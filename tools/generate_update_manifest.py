@@ -23,14 +23,24 @@ def sha256(path: Path) -> str:
 
 def android_tool(name: str) -> str:
     sdk = Path(os.environ["ANDROID_HOME"])
-    candidates = sorted(
-        sdk.glob(f"build-tools/*/{name}*"),
-        key=lambda path: tuple(int(part) for part in re.findall(r"\d+", path.parent.name)),
+    build_tools = sorted(
+        (path for path in (sdk / "build-tools").iterdir() if path.is_dir()),
+        key=lambda path: tuple(int(part) for part in re.findall(r"\d+", path.name)),
         reverse=True,
     )
-    if not candidates:
-        raise FileNotFoundError(f"{name} not found under {sdk}")
-    return str(candidates[0])
+    for directory in build_tools:
+        for filename in (name, f"{name}.exe", f"{name}.bat"):
+            candidate = directory / filename
+            if candidate.is_file():
+                return str(candidate)
+    raise FileNotFoundError(f"{name} not found under {sdk}")
+
+
+def min_sdk_from_badging(output: str) -> int:
+    match = re.search(r"^(?:sdkVersion|minSdkVersion):'(\d+)'$", output, re.MULTILINE)
+    if not match:
+        raise ValueError("Unable to read APK minimum SDK")
+    return int(match.group(1))
 
 
 def apk_info(path: Path) -> dict:
@@ -46,7 +56,6 @@ def apk_info(path: Path) -> dict:
     )
     if not package:
         raise ValueError(f"Unable to read APK metadata: {path}")
-    min_sdk = re.search(r"sdkVersion:'(\d+)'", output)
     native_lines = re.findall(r"^(?:alt-)?native-code:\s*(.+)$", output, re.MULTILINE)
     abis = sorted({
         abi
@@ -72,7 +81,7 @@ def apk_info(path: Path) -> dict:
         "package_name": package.group(1),
         "version_code": int(package.group(2)),
         "version_name": package.group(3),
-        "min_sdk": int(min_sdk.group(1)) if min_sdk else 1,
+        "min_sdk": min_sdk_from_badging(output),
         "abis": abis,
         "signer_sha256": sorted(fingerprints),
     }

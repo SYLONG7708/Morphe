@@ -51,6 +51,9 @@ jobs:
           yes | sdkmanager --licenses >/dev/null
           sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "cmake;3.22.1" "ndk;28.2.13676358"
 
+      - name: Test release metadata generator
+        run: python -m unittest discover -s tools -p 'test_*.py'
+
       - name: Resolve upstream releases
         id: upstream
         env:
