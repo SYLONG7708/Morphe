@@ -152,6 +152,35 @@ jobs:
             java -cp dist VerifyFile app/src/main/res/raw/update_signing_cert.der \
               "$file" "$file.sig"
           done
+          bundle_dir="dist/AutoPatch-Hub-Ecosystem-$RELEASE_VERSION"
+          mkdir -p "$bundle_dir"
+          cp "dist/AutoPatch-Hub-$RELEASE_VERSION.apk" \
+            "dist/AutoPatch-Hub-$RELEASE_VERSION.apk.sig" \
+            "dist/microg-$MICROG_VERSION.apk" \
+            "dist/microg-$MICROG_VERSION.apk.sig" \
+            "dist/patches-$PATCH_VERSION.mpp" \
+            "dist/patches-$PATCH_VERSION.mpp.sig" \
+            "dist/update-manifest.json" \
+            "dist/update-manifest.json.sig" "$bundle_dir/"
+          cat > "$bundle_dir/README.txt" <<EOF
+AutoPatch Hub Ecosystem Bundle $RELEASE_VERSION
+
+This single ZIP contains the signed AutoPatch Hub manager, MicroG-RE,
+Morphe patch bundle, signed manifest, and detached signatures.
+Install AutoPatch Hub first, then open its Security Update Center to install
+MicroG-RE and patch the compatible YouTube APK already installed on the device.
+The Google YouTube APK is intentionally not included. Android still installs
+the manager and MicroG-RE as separate packages because Google login requires
+the MicroG package identity. Enable Automatic ecosystem updates in Settings
+to keep the verified components current.
+EOF
+          bundle="dist/AutoPatch-Hub-Ecosystem-$RELEASE_VERSION.zip"
+          (cd "$bundle_dir" && zip -q -r "../$(basename "$bundle")" .)
+          java -cp dist SignFile update-signing.p12 \
+            "$UPDATE_SIGNING_STORE_PASSWORD" "$UPDATE_SIGNING_KEY_ALIAS" \
+            "$UPDATE_SIGNING_KEY_PASSWORD" "$bundle" "$bundle.sig"
+          java -cp dist VerifyFile app/src/main/res/raw/update_signing_cert.der \
+            "$bundle" "$bundle.sig"
 
       - name: Create GitHub Release
         if: steps.gate.outputs.publish == 'true'
@@ -160,7 +189,7 @@ jobs:
         run: |
           set -euo pipefail
           tag="autopatch-v$RELEASE_VERSION"
-          assets=(dist/*.apk dist/*.mpp dist/*.sig dist/update-manifest.json)
+          assets=(dist/*.apk dist/*.mpp dist/*.sig dist/*.zip dist/update-manifest.json)
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "${assets[@]}" --clobber
           else
