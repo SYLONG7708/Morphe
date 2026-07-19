@@ -36,6 +36,8 @@ class SignedUpdateManifestRepository(
         require(manifest.schema == SUPPORTED_SCHEMA) {
             "Unsupported update manifest schema ${manifest.schema}"
         }
+        require(manifest.channel == "stable") { "Untrusted update channel ${manifest.channel}" }
+        require(manifest.sequence > 0) { "Invalid update manifest sequence" }
 
         val acceptedSequence = prefs.lastAcceptedManifestSequence.get()
         require(manifest.sequence >= acceptedSequence) {

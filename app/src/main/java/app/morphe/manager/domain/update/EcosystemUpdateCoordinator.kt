@@ -8,6 +8,7 @@ import android.app.Application
 import android.os.Build
 import app.morphe.manager.BuildConfig
 import app.morphe.manager.data.platform.Filesystem
+import app.morphe.manager.data.platform.NetworkInfo
 import app.morphe.manager.domain.installer.InstallResult
 import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
@@ -57,6 +58,7 @@ class EcosystemUpdateCoordinator(
     private val http: HttpService,
     private val verifier: DetachedSignatureVerifier,
     private val filesystem: Filesystem,
+    private val networkInfo: NetworkInfo,
     private val prefs: PreferencesManager,
     private val pm: PM,
     private val patchBundleRepository: PatchBundleRepository,
@@ -82,7 +84,12 @@ class EcosystemUpdateCoordinator(
             var manager = resolveManager(manifest.manager, profile)
             var microg = resolveMicroG(manifest.microg, profile)
 
-            if (downloadAssets && prefs.automaticEcosystemUpdates.get()) {
+            val mayUseCurrentNetwork =
+                prefs.allowMeteredUpdates.get() || !networkInfo.isMetered()
+            if (downloadAssets &&
+                prefs.automaticEcosystemUpdates.get() &&
+                mayUseCurrentNetwork
+            ) {
                 coroutineScope {
                     val managerJob = async { prepareIfNeeded(manager) }
                     val microgJob = async { prepareIfNeeded(microg) }
@@ -339,12 +346,20 @@ class EcosystemUpdateCoordinator(
                 }
             }
 
-            Files.move(
-                partial.toPath(),
-                destination.toPath(),
-                StandardCopyOption.REPLACE_EXISTING,
-                StandardCopyOption.ATOMIC_MOVE,
-            )
+            runCatching {
+                Files.move(
+                    partial.toPath(),
+                    destination.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE,
+                )
+            }.getOrElse {
+                Files.move(
+                    partial.toPath(),
+                    destination.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING,
+                )
+            }
             destination
         }
 
