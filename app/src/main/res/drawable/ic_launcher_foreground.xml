@@ -8,11 +8,11 @@
     android:viewportHeight="108">
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,19a35,35 0,1 0,0 70a35,35 0,1 0,0 -70" />
+        android:pathData="M54,19C73.33,19 89,34.67 89,54C89,73.33 73.33,89 54,89C34.67,89 19,73.33 19,54C19,34.67 34.67,19 54,19Z" />
     <path
         android:fillColor="#111827"
         android:pathData="M49,40L70,54L49,68Z" />
     <path
         android:fillColor="#7C3AED"
-        android:pathData="M54,24a5,5 0,1 0,0 10a5,5 0,1 0,0 -10M54,74a5,5 0,1 0,0 10a5,5 0,1 0,0 0,-10M24,49a5,5 0,1 0,0 10a5,5 0,1 0,0 0,-10M74,49a5,5 0,1 0,0 10a5,5 0,1 0,0 0,-10" />
+        android:pathData="M51,26h6v6h-6zM51,76h6v6h-6zM26,51h6v6h-6zM76,51h6v6h-6z" />
 </vector>
