@@ -342,7 +342,7 @@
     <string name="patcher_conflict_subtitle">You need to uninstall the existing version</string>
     <string name="patcher_conflict_hint">पैच किया गया ऐप इंस्टॉल किए गए संस्करण से अलग प्रमाणपत्र का उपयोग करता है। अनइंस्टॉल करने से सभी ऐप डेटा मिट जाएगा।</string>
     <string name="patcher_installed_conflict_title">अनइंस्टॉल आवश्यक है</string>
-    <string name="patcher_installed_conflict_body">"Morphe अपने स्वयं के प्रमाणपत्र के साथ पैच्ड ऐप्स पर हस्ताक्षर करता है, जो मूल से अलग है। Android को पैच्ड ऐप को इंस्टॉल करने से पहले मौजूदा संस्करण को हटाने की आवश्यकता होती है।
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub अपने स्वयं के प्रमाणपत्र के साथ पैच्ड ऐप्स पर हस्ताक्षर करता है, जो मूल से अलग है। Android को पैच्ड ऐप को इंस्टॉल करने से पहले मौजूदा संस्करण को हटाने की आवश्यकता होती है।
 
 अनइंस्टॉल करने से सभी ऐप डेटा स्थायी रूप से मिट जाएगा।"</string>
     <string name="patcher_install_error_title">Installation error</string>
@@ -351,7 +351,7 @@
     <string name="patcher_ready_to_mount_subtitle">Press the button below to mount</string>
     <string name="patcher_storage_permission_dialog_title">स्तोरेज पथ तक पहुंच नहीं हो सकती है</string>
     <string name="patcher_incompatible_patcher_title">अपडेट आवश्यक है</string>
-    <string name="patcher_incompatible_patcher_description">बंडल &lt;b&gt;%1$s&lt;/b&gt; को पैचर संस्करण &lt;b&gt;%2$s&lt;/b&gt; या नया संस्करण की आवश्यकता है। कृपया इस ऐप को पैच करने के लिए Morphe को अपडेट करें।</string>
+    <string name="patcher_incompatible_patcher_description">बंडल &lt;b&gt;%1$s&lt;/b&gt; को पैचर संस्करण &lt;b&gt;%2$s&lt;/b&gt; या नया संस्करण की आवश्यकता है। कृपया इस ऐप को पैच करने के लिए AutoPatch Hub को अपडेट करें।</string>
     <string name="patcher_incompatible_patcher_update_button">डाउनलोड करें और मोर्फ़ अपडेट करें</string>
     <string name="patcher_storage_permission_description_api30">एक या अधिक पैच विकल्प ऐसे पथों की ओर इशारा करते हैं जिन्हें मोर्फे नहीं पढ़ सकता है। स्टोरेज एक्सेस प्रदान करें और बटन पर टैप करें, फिर पैचिंग स्वचालित रूप से शुरू हो जाएगी</string>
     <string name="patcher_storage_permission_description_legacy">एक या अधिक पैच ऑप्शन को पथ्स को पॉइंट करता है जो पहुंच नहीं हो सकती है। पैच ऑप्शन में पथ्स को अद्यतन करें और पुन: प्रयास करें</string>
@@ -388,7 +388,7 @@
     <string name="patcher_message_6">Coffee break recommended… ☕</string>
     <string name="patcher_message_7">Look outside, it\'s nice out there… 🌤️</string>
     <string name="patcher_message_8">Adjusting 1\'s and 0\'s… 🤖</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">अपैच किए गए ऐप में बग्स को ठीक कर रहा हूँ… 🪲</string>
     <string name="patcher_message_10">Fixing bugs in the unpatched app… 🐞</string>
     <string name="patcher_message_11">Great patches are worth the wait… ⏳</string>
@@ -492,9 +492,9 @@
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">अपडेट</string>
     <string name="settings_advanced_updates_use_prereleases">प्री-रिलीज़ अपडेट</string>
-    <string name="settings_advanced_updates_use_prereleases_description">नए Morphe ऐप संस्करणों तक प्रारंभिक पहुंच। पैच स्रोतों में प्रति स्रोत प्री-रिलीज़ सक्षम करें।</string>
+    <string name="settings_advanced_updates_use_prereleases_description">नए AutoPatch Hub ऐप संस्करणों तक प्रारंभिक पहुंच। पैच स्रोतों में प्रति स्रोत प्री-रिलीज़ सक्षम करें।</string>
     <string name="settings_advanced_updates_allow_metered">मोबाइल डेटा अपडेट</string>
-    <string name="settings_advanced_updates_allow_metered_description">Morphe और पैच अपडेट को मोबाइल डेटा पर डाउनलोड करने की अनुमति देता है।</string>
+    <string name="settings_advanced_updates_allow_metered_description">AutoPatch Hub और पैच अपडेट को मोबाइल डेटा पर डाउनलोड करने की अनुमति देता है।</string>
     <string name="settings_advanced_updates_background_notifications">रीलेटेड अपडेट नोटिफिकेशन्स</string>
     <string name="settings_advanced_updates_background_notifications_description">बैकग्राउंड में अद्यतन उपलब्ध होने पर सूचित करें।</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">नया रिलीज़ होने पर, ऐप बंद होने पर भी पुश नोटिफिकेशन।</string>
@@ -521,7 +521,7 @@
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">एक्सपर्ट सेटिंग्स</string>
     <string name="settings_advanced_expert_mode">एक्सपर्ट मोड</string>
-    <string name="settings_advanced_expert_mode_description">जटिल Morphe पैचिंग सेटिंग्स और अनुकूलन विकल्पों को सक्षम करता है।</string>
+    <string name="settings_advanced_expert_mode_description">जटिल AutoPatch Hub पैचिंग सेटिंग्स और अनुकूलन विकल्पों को सक्षम करता है।</string>
     <string name="settings_advanced_expert_mode_dialog_title">एक्सपर्ट मोड को अनुमोदित करना?</string>
     <string name="settings_advanced_expert_mode_dialog_message">एक्सपर्ट मोड पट्चों को लागू करने के तरीके पर अधिक नियंत्रण देता है, लेकिन एक्सपर्ट मोड में सेटिंग्स गलत करने से अप्लिकेशन में काम नहीं करने का खतरा हो सकता है</string>
     <string name="settings_advanced_strip_unused_libs">डिवाइस आर्किटेक्चर के लिए अनुकूलित करें</string>
@@ -694,10 +694,10 @@ morphe_header_custom_dark.png
     <string name="settings_system_show_password_field">पासवर्ड दिखाएं</string>
     <string name="settings_system_hide_password_field">पासवर्ड छिपाएं</string>
     <string name="settings_system_morphe_settings">मॉर्फ सेटिंग्स</string>
-    <string name="settings_system_import_manager_settings_description">आपकी Morphe सेटिंग्स का बैकअप और पुनर्स्थापित करता है।</string>
+    <string name="settings_system_import_manager_settings_description">आपकी AutoPatch Hub सेटिंग्स का बैकअप और पुनर्स्थापित करता है।</string>
     <string name="settings_system_import_manager_settings_fail">मोर्फ़ सेटिंग्स आयात करने में विफल: %s</string>
     <string name="settings_system_import_manager_settings_success">मोर्फ़ सेटिंग्स आयात की गईं</string>
-    <string name="settings_system_import_manager_settings_mode_title">Morphe सेटिंग्स आयात करें</string>
+    <string name="settings_system_import_manager_settings_mode_title">AutoPatch Hub सेटिंग्स आयात करें</string>
     <string name="settings_system_import_manager_settings_mode_description">चुनें कि आयात की गई सेटिंग्स और स्रोतों को कैसे लागू किया जाना चाहिए</string>
     <string name="settings_system_import_selections_mode_title">आयात पैच चयन</string>
     <string name="settings_system_import_selections_mode_description">आयातित चयन और पैच विकल्पों को कैसे लागू किया जाना चाहिए, चुनें</string>
@@ -780,7 +780,7 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">मorphe के बारे में</string>
     <string name="settings_system_share_website">वेबसाइट शेयर करें</string>
-    <string name="settings_system_share_website_description">आधिकारिक Morphe वेबसाइट साझा करता है।</string>
+    <string name="settings_system_share_website_description">आधिकारिक AutoPatch Hub वेबसाइट साझा करता है।</string>
     <string name="settings_system_manager_description">यह एक ओपन-सोर्स परियोजना है जो लोकप्रिय एंड्रॉइड ऐप्स के आधुनिक, सुव्यवस्थित पैचिंग के लिए है, जो सामुदायिक प्रतिक्रिया और योगदान से प्रेरित है</string>
     <string name="credits">क्रेडिट</string>
     <string name="credits_current_development">वर्तमान विकास</string>
@@ -912,7 +912,7 @@ morphe_header_custom_dark.png
     <string name="onboarding_sources_desc">अपने पैच स्रोतों का प्रबंधन करें। प्रत्येक स्रोत पैच प्रदान करता है जिन्हें आपके ऐप्स पर लागू किया जा सकता है।</string>
     <string name="onboarding_swipe_title">स्वाइप इशारे</string>
     <string name="onboarding_swipe_desc">अपने उपलब्ध पैच देखने के लिए किसी ऐप कार्ड पर दाईं ओर स्वाइप करें। होम स्क्रीन से कार्ड को छिपाने के लिए बाईं ओर स्वाइप करें।</string>
-    <string name="onboarding_settings_desc">Morphe को अनुकूलित करें: दिखावट, उन्नत विकल्प और सिस्टम उपकरण।</string>
+    <string name="onboarding_settings_desc">AutoPatch Hub को अनुकूलित करें: दिखावट, उन्नत विकल्प और सिस्टम उपकरण।</string>
     <string name="onboarding_sources_patches_desc">इस स्रोत से उपलब्ध सभी पैच देखने के लिए टैप करें।</string>
     <string name="onboarding_sources_version_desc">इस स्रोत के लिए पूर्ण चेंजलॉग देखने के लिए संस्करण पर टैप करें।</string>
     <string name="onboarding_sources_prerelease_desc">इस स्रोत से प्री-रिलीज़ पैच संस्करण प्राप्त करने के लिए इसे सक्षम करें।</string>
@@ -927,8 +927,8 @@ morphe_header_custom_dark.png
     <string name="onboarding_system_file_picker_desc">जब APK या कीस्टोर का चयन करते हैं तो सिस्टम पिकर के बजाय अंतर्निहित फ़ाइल ब्राउज़र का उपयोग करने के लिए सक्षम करें।</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">त्वरित सुविधा दौरा</string>
-    <string name="tour_prompt_desc">क्या आप Morphe की मुख्य विशेषताओं का त्वरित दौरा करना चाहेंगे?</string>
+    <string name="tour_prompt_desc">क्या आप AutoPatch Hub की मुख्य विशेषताओं का त्वरित दौरा करना चाहेंगे?</string>
     <string name="tour_prompt_confirm">मुझे दिखाओ</string>
     <string name="onboarding_restart_title">सुविधा दौरा</string>
-    <string name="onboarding_restart_desc">Morphe की प्रमुख विशेषताओं का निर्देशित दौरा करें।</string>
+    <string name="onboarding_restart_desc">AutoPatch Hub की प्रमुख विशेषताओं का निर्देशित दौरा करें।</string>
 </resources>

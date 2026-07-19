@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11-Fehler</string>
     <string name="android_11_bug_dialog_description">Die App-Installationserlaubnis muss vorab erteilt werden, um einen Fehler im Android-11-System zu vermeiden, der die Benutzererfahrung negativ beeinflussen wird</string>
     <string name="deep_link_add_source_title">Quelle hinzufügen</string>
-    <string name="deep_link_add_source_message">Möchten Sie diese Patch-Quelle zu Morphe hinzufügen?</string>
+    <string name="deep_link_add_source_message">Möchten Sie diese Patch-Quelle zu AutoPatch Hub hinzufügen?</string>
     <string name="deep_link_add_source_warning">Fügen Sie nur Quellen hinzu, denen Sie vertrauen</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Morphe-Update verfügbar</string>
+    <string name="home_update_available">AutoPatch Hub-Update verfügbar</string>
     <string name="home_update_available_subtitle">Neue Version bereit zur Installation</string>
     <string name="home_update_error">Update fehlgeschlagen</string>
     <string name="home_update_error_subtitle">Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Übung macht den Meister, und Sie sind auf dem richtigen Weg 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Immer noch nicht hier… immer noch nicht hier… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">OK, ich respektiere die Hingabe 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Sie sind jetzt ein offizieller Morphe Button Tester 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Sie sind jetzt ein offizieller AutoPatch Hub Button Tester 🏅</string>
     <string name="home_download_instructions_step3">Warten Sie bis der Download abgeschlossen ist, und &lt;b&gt; installieren Sie nicht&lt;/b&gt; die APK </string>
     <string name="home_download_instructions_step3_mount">Warten Sie bis der Download abgeschlossen ist, dann &lt;b&gt;installieren Sie die APK&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Nachdem der Download abgeschlossen ist, kehren Sie zu Morphe zurück</string>
-    <string name="home_download_instructions_step4_mount">Nach der Installation der originalen APK, kehren Sie zu Morphe zurück</string>
+    <string name="home_download_instructions_step4">Nachdem der Download abgeschlossen ist, kehren Sie zu AutoPatch Hub zurück</string>
+    <string name="home_download_instructions_step4_mount">Nach der Installation der originalen APK, kehren Sie zu AutoPatch Hub zurück</string>
     <string name="home_download_instructions_continue">Weiter zu APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Heruntergeladene APK-Datei auswählen</string>
@@ -306,7 +306,7 @@ Für optimale Ergebnisse empfiehlt diese App eine &lt;b&gt;vollständige APK&lt;
     <string name="home_app_info_patch_update_available">Patch-Update verfügbar</string>
     <string name="home_app_info_patch_update_available_description">Eine neuere Version von Patches ist verfügbar. Repatchen Sie Ihre App, um die neuesten Verbesserungen und Fehlerbehebungen zu erhalten</string>
     <string name="home_app_info_app_deleted_warning">App wurde deinstalliert</string>
-    <string name="home_app_info_app_deleted_description">Diese App wurde außerhalb von Morphe deinstalliert. Repatchen Sie sie, um die Funktionalität wiederherzustellen</string>
+    <string name="home_app_info_app_deleted_description">Diese App wurde außerhalb von AutoPatch Hub deinstalliert. Repatchen Sie sie, um die Funktionalität wiederherzustellen</string>
     <string name="home_app_info_apk_size">APK-Größe</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Root-Modus erfordert, dass die originale APK-Datei auf Ihrem Gerät installiert ist, bevor Sie mit dem Patchen beginnen</string>
@@ -342,7 +342,7 @@ Für optimale Ergebnisse empfiehlt diese App eine &lt;b&gt;vollständige APK&lt;
     <string name="patcher_conflict_subtitle">Du musst die vorhandene Version deinstallieren</string>
     <string name="patcher_conflict_hint">Die gepatchte App verwendet ein anderes Zertifikat als die installierte Version. Die Deinstallation löscht alle App-Daten</string>
     <string name="patcher_installed_conflict_title">Deinstallation erforderlich</string>
-    <string name="patcher_installed_conflict_body">"Morphe signiert gepatchte Apps mit seinem eigenen Zertifikat, das sich vom Original unterscheidet. Android erfordert, dass die vorhandene Version entfernt wird, bevor die gepatchte App installiert werden kann.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub signiert gepatchte Apps mit seinem eigenen Zertifikat, das sich vom Original unterscheidet. Android erfordert, dass die vorhandene Version entfernt wird, bevor die gepatchte App installiert werden kann.
 
 Durch die Deinstallation werden alle App-Daten dauerhaft gelöscht"</string>
     <string name="patcher_install_error_title">Installationsfehler</string>
@@ -351,9 +351,9 @@ Durch die Deinstallation werden alle App-Daten dauerhaft gelöscht"</string>
     <string name="patcher_ready_to_mount_subtitle">Drücke die Schaltfläche unten, um zu mounten</string>
     <string name="patcher_storage_permission_dialog_title">Speicherpfad kann nicht erreicht werden</string>
     <string name="patcher_incompatible_patcher_title">Update erforderlich</string>
-    <string name="patcher_incompatible_patcher_description">Das Bundle &lt;b&gt;%1$s&lt;/b&gt; benötigt Patcher-Version &lt;b&gt;%2$s&lt;/b&gt; oder neuer. Bitte aktualisieren Sie Morphe, um diese App zu patchen</string>
-    <string name="patcher_incompatible_patcher_update_button">Morphe herunterladen und aktualisieren</string>
-    <string name="patcher_storage_permission_description_api30">Eine oder mehrere Patch-Optionen verweisen auf Pfade, die Morphe nicht lesen kann. Gewähren Sie den Speicherzugriff und tippen Sie auf die Schaltfläche, dann beginnt das Patchen automatisch</string>
+    <string name="patcher_incompatible_patcher_description">Das Bundle &lt;b&gt;%1$s&lt;/b&gt; benötigt Patcher-Version &lt;b&gt;%2$s&lt;/b&gt; oder neuer. Bitte aktualisieren Sie AutoPatch Hub, um diese App zu patchen</string>
+    <string name="patcher_incompatible_patcher_update_button">AutoPatch Hub herunterladen und aktualisieren</string>
+    <string name="patcher_storage_permission_description_api30">Eine oder mehrere Patch-Optionen verweisen auf Pfade, die AutoPatch Hub nicht lesen kann. Gewähren Sie den Speicherzugriff und tippen Sie auf die Schaltfläche, dann beginnt das Patchen automatisch</string>
     <string name="patcher_storage_permission_description_legacy">Ein oder mehrere Patch-Optionen verweisen auf Pfade, auf die nicht zugegriffen werden kann. Aktualisieren Sie die Pfade in den Patch-Optionen und versuchen Sie es erneut</string>
     <string name="patcher_storage_permission_grant">Speicherberechtigung gewähren</string>
     <string name="patcher_storage_permission_denied_warning">Speicherkartenberechtigung wurde abgelehnt. Erteilen Sie die Berechtigung, um diesen Pfad zu verwenden, oder verschieben Sie die Dateien in das private Verzeichnis der App</string>
@@ -372,7 +372,7 @@ Durch die Deinstallation werden alle App-Daten dauerhaft gelöscht"</string>
     <string name="patcher_step_sign_apk">Gepatchte APK-Datei wird signiert</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Schutz für Hintergrund-Patching</string>
-    <string name="battery_optimization_dialog_description">Auf einigen Geräten wird das Patchen beendet, wenn die App minimiert wird. Erlauben Sie Morphe ohne Batteriebeschränkungen zu laufen, um sicherzustellen, dass das Patchen zuverlässig abgeschlossen wird</string>
+    <string name="battery_optimization_dialog_description">Auf einigen Geräten wird das Patchen beendet, wenn die App minimiert wird. Erlauben Sie AutoPatch Hub ohne Batteriebeschränkungen zu laufen, um sicherzustellen, dass das Patchen zuverlässig abgeschlossen wird</string>
     <string name="battery_optimization_not_now">Nicht jetzt</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Patchen läuft…</string>
@@ -388,7 +388,7 @@ Durch die Deinstallation werden alle App-Daten dauerhaft gelöscht"</string>
     <string name="patcher_message_6">Schauen Sie nach draußen, es ist schön dort… 🌤️</string>
     <string name="patcher_message_7">Justiere 1en und 0en… 🤖</string>
     <string name="patcher_message_8">Entwirre digitale Spaghetti… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Behebe Bugs in der ungepatchten App… 🪲</string>
     <string name="patcher_message_10">Großartige Patches sind das Warten wert… ⏳</string>
     <string name="patcher_message_11">Poliere Pixel, bis sie glänzen… 💎</string>
@@ -492,9 +492,9 @@ Durch die Deinstallation werden alle App-Daten dauerhaft gelöscht"</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Updates</string>
     <string name="settings_advanced_updates_use_prereleases">Updates für Vorabversionen</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Frühzeitiger Zugriff auf neue Morphe-App-Versionen. Aktivieren Sie Vorabversionen pro Quelle in den Patchquellen</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Frühzeitiger Zugriff auf neue AutoPatch Hub-App-Versionen. Aktivieren Sie Vorabversionen pro Quelle in den Patchquellen</string>
     <string name="settings_advanced_updates_allow_metered">Mobile Daten-Updates</string>
-    <string name="settings_advanced_updates_allow_metered_description">Ermöglicht das Herunterladen von Morphe- und Patch-Updates über mobile Daten</string>
+    <string name="settings_advanced_updates_allow_metered_description">Ermöglicht das Herunterladen von AutoPatch Hub- und Patch-Updates über mobile Daten</string>
     <string name="settings_advanced_updates_background_notifications">Benachrichtigungen über Updates im Hintergrund</string>
     <string name="settings_advanced_updates_background_notifications_description">Im Hintergrund periodisch nach Updates suchen und bei Verfügbarkeit benachrichtigen.</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Push-Benachrichtigungen für neue Versionen, auch wenn die App geschlossen ist</string>
@@ -507,21 +507,21 @@ Durch die Deinstallation werden alle App-Daten dauerhaft gelöscht"</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Häufigkeit der Update-Suche im Hintergrund</string>
     <string name="settings_advanced_update_interval_battery_warning">Die Suche nach Updates im Hintergrund funktioniert möglicherweise auf einigen Geräten nicht zuverlässig. Hersteller wie Xiaomi, Huawei, Samsung und OnePlus beschränken oft aggressiv Hintergrundprozesse, um Batterieleistung zu sparen</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Morphe-Update verfügbar</string>
+    <string name="notification_manager_update_title">AutoPatch Hub-Update verfügbar</string>
     <string name="notification_bundle_update_title">Neue Patches verfügbar</string>
     <string name="notification_update_text">Version %s ist zum Herunterladen bereit</string>
-    <string name="notification_bundle_update_text_unversioned">Tippen Sie, um Morphe zu öffnen und zu aktualisieren</string>
+    <string name="notification_bundle_update_text_unversioned">Tippen Sie, um AutoPatch Hub zu öffnen und zu aktualisieren</string>
     <string name="notification_permission_dialog_title">Benachrichtigungen erlauben</string>
-    <string name="notification_permission_dialog_description">Morphe benötigt die Berechtigung für Benachrichtigungen, um Sie zu benachrichtigen, wenn Updates im Hintergrund verfügbar sind</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub benötigt die Berechtigung für Benachrichtigungen, um Sie zu benachrichtigen, wenn Updates im Hintergrund verfügbar sind</string>
     <string name="notification_post_patch_dialog_title">Möchten Sie benachrichtigt werden, wenn Updates verfügbar sind?</string>
     <string name="notification_channel_fcm_updates">Update-Benachrichtigungen</string>
-    <string name="notification_channel_fcm_updates_description">Benachrichtigungen über neue Morphe- und Patch-Veröffentlichungen</string>
+    <string name="notification_channel_fcm_updates_description">Benachrichtigungen über neue AutoPatch Hub- und Patch-Veröffentlichungen</string>
     <string name="notification_channel_patcher">Patchen</string>
-    <string name="notification_channel_patcher_description">Wird angezeigt, während Morphe eine App im Hintergrund patcht</string>
+    <string name="notification_channel_patcher_description">Wird angezeigt, während AutoPatch Hub eine App im Hintergrund patcht</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Experten-Einstellungen</string>
     <string name="settings_advanced_expert_mode">Experten-Modus</string>
-    <string name="settings_advanced_expert_mode_description">Aktiviert komplexe Morphe-Patch-Einstellungen und Anpassungsoptionen</string>
+    <string name="settings_advanced_expert_mode_description">Aktiviert komplexe AutoPatch Hub-Patch-Einstellungen und Anpassungsoptionen</string>
     <string name="settings_advanced_expert_mode_dialog_title">Experten-Modus aktivieren?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Der Experten-Modus gewährt mehr Kontrolle darüber, wie Patches angewendet werden, kann aber bei falscher Konfiguration zu einer nicht funktionsfähigen App führen</string>
     <string name="settings_advanced_strip_unused_libs">Für die Gerätearchitektur optimieren</string>
@@ -542,7 +542,7 @@ Durch die Deinstallation werden alle App-Daten dauerhaft gelöscht"</string>
     <string name="settings_advanced_github_pat_dialog_title">GitHub Personal Access Token festlegen</string>
     <string name="settings_advanced_github_pat_dialog_description">Legen Sie einen GitHub Personal Access Token fest, um Pull-Anfragen als externe Quellen hinzufügen zu können. Erstellen Sie einen PAT mit dem Geltungsbereich \"public_repo github.com\"</string>
     <string name="settings_advanced_github_pat_export_include_label">In den Export von Einstellungen einschließen </string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Fügt diesen PAT zu den exportierten Morphe-Einstellungen hinzu</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Fügt diesen PAT zu den exportierten AutoPatch Hub-Einstellungen hinzu</string>
     <string name="settings_advanced_github_pat_export_warning">Teilen Sie Ihren PAT nicht. Wenn Sie ihn mitexportieren, halten Sie die Datei privat, da sie den Token enthält</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Patch-Optionen</string>
@@ -639,7 +639,7 @@ Die Bildgrößen müssen wie folgt sein:
     <string name="installer_status_not_supported">Nicht unterstützt für diese Aktion</string>
     <string name="installer_status_shizuku_not_installed">Installieren Sie Shizuku oder Sui, um diese Option zu verwenden</string>
     <string name="installer_status_shizuku_not_running">Starten Sie Shizuku oder Sui und versuchen Sie es erneut</string>
-    <string name="installer_status_shizuku_permission">Erlauben Sie Shizuku den Zugriff auf Morphe von der Shizuku-App aus</string>
+    <string name="installer_status_shizuku_permission">Erlauben Sie Shizuku den Zugriff auf AutoPatch Hub von der Shizuku-App aus</string>
     <string name="installer_mount_warning_install">Ihr primärer Installer ist auf den Root-Mount-Installer gesetzt. Diese gespeicherte App wurde nicht mit Mount installiert</string>
     <string name="mount_version_mismatch_message">Stock-App-Version (%2$s) stimmt nicht mit gepatchter App-Version (%1$s) überein. Mounten Sie die passende Stock-Version und versuchen Sie es erneut</string>
     <string name="installer_status_shizuku_unsupported">Die installierte Shizuku-Version wird nicht unterstützt</string>
@@ -693,11 +693,11 @@ Die Bildgrößen müssen wie folgt sein:
     <string name="settings_system_export_keystore_failed">Exportieren des Keystores fehlgeschlagen</string>
     <string name="settings_system_show_password_field">Passwort anzeigen</string>
     <string name="settings_system_hide_password_field">Passwort ausblenden</string>
-    <string name="settings_system_morphe_settings">Morphe Einstellungen</string>
-    <string name="settings_system_import_manager_settings_description">Sichert und stellt Ihre Morphe-Einstellungen wieder her</string>
-    <string name="settings_system_import_manager_settings_fail">Importieren der Morphe-Einstellungen fehlgeschlagen: %s</string>
-    <string name="settings_system_import_manager_settings_success">Morphe-Einstellungen importiert</string>
-    <string name="settings_system_import_manager_settings_mode_title">Morphe-Einstellungen importieren</string>
+    <string name="settings_system_morphe_settings">AutoPatch Hub Einstellungen</string>
+    <string name="settings_system_import_manager_settings_description">Sichert und stellt Ihre AutoPatch Hub-Einstellungen wieder her</string>
+    <string name="settings_system_import_manager_settings_fail">Importieren der AutoPatch Hub-Einstellungen fehlgeschlagen: %s</string>
+    <string name="settings_system_import_manager_settings_success">AutoPatch Hub-Einstellungen importiert</string>
+    <string name="settings_system_import_manager_settings_mode_title">AutoPatch Hub-Einstellungen importieren</string>
     <string name="settings_system_import_manager_settings_mode_description">Wählen Sie, wie die importierten Einstellungen und Quellen angewendet werden sollen</string>
     <string name="settings_system_import_selections_mode_title">Patch-Auswahlen importieren</string>
     <string name="settings_system_import_selections_mode_description">Wählen Sie, wie die importierten Auswahlen und Patch-Optionen angewendet werden sollen</string>
@@ -705,8 +705,8 @@ Die Bildgrößen müssen wie folgt sein:
     <string name="import_mode_replace_description">Das Backup exakt übernehmen. Fehlende Elemente im Backup werden entfernt</string>
     <string name="import_mode_merge_title">Mit Vorhandenem zusammenführen</string>
     <string name="import_mode_merge_description">Fehlende Elemente aus dem Backup hinzufügen. Vorhandene Elemente bleiben unverändert</string>
-    <string name="settings_system_export_manager_settings_fail">Exportieren der Morphe-Einstellungen fehlgeschlagen: %s</string>
-    <string name="settings_system_export_manager_settings_success">Morphe-Einstellungen exportiert</string>
+    <string name="settings_system_export_manager_settings_fail">Exportieren der AutoPatch Hub-Einstellungen fehlgeschlagen: %s</string>
+    <string name="settings_system_export_manager_settings_success">AutoPatch Hub-Einstellungen exportiert</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_description">Speichert Systemprotokolle zur Fehlerbehebung</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Lesen der Protokolle fehlgeschlagen (Rückgabecode %s)</string>
@@ -762,7 +762,7 @@ Die Bildgrößen müssen wie folgt sein:
     <string name="settings_system_no_patches_or_options">Keine Patches oder Optionen gespeichert</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Benutzerdefinierter Dateiauswahldialog</string>
-    <string name="settings_system_custom_file_picker_description">Durchsuchen Sie den Speicher mit dem integrierten Dateiauswahldialog von Morphe anstelle der systemspezifischen Standardeinstellung</string>
+    <string name="settings_system_custom_file_picker_description">Durchsuchen Sie den Speicher mit dem integrierten Dateiauswahldialog von AutoPatch Hub anstelle der systemspezifischen Standardeinstellung</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Vorheriges Verzeichnis</string>
     <string name="file_picker_no_files">Keine Dateien hier</string>
@@ -780,7 +780,7 @@ Die Bildgrößen müssen wie folgt sein:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Über</string>
     <string name="settings_system_share_website">Website teilen</string>
-    <string name="settings_system_share_website_description">Teilt die offizielle Morphe-Website</string>
+    <string name="settings_system_share_website_description">Teilt die offizielle AutoPatch Hub-Website</string>
     <string name="settings_system_manager_description">Ein Open-Source-Projekt für modernes, optimiertes Patchen beliebter Android-Apps, das von Community-Feedback und -beiträgen angetrieben wird</string>
     <string name="credits">Credits</string>
     <string name="credits_current_development">Aktuelle Entwicklung</string>
@@ -912,7 +912,7 @@ Wollen Sie trotzdem fortfahren?"</string>
     <string name="onboarding_sources_desc">Verwalten Sie Ihre Patch-Quellen. Jede Quelle stellt Patches bereit, die auf Ihre Apps angewendet werden können</string>
     <string name="onboarding_swipe_title">Wischgesten</string>
     <string name="onboarding_swipe_desc">Wischen Sie mit dem Finger nach rechts über eine App-Karte, um die verfügbaren Patches anzuzeigen. Wischen Sie nach links, um die Karte vom Startbildschirm auszublenden</string>
-    <string name="onboarding_settings_desc">Passen Sie Morphe an: Aussehen, erweiterte Optionen und Systemtools</string>
+    <string name="onboarding_settings_desc">Passen Sie AutoPatch Hub an: Aussehen, erweiterte Optionen und Systemtools</string>
     <string name="onboarding_sources_patches_desc">Tippen Sie, um alle Patches anzuzeigen, die aus dieser Quelle verfügbar sind</string>
     <string name="onboarding_sources_version_desc">Tippen Sie auf die Version, um den vollständigen Änderungsprotokoll für diese Quelle anzuzeigen</string>
     <string name="onboarding_sources_prerelease_desc">Aktivieren Sie dies, um vorab veröffentlichte Patch-Versionen von dieser Quelle zu erhalten</string>
@@ -927,8 +927,8 @@ Wollen Sie trotzdem fortfahren?"</string>
     <string name="onboarding_system_file_picker_desc">Aktivieren Sie dies, um den integrierten Dateibrowser anstelle des System-Pickers zu verwenden, wenn Sie APKs oder Keystores auswählen</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Schnelle Feature-Tour</string>
-    <string name="tour_prompt_desc">Möchten Sie eine kurze Tour durch die wichtigsten Funktionen von Morphe machen?</string>
+    <string name="tour_prompt_desc">Möchten Sie eine kurze Tour durch die wichtigsten Funktionen von AutoPatch Hub machen?</string>
     <string name="tour_prompt_confirm">Zeigen Sie mir alles</string>
     <string name="onboarding_restart_title">Feature-Tour</string>
-    <string name="onboarding_restart_desc">Machen Sie einen geführten Rundgang durch die wichtigsten Funktionen von Morphe.</string>
+    <string name="onboarding_restart_desc">Machen Sie einen geführten Rundgang durch die wichtigsten Funktionen von AutoPatch Hub.</string>
 </resources>

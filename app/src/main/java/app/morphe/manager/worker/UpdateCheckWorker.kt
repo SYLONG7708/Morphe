@@ -8,14 +8,12 @@ package app.morphe.manager.worker
 import android.content.Context
 import android.util.Log
 import androidx.work.*
-import app.morphe.manager.BuildConfig
 import app.morphe.manager.R
 import app.morphe.manager.domain.manager.PreferencesManager
-import app.morphe.manager.domain.repository.PatchBundleRepository
-import app.morphe.manager.network.api.MorpheAPI
+import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
+import app.morphe.manager.domain.update.UpdateStatus
 import app.morphe.manager.util.UpdateNotificationManager
 import app.morphe.manager.util.tag
-import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
@@ -64,8 +62,7 @@ class UpdateCheckWorker(
 ) : CoroutineWorker(context, params), KoinComponent {
 
     private val prefs: PreferencesManager by inject()
-    private val morpheAPI: MorpheAPI by inject()
-    private val patchBundleRepository: PatchBundleRepository by inject()
+    private val coordinator: EcosystemUpdateCoordinator by inject()
     private val notificationManager: UpdateNotificationManager by inject()
 
     override suspend fun doWork(): Result {
@@ -78,48 +75,25 @@ class UpdateCheckWorker(
         Log.d(tag, "UpdateCheckWorker: starting background update check")
 
         return try {
-            checkForManagerUpdate()
-            checkForBundleUpdate()
+            val snapshot = coordinator.refresh(downloadAssets = true)
+            if (snapshot.manager.status in NOTIFIABLE) {
+                notificationManager.showManagerUpdateNotification(snapshot.manager.availableVersion)
+            }
+            if (snapshot.patches.status == UpdateStatus.UPDATE_AVAILABLE) {
+                notificationManager.showBundleUpdateNotification(snapshot.patches.availableVersion)
+            }
+            if (snapshot.youtube.status == UpdateStatus.UPDATE_AVAILABLE) {
+                notificationManager.showYouTubeUpdateNotification(snapshot.youtube.availableVersion)
+            }
+            if (snapshot.microg.status in NOTIFIABLE) {
+                notificationManager.showMicroGUpdateNotification(snapshot.microg.availableVersion)
+            }
             Log.d(tag, "UpdateCheckWorker: background update check completed")
             Result.success()
         } catch (e: Exception) {
             Log.e(tag, "UpdateCheckWorker: failed to check for updates", e)
             // Retry later; avoids spamming logs on persistent failures (e.g. no internet)
             Result.retry()
-        }
-    }
-
-    /**
-     * Check if a new Morphe Manager version is available.
-     * Delegates to [MorpheAPI.getAppUpdate] which handles semver comparison,
-     * prerelease logic and fetching from the correct branch.
-     */
-    private suspend fun checkForManagerUpdate() {
-        val update = runCatching {
-            morpheAPI.getAppUpdate()
-        }.getOrNull() ?: return
-
-        val newVersion = update.version.removePrefix("v")
-        Log.d(tag, "UpdateCheckWorker: manager update available (${BuildConfig.VERSION_NAME} -> $newVersion)")
-        notificationManager.showManagerUpdateNotification(newVersion)
-    }
-
-    /**
-     * Check if any remote patch bundle has a newer version available.
-     * Delegates to [PatchBundleRepository.checkForBundleUpdatesQuiet] which compares
-     * local vs. remote versions without applying the update.
-     */
-    private suspend fun checkForBundleUpdate() {
-        val sources = patchBundleRepository.sources.first()
-        if (sources.isEmpty()) return
-
-        val updatedVersion = patchBundleRepository.checkForBundleUpdatesQuiet()
-
-        if (updatedVersion != null) {
-            Log.d(tag, "UpdateCheckWorker: patch bundle update available ($updatedVersion)")
-            notificationManager.showBundleUpdateNotification(updatedVersion)
-        } else {
-            Log.d(tag, "UpdateCheckWorker: patch bundles are up to date")
         }
     }
 
@@ -135,6 +109,8 @@ class UpdateCheckWorker(
         fun schedule(context: Context, interval: UpdateCheckInterval = UpdateCheckInterval.DAILY) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresBatteryNotLow(true)
+                .setRequiresStorageNotLow(true)
                 .build()
 
             val request = PeriodicWorkRequestBuilder<UpdateCheckWorker>(
@@ -160,5 +136,10 @@ class UpdateCheckWorker(
             WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
             Log.d("UpdateCheckWorker", "Periodic update check cancelled")
         }
+
+        private val NOTIFIABLE = setOf(
+            UpdateStatus.UPDATE_AVAILABLE,
+            UpdateStatus.DOWNLOADED,
+        )
     }
 }

@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11-feil</string>
     <string name="android_11_bug_dialog_description">Appinstallasjonstillatelse må gis på forhånd for å unngå en feil i Android 11-systemet som vil påvirke brukeropplevelsen negativt</string>
     <string name="deep_link_add_source_title">Legg til kilde</string>
-    <string name="deep_link_add_source_message">Vil du legge til denne patch-kilden til Morphe?</string>
+    <string name="deep_link_add_source_message">Vil du legge til denne patch-kilden til AutoPatch Hub?</string>
     <string name="deep_link_add_source_warning">Bruk kun betrodde kilder</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Morphe-oppdatering er tilgjengelig</string>
+    <string name="home_update_available">AutoPatch Hub-oppdatering er tilgjengelig</string>
     <string name="home_update_available_subtitle">Ny versjon klar for installasjon</string>
     <string name="home_update_error">Oppdatering mislyktes</string>
     <string name="home_update_error_subtitle">Sjekk internettforbindelsen og prøv igjen</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Øvelse gjør mester, og du er på vei 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Fortsatt ikke her… fortsatt ikke her… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">OK, jeg respekterer dedikasjonen 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Du er nå en offisiell Morphe-knapptester 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Du er nå en offisiell AutoPatch Hub-knapptester 🏅</string>
     <string name="home_download_instructions_step3">Vent til nedlastingen er fullført, og &lt;b&gt;ikke installer&lt;/b&gt; APK-filen</string>
     <string name="home_download_instructions_step3_mount">Vent til nedlastingen er fullført, og &lt;b&gt;installer APK-filen&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Etter at nedlastingen er fullført, gå tilbake til Morphe</string>
-    <string name="home_download_instructions_step4_mount">Etter installasjon av den originale APK-filen, gå tilbake til Morphe</string>
+    <string name="home_download_instructions_step4">Etter at nedlastingen er fullført, gå tilbake til AutoPatch Hub</string>
+    <string name="home_download_instructions_step4_mount">Etter installasjon av den originale APK-filen, gå tilbake til AutoPatch Hub</string>
     <string name="home_download_instructions_continue">Fortsett til APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Velg nedlastet APK-fil</string>
@@ -306,7 +306,7 @@ Ytre sone (stiplet): kan bli beskåret av launcher-masken – hold viktig inform
     <string name="home_app_info_patch_update_available">Patch-oppdatering tilgjengelig</string>
     <string name="home_app_info_patch_update_available_description">En nyere versjon av patcher er tilgjengelig. Patch appen din på nytt for å få de nyeste forbedringene og reparasjonene</string>
     <string name="home_app_info_app_deleted_warning">Appen ble avinstallert</string>
-    <string name="home_app_info_app_deleted_description">Denne appen ble avinstallert utenfor Morphe. Patch den på nytt for å gjenopprette funksjonaliteten</string>
+    <string name="home_app_info_app_deleted_description">Denne appen ble avinstallert utenfor AutoPatch Hub. Patch den på nytt for å gjenopprette funksjonaliteten</string>
     <string name="home_app_info_apk_size">APK-størrelse</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Root-modus krever at den originale APK-en er installert på enheten din før patching</string>
@@ -342,7 +342,7 @@ Ytre sone (stiplet): kan bli beskåret av launcher-masken – hold viktig inform
     <string name="patcher_conflict_subtitle">Du må avinstallere den eksisterende versjonen</string>
     <string name="patcher_conflict_hint">Den patchede appen bruker et annet sertifikat enn den installerte versjonen. Avinstallering vil slette alle appdata</string>
     <string name="patcher_installed_conflict_title">Avinstallasjon kreves</string>
-    <string name="patcher_installed_conflict_body">"Morphe signerer patched apper med sitt eget sertifikat, som er forskjellig fra det originale. Android krever at du fjerner den eksisterende versjonen før den patched appen kan installeres.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub signerer patched apper med sitt eget sertifikat, som er forskjellig fra det originale. Android krever at du fjerner den eksisterende versjonen før den patched appen kan installeres.
 
 Avinstallering vil permanent slette alle appdata"</string>
     <string name="patcher_install_error_title">Installeringsfeil</string>
@@ -351,9 +351,9 @@ Avinstallering vil permanent slette alle appdata"</string>
     <string name="patcher_ready_to_mount_subtitle">Trykk på knappen nedenfor for å montere</string>
     <string name="patcher_storage_permission_dialog_title">Kan ikke få tilgang til lagringsbane</string>
     <string name="patcher_incompatible_patcher_title">Oppdatering kreves</string>
-    <string name="patcher_incompatible_patcher_description">Pakken &lt;b&gt;%1$s&lt;/b&gt; krever patcher-versjon &lt;b&gt;%2$s&lt;/b&gt; eller nyere. Oppdater Morphe for å patche denne appen</string>
-    <string name="patcher_incompatible_patcher_update_button">Last ned og oppdater Morphe</string>
-    <string name="patcher_storage_permission_description_api30">Én eller flere patch-alternativer peker til baner som Morphe ikke kan lese. Gi tilgang til lagring og trykk på knappen, så starter patching automatisk</string>
+    <string name="patcher_incompatible_patcher_description">Pakken &lt;b&gt;%1$s&lt;/b&gt; krever patcher-versjon &lt;b&gt;%2$s&lt;/b&gt; eller nyere. Oppdater AutoPatch Hub for å patche denne appen</string>
+    <string name="patcher_incompatible_patcher_update_button">Last ned og oppdater AutoPatch Hub</string>
+    <string name="patcher_storage_permission_description_api30">Én eller flere patch-alternativer peker til baner som AutoPatch Hub ikke kan lese. Gi tilgang til lagring og trykk på knappen, så starter patching automatisk</string>
     <string name="patcher_storage_permission_description_legacy">Ett eller flere patch-alternativer peker til baner som ikke kan nås. Oppdater banene i patch-alternativene og prøv igjen</string>
     <string name="patcher_storage_permission_grant">Gi lagringstillatelse</string>
     <string name="patcher_storage_permission_denied_warning">Lagringstillatelsen ble nektet. Gi tillatelsen for å bruke denne banen, eller flytt filene til appens private katalog</string>
@@ -372,7 +372,7 @@ Avinstallering vil permanent slette alle appdata"</string>
     <string name="patcher_step_sign_apk">Signerer patchad APK-fil</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Beskyttelse mot bakgrunnsoppdatering</string>
-    <string name="battery_optimization_dialog_description">Noen enheter kan stoppe oppdateringsprogrammet når appen minimeres. La Morphe kjøre uten batteribegrensninger for å sikre at oppdateringen fullføres pålitelig.</string>
+    <string name="battery_optimization_dialog_description">Noen enheter kan stoppe oppdateringsprogrammet når appen minimeres. La AutoPatch Hub kjøre uten batteribegrensninger for å sikre at oppdateringen fullføres pålitelig.</string>
     <string name="battery_optimization_not_now">Ikke nå</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Patching pågår…</string>
@@ -388,7 +388,7 @@ Avinstallering vil permanent slette alle appdata"</string>
     <string name="patcher_message_6">Se ut, det er fint vær der ute… 🌤️</string>
     <string name="patcher_message_7">Justerer 1-ere og 0-ere… 🤖</string>
     <string name="patcher_message_8">Løser ut digital spaghetti… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Fikser feil i den upatchade appen… 🪲</string>
     <string name="patcher_message_10">Flotte patcher er verdt ventetiden… ⏳</string>
     <string name="patcher_message_11">Polerer piksler til de skinner… 💎</string>
@@ -492,9 +492,9 @@ Avinstallering vil permanent slette alle appdata"</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Deaktiver</string>
     <string name="settings_advanced_updates_use_prereleases">Forhåndsutgitte oppdateringer</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Tidlig tilgang til nye Morphe-appversjoner. Aktiver forhåndsutgitt per kilde i oppdateringskildene</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Tidlig tilgang til nye AutoPatch Hub-appversjoner. Aktiver forhåndsutgitt per kilde i oppdateringskildene</string>
     <string name="settings_advanced_updates_allow_metered">Mobildataoppdateringer</string>
-    <string name="settings_advanced_updates_allow_metered_description">Lar Morphe og oppdateringer laste ned over mobildata</string>
+    <string name="settings_advanced_updates_allow_metered_description">Lar AutoPatch Hub og oppdateringer laste ned over mobildata</string>
     <string name="settings_advanced_updates_background_notifications">Bakgrunnsoppdateringsvarsler</string>
     <string name="settings_advanced_updates_background_notifications_description">Sjekk periodisk etter oppdateringer i bakgrunnen og varsle når de er tilgjengelige</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Push-varsler for nye utgivelser, selv når appen er lukket</string>
@@ -507,21 +507,21 @@ Avinstallering vil permanent slette alle appdata"</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Bakgrunnssjekkfrekvens</string>
     <string name="settings_advanced_update_interval_battery_warning">Bakgrunnssjekker fungerer kanskje ikke pålitelig på noen enheter. Produsenter som Xiaomi, Huawei, Samsung og OnePlus begrenser ofte bakgrunnsprosesser for å spare batteri</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Morphe-oppdatering er tilgjengelig</string>
+    <string name="notification_manager_update_title">AutoPatch Hub-oppdatering er tilgjengelig</string>
     <string name="notification_bundle_update_title">Nye patcher tilgjengelig</string>
     <string name="notification_update_text">Versjon %s er klar for nedlasting</string>
-    <string name="notification_bundle_update_text_unversioned">Trykk for å åpne Morphe og oppdatere</string>
+    <string name="notification_bundle_update_text_unversioned">Trykk for å åpne AutoPatch Hub og oppdatere</string>
     <string name="notification_permission_dialog_title">Tillat varsler</string>
-    <string name="notification_permission_dialog_description">Morphe trenger tillatelse til varsler for å varsle deg når oppdateringer er tilgjengelige i bakgrunnen</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub trenger tillatelse til varsler for å varsle deg når oppdateringer er tilgjengelige i bakgrunnen</string>
     <string name="notification_post_patch_dialog_title">Vil du bli varslet når oppdateringer er tilgjengelige?</string>
     <string name="notification_channel_fcm_updates">Oppdateringsvarsler</string>
-    <string name="notification_channel_fcm_updates_description">Varsler om nye Morphe- og patch-utgivelser</string>
+    <string name="notification_channel_fcm_updates_description">Varsler om nye AutoPatch Hub- og patch-utgivelser</string>
     <string name="notification_channel_patcher">Patching</string>
-    <string name="notification_channel_patcher_description">Vises mens Morphe patcher en app i bakgrunnen</string>
+    <string name="notification_channel_patcher_description">Vises mens AutoPatch Hub patcher en app i bakgrunnen</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Oppdateringer</string>
     <string name="settings_advanced_expert_mode">Ekspertinnstillinger</string>
-    <string name="settings_advanced_expert_mode_description">Aktiverer komplekse Morphe-innstillinger for oppdatering og tilpasningsmuligheter</string>
+    <string name="settings_advanced_expert_mode_description">Aktiverer komplekse AutoPatch Hub-innstillinger for oppdatering og tilpasningsmuligheter</string>
     <string name="settings_advanced_expert_mode_dialog_title">Aktiver ekspertmodus?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Ekspertmodus gir mer kontroll over hvordan patcher brukes, men feilkonfigurering av innstillinger i ekspertmodus kan føre til en ikke-funksjonell app</string>
     <string name="settings_advanced_strip_unused_libs">Optimaliser for enhetsarkitektur</string>
@@ -542,7 +542,7 @@ Avinstallering vil permanent slette alle appdata"</string>
     <string name="settings_advanced_github_pat_dialog_title">Sett GitHub Personal Access Token</string>
     <string name="settings_advanced_github_pat_dialog_description">Angi en GitHub Personal Access Token for å kunne legge til pull requests som eksterne kilder. Opprett en PAT med scope public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Inkluder i eksport av innstillinger</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Legger denne PAT-en til eksporterte Morphe-innstillinger</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Legger denne PAT-en til eksporterte AutoPatch Hub-innstillinger</string>
     <string name="settings_advanced_github_pat_export_warning">Ikke del din PAT. Hvis du inkluderer den i en eksport av innstillinger, må du holde den filen privat, da den inneholder tokenet</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Patch-alternativer</string>
@@ -639,7 +639,7 @@ morphe_header_custom_dark.png
     <string name="installer_status_not_supported">Ikke støttet for denne handlingen</string>
     <string name="installer_status_shizuku_not_installed">Installer Shizuku eller Sui for å bruke dette alternativet</string>
     <string name="installer_status_shizuku_not_running">Start Shizuku eller Sui og prøv igjen</string>
-    <string name="installer_status_shizuku_permission">Gi Shizuku tillatelse til Morphe fra Shizuku-appen</string>
+    <string name="installer_status_shizuku_permission">Gi Shizuku tillatelse til AutoPatch Hub fra Shizuku-appen</string>
     <string name="installer_mount_warning_install">Din primære installasjonsprogram er satt til den rooted mount-installasjonsprogrammet. Denne lagrede appen ble ikke installert ved hjelp av mount</string>
     <string name="mount_version_mismatch_message">Aksjeversjonen (%2$s) stemmer ikke overens med den patchede appversjonen (%1$s). Mount den matchende aksjeversjonen og prøv igjen</string>
     <string name="installer_status_shizuku_unsupported">Den installerte Shizuku-versjonen støttes ikke</string>
@@ -693,11 +693,11 @@ morphe_header_custom_dark.png
     <string name="settings_system_export_keystore_failed">Kunne ikke eksportere nøkkelregister</string>
     <string name="settings_system_show_password_field">Vis passord</string>
     <string name="settings_system_hide_password_field">Skjul passord</string>
-    <string name="settings_system_morphe_settings">Morphe-innstillinger</string>
-    <string name="settings_system_import_manager_settings_description">Sikkerhetskopierer og gjenoppretter Morphe-innstillingene dine</string>
-    <string name="settings_system_import_manager_settings_fail">Kunne ikke importere Morphe-innstillinger: %s</string>
-    <string name="settings_system_import_manager_settings_success">Morphe-innstillinger importert</string>
-    <string name="settings_system_import_manager_settings_mode_title">Importer Morphe-innstillinger</string>
+    <string name="settings_system_morphe_settings">AutoPatch Hub-innstillinger</string>
+    <string name="settings_system_import_manager_settings_description">Sikkerhetskopierer og gjenoppretter AutoPatch Hub-innstillingene dine</string>
+    <string name="settings_system_import_manager_settings_fail">Kunne ikke importere AutoPatch Hub-innstillinger: %s</string>
+    <string name="settings_system_import_manager_settings_success">AutoPatch Hub-innstillinger importert</string>
+    <string name="settings_system_import_manager_settings_mode_title">Importer AutoPatch Hub-innstillinger</string>
     <string name="settings_system_import_manager_settings_mode_description">Velg hvordan de importerte innstillingene og kildene skal brukes</string>
     <string name="settings_system_import_selections_mode_title">Importer utvalg av endringer</string>
     <string name="settings_system_import_selections_mode_description">Velg hvordan de importerte utvalgene og patch-alternativene skal brukes</string>
@@ -705,8 +705,8 @@ morphe_header_custom_dark.png
     <string name="import_mode_replace_description">Samsvar nøyaktig med sikkerhetskopien. Elementer som mangler fra sikkerhetskopien vil bli fjernet</string>
     <string name="import_mode_merge_title">Slå sammen med eksisterende</string>
     <string name="import_mode_merge_description">Legg til manglende elementer fra sikkerhetskopien. Eksisterende elementer forblir uendret</string>
-    <string name="settings_system_export_manager_settings_fail">Kunne ikke eksportere Morphe-innstillinger: %s</string>
-    <string name="settings_system_export_manager_settings_success">Morphe-innstillinger eksportert</string>
+    <string name="settings_system_export_manager_settings_fail">Kunne ikke eksportere AutoPatch Hub-innstillinger: %s</string>
+    <string name="settings_system_export_manager_settings_success">AutoPatch Hub-innstillinger eksportert</string>
     <string name="settings_system_debug">Feilsøking</string>
     <string name="settings_system_export_debug_logs_description">Lagrer systemlogger for feilsøking</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Kunne ikke lese logger (exit-kode %s)</string>
@@ -780,7 +780,7 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Om</string>
     <string name="settings_system_share_website">Del nettsiden</string>
-    <string name="settings_system_share_website_description">Deler den offisielle Morphe-nettsiden</string>
+    <string name="settings_system_share_website_description">Deler den offisielle AutoPatch Hub-nettsiden</string>
     <string name="settings_system_manager_description">Et åpen kildekode-prosjekt for moderne, strømlinjeformet patching av populære Android-apper, drevet av fellesskapets tilbakemeldinger og bidrag</string>
     <string name="credits">Credits</string>
     <string name="credits_current_development">Nåværende utvikling</string>
@@ -912,7 +912,7 @@ Vil du likevel fortsette?"</string>
     <string name="onboarding_sources_desc">Administrer kildeinnstillingene dine. Hver kilde gir oppdateringer som kan brukes på appene dine.</string>
     <string name="onboarding_swipe_title">Sveipbevegelser</string>
     <string name="onboarding_swipe_desc">Sveip mot høyre på et app-kort for å se tilgjengelige oppdateringer. Sveip mot venstre for å skjule kortet fra startskjermen.</string>
-    <string name="onboarding_settings_desc">Tilpass Morphe: utseende, avanserte innstillinger og systemverktøy</string>
+    <string name="onboarding_settings_desc">Tilpass AutoPatch Hub: utseende, avanserte innstillinger og systemverktøy</string>
     <string name="onboarding_sources_patches_desc">Trykk for å se alle oppdateringer som er tilgjengelige fra denne kilden.</string>
     <string name="onboarding_sources_version_desc">Trykk på versjonen for å se hele endringsloggen for denne kilden.</string>
     <string name="onboarding_sources_prerelease_desc">Aktiver dette for å motta tidlige versjoner av oppdateringer fra denne kilden.</string>
@@ -927,8 +927,8 @@ Vil du likevel fortsette?"</string>
     <string name="onboarding_system_file_picker_desc">Aktiver dette for å bruke den innebygde filbehandleren i stedet for systemvelgeren når du velger APK-er eller nøkkel lagre.</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Rask omvisning</string>
-    <string name="tour_prompt_desc">Vil du ha en rask omvisning i Morphes nøkkelfunksjoner?</string>
+    <string name="tour_prompt_desc">Vil du ha en rask omvisning i AutoPatch Hubs nøkkelfunksjoner?</string>
     <string name="tour_prompt_confirm">Vis meg rundt</string>
     <string name="onboarding_restart_title">Omvisning i funksjoner</string>
-    <string name="onboarding_restart_desc">Ta en veiledet omvisning i Morphes nøkkelfunksjoner.</string>
+    <string name="onboarding_restart_desc">Ta en veiledet omvisning i AutoPatch Hubs nøkkelfunksjoner.</string>
 </resources>

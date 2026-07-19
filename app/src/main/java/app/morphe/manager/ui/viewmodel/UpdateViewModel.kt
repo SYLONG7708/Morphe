@@ -16,9 +16,11 @@ import app.morphe.manager.domain.installer.InstallResult
 import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.SessionInstaller
 import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.domain.update.DetachedSignatureVerifier
 import app.morphe.manager.network.api.MorpheAPI
 import app.morphe.manager.network.dto.MorpheAsset
 import app.morphe.manager.network.service.HttpService
+import app.morphe.manager.network.utils.getOrThrow
 import app.morphe.manager.util.*
 import io.ktor.client.plugins.onDownload
 import io.ktor.client.request.url
@@ -39,6 +41,7 @@ class UpdateViewModel(
     private val fs: Filesystem by inject()
     private val prefs: PreferencesManager by inject()
     private val installerManager: InstallerManager by inject()
+    private val detachedSignatureVerifier: DetachedSignatureVerifier by inject()
 
     private var pendingExternalInstall: InstallerManager.InstallPlan.External? = null
     private var externalInstallTimeoutJob: Job? = null
@@ -154,6 +157,15 @@ class UpdateViewModel(
                                 downloadedSize = resumeOffset + bytesSentTotal
                                 totalSize = resumeOffset + (contentLength ?: totalSize)
                             }
+                        }
+                    }
+
+                    release.signatureDownloadUrl?.let { signatureUrl ->
+                        val detached = http.request<String> {
+                            url(signatureUrl)
+                        }.getOrThrow()
+                        check(detachedSignatureVerifier.verifyFile(location, detached)) {
+                            "Manager update detached-signature verification failed"
                         }
                     }
                 }

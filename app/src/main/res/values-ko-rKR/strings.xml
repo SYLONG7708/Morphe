@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 버그</string>
     <string name="android_11_bug_dialog_description">사용자 환경에 부정적인 영향을 미치는 Android 11 시스템 버그를 방지하려면 앱 설치 권한을 미리 부여해야 합니다</string>
     <string name="deep_link_add_source_title">소스 추가</string>
-    <string name="deep_link_add_source_message">이 패치 소스를 Morphe에 추가하시겠습니까?</string>
+    <string name="deep_link_add_source_message">이 패치 소스를 AutoPatch Hub에 추가하시겠습니까?</string>
     <string name="deep_link_add_source_warning">신뢰할 수 있는 출처의 소스만 추가하세요</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Morphe 업데이트 사용 가능</string>
+    <string name="home_update_available">AutoPatch Hub 업데이트 사용 가능</string>
     <string name="home_update_available_subtitle">새 버전 설치 준비 완료</string>
     <string name="home_update_error">업데이트 실패</string>
     <string name="home_update_error_subtitle">인터넷 연결 상태를 확인하고 다시 시도하세요</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">연습할수록 실력이 늘고, 당신도 잘하고 있어요 💪</string>
     <string name="home_download_instructions_download_button_toast_4">여기는 아니예요… 여기는 아니예요… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">좋아요, 그 끈기는 인정합니다 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">이제 당신은 공식 Morphe 버튼 테스터입니다 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">이제 당신은 공식 AutoPatch Hub 버튼 테스터입니다 🏅</string>
     <string name="home_download_instructions_step3">다운로드가 완료될 때까지 기다리세요&lt;br&gt;APK는 &lt;b&gt;설치하지 마세요&lt;/b&gt;</string>
     <string name="home_download_instructions_step3_mount">다운로드가 완료되면, &lt;b&gt;APK 파일을 설치하세요&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">다운로드가 완료되면 Morphe로 돌아오세요</string>
-    <string name="home_download_instructions_step4_mount">원본 APK를 설치한 후에 Morphe로 돌아오세요</string>
+    <string name="home_download_instructions_step4">다운로드가 완료되면 AutoPatch Hub로 돌아오세요</string>
+    <string name="home_download_instructions_step4_mount">원본 APK를 설치한 후에 AutoPatch Hub로 돌아오세요</string>
     <string name="home_download_instructions_continue">APKMirror.com으로 이동</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">다운로드된 APK 선택</string>
@@ -306,7 +306,7 @@
     <string name="home_app_info_patch_update_available">패치 업데이트 사용 가능</string>
     <string name="home_app_info_patch_update_available_description">새 버전의 패치가 있습니다. 최신 개선 사항 및 수정 사항을 적용하려면 앱을 다시 패치하세요</string>
     <string name="home_app_info_app_deleted_warning">앱이 제거되었습니다</string>
-    <string name="home_app_info_app_deleted_description">이 앱은 Morphe 외부에서 제거되었습니다. 기능을 복원하려면 다시 패치하세요</string>
+    <string name="home_app_info_app_deleted_description">이 앱은 AutoPatch Hub 외부에서 제거되었습니다. 기능을 복원하려면 다시 패치하세요</string>
     <string name="home_app_info_apk_size">APK 크기</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">루트 모드에서는 패치 전에 원본 APK가 기기에 설치되어 있어야 합니다</string>
@@ -342,7 +342,7 @@
     <string name="patcher_conflict_subtitle">기존 버전을 제거해야 합니다</string>
     <string name="patcher_conflict_hint">패치된 앱은 설치된 버전과 다른 인증서를 사용합니다. 제거하면 앱 데이터가 모두 삭제됩니다</string>
     <string name="patcher_installed_conflict_title">제거가 필요합니다</string>
-    <string name="patcher_installed_conflict_body">"Morphe는 자체 인증서로 패치된 앱에 서명하므로 원본 앱과 인증서가 다릅니다. Android에서는 기존 버전을 제거해야 패치된 앱을 설치할 수 있습니다.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub는 자체 인증서로 패치된 앱에 서명하므로 원본 앱과 인증서가 다릅니다. Android에서는 기존 버전을 제거해야 패치된 앱을 설치할 수 있습니다.
 
 앱을 제거하면 모든 앱 데이터가 영구적으로 삭제됩니다"</string>
     <string name="patcher_install_error_title">설치 오류</string>
@@ -351,9 +351,9 @@
     <string name="patcher_ready_to_mount_subtitle">마운트하려면 아래 버튼을 탭하세요</string>
     <string name="patcher_storage_permission_dialog_title">저장소 경로에 접근할 수 없음</string>
     <string name="patcher_incompatible_patcher_title">업데이트 필요</string>
-    <string name="patcher_incompatible_patcher_description">번들 &lt;b&gt;%1$s&lt;/b&gt;는 패처 버전 &lt;b&gt;%2$s&lt;/b&gt; 이상이 필요합니다. 이 앱을 패치하려면 Morphe를 업데이트하세요</string>
-    <string name="patcher_incompatible_patcher_update_button">Morphe 다운로드 및 업데이트</string>
-    <string name="patcher_storage_permission_description_api30">하나 이상의 패치 옵션이 Morphe가 읽을 수 없는 경로를 가리키고 있습니다. 저장소 접근 권한을 부여하고 버튼을 탭하면 패치가 자동으로 시작됩니다</string>
+    <string name="patcher_incompatible_patcher_description">번들 &lt;b&gt;%1$s&lt;/b&gt;는 패처 버전 &lt;b&gt;%2$s&lt;/b&gt; 이상이 필요합니다. 이 앱을 패치하려면 AutoPatch Hub를 업데이트하세요</string>
+    <string name="patcher_incompatible_patcher_update_button">AutoPatch Hub 다운로드 및 업데이트</string>
+    <string name="patcher_storage_permission_description_api30">하나 이상의 패치 옵션이 AutoPatch Hub가 읽을 수 없는 경로를 가리키고 있습니다. 저장소 접근 권한을 부여하고 버튼을 탭하면 패치가 자동으로 시작됩니다</string>
     <string name="patcher_storage_permission_description_legacy">하나 이상의 패치 옵션이 접근할 수 없는 경로를 가리키고 있습니다. 패치 옵션에서 경로를 업데이트하고 다시 시도하세요</string>
     <string name="patcher_storage_permission_grant">저장소 권한 부여</string>
     <string name="patcher_storage_permission_denied_warning">저장소 권한이 거부되었습니다. 이 경로를 사용하려면 권한을 부여하거나, 파일을 앱 전용 디렉터리로 옮겨주세요</string>
@@ -372,7 +372,7 @@
     <string name="patcher_step_sign_apk">패치된 APK 파일에 서명하는 중</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">백그라운드 패치 보호</string>
-    <string name="battery_optimization_dialog_description">일부 기기에서는 앱이 최소화되면 패처가 중지될 수 있습니다. 패치가 안정적으로 완료되도록 Morphe가 배터리 제한 없이 실행되도록 허용하세요</string>
+    <string name="battery_optimization_dialog_description">일부 기기에서는 앱이 최소화되면 패처가 중지될 수 있습니다. 패치가 안정적으로 완료되도록 AutoPatch Hub가 배터리 제한 없이 실행되도록 허용하세요</string>
     <string name="battery_optimization_not_now">나중에</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">패치를 진행하는 중…</string>
@@ -388,7 +388,7 @@
     <string name="patcher_message_6">밖을 보세요, 날씨가 좋아요… 🌤️</string>
     <string name="patcher_message_7">1과 0을 조정 중… 🤖</string>
     <string name="patcher_message_8">스파게티 코드를 푸는 중… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">패치되지 않은 앱의 버그 수정 중… 🪲</string>
     <string name="patcher_message_10">훌륭한 패치는 기다릴 가치가 있습니다… ⏳</string>
     <string name="patcher_message_11">픽셀이 반짝일 때까지 연마 중… 💎</string>
@@ -492,9 +492,9 @@
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">업데이트</string>
     <string name="settings_advanced_updates_use_prereleases">Pre-release 업데이트</string>
-    <string name="settings_advanced_updates_use_prereleases_description">새 Morphe 앱 버전에 미리 받아봅니다. 패치 소스는 소스별로 Pre-release 패치를 활성화하세요</string>
+    <string name="settings_advanced_updates_use_prereleases_description">새 AutoPatch Hub 앱 버전에 미리 받아봅니다. 패치 소스는 소스별로 Pre-release 패치를 활성화하세요</string>
     <string name="settings_advanced_updates_allow_metered">모바일 데이터에서 업데이트</string>
-    <string name="settings_advanced_updates_allow_metered_description">모바일 데이터를 사용하여 Morphe 및 패치 업데이트를 다운로드할 수 있도록 허용합니다</string>
+    <string name="settings_advanced_updates_allow_metered_description">모바일 데이터를 사용하여 AutoPatch Hub 및 패치 업데이트를 다운로드할 수 있도록 허용합니다</string>
     <string name="settings_advanced_updates_background_notifications">백그라운드 업데이트 알림</string>
     <string name="settings_advanced_updates_background_notifications_description">백그라운드에서 주기적으로 업데이트를 확인하고 업데이트가 있을 경우에 알림을 보냅니다</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">앱이 닫혀 있어도 새 릴리스에 대한 푸시 알림을 받습니다</string>
@@ -507,21 +507,21 @@
     <string name="settings_advanced_update_interval_chip_subtitle">백그라운드 확인 빈도</string>
     <string name="settings_advanced_update_interval_battery_warning">일부 기기에서는 백그라운드 확인 기능이 정상적으로 작동하지 않을 수 있습니다. 특히 Xiaomi, Huawei, Samsung, OnePlus 기기는 배터리 최적화 정책 때문에 백그라운드 작업이 제한되는 경우가 많습니다</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Morphe 업데이트 사용 가능</string>
+    <string name="notification_manager_update_title">AutoPatch Hub 업데이트 사용 가능</string>
     <string name="notification_bundle_update_title">새 패치 사용 가능</string>
     <string name="notification_update_text">%s 버전 다운로드 준비 완료</string>
-    <string name="notification_bundle_update_text_unversioned">Morphe를 열고 업데이트하려면 탭하세요</string>
+    <string name="notification_bundle_update_text_unversioned">AutoPatch Hub를 열고 업데이트하려면 탭하세요</string>
     <string name="notification_permission_dialog_title">알림 허용</string>
-    <string name="notification_permission_dialog_description">Morphe는 백그라운드에서 업데이트가 있을 경우에 알림을 보내기 위해 알림 권한이 필요합니다</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub는 백그라운드에서 업데이트가 있을 경우에 알림을 보내기 위해 알림 권한이 필요합니다</string>
     <string name="notification_post_patch_dialog_title">업데이트가 있을 때 알림을 받으시겠습니까?</string>
     <string name="notification_channel_fcm_updates">업데이트 알림</string>
-    <string name="notification_channel_fcm_updates_description">새 Morphe 및 패치 릴리스에 대한 알림</string>
+    <string name="notification_channel_fcm_updates_description">새 AutoPatch Hub 및 패치 릴리스에 대한 알림</string>
     <string name="notification_channel_patcher">패치하는 중</string>
-    <string name="notification_channel_patcher_description">Morphe가 백그라운드에서 앱을 패치하는 동안 표시됩니다</string>
+    <string name="notification_channel_patcher_description">AutoPatch Hub가 백그라운드에서 앱을 패치하는 동안 표시됩니다</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">전문가 설정</string>
     <string name="settings_advanced_expert_mode">전문가 모드</string>
-    <string name="settings_advanced_expert_mode_description">고급 Morphe 패치 설정과 커스텀 옵션을 활성화합니다</string>
+    <string name="settings_advanced_expert_mode_description">고급 AutoPatch Hub 패치 설정과 커스텀 옵션을 활성화합니다</string>
     <string name="settings_advanced_expert_mode_dialog_title">전문가 모드 활성화</string>
     <string name="settings_advanced_expert_mode_dialog_message">전문가 모드에서는 패치를 적용하는 방식을 더 세밀하게 조절할 수 있지만, 설정을 잘못 건드리면 앱이 정상적으로 작동하지 않을 수 있습니다</string>
     <string name="settings_advanced_strip_unused_libs">기기 아키텍처에 맞게 최적화</string>
@@ -543,7 +543,7 @@
     <string name="settings_advanced_github_pat_dialog_description">풀 리퀘스트를 외부 소스로 사용하기 위해 GitHub 개인 액세스 토큰이 필요합니다.
 GitHub.com에서 public_repo 권한이 포함된 개인 액세스 토큰을 생성하세요</string>
     <string name="settings_advanced_github_pat_export_include_label">설정 내보내기에 포함</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">내보낼 Morphe 설정에 이 개인 액세스 토큰을 추가합니다</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">내보낼 AutoPatch Hub 설정에 이 개인 액세스 토큰을 추가합니다</string>
     <string name="settings_advanced_github_pat_export_warning">개인 액세스 토큰을 공유하지 마세요. 설정 내보내기에 포함되는 경우에는 토큰이 포함되어 있으므로 해당 파일을 비공개로 유지하세요</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">패치 옵션</string>
@@ -640,7 +640,7 @@ morphe_header_custom_dark.png
     <string name="installer_status_not_supported">이 작업에는 지원되지 않습니다</string>
     <string name="installer_status_shizuku_not_installed">이 옵션을 사용하려면 Shizuku 또는 Sui를 설치하세요</string>
     <string name="installer_status_shizuku_not_running">Shizuku 또는 Sui 을 시작하고 다시 시도하세요</string>
-    <string name="installer_status_shizuku_permission">Shizuku 앱에서 Morphe에 Shizuku 권한을 부여하세요</string>
+    <string name="installer_status_shizuku_permission">Shizuku 앱에서 AutoPatch Hub에 Shizuku 권한을 부여하세요</string>
     <string name="installer_mount_warning_install">기본 설치 프로그램이 루팅된 마운트 설치 프로그램으로 설정되어 있습니다. 이 저장된 앱은 마운트를 사용하여 설치되지 않았습니다</string>
     <string name="mount_version_mismatch_message">순정 앱 버전(%2$s)이 패치된 앱 버전(%1$s)과 일치하지 않습니다. 일치하는 순정 버전을 마운트한 다음에 다시 시도하세요</string>
     <string name="installer_status_shizuku_unsupported">설치된 Shizuku 버전은 지원되지 않습니다</string>
@@ -694,11 +694,11 @@ morphe_header_custom_dark.png
     <string name="settings_system_export_keystore_failed">키스토어를 내보낼 수 없습니다</string>
     <string name="settings_system_show_password_field">비밀번호 표시</string>
     <string name="settings_system_hide_password_field">비밀번호 숨기기</string>
-    <string name="settings_system_morphe_settings">Morphe 설정</string>
-    <string name="settings_system_import_manager_settings_description">Morphe 설정을 백업하고 복원합니다</string>
-    <string name="settings_system_import_manager_settings_fail">Morphe 설정을 가져올 수 없습니다: %s</string>
-    <string name="settings_system_import_manager_settings_success">Morphe 설정을 가져왔습니다</string>
-    <string name="settings_system_import_manager_settings_mode_title">Morphe 설정 가져오기</string>
+    <string name="settings_system_morphe_settings">AutoPatch Hub 설정</string>
+    <string name="settings_system_import_manager_settings_description">AutoPatch Hub 설정을 백업하고 복원합니다</string>
+    <string name="settings_system_import_manager_settings_fail">AutoPatch Hub 설정을 가져올 수 없습니다: %s</string>
+    <string name="settings_system_import_manager_settings_success">AutoPatch Hub 설정을 가져왔습니다</string>
+    <string name="settings_system_import_manager_settings_mode_title">AutoPatch Hub 설정 가져오기</string>
     <string name="settings_system_import_manager_settings_mode_description">가져온 설정 및 소스를 적용하는 방식을 선택하세요</string>
     <string name="settings_system_import_selections_mode_title">패치 선택 목록 가져오기</string>
     <string name="settings_system_import_selections_mode_description">가져온 선택 목록 및 패치 옵션을 적용하는 방법을 선택하세요</string>
@@ -706,8 +706,8 @@ morphe_header_custom_dark.png
     <string name="import_mode_replace_description">백업과 정확히 일치합니다. 백업에 없는 항목은 제거됩니다</string>
     <string name="import_mode_merge_title">기존 항목과 병합</string>
     <string name="import_mode_merge_description">백업에서 누락된 항목을 추가합니다. 기존 항목은 변경되지 않습니다</string>
-    <string name="settings_system_export_manager_settings_fail">Morphe 설정을 내보낼 수 없습니다: %s</string>
-    <string name="settings_system_export_manager_settings_success">Morphe 설정을 내보냈습니다</string>
+    <string name="settings_system_export_manager_settings_fail">AutoPatch Hub 설정을 내보낼 수 없습니다: %s</string>
+    <string name="settings_system_export_manager_settings_success">AutoPatch Hub 설정을 내보냈습니다</string>
     <string name="settings_system_debug">디버그</string>
     <string name="settings_system_export_debug_logs_description">문제 해결을 위해 시스템 로그를 저장합니다</string>
     <string name="settings_system_export_debug_logs_export_read_failed">로그를 읽을 수 없습니다 (종료 코드 %s)</string>
@@ -763,7 +763,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_no_patches_or_options">저장된 패치 또는 옵션이 없습니다</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">사용자 정의 파일 선택기</string>
-    <string name="settings_system_custom_file_picker_description">시스템 기본 파일 선택기 대신 Morphe에 내장된 파일 선택기를 사용하여 저장소를 탐색합니다</string>
+    <string name="settings_system_custom_file_picker_description">시스템 기본 파일 선택기 대신 AutoPatch Hub에 내장된 파일 선택기를 사용하여 저장소를 탐색합니다</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">이전 디렉터리</string>
     <string name="file_picker_no_files">파일이 없습니다</string>
@@ -781,7 +781,7 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">정보</string>
     <string name="settings_system_share_website">웹사이트 공유</string>
-    <string name="settings_system_share_website_description">공식 Morphe 웹사이트를 공유해 보세요</string>
+    <string name="settings_system_share_website_description">공식 AutoPatch Hub 웹사이트를 공유해 보세요</string>
     <string name="settings_system_manager_description">커뮤니티 피드백과 기여를 기반으로 인기 있는 Android 앱을 현대적이고 간소화된 방식으로 패치하기 위한 오픈소스 프로젝트입니다</string>
     <string name="credits">크레딧</string>
     <string name="credits_current_development">현재 개발</string>
@@ -913,7 +913,7 @@ morphe_header_custom_dark.png
     <string name="onboarding_sources_desc">앱에 적용할 패치를 제공하는 패치 소스를 관리할 수 있습니다. 각 소스는 앱에 적용할 수 있는 패치를 제공합니다</string>
     <string name="onboarding_swipe_title">스와이프 제스처</string>
     <string name="onboarding_swipe_desc">앱 카드를 오른쪽으로 스와이프하여 사용 가능한 패치를 확인할 수 있고, 왼쪽으로 스와이프하여 홈 화면에서 카드를 숨길 수 있습니다</string>
-    <string name="onboarding_settings_desc">레이아웃, 고급 옵션 및 시스템 도구와 같은 Morphe 설정을 관리할 수 있습니다</string>
+    <string name="onboarding_settings_desc">레이아웃, 고급 옵션 및 시스템 도구와 같은 AutoPatch Hub 설정을 관리할 수 있습니다</string>
     <string name="onboarding_sources_patches_desc">패치 버튼을 탭하여 이 소스에서 사용할 수 있는 모든 패치를 볼 수 있습니다</string>
     <string name="onboarding_sources_version_desc">버전 버튼을 탭하여 이 소스의 전체 변경 사항을 볼 수 있습니다</string>
     <string name="onboarding_sources_prerelease_desc">이 옵션을 활성화하여 이 소스의 Pre-release 패치 버전을 수신할 수 있습니다</string>
@@ -928,8 +928,8 @@ morphe_header_custom_dark.png
     <string name="onboarding_system_file_picker_desc">APK 또는 키스토어를 선택 시 시스템 기본 파일 선택기 대신 앱에 내장된 파일 선택기를 사용할 수 있습니다</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">빠른 기능 투어</string>
-    <string name="tour_prompt_desc">Morphe의 주요 기능을 빠르게 둘러보시겠습니까?</string>
+    <string name="tour_prompt_desc">AutoPatch Hub의 주요 기능을 빠르게 둘러보시겠습니까?</string>
     <string name="tour_prompt_confirm">안내해 드릴게요</string>
     <string name="onboarding_restart_title">기능 투어</string>
-    <string name="onboarding_restart_desc">Morphe의 주요 기능을 둘러보는 가이드 투어를 시작해 보세요</string>
+    <string name="onboarding_restart_desc">AutoPatch Hub의 주요 기능을 둘러보는 가이드 투어를 시작해 보세요</string>
 </resources>

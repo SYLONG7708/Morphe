@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "repository": "SYLONG7708/Morphe",
+  "channel": "stable",
+  "check_interval": "PT1H",
+  "sources": {
+    "patches": "MorpheApp/morphe-patches",
+    "microg": "MorpheApp/MicroG-RE"
+  },
+  "youtube": {
+    "download_original_apk": false,
+    "source_priority": ["installed_compatible", "saved_compatible"],
+    "patch_on_device": true
+  },
+  "install": {
+    "silent_when": ["shizuku_authorized", "root_authorized"],
+    "system_confirmation_without_privilege": true
+  },
+  "security": {
+    "manifest_signature": "SHA256withRSA",
+    "anti_rollback": true,
+    "require_https": true,
+    "verify_sha256": true,
+    "verify_package_and_signer": true
+  }
+}

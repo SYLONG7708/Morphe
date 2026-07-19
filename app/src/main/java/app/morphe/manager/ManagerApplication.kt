@@ -13,13 +13,10 @@ import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.githubAvat
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.gitlabAvatarUrl
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.PatchBundleRepository
-import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
 import app.morphe.manager.util.*
 import app.morphe.manager.worker.UpdateCheckWorker
 import coil.Coil
 import coil.ImageLoader
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -94,30 +91,14 @@ class ManagerApplication : Application() {
             // (Application + Activity) can read the language without touching DataStore
             saveLanguageToPrefs(this@ManagerApplication, prefs.appLanguage.get().ifBlank { "system" })
 
-            // Schedule/cancel WorkManager fallback AND sync FCM topic subscriptions.
-            // FCM is the primary delivery path (bypasses Doze); WorkManager is the fallback
-            // for non-GMS devices. syncFcmTopics() subscribes to the correct stable/dev
-            // topics based on user preferences, or unsubscribes from all when disabled.
+            // Use the same deterministic WorkManager path on every device. This derivative
+            // intentionally has no private Firebase project or Google configuration.
             val notificationsEnabled = prefs.backgroundUpdateNotifications.get()
-            val useManagerPrereleases = prefs.useManagerPrereleases.get()
-            // Patches FCM topic is determined by the default bundle (uid=0) prerelease toggle
-            val usePatchesPrereleases = prefs.bundlePrereleasesEnabled.get().contains(DEFAULT_SOURCE_UID.toString())
-
-            // On GMS devices FCM is the primary delivery channel - WorkManager is not needed.
-            // Cancel any previously scheduled jobs on GMS devices
-            val hasGms = GoogleApiAvailability.getInstance()
-                .isGooglePlayServicesAvailable(this@ManagerApplication) == ConnectionResult.SUCCESS
-
-            if (notificationsEnabled && !hasGms) {
+            if (notificationsEnabled) {
                 UpdateCheckWorker.schedule(this@ManagerApplication, prefs.updateCheckInterval.get())
             } else {
                 UpdateCheckWorker.cancel(this@ManagerApplication)
             }
-            syncFcmTopics(
-                notificationsEnabled = notificationsEnabled,
-                useManagerPrereleases = useManagerPrereleases,
-                usePatchesPrereleases = usePatchesPrereleases,
-            )
         }
 
         scope.launch(Dispatchers.Default) {

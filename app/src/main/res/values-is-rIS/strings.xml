@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 galla</string>
     <string name="android_11_bug_dialog_description">Það er þörf á samningi um app uppsetningarheimildir til að forðast villu í Android 11 kerfinu sem mun hafa neikvæð áhrif á notendaupplifunina</string>
     <string name="deep_link_add_source_title">Bæta við gjafa</string>
-    <string name="deep_link_add_source_message">Viltu bæta við þetta pakkningargjafa til Morphe?</string>
+    <string name="deep_link_add_source_message">Viltu bæta við þetta pakkningargjafa til AutoPatch Hub?</string>
     <string name="deep_link_add_source_warning">Bættu aðeins við heimildir sem þú treystir</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Morphe uppfærsla í boði</string>
+    <string name="home_update_available">AutoPatch Hub uppfærsla í boði</string>
     <string name="home_update_available_subtitle">Ný útgáfa tilbúin til að setja upp</string>
     <string name="home_update_error">Uppskera mistókst</string>
     <string name="home_update_error_subtitle">Vinsamlegast athugaðu internet tenginguna þína og reyndu aftur</string>
@@ -161,8 +161,8 @@
     <string name="home_download_instructions_download_button_toast_6">Þú ert nú það sem kalla má áhugaverðan prófunarhnappur 🏅</string>
     <string name="home_download_instructions_step3">Bíðu þar til niðuhlaðningu er lokið, og &lt;b&gt;ekki setja upp&lt;/b&gt; APK skrárna</string>
     <string name="home_download_instructions_step3_mount">Bíðu þar til niðuhlaðningu er lokið, þá &lt;b&gt;setja upp APK skrárna&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Eftir að niðursöltunin er lokið, farðu aftur til Morphe</string>
-    <string name="home_download_instructions_step4_mount">Eftir að setja upp upprunalega APK-skrána, farðu aftur til Morphe</string>
+    <string name="home_download_instructions_step4">Eftir að niðursöltunin er lokið, farðu aftur til AutoPatch Hub</string>
+    <string name="home_download_instructions_step4_mount">Eftir að setja upp upprunalega APK-skrána, farðu aftur til AutoPatch Hub</string>
     <string name="home_download_instructions_continue">Halda áfram á APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Velja skrá</string>
@@ -304,7 +304,7 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="home_app_info_patch_update_available">Breytistilling er til staðar</string>
     <string name="home_app_info_patch_update_available_description">Nýrri útgáfa af patta er í boði. Endurpakkalaðu þitt app til að fá nýjustu endurbætur og lagfæringar</string>
     <string name="home_app_info_app_deleted_warning">App var afhent</string>
-    <string name="home_app_info_app_deleted_description">Þetta app var afhent utan Morphe. Endurpakkalaðu það til að endurheimta virkni</string>
+    <string name="home_app_info_app_deleted_description">Þetta app var afhent utan AutoPatch Hub. Endurpakkalaðu það til að endurheimta virkni</string>
     <string name="home_app_info_apk_size">APK stærð</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Róttækni krafa er að upprunaleg APK sé uppsett á tækinu þínu áður en það er pakkað</string>
@@ -340,7 +340,7 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="patcher_conflict_subtitle">Þú þarft að afinstallera núverandi útgáfuna</string>
     <string name="patcher_conflict_hint">Breytt app notar mismunandi vottorð og installaðri útgáfu. Afnám eyðir öllum forritsgögnum</string>
     <string name="patcher_installed_conflict_title">Afnaman krafist</string>
-    <string name="patcher_installed_conflict_body">"Morphe reynir fyrir pantlínur með sínu eigin vottorði, sem er mismunandi frá upprunalegu vottorðinu. Android krefst þess að fjarlægja upprunalega útgáfuna áður en breytt app getur verið installað.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub reynir fyrir pantlínur með sínu eigin vottorði, sem er mismunandi frá upprunalegu vottorðinu. Android krefst þess að fjarlægja upprunalega útgáfuna áður en breytt app getur verið installað.
 
 Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="patcher_install_error_title">Uppsetningarvilla</string>
@@ -349,9 +349,9 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="patcher_ready_to_mount_subtitle">Ýttu á hnappinn hér að neðan til að festa</string>
     <string name="patcher_storage_permission_dialog_title">Ekki hægt að fá aðgang að geymslushörðu</string>
     <string name="patcher_incompatible_patcher_title">Uppfærsla krafist</string>
-    <string name="patcher_incompatible_patcher_description">Pakkinn &lt;b&gt;%1$s&lt;/b&gt; krefst Morphe útgáfu &lt;b&gt;%2$s&lt;/b&gt; eða nýrri. Vinsamlegast uppfæra Morphe til að breyta þessari forrit</string>
-    <string name="patcher_incompatible_patcher_update_button">Sæktu og uppfæra Morphe</string>
-    <string name="patcher_storage_permission_description_api30">Einn eða fleiri pakkningaval benda á slóð sem Morphe gat ekki lesið. Veittu geymsluheimild og smelltu á hnappinn þá mun pakkningin hefjast sjálfkrafa</string>
+    <string name="patcher_incompatible_patcher_description">Pakkinn &lt;b&gt;%1$s&lt;/b&gt; krefst AutoPatch Hub útgáfu &lt;b&gt;%2$s&lt;/b&gt; eða nýrri. Vinsamlegast uppfæra AutoPatch Hub til að breyta þessari forrit</string>
+    <string name="patcher_incompatible_patcher_update_button">Sæktu og uppfæra AutoPatch Hub</string>
+    <string name="patcher_storage_permission_description_api30">Einn eða fleiri pakkningaval benda á slóð sem AutoPatch Hub gat ekki lesið. Veittu geymsluheimild og smelltu á hnappinn þá mun pakkningin hefjast sjálfkrafa</string>
     <string name="patcher_storage_permission_description_legacy">Einn eða fleiri pakkningaval benda á slóð sem ekkert lið veitir aðgang að. Endurskoða slóðir í pakkningavalum og reyndu aftur</string>
     <string name="patcher_storage_permission_grant">Veittu geymsluheimild</string>
     <string name="patcher_storage_permission_denied_warning">Geymsluheimild var hafnað. Veittu heimildina til að nota þenna slóð, eða hreyfðu skráarnar í einkalega bókasafn appsins</string>
@@ -370,7 +370,7 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="patcher_step_sign_apk">Undirskrifa breytta APK skrá</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Vernd fyrir bakgrunns breytingar</string>
-    <string name="battery_optimization_dialog_description">Sum tæki gætu stöðvað breytingasmáttana þegar appið er lágmarks. Leyfðu Morphe að keyra án rafhlöðubindingar til að tryggja áreiðanlega breytinga</string>
+    <string name="battery_optimization_dialog_description">Sum tæki gætu stöðvað breytingasmáttana þegar appið er lágmarks. Leyfðu AutoPatch Hub að keyra án rafhlöðubindingar til að tryggja áreiðanlega breytinga</string>
     <string name="battery_optimization_not_now">Ekki núna</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Breytistilling í gangi…</string>
@@ -386,7 +386,7 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="patcher_message_6">Lítu út um gluggann, það er gott veður úti… 🌤️</string>
     <string name="patcher_message_7">Stillum 1 og 0… 🤖</string>
     <string name="patcher_message_8">Tengjum digital spaghetti… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Lækna bugga í óbreyttu appinu… 🪲</string>
     <string name="patcher_message_10">Frábær breytistilling er þess virði að bíða… ⏳</string>
     <string name="patcher_message_11">Pússum pixla þar til þau glansar… 💎</string>
@@ -490,9 +490,9 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Uppfæra</string>
     <string name="settings_advanced_updates_use_prereleases">Uppfærsla fyrir útgáfur</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Snemma aðgangur að nýjum Morphe app útgáfum. Virkja for útgáfur per heimild í breytandas heimildum</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Snemma aðgangur að nýjum AutoPatch Hub app útgáfum. Virkja for útgáfur per heimild í breytandas heimildum</string>
     <string name="settings_advanced_updates_allow_metered">Gagnagáfa á gögnum</string>
-    <string name="settings_advanced_updates_allow_metered_description">Leyfir Morphe og breytingar uppfærslu hlaði niður á farsímaneton</string>
+    <string name="settings_advanced_updates_allow_metered_description">Leyfir AutoPatch Hub og breytingar uppfærslu hlaði niður á farsímaneton</string>
     <string name="settings_advanced_updates_background_notifications">Bakgrunns uppfærslukynning</string>
     <string name="settings_advanced_updates_background_notifications_description">Á þennan hátt getur þú hægt en örugglega sagt frá þegar uppfærslur eru í boði</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Skilaboð um nýjar útgáfur, jafnvel þegar appið er lokað</string>
@@ -505,21 +505,21 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Bakgrunns þjónastútur tímatali</string>
     <string name="settings_advanced_update_interval_battery_warning">Bakgrunnur prótanir mega ekki virka á ákveðnum tækjum. Framleiðendur eins og Xiaomi, Huawei, Samsung og OnePlus takast oft á við bakgrunns prótanir til að spara rafmagn</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Morphe uppfærsla í boði</string>
+    <string name="notification_manager_update_title">AutoPatch Hub uppfærsla í boði</string>
     <string name="notification_bundle_update_title">Nýjar pakkningar í boði</string>
     <string name="notification_update_text">Útgáfa %s er tilbúin til að hlaða niður</string>
-    <string name="notification_bundle_update_text_unversioned">Smelltu til að opna Morphe og uppfæra</string>
+    <string name="notification_bundle_update_text_unversioned">Smelltu til að opna AutoPatch Hub og uppfæra</string>
     <string name="notification_permission_dialog_title">Leyfa tilkynningar</string>
-    <string name="notification_permission_dialog_description">Morphe þarf tilkynningaleyfi til að láta þig vita þegar uppfærslur eru í boði í bakgrunni</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub þarf tilkynningaleyfi til að láta þig vita þegar uppfærslur eru í boði í bakgrunni</string>
     <string name="notification_post_patch_dialog_title">Viltu taka þátt í uppfærslukynningu?</string>
     <string name="notification_channel_fcm_updates">Uppfærslukynningar</string>
-    <string name="notification_channel_fcm_updates_description">Kynningar um nýjar Morphe útgáfur og breytingar</string>
+    <string name="notification_channel_fcm_updates_description">Kynningar um nýjar AutoPatch Hub útgáfur og breytingar</string>
     <string name="notification_channel_patcher">Breyting</string>
-    <string name="notification_channel_patcher_description">Sýnt þegar Morphe breytir app í bakgrunninum</string>
+    <string name="notification_channel_patcher_description">Sýnt þegar AutoPatch Hub breytir app í bakgrunninum</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Advanced</string>
     <string name="settings_advanced_expert_mode">Sérstakur háttur</string>
-    <string name="settings_advanced_expert_mode_description">Virkjar flóknar Morphe breytingar stillingar og sérsniðsa valkosts</string>
+    <string name="settings_advanced_expert_mode_description">Virkjar flóknar AutoPatch Hub breytingar stillingar og sérsniðsa valkosts</string>
     <string name="settings_advanced_expert_mode_dialog_title">Virkja fagmanna ástand?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Fagmanna ástand veitir meiri stjórn yfir hvernig pakkningar eru notaðar, en rangar stillingar í fagmanna ástandi geta leitt til óvirkjandi app</string>
     <string name="settings_advanced_strip_unused_libs">Optimera fyrir tækja arkitektúr</string>
@@ -540,7 +540,7 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="settings_advanced_github_pat_dialog_title">Stilltu GitHub Personal Access Token</string>
     <string name="settings_advanced_github_pat_dialog_description">Stilltu GitHub Personal Access Token til að geta bætt pull beiðnir sem ytri gjafir.</string>
     <string name="settings_advanced_github_pat_export_include_label">Taktu með í útflutningi stillingar</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Bæta þennan PAT til fluttra Morphe stillinga</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Bæta þennan PAT til fluttra AutoPatch Hub stillinga</string>
     <string name="settings_advanced_github_pat_export_warning">Ekki deila þínu PAT. Ef þú tekur það með í stillingarútflutningi, geymdu þá skrána einkaleyndlega því hún inniheldur táknið</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Breytistallakosti</string>
@@ -634,7 +634,7 @@ Myndastærðin verður að vera sem hér segir:
     <string name="installer_status_not_supported">Ekki studd fyrir þessa athöfn</string>
     <string name="installer_status_shizuku_not_installed">Install Shizuku eða Sui til að nota þennan valkost</string>
     <string name="installer_status_shizuku_not_running">Ræsa Shizuku eða Sui og reyndu aftur</string>
-    <string name="installer_status_shizuku_permission">Veittu Shizuku heimild til Morphe úr Shizuku app</string>
+    <string name="installer_status_shizuku_permission">Veittu Shizuku heimild til AutoPatch Hub úr Shizuku app</string>
     <string name="installer_mount_warning_install">Uppsettur uppsetjara þinn er stilltur á róttæka uppsetjarann. Þetta vistaða app var ekki uppsett með uppsetningu</string>
     <string name="mount_version_mismatch_message">Lager gerð app útgáfa (%2$s) passar ekki við pattaða app útgáfu (%1$s). Uppsetja samsvarandi vísindalaga gerð og reyna aftur</string>
     <string name="installer_status_shizuku_unsupported">Stuðlað er ekki við uppsettu Shizuku útgáfuna</string>
@@ -688,11 +688,11 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_system_export_keystore_failed">Ekki tókst að flytja út keystore</string>
     <string name="settings_system_show_password_field">Sýna lykilorð</string>
     <string name="settings_system_hide_password_field">Fela lykilorð</string>
-    <string name="settings_system_morphe_settings">Morphe stillingar</string>
-    <string name="settings_system_import_manager_settings_description">Backup og endurheimta Morphe áhorf</string>
-    <string name="settings_system_import_manager_settings_fail">Ekki tókst að flytja inn Morphe stillingar: %s</string>
-    <string name="settings_system_import_manager_settings_success">Morphe stillingar fluttar inn</string>
-    <string name="settings_system_import_manager_settings_mode_title">Innflutning stillinga Morphe</string>
+    <string name="settings_system_morphe_settings">AutoPatch Hub stillingar</string>
+    <string name="settings_system_import_manager_settings_description">Backup og endurheimta AutoPatch Hub áhorf</string>
+    <string name="settings_system_import_manager_settings_fail">Ekki tókst að flytja inn AutoPatch Hub stillingar: %s</string>
+    <string name="settings_system_import_manager_settings_success">AutoPatch Hub stillingar fluttar inn</string>
+    <string name="settings_system_import_manager_settings_mode_title">Innflutning stillinga AutoPatch Hub</string>
     <string name="settings_system_import_manager_settings_mode_description">Veldu hvernig innfluttu stillingar og heimildir á að nota</string>
     <string name="settings_system_import_selections_mode_title">Innflutning valda á plottum</string>
     <string name="settings_system_import_selections_mode_description">Veldu hvernig innflutt val og breytingar á stillingum eiga að vera notaðar</string>
@@ -700,8 +700,8 @@ Myndastærðin verður að vera sem hér segir:
     <string name="import_mode_replace_description">Samsvarinnu nákvæmlega við afritið. Hlutir sem vantar úr afritinu verða fjarlægðir</string>
     <string name="import_mode_merge_title">Samfella við núverandi</string>
     <string name="import_mode_merge_description">Bæta við vöntunum hlutum úr afritinu. Núverandi hlutir eru óbreyttir</string>
-    <string name="settings_system_export_manager_settings_fail">Ekki tókst að flytja út Morphe stillingar: %s</string>
-    <string name="settings_system_export_manager_settings_success">Morphe stillingar fluttar út</string>
+    <string name="settings_system_export_manager_settings_fail">Ekki tókst að flytja út AutoPatch Hub stillingar: %s</string>
+    <string name="settings_system_export_manager_settings_success">AutoPatch Hub stillingar fluttar út</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_description">Geyma kerfislogg fyrir vandamálaleit</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Ekki tókst að lesa logs (exit kóði %s)</string>
@@ -757,7 +757,7 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_system_no_patches_or_options">Engar pattaðar valkostir eða valkostir geymdar</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Sérsniðin skráaraðjari</string>
-    <string name="settings_system_custom_file_picker_description">Skoðu geymslu með innbyggðum skráaraðjara Morphe heldur en staðkerfinu</string>
+    <string name="settings_system_custom_file_picker_description">Skoðu geymslu með innbyggðum skráaraðjara AutoPatch Hub heldur en staðkerfinu</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Fyrri skrá</string>
     <string name="file_picker_no_files">Engar skrár hér</string>
@@ -775,7 +775,7 @@ Myndastærðin verður að vera sem hér segir:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Um</string>
     <string name="settings_system_share_website">Deila vefsíðu</string>
-    <string name="settings_system_share_website_description">Deila opinberri Morphe vefsíðu</string>
+    <string name="settings_system_share_website_description">Deila opinberri AutoPatch Hub vefsíðu</string>
     <string name="settings_system_manager_description">Opinn-hugsaðar verkefni fyrir nútímalega, einfalda breytingu á vinsælum Android forunum, knúin áfram af samfélagsáhrifum og framlögum</string>
     <string name="credits">Viðurkenningar</string>
     <string name="credits_current_development">Núverandi þróun</string>

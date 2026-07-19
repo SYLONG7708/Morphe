@@ -14,10 +14,10 @@
     <string name="android_11_bug_dialog_title">באג ב-Android 11</string>
     <string name="android_11_bug_dialog_description">ההרשאה להתקין את האפליקציה צריכה להיות מאושרת מראש כדי להימנע מבאג במערכת Android 11 שיפגע בחוויית המשתמש</string>
     <string name="deep_link_add_source_title">הוסף מקור</string>
-    <string name="deep_link_add_source_message">האם ברצונך להוסיף מקור תיקונים זה ל-Morphe?</string>
+    <string name="deep_link_add_source_message">האם ברצונך להוסיף מקור תיקונים זה ל-AutoPatch Hub?</string>
     <string name="deep_link_add_source_warning">הוסף מקורות שאתה סומך עליהם בלבד</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">עדכון Morphe זמין</string>
+    <string name="home_update_available">עדכון AutoPatch Hub זמין</string>
     <string name="home_update_available_subtitle">גרסה חדשה מוכנה להתקנה</string>
     <string name="home_update_error">העדכון נכשל</string>
     <string name="home_update_error_subtitle">בדוק את חיבור האינטרנט שלך ונסה שוב</string>
@@ -159,7 +159,7 @@
     <string name="home_download_instructions_download_button_toast_3">תרגול הופך את הדברים לשלמים ואתה בדרך הנכונה 💪</string>
     <string name="home_download_instructions_download_button_toast_4">עדיין לא כאן… עדיין לא כאן… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">בסדר, אני מכבד את המסירות 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">אתה עכשיו בודק רשמי של כפתור Morphe 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">אתה עכשיו בודק רשמי של כפתור AutoPatch Hub 🏅</string>
     <string name="home_download_instructions_step3">המתן להשלמת ההורדה, ו&lt;b&gt;אל תתקין&lt;/b&gt; את ה-APK</string>
     <string name="home_download_instructions_step3_mount">המתן להשלמת ההורדה, ואז &lt;b&gt;התקן את ה-APK&lt;/b&gt;</string>
     <string name="home_download_instructions_step4">לאחר סיום ההורדה, חזרו למורפ</string>
@@ -343,7 +343,7 @@
     <string name="patcher_conflict_subtitle">עליך להסיר את ההתקנה של הגרסה הקיימת</string>
     <string name="patcher_conflict_hint">האפליקציה שעברה תיקון משתמשת בתעודה שונה מזו של הגרסה המותקנת. הסרת ההתקנה תמחק את כל נתוני האפליקציה.</string>
     <string name="patcher_installed_conflict_title">יש להסיר התקנה</string>
-    <string name="patcher_installed_conflict_body">"Morphe חותם על אפליקציות שעברו שינוי באמצעות תעודה משלו, השונה מהמקורית. Android דורש הסרת הגרסה הקיימת לפני שאפשר להתקין את האפליקציה שעברה שינוי.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub חותם על אפליקציות שעברו שינוי באמצעות תעודה משלו, השונה מהמקורית. Android דורש הסרת הגרסה הקיימת לפני שאפשר להתקין את האפליקציה שעברה שינוי.
 
 הסרת ההתקנה תמחק לצמיתות את כל נתוני האפליקציה."</string>
     <string name="patcher_install_error_title">שגיאת התקנה</string>
@@ -352,9 +352,9 @@
     <string name="patcher_ready_to_mount_subtitle">לחץ על הכפתור למטה כדי לאתחל</string>
     <string name="patcher_storage_permission_dialog_title">לא ניתן לגשת לדרך אחסון</string>
     <string name="patcher_incompatible_patcher_title">עדכון נדרש</string>
-    <string name="patcher_incompatible_patcher_description">החבילה &lt;b&gt;%1$s&lt;/b&gt; דורשת גרסת מתקן &lt;b&gt;%2$s&lt;/b&gt; ומעלה. אנא עדכן את Morphe כדי לתקן את האפליקציה הזו</string>
-    <string name="patcher_incompatible_patcher_update_button">הורד ועדכן את Morphe</string>
-    <string name="patcher_storage_permission_description_api30">אפשרות אחת או יותר של תיקונים מצביעה על נתיבים ש-Morphe לא יכול לקרוא. הענק גישה לאחסון ולחץ על הכפתור ואז התיקון יתחיל באופן אוטומטי</string>
+    <string name="patcher_incompatible_patcher_description">החבילה &lt;b&gt;%1$s&lt;/b&gt; דורשת גרסת מתקן &lt;b&gt;%2$s&lt;/b&gt; ומעלה. אנא עדכן את AutoPatch Hub כדי לתקן את האפליקציה הזו</string>
+    <string name="patcher_incompatible_patcher_update_button">הורד ועדכן את AutoPatch Hub</string>
+    <string name="patcher_storage_permission_description_api30">אפשרות אחת או יותר של תיקונים מצביעה על נתיבים ש-AutoPatch Hub לא יכול לקרוא. הענק גישה לאחסון ולחץ על הכפתור ואז התיקון יתחיל באופן אוטומטי</string>
     <string name="patcher_storage_permission_description_legacy">אחד או יותר אופציות תיקון מצביעות על דרכים שאינן נגישות. עדכן את הדרכים באופציות התיקון ונסה שוב</string>
     <string name="patcher_storage_permission_grant">אשר אישור גישה לאחסון</string>
     <string name="patcher_storage_permission_denied_warning">התחשיבו את הרשאת אחסון. תן את הרשאה כדי להשתמש בפாத זה, או העבר את הקבצים לתיקיית האפליקציה הפרטית.</string>
@@ -373,7 +373,7 @@
     <string name="patcher_step_sign_apk">חתימה על קובץ APK מתוקן</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">הגנה על תיקון רקע</string>
-    <string name="battery_optimization_dialog_description">ייתכן שמכשירים מסוימים יפסיקו את המתקן כאשר האפליקציה מצומצמת. אפשר ל-Morphe לפעול ללא הגבלות סוללה כדי להבטיח שהתיקון יושלם באופן מהימן</string>
+    <string name="battery_optimization_dialog_description">ייתכן שמכשירים מסוימים יפסיקו את המתקן כאשר האפליקציה מצומצמת. אפשר ל-AutoPatch Hub לפעול ללא הגבלות סוללה כדי להבטיח שהתיקון יושלם באופן מהימן</string>
     <string name="battery_optimization_not_now">לא עכשיו</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">התיקון מתבצע…</string>
@@ -389,7 +389,7 @@
     <string name="patcher_message_6">הציצו החוצה, יפה שם בחוץ… 🌤️</string>
     <string name="patcher_message_7">מכווננים 1 ו-0… 🤖</string>
     <string name="patcher_message_8">מתירים ספגטי דיגיטלי… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">מתקן בעיות באפליקציה בלתי מתוקנת… 🪲</string>
     <string name="patcher_message_10">תיקונים מעולים שווים את ההמתנה… ⏳</string>
     <string name="patcher_message_11">מצחצחים פיקסלים עד שהם נוצצים… 💎</string>
@@ -466,7 +466,7 @@
     <string name="settings_appearance_system">מערכת</string>
     <string name="settings_appearance_light">אור</string>
     <string name="settings_appearance_dark">שחור</string>
-    <string name="settings_appearance_dynamic">Morphe</string>
+    <string name="settings_appearance_dynamic">AutoPatch Hub</string>
     <string name="settings_appearance_accent_color">צבע מוביל</string>
     <string name="settings_appearance_pure_black">שחור טהור</string>
     <string name="settings_appearance_pure_black_description">משתמש ברקעים שחורים אמיתיים</string>
@@ -493,9 +493,9 @@
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">עדכונים</string>
     <string name="settings_advanced_updates_use_prereleases">עדכונים לפני הפצה</string>
-    <string name="settings_advanced_updates_use_prereleases_description">גישה מוקדמת לגרסאות חדשות של אפליקציית Morphe. הפעלת גרסאות מוקדמות לכל מקור במקורות התיקון</string>
+    <string name="settings_advanced_updates_use_prereleases_description">גישה מוקדמת לגרסאות חדשות של אפליקציית AutoPatch Hub. הפעלת גרסאות מוקדמות לכל מקור במקורות התיקון</string>
     <string name="settings_advanced_updates_allow_metered">עדכוני נתונים ניידים</string>
-    <string name="settings_advanced_updates_allow_metered_description">מאפשר לאפליקציית Morphe ולעדכוני תיקונים להוריד דרך נתונים ניידים</string>
+    <string name="settings_advanced_updates_allow_metered_description">מאפשר לאפליקציית AutoPatch Hub ולעדכוני תיקונים להוריד דרך נתונים ניידים</string>
     <string name="settings_advanced_updates_background_notifications">התראות עדכונים רקע</string>
     <string name="settings_advanced_updates_background_notifications_description">עדכונים מוטבעים תדירית וודא וידיעה זמינות</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">התראות דחיפה עבור גרסאות חדשות, גם כאשר האפליקציה סגורה</string>
@@ -508,21 +508,21 @@
     <string name="settings_advanced_update_interval_chip_subtitle">תדירות בדיקה ברקע</string>
     <string name="settings_advanced_update_interval_battery_warning">בדיקות ברקע עשויות שלא לעבוד באופן אמין על חלק מהמכשירים. יצרנים כמו Xiaomi, Huawei, Samsung ו-OnePlus לעיתים קרובות מוגבלים את תהליכי הרקע כדי לשמר סוללה</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">עדכון Morphe זמין</string>
+    <string name="notification_manager_update_title">עדכון AutoPatch Hub זמין</string>
     <string name="notification_bundle_update_title">פיצ\'ים חדשים זמינים</string>
     <string name="notification_update_text">גרסה %s מוכנה להורדה</string>
-    <string name="notification_bundle_update_text_unversioned">לץ לפתוח את Morphe ולעדכן</string>
+    <string name="notification_bundle_update_text_unversioned">לץ לפתוח את AutoPatch Hub ולעדכן</string>
     <string name="notification_permission_dialog_title">אישור התראות</string>
-    <string name="notification_permission_dialog_description">Morphe זקוקה לבקשת הרשאה להודעות כדי להודיע לך כאשר ישנם עדכונים זמינים ברקע</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub זקוקה לבקשת הרשאה להודעות כדי להודיע לך כאשר ישנם עדכונים זמינים ברקע</string>
     <string name="notification_post_patch_dialog_title">האם תרצה להודע כשעדכונים יהיו זמינים?</string>
     <string name="notification_channel_fcm_updates">עדכוני התראות</string>
-    <string name="notification_channel_fcm_updates_description">התראות לגבי גרסאות חדשות של Morphe ותיקונים</string>
+    <string name="notification_channel_fcm_updates_description">התראות לגבי גרסאות חדשות של AutoPatch Hub ותיקונים</string>
     <string name="notification_channel_patcher">תיקונים</string>
-    <string name="notification_channel_patcher_description">מוצג בזמן ש-Morphe מתקן אפליקציה ברקע</string>
+    <string name="notification_channel_patcher_description">מוצג בזמן ש-AutoPatch Hub מתקן אפליקציה ברקע</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">הגדרות מומחג\'שיות</string>
     <string name="settings_advanced_expert_mode">מצב מומחג\'שיות</string>
-    <string name="settings_advanced_expert_mode_description">מאפשר הגדרות והתאמות אישיות תחכוריות של תיקון Morphe</string>
+    <string name="settings_advanced_expert_mode_description">מאפשר הגדרות והתאמות אישיות תחכוריות של תיקון AutoPatch Hub</string>
     <string name="settings_advanced_expert_mode_dialog_title">אפשר את режим מומחה?</string>
     <string name="settings_advanced_expert_mode_dialog_message">mode מומחה מספק יותר שליטה על איך התיקונים מופעלים, אך תצורתה של הגדרות ב-mode מומחה יכולה לגרום לאפליקציה שאינה פונקציונלית</string>
     <string name="settings_advanced_strip_unused_libs">לייעל עבור ארכיטקטורת ההתקן</string>
@@ -543,7 +543,7 @@
     <string name="settings_advanced_github_pat_dialog_title">הגדר טוקן גישה אישי של GitHub</string>
     <string name="settings_advanced_github_pat_dialog_description">הגדרו טוקן אישור אישי של GitHub כדי שיוכלו להוסיף בקשות לשינוי כמקורות חיצוניים. צרו טוקן PAT עם סקופ של public_repo של github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">כלול בהגדרות ייצוא</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">מוסיף את PAT זה להגדרות Morphe המיוצאות</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">מוסיף את PAT זה להגדרות AutoPatch Hub המיוצאות</string>
     <string name="settings_advanced_github_pat_export_warning">אל תשתף את הטוקן שלך. אם תכלילו אותו בהגדרות ייצוא, שמור את הקובץ הפרטי כי הוא מכיל את הטוקן</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">אופצ\'ים</string>
@@ -624,7 +624,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="installer_status_not_supported">לא נתמך עבור פעולה זו</string>
     <string name="installer_status_shizuku_not_installed">התקן שיזוקה או סוי כדי להשתמש באפשרות זו</string>
     <string name="installer_status_shizuku_not_running">הפעל שיזוקה או סוי ונסה שוב</string>
-    <string name="installer_status_shizuku_permission">אשר את הרשאות שיזוקה ל-Morphe מהאפליקציה של שיזוקה</string>
+    <string name="installer_status_shizuku_permission">אשר את הרשאות שיזוקה ל-AutoPatch Hub מהאפליקציה של שיזוקה</string>
     <string name="installer_mount_warning_install">התקן שלך הוא מותקן על התקן שורש. אפליקציה זו לא התקינה באמצעות מותקן</string>
     <string name="mount_version_mismatch_message">גרסת אפליקציה מקורית (%2$s) אינה תואמת לגרסת אפליקציה שחורה (%1$s). מותקן את הגרסה המקורית התואמת, ואז נסה שוב</string>
     <string name="installer_status_shizuku_unsupported">גרסת שיזוקה המותקנת אינה נתמכת</string>
@@ -678,11 +678,11 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_export_keystore_failed">נכשל לייצא מאגר מפתחות</string>
     <string name="settings_system_show_password_field">שגגה להרוס תיקון: %s</string>
     <string name="settings_system_hide_password_field">ייבוא הגדרות של הפיצ\'ח</string>
-    <string name="settings_system_morphe_settings">הגדרות Morphe</string>
-    <string name="settings_system_import_manager_settings_description">גיבוי ושחזור של הגדרות Morphe שלך</string>
-    <string name="settings_system_import_manager_settings_fail">נכשל ייבוא הגדרות Morphe: %s</string>
-    <string name="settings_system_import_manager_settings_success">הגדרות Morphe יובאו</string>
-    <string name="settings_system_import_manager_settings_mode_title">ייבוא הגדרות Morphe</string>
+    <string name="settings_system_morphe_settings">הגדרות AutoPatch Hub</string>
+    <string name="settings_system_import_manager_settings_description">גיבוי ושחזור של הגדרות AutoPatch Hub שלך</string>
+    <string name="settings_system_import_manager_settings_fail">נכשל ייבוא הגדרות AutoPatch Hub: %s</string>
+    <string name="settings_system_import_manager_settings_success">הגדרות AutoPatch Hub יובאו</string>
+    <string name="settings_system_import_manager_settings_mode_title">ייבוא הגדרות AutoPatch Hub</string>
     <string name="settings_system_import_manager_settings_mode_description">בחר כיצד יש ליישם את ההגדרות והמקורות המיובאים</string>
     <string name="settings_system_import_selections_mode_title">ייבוא בחירות תיקונים</string>
     <string name="settings_system_import_selections_mode_description">בחר כיצד יש ליישם את הפריטים המיובאים ואת אפשרויות התיקון</string>
@@ -690,8 +690,8 @@ morphe_adaptive_monochrome_custom.xml
     <string name="import_mode_replace_description">התאם במדויק את הגיבוי. פריטים חסרים מהגיבוי יוסרו</string>
     <string name="import_mode_merge_title">מזג עם קיימים</string>
     <string name="import_mode_merge_description">הוסף פריטים חסרים מהגיבוי. פריטים קיימים יישארו ללא שינוי</string>
-    <string name="settings_system_export_manager_settings_fail">נכשל לייצא הגדרות Morphe: %s</string>
-    <string name="settings_system_export_manager_settings_success">הגדרות Morphe ייצאו</string>
+    <string name="settings_system_export_manager_settings_fail">נכשל לייצא הגדרות AutoPatch Hub: %s</string>
+    <string name="settings_system_export_manager_settings_success">הגדרות AutoPatch Hub ייצאו</string>
     <string name="settings_system_debug">debug</string>
     <string name="settings_system_export_debug_logs_description">שומר יומני מערכת לצורך פתרון בעיות</string>
     <string name="settings_system_export_debug_logs_export_read_failed">שגיאה בקריאת לוגים (קוד יציאה %s)</string>
@@ -747,7 +747,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_no_patches_or_options">אין תיקונים או אפשרויות שמורות</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">בחירת קבצים מותאמת אישית</string>
-    <string name="settings_system_custom_file_picker_description">דפדף אחסון באמצעות בוחר הקבצים המובנה של Morphe במקום ברירת המערכת</string>
+    <string name="settings_system_custom_file_picker_description">דפדף אחסון באמצעות בוחר הקבצים המובנה של AutoPatch Hub במקום ברירת המערכת</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">ספרייה קודמת</string>
     <string name="file_picker_no_files">אין קבצים כאן</string>
@@ -765,7 +765,7 @@ morphe_adaptive_monochrome_custom.xml
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">אודות</string>
     <string name="settings_system_share_website">שתף אתר</string>
-    <string name="settings_system_share_website_description">משתף את האתר הרשמי של Morphe</string>
+    <string name="settings_system_share_website_description">משתף את האתר הרשמי של AutoPatch Hub</string>
     <string name="settings_system_manager_description">פרויקט קוד פתוח לתיקון יעיל ומודרני של אפליקציות אנדרואיד פופולריות, המונע על ידי משוב ותרומות של הקהילה</string>
     <string name="credits">קרדיטים</string>
     <string name="credits_current_development">פיתוח נוכחי</string>
@@ -897,7 +897,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="onboarding_sources_desc">נהל את מקורות התיקונים שלך. כל מקור מספק תיקונים שניתן להחיל על האפליקציות שלך</string>
     <string name="onboarding_swipe_title">מחוות החלקה</string>
     <string name="onboarding_swipe_desc">החלק ימינה על כרטיס אפליקציה כדי לראות את התיקונים הזמינים. החלק שמאלה כדי להסתיר את הכרטיס ממסך הבית</string>
-    <string name="onboarding_settings_desc">התאם אישית את Morphe: מראה, אפשרויות מתקדמות וכלי מערכת</string>
+    <string name="onboarding_settings_desc">התאם אישית את AutoPatch Hub: מראה, אפשרויות מתקדמות וכלי מערכת</string>
     <string name="onboarding_sources_patches_desc">הקש כדי לראות את כל התיקונים הזמינים ממקור זה</string>
     <string name="onboarding_sources_version_desc">הקש על הגרסה כדי לראות את יומן השינויים המלא עבור מקור זה</string>
     <string name="onboarding_sources_prerelease_desc">הפעל זאת כדי לקבל גרסאות תיקון לפני הפצה ממקור זה</string>
@@ -912,8 +912,8 @@ morphe_adaptive_monochrome_custom.xml
     <string name="onboarding_system_file_picker_desc">הפעל כדי להשתמש בדפדפן הקבצים המובנה במקום בוחר המערכת בעת בחירת קבצי APK או מחזיקי מפתחות</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">סיור תכונות מהיר</string>
-    <string name="tour_prompt_desc">רוצה סיור מהיר בתכונות המרכזיות של Morphe?</string>
+    <string name="tour_prompt_desc">רוצה סיור מהיר בתכונות המרכזיות של AutoPatch Hub?</string>
     <string name="tour_prompt_confirm">הראה לי את הסביבה</string>
     <string name="onboarding_restart_title">סיור תכונות</string>
-    <string name="onboarding_restart_desc">צא לסיור מודרך בתכונות המרכזיות של Morphe</string>
+    <string name="onboarding_restart_desc">צא לסיור מודרך בתכונות המרכזיות של AutoPatch Hub</string>
 </resources>

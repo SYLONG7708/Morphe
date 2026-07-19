@@ -1,117 +1,185 @@
-name: Release
+name: Signed ecosystem release
 
 on:
   workflow_dispatch:
-    inputs:
-      send_fcm:
-        description: 'Send FCM push notification'
-        type: boolean
-        default: true
+  schedule:
+    - cron: "17 2 * * *"
   push:
-    branches:
-      - main
+    branches: [main]
+    paths-ignore:
+      - app-release.json
+      - patches-bundle.json
+      - "*.md"
+      - docs/**
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: signed-ecosystem-release
+  cancel-in-progress: false
 
 jobs:
   release:
-    name: Release
-    permissions:
-      contents: write
-      packages: write
-      id-token: write
-      attestations: write
-      actions: write
     runs-on: ubuntu-latest
-
+    timeout-minutes: 75
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Setup Java
+      - name: Set up Java
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
 
-      - name: Cache Gradle
-        uses: burrunan/gradle-cache-action@v3
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
 
-      - name: Setup keystore
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install pinned Android toolchain
         run: |
-          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > app/keystore.jks
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "cmake;3.22.1" "ndk;28.2.13676358"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "lts/*"
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          fingerprint: ${{ vars.GPG_FINGERPRINT }}
-
-      - name: Release
-        uses: cycjimmy/semantic-release-action@v5
-        id: release
+      - name: Resolve upstream releases
+        id: upstream
         env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          patch_json="$(gh api repos/MorpheApp/morphe-patches/releases/latest)"
+          microg_json="$(gh api repos/MorpheApp/MicroG-RE/releases/latest)"
+          patch_version="$(jq -r '.tag_name | sub("^v"; "")' <<<"$patch_json")"
+          microg_version="$(jq -r '.tag_name | sub("^v"; "")' <<<"$microg_json")"
+          patch_url="$(jq -r '.assets[] | select(.name | endswith(".mpp")) | .browser_download_url' <<<"$patch_json" | head -n1)"
+          microg_url="$(jq -r '.assets[] | select(.name | endswith(".apk")) | .browser_download_url' <<<"$microg_json" | head -n1)"
+          test -n "$patch_url" && test "$patch_url" != "null"
+          test -n "$microg_url" && test "$microg_url" != "null"
+          echo "patch_version=$patch_version" >> "$GITHUB_OUTPUT"
+          echo "microg_version=$microg_version" >> "$GITHUB_OUTPUT"
+          curl --fail --location --retry 3 "$patch_url" --output "dist/patches-$patch_version.mpp"
+          curl --fail --location --retry 3 "$microg_url" --output "dist/microg-$microg_version.apk"
+
+      - name: Skip unchanged scheduled release
+        id: gate
+        env:
+          PATCH_VERSION: ${{ steps.upstream.outputs.patch_version }}
+          MICROG_VERSION: ${{ steps.upstream.outputs.microg_version }}
+        run: |
+          publish=true
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            current="$(curl --fail --silent --location \
+              https://github.com/SYLONG7708/Morphe/releases/latest/download/update-manifest.json || true)"
+            if [ -n "$current" ] \
+              && [ "$(jq -r '.patches.version' <<<"$current")" = "$PATCH_VERSION" ] \
+              && [ "$(jq -r '.microg.version' <<<"$current")" = "$MICROG_VERSION" ]; then
+              publish=false
+            fi
+          fi
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
+
+      - name: Restore signing material
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          UPDATE_SIGNING_P12_BASE64: ${{ secrets.UPDATE_SIGNING_P12_BASE64 }}
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$UPDATE_SIGNING_P12_BASE64"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > app/keystore.jks
+          printf '%s' "$UPDATE_SIGNING_P12_BASE64" | base64 --decode > update-signing.p12
+          chmod 600 app/keystore.jks update-signing.p12
+
+      - name: Build signed manager
+        if: steps.gate.outputs.publish == 'true'
+        env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_ENTRY_ALIAS: ${{ secrets.KEYSTORE_ENTRY_ALIAS }}
           KEYSTORE_ENTRY_PASSWORD: ${{ secrets.KEYSTORE_ENTRY_PASSWORD }}
-
-      - name: Attest
-        if: steps.release.outputs.new_release_published == 'true'
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: 'Morphe Manager ${{ steps.release.outputs.new_release_git_tag }}'
-          subject-path: app/build/outputs/apk/release/morphe-manager*.apk
-
-      - name: Generate website deploy token
-        if: steps.release.outputs.new_release_published == 'true'
-        id: app-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ vars.MORPHE_AAMATT_APP_ID }}
-          private-key: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
-          owner: MorpheApp
-
-      - name: Trigger website deploy
-        if: steps.release.outputs.new_release_published == 'true'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ steps.app-token.outputs.token }}
-          script: |
-            await github.rest.repos.createDispatchEvent({
-              owner: 'MorpheApp',
-              repo: 'morphe-website',
-              event_type: 'trigger-deploy'
-            })
-
-      - name: Wait before sending FCM
-        if: steps.release.outputs.new_release_published == 'true' && (github.event_name == 'push' || inputs.send_fcm == true)
-        run: sleep 480
-
-      - name: Setup Python for FCM
-        if: steps.release.outputs.new_release_published == 'true' && (github.event_name == 'push' || inputs.send_fcm == true)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Send FCM push notification
-        if: steps.release.outputs.new_release_published == 'true' && (github.event_name == 'push' || inputs.send_fcm == true)
-        env:
-          FCM_PROJECT_ID: ${{ secrets.FCM_PROJECT_ID }}
-          FCM_SERVICE_ACCOUNT_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
-          NEW_TAG: ${{ steps.release.outputs.new_release_git_tag }}
-          BRANCH: ${{ github.ref_name }}
         run: |
-          pip install cryptography
-          python3 .github/scripts/send_fcm.py
+          set -euo pipefail
+          version="1.0.${GITHUB_RUN_NUMBER}"
+          sed -i "s/^version = .*/version = $version/" app/gradle.properties
+          chmod +x gradlew
+          ./gradlew clean lintRelease assembleRelease --stacktrace
+          apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
+          test -f "$apk"
+          cp "$apk" "dist/AutoPatch-Hub-$version.apk"
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Generate and sign release metadata
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          UPDATE_SIGNING_STORE_PASSWORD: ${{ secrets.UPDATE_SIGNING_STORE_PASSWORD }}
+          UPDATE_SIGNING_KEY_ALIAS: ${{ secrets.UPDATE_SIGNING_KEY_ALIAS }}
+          UPDATE_SIGNING_KEY_PASSWORD: ${{ secrets.UPDATE_SIGNING_KEY_PASSWORD }}
+          PATCH_VERSION: ${{ steps.upstream.outputs.patch_version }}
+          MICROG_VERSION: ${{ steps.upstream.outputs.microg_version }}
+        run: |
+          set -euo pipefail
+          base="https://github.com/SYLONG7708/Morphe/releases/latest/download"
+          python tools/generate_update_manifest.py \
+            --manager "dist/AutoPatch-Hub-$RELEASE_VERSION.apk" \
+            --patches "dist/patches-$PATCH_VERSION.mpp" \
+            --patch-version "$PATCH_VERSION" \
+            --microg "dist/microg-$MICROG_VERSION.apk" \
+            --base-url "$base" \
+            --output-dir dist
+          javac -d dist tools/SignFile.java tools/VerifyFile.java
+          for file in \
+            "dist/AutoPatch-Hub-$RELEASE_VERSION.apk" \
+            "dist/patches-$PATCH_VERSION.mpp" \
+            "dist/microg-$MICROG_VERSION.apk" \
+            "dist/update-manifest.json"; do
+            java -cp dist SignFile update-signing.p12 \
+              "$UPDATE_SIGNING_STORE_PASSWORD" "$UPDATE_SIGNING_KEY_ALIAS" \
+              "$UPDATE_SIGNING_KEY_PASSWORD" "$file" "$file.sig"
+            java -cp dist VerifyFile app/src/main/res/raw/update_signing_cert.der \
+              "$file" "$file.sig"
+          done
+
+      - name: Create GitHub Release
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="autopatch-v$RELEASE_VERSION"
+          gh release create "$tag" \
+            --target "$GITHUB_SHA" \
+            --title "AutoPatch Hub v$RELEASE_VERSION" \
+            --notes "Signed zero-configuration update channel. Google YouTube APK is not included; YouTube is patched locally on the device." \
+            dist/*.apk dist/*.mpp dist/*.sig dist/update-manifest.json
+
+      - name: Attest manager APK
+        if: steps.gate.outputs.publish == 'true'
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: dist/AutoPatch-Hub-${{ env.RELEASE_VERSION }}.apk
+
+      - name: Publish static discovery metadata
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cp dist/app-release.json app-release.json
+          cp dist/patches-bundle.json patches-bundle.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app-release.json patches-bundle.json
+          git commit -m "chore: update signed release discovery metadata [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

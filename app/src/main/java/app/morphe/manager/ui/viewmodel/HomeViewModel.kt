@@ -1540,15 +1540,14 @@ class HomeViewModel(
      * open the APK availability dialog.
      */
     private suspend fun continueApkSelectionFlow(packageName: String) {
-        // Load saved APK (Room + AppDataResolver) and, in expert mode only, installed APK
-        // (PackageManager) in parallel. In simple mode the installed-APK button is hidden,
-        // so we skip the PM lookup entirely to keep simple-mode behavior unchanged
+        // Load both safe local sources in parallel. Simple mode can then select the exact
+        // compatible source automatically, including Play Store split installs.
         val expertMode = isExpertMode()
         coroutineScope {
             val savedJob = if (pendingSavedApkInfo == null) {
                 async(Dispatchers.IO) { loadSavedApkInfo(packageName) }
             } else null
-            val installedJob = if (expertMode && pendingTargetAppInstalled == null) {
+            val installedJob = if (pendingTargetAppInstalled == null) {
                 async(Dispatchers.IO) { loadInstalledInfo(packageName) }
             } else null
             savedJob?.await()?.let { pendingSavedApkInfo = it }
@@ -1560,17 +1559,19 @@ class HomeViewModel(
 
         val recommendedVersion = pendingRecommendedVersion
 
+        val shouldAutoUseInstalled = !expertMode &&
+                pendingInstalledApkInfo != null &&
+                recommendedVersion != null &&
+                pendingInstalledApkInfo!!.version == recommendedVersion.version
         val shouldAutoUseSaved = !expertMode &&
                 pendingSavedApkInfo != null &&
                 recommendedVersion != null &&
                 pendingSavedApkInfo!!.version == recommendedVersion.version
 
-        if (shouldAutoUseSaved) {
-            // Skip dialog and use saved APK directly
-            handleSavedApkSelection()
-        } else {
-            // Show dialog
-            showApkAvailabilityDialog = true
+        when {
+            shouldAutoUseInstalled -> handleInstalledApkSelection()
+            shouldAutoUseSaved -> handleSavedApkSelection()
+            else -> showApkAvailabilityDialog = true
         }
     }
 

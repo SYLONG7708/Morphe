@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AutoPatch Hub 零配置操作指南</title>
+  <style>
+    :root{color-scheme:dark;--bg:#071018;--panel:#101d29;--line:#22394b;--text:#edf7ff;--muted:#9eb6c8;--a:#38d6c8;--b:#67a8ff}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#143d4b 0,transparent 35%),var(--bg);font:16px/1.7 system-ui,sans-serif;color:var(--text)}
+    main{max-width:980px;margin:auto;padding:48px 22px 80px}header{padding:34px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,#102536dd,#0c1722dd)}
+    h1{font-size:clamp(2rem,6vw,4.2rem);line-height:1.05;margin:0 0 18px}h2{margin-top:42px}p{color:var(--muted)}.tag{display:inline-block;color:#001715;background:var(--a);padding:5px 12px;border-radius:999px;font-weight:750}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}.n{font-size:2rem;color:var(--a);font-weight:850}
+    .flow{display:flex;gap:10px;flex-wrap:wrap}.flow span{border:1px solid var(--line);background:#0c1822;padding:11px 15px;border-radius:12px}.note{border-left:4px solid var(--b);padding:14px 18px;background:#101b2b;border-radius:8px}
+    code{color:#9cf2e9}a{color:#79baff}@media(max-width:600px){main{padding-top:20px}header{padding:24px}}
+  </style>
+</head>
+<body><main>
+  <header><span class="tag">安全更新中心</span><h1>安裝一次，之後自動判斷。</h1>
+    <p>AutoPatch Hub 會檢查管理器、修補套件、YouTube 相容來源與 MicroG-RE，
+    自動選擇符合手機 Android SDK 與 CPU 的版本，下載後逐層驗證。</p></header>
+  <h2>第一次只做三件事</h2>
+  <div class="grid">
+    <section class="card"><div class="n">01</div><h3>安裝</h3><p>從本專案 GitHub Release 安裝 <code>AutoPatch-Hub-*.apk</code>。</p></section>
+    <section class="card"><div class="n">02</div><h3>允許通知</h3><p>收到更新時會直接帶你到正確元件，不需要自己找版本。</p></section>
+    <section class="card"><div class="n">03</div><h3>選擇權限</h3><p>一般模式使用系統確認；想要靜默安裝才授權 Shizuku 或 Root。</p></section>
+  </div>
+  <h2>每次更新會自動完成</h2>
+  <div class="flow"><span>簽章清單</span><span>SDK／ABI 選版</span><span>背景下載</span>
+    <span>SHA-256</span><span>APK 身分</span><span>簽署鏈</span><span>安裝或本機修補</span></div>
+  <h2>YouTube 為什麼不同？</h2>
+  <p>本專案不散布 Google 原始或預先修補的 YouTube APK。App 只會檢查手機中已安裝
+  或已保存的合法來源，確認修補套件精確支援後才在手機內合併 split、修補及簽署。
+  不相容時會等待，不會硬套版本。</p>
+  <div class="note"><strong>Android 必要限制：</strong>未授權的普通 App 不能無提示安裝。
+  所以一般手機仍會看到一次系統安裝確認；已授權 Shizuku／Root 才能完全靜默。</div>
+  <h2>查看狀態</h2>
+  <p>開啟「設定 → 進階 → 安全更新中心」，即可一次看到 AutoPatch Hub、YouTube
+  本機修補、修補套件與 MicroG-RE。預設全生態自動更新已開啟。</p>
+</main></body></html>

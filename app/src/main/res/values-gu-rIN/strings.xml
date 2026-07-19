@@ -118,7 +118,7 @@
     <string name="patcher_message_6">બહાર જુઓ, ત્યાં સરસ છે… 🌤️</string>
     <string name="patcher_message_7">1 અને 0 ને સમાયોજિત કરી રહ્યા છીએ… 🤖</string>
     <string name="patcher_message_8">ડિજિટલ સ્પેગેટી ગૂંચવણ ઉકેલી રહ્યા છીએ… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">પેચ વગરની એપમાં બગ ફિક્સ કરી રહ્યા છીએ… 🪲</string>
     <string name="patcher_message_10">મહાન પેચો માટે રાહ જોવી યોગ્ય છે… ⏳</string>
     <string name="patcher_message_11">પિક્સેલ ચમકે ત્યાં સુધી પોલિશ કરી રહ્યાં છે… 💎</string>

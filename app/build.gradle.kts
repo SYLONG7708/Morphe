@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.devtools)
     alias(libs.plugins.about.libraries)
     alias(libs.plugins.about.libraries.android)
-    alias(libs.plugins.google.services)
     signing
 }
 
@@ -97,9 +96,7 @@ dependencies {
     implementation(libs.ktor.content.negotiation)
     implementation(libs.ktor.serialization)
 
-    // Firebase Cloud Messaging
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.messaging)
+    // Google Play Services availability is used only for device diagnostics.
     implementation(libs.play.services.base)
 
     // Markdown
@@ -130,7 +127,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "app.morphe.manager"
+        applicationId = "com.sylong.autopatchhub"
         minSdk = 26
 
         versionName = version.toString()
@@ -138,11 +135,8 @@ android {
         // VersionCode derived from current time (1-minute intervals) + offset.
         val nowMillis = System.currentTimeMillis()
         val timestampVersionCode = (nowMillis / (60 * 1000)).toInt()
-        // Offset of the prior v1.1.1 version code to ensure the code is always newer for old installations.
-        // If a new app is used this offset should be changed to zero.
-        // 1 minute rounding and this offset still gives ~4,000 years of valid version codes
-        // and still fall into Play store max version code range.
-        val versionCodeOffset = 10010100
+        // AutoPatch Hub uses its own application ID and signing lineage.
+        val versionCodeOffset = 0
         versionCode = timestampVersionCode + versionCodeOffset
 
         // Expose the resolved morphe-patcher version so PatcherViewModel can compare it

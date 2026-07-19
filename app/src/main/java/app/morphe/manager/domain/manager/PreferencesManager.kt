@@ -52,10 +52,10 @@ class PreferencesManager(
     val bundleExperimentalVersionsEnabled = stringSetPreference("bundle_experimental_versions_enabled", emptySet())
 
     /**  Whether to send Android system notifications when updates are available in the background. */
-    val backgroundUpdateNotifications = booleanPreference("background_update_notifications", false)
+    val backgroundUpdateNotifications = booleanPreference("background_update_notifications", true)
 
     /**  How often the background update check should run. */
-    val updateCheckInterval = enumPreference("update_check_interval", UpdateCheckInterval.DAILY)
+    val updateCheckInterval = enumPreference("update_check_interval", UpdateCheckInterval.HOURLY)
 
     /** Tracks whether the POST_NOTIFICATIONS runtime permission dialog has already been shown at least once on first launch (Android 13+). */
     val notificationPermissionRequested = booleanPreference("notification_permission_requested", false)
@@ -100,6 +100,11 @@ class PreferencesManager(
     val includeGitHubPatInExports = booleanPreference("include_github_pat_in_exports", false)
 
     val allowMeteredUpdates = booleanPreference("allow_metered_updates", true)
+    /** Downloads verified manager and MicroG assets without asking the user to choose files. */
+    val automaticEcosystemUpdates = booleanPreference("automatic_ecosystem_updates", true)
+    /** Highest signed manifest sequence accepted; prevents replaying an older release. */
+    val lastAcceptedManifestSequence =
+        LongPreference(dataStore, "last_accepted_manifest_sequence", 0L)
     val firstLaunch = booleanPreference("first_launch", true)
 
     val installationTime = LongPreference(dataStore, "manager_installation_time", 0L)

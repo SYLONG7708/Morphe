@@ -13,6 +13,7 @@
 
 # Package Files #
 *.jar
+!vendor/m2/**/*.jar
 *.war
 *.nar
 *.ear
@@ -128,6 +129,9 @@ node_modules/
 .kotlin/
 
 local.properties
+.secrets/
+app/keystore.jks
+release-artifacts/
 
 .cxx
 AGENT.md

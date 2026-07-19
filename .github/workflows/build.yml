@@ -1,0 +1,58 @@
+name: Build and verify
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - app-release.json
+      - patches-bundle.json
+      - "*.md"
+      - docs/**
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install pinned Android toolchain
+        run: |
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "cmake;3.22.1" "ndk;28.2.13676358"
+
+      - name: Lint and reproducible release build
+        run: |
+          chmod +x gradlew
+          ./gradlew lintRelease assembleRelease -PsignAsDebug --stacktrace
+
+      - name: Upload verification APK and reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: autopatch-hub-verification
+          archive: false
+          if-no-files-found: warn
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/reports/**

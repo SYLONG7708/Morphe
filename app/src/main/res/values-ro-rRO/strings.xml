@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Bug al Android 11</string>
     <string name="android_11_bug_dialog_description">Permisiunea de instalare a aplicației trebuie acordată în avans pentru a evita o problemă în sistemul Android 11 care poate afecta negativ experiența utilizatorului</string>
     <string name="deep_link_add_source_title">Adaugă sursă</string>
-    <string name="deep_link_add_source_message">Dorești să adaugi această sursă de patch la Morphe?</string>
+    <string name="deep_link_add_source_message">Dorești să adaugi această sursă de patch la AutoPatch Hub?</string>
     <string name="deep_link_add_source_warning">Adaugă numai surse în care ai încredere</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Actualizare Morphe disponibilă</string>
+    <string name="home_update_available">Actualizare AutoPatch Hub disponibilă</string>
     <string name="home_update_available_subtitle">Versiune nouă pregătită pentru instalare</string>
     <string name="home_update_error">Actualizarea a eșuat</string>
     <string name="home_update_error_subtitle">Verifică-ți conexiunea la internet și încearcă din nou</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Exercițiul este cheia succesului și te apropii din ce în ce mai mult 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Încă nu ești aici… încă nu ești aici… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Bine, respect dedicarea 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Acum ești un tester oficial Morphe 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Acum ești un tester oficial AutoPatch Hub 🏅</string>
     <string name="home_download_instructions_step3">Așteaptă ca descărcarea să se finalizeze, și &lt;b&gt;nu instala&lt;/b&gt; APK-ul</string>
     <string name="home_download_instructions_step3_mount">Așteaptă ca descărcarea să se finalizeze, și &lt;b&gt;instalează&lt;/b&gt; APK-ul</string>
-    <string name="home_download_instructions_step4">După ce descărcarea se termină, revino la Morphe</string>
-    <string name="home_download_instructions_step4_mount">După instalarea APK-ului original, revino la Morphe</string>
+    <string name="home_download_instructions_step4">După ce descărcarea se termină, revino la AutoPatch Hub</string>
+    <string name="home_download_instructions_step4_mount">După instalarea APK-ului original, revino la AutoPatch Hub</string>
     <string name="home_download_instructions_continue">Continuă către APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Selectează APK-ul descărcat</string>
@@ -306,7 +306,7 @@ Zona exterioară (întreruptă): poate fi decupată de masca lansatorului - păs
     <string name="home_app_info_patch_update_available">Actualizare patach disponibilă</string>
     <string name="home_app_info_patch_update_available_description">O versiune mai nouă a modificărilor este disponibilă. Repătați aplicația pentru a obține ultimele îmbunătățiri și corectări</string>
     <string name="home_app_info_app_deleted_warning">Aplicația a fost dezinstalată</string>
-    <string name="home_app_info_app_deleted_description">Această aplicație a fost dezinstalată în afara Morphe. Aplica-o din nou pentru a restabili funcționalitatea</string>
+    <string name="home_app_info_app_deleted_description">Această aplicație a fost dezinstalată în afara AutoPatch Hub. Aplica-o din nou pentru a restabili funcționalitatea</string>
     <string name="home_app_info_apk_size">Dimensiunea APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Modul radical necesită instalarea APK-ului original pe dispozitivul dvs. înainte de a pata</string>
@@ -342,7 +342,7 @@ Zona exterioară (întreruptă): poate fi decupată de masca lansatorului - păs
     <string name="patcher_conflict_subtitle">Trebuie să dezinstalați versiunea existentă</string>
     <string name="patcher_conflict_hint">Aplicația modificată utilizează un certificat diferit față de versiunea instalată. Dezinstalarea va șterge toate datele aplicației.</string>
     <string name="patcher_installed_conflict_title">Dezinstalare necesară</string>
-    <string name="patcher_installed_conflict_body">"Morphe semnează aplicațiile modificate cu propriul certificat, care diferă de cel original. Android necesită eliminarea versiunii existente înainte ca aplicația modificată să poată fi instalată.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub semnează aplicațiile modificate cu propriul certificat, care diferă de cel original. Android necesită eliminarea versiunii existente înainte ca aplicația modificată să poată fi instalată.
 
 Dezinstalarea va șterge definitiv toate datele aplicației."</string>
     <string name="patcher_install_error_title">Eroare la instalare</string>
@@ -351,9 +351,9 @@ Dezinstalarea va șterge definitiv toate datele aplicației."</string>
     <string name="patcher_ready_to_mount_subtitle">Apăsați butonul de mai jos pentru a monta</string>
     <string name="patcher_storage_permission_dialog_title">Nu se poate accesa calea de stocare</string>
     <string name="patcher_incompatible_patcher_title">Actualizare necesară</string>
-    <string name="patcher_incompatible_patcher_description">Pachetul &lt;b&gt;%1$s&lt;/b&gt; necesită versiunea patcher-ului &lt;b&gt;%2$s&lt;/b&gt; sau mai nouă. Vă rugăm să actualizați Morphe pentru a aplica patch la această aplicație</string>
-    <string name="patcher_incompatible_patcher_update_button">Descărcă și actualizează Morphe</string>
-    <string name="patcher_storage_permission_description_api30">Una sau mai multe opțiuni de patch indică către căi pe care Morphe nu le poate citi. Acordă acces la stocare și atinge butonul, apoi patch-uirea va începe automat</string>
+    <string name="patcher_incompatible_patcher_description">Pachetul &lt;b&gt;%1$s&lt;/b&gt; necesită versiunea patcher-ului &lt;b&gt;%2$s&lt;/b&gt; sau mai nouă. Vă rugăm să actualizați AutoPatch Hub pentru a aplica patch la această aplicație</string>
+    <string name="patcher_incompatible_patcher_update_button">Descărcă și actualizează AutoPatch Hub</string>
+    <string name="patcher_storage_permission_description_api30">Una sau mai multe opțiuni de patch indică către căi pe care AutoPatch Hub nu le poate citi. Acordă acces la stocare și atinge butonul, apoi patch-uirea va începe automat</string>
     <string name="patcher_storage_permission_description_legacy">Una sau mai multe opțiuni de patch indică căi de stocare care nu pot fi accesate. Actualizați căile în opțiunile de patch și încercați din nou</string>
     <string name="patcher_storage_permission_grant">Acordați permisiunea de stocare</string>
     <string name="patcher_storage_permission_denied_warning">Permisiunea de stocare a fost refuzată. Acordați permisiunea pentru a utiliza acest drum, sau mutați fișierul în directorul privat al aplicației</string>
@@ -372,7 +372,7 @@ Dezinstalarea va șterge definitiv toate datele aplicației."</string>
     <string name="patcher_step_sign_apk">Se semnează fișierul APK modificat</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Protecție la patch-uri în fundal</string>
-    <string name="battery_optimization_dialog_description">Unele dispozitive pot opri patcher-ul când aplicația este minimizată. Permiteți aplicației Morphe să ruleze fără restricții de baterie pentru a asigura finalizarea fiabilă a patch-urilor</string>
+    <string name="battery_optimization_dialog_description">Unele dispozitive pot opri patcher-ul când aplicația este minimizată. Permiteți aplicației AutoPatch Hub să ruleze fără restricții de baterie pentru a asigura finalizarea fiabilă a patch-urilor</string>
     <string name="battery_optimization_not_now">Nu acum</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Se aplică modificările…</string>
@@ -388,7 +388,7 @@ Dezinstalarea va șterge definitiv toate datele aplicației."</string>
     <string name="patcher_message_6">Privește pe fereastră, e frumos afară… 🌤️</string>
     <string name="patcher_message_7">Ajustare 1-uri și 0-uri… 🤖</string>
     <string name="patcher_message_8">Descurcarea spaghetti-ului digital… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Se încerca repararea bug-urilor din aplicația nepatcheată… 🪲</string>
     <string name="patcher_message_10">Patch-urile grozave merită așteptarea… ⏳</string>
     <string name="patcher_message_11">Șlefuirea pixelilor până strălucesc… 💎</string>
@@ -492,9 +492,9 @@ Dezinstalarea va șterge definitiv toate datele aplicației."</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Actualizări</string>
     <string name="settings_advanced_updates_use_prereleases">Actualizări pre-lansare</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Acces anticipat la noile versiuni ale aplicației Morphe. Activează pre-lansarea per sursă în sursele de patch-uri</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Acces anticipat la noile versiuni ale aplicației AutoPatch Hub. Activează pre-lansarea per sursă în sursele de patch-uri</string>
     <string name="settings_advanced_updates_allow_metered">Actualizări de date mobile</string>
-    <string name="settings_advanced_updates_allow_metered_description">Permite aplicației Morphe și actualizărilor de patch-uri să se descarce prin date mobile</string>
+    <string name="settings_advanced_updates_allow_metered_description">Permite aplicației AutoPatch Hub și actualizărilor de patch-uri să se descarce prin date mobile</string>
     <string name="settings_advanced_updates_background_notifications">Notificări de actualizări în fundal</string>
     <string name="settings_advanced_updates_background_notifications_description">Verifică periodic pentru actualizări în fundal și notifică când sunt disponibile</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Primește notificări push instantanee pentru noile versiuni, chiar și când aplicația este închisă</string>
@@ -507,21 +507,21 @@ Dezinstalarea va șterge definitiv toate datele aplicației."</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Frecvența de verificare în fundal</string>
     <string name="settings_advanced_update_interval_battery_warning">Verificările în fundal pot nu funcționa reliable pe unele dispozitive. Fabricanții precum Xiaomi, Huawei, Samsung și OnePlus adesea restrictă procesul în fundal pentru a economisi baterie</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Actualizare Morphe disponibilă</string>
+    <string name="notification_manager_update_title">Actualizare AutoPatch Hub disponibilă</string>
     <string name="notification_bundle_update_title">Există actualizări disponibile</string>
     <string name="notification_update_text">Versiunea %s este gata de descărcare</string>
-    <string name="notification_bundle_update_text_unversioned">Apasă pentru a deschide Morphe și a actualiza</string>
+    <string name="notification_bundle_update_text_unversioned">Apasă pentru a deschide AutoPatch Hub și a actualiza</string>
     <string name="notification_permission_dialog_title">Permite notificări</string>
-    <string name="notification_permission_dialog_description">Morphe are nevoie de permisiunea de notificare pentru a te avertiza când sunt disponibile actualizări în fundal</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub are nevoie de permisiunea de notificare pentru a te avertiza când sunt disponibile actualizări în fundal</string>
     <string name="notification_post_patch_dialog_title">Doriți să fiți notificați când sunt disponibile actualizări?</string>
     <string name="notification_channel_fcm_updates">Actualizări notificări</string>
-    <string name="notification_channel_fcm_updates_description">Notificări despre versiuni noi de Morphe și patch-uri</string>
+    <string name="notification_channel_fcm_updates_description">Notificări despre versiuni noi de AutoPatch Hub și patch-uri</string>
     <string name="notification_channel_patcher">Se aplică patch-uri</string>
-    <string name="notification_channel_patcher_description">Afișate în timp ce Morphe aplică un patch unei aplicații în fundal</string>
+    <string name="notification_channel_patcher_description">Afișate în timp ce AutoPatch Hub aplică un patch unei aplicații în fundal</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Setări expert</string>
     <string name="settings_advanced_expert_mode">Mod expert</string>
-    <string name="settings_advanced_expert_mode_description">Activează setările complexe de patch-uire Morphe și opțiunile de personalizare</string>
+    <string name="settings_advanced_expert_mode_description">Activează setările complexe de patch-uire AutoPatch Hub și opțiunile de personalizare</string>
     <string name="settings_advanced_expert_mode_dialog_title">Vrei sâ activezi modul expert?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Modul expert oferâ mai mult control asupra modului cum pateâturile sunt aplicaâ, dar o configurare greşită a setârilor poate duce la o aplicaâ nefuncțională</string>
     <string name="settings_advanced_strip_unused_libs">Optimize pentru arhitectura dispozitivului</string>
@@ -542,7 +542,7 @@ Dezinstalarea va șterge definitiv toate datele aplicației."</string>
     <string name="settings_advanced_github_pat_dialog_title">Setează jeton de acces personal GitHub</string>
     <string name="settings_advanced_github_pat_dialog_description">Setă un token de acces personal GitHub pentru a putea adăuga cereri de pull ca surse externe. Creează un token cu scopul public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Include în exportul setărilor</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Adaugă acest PAT la setările Morphe exportate</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Adaugă acest PAT la setările AutoPatch Hub exportate</string>
     <string name="settings_advanced_github_pat_export_warning">Nu partaja PAT-ul tău. Dacă îl incluzi într-un export de setări, păstrează acel fișier privat, deoarece conține jetonul</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Opțiuni de patch-uire</string>
@@ -639,7 +639,7 @@ Dimensiunile imaginilor trebuie să fie următoarele:
     <string name="installer_status_not_supported">Nu este suportat pentru această acțiune</string>
     <string name="installer_status_shizuku_not_installed">Instalează Shizuku sau Sui pentru a folosi această opțiune</string>
     <string name="installer_status_shizuku_not_running">Pornește Shizuku sau Sui și încearcă din nou</string>
-    <string name="installer_status_shizuku_permission">Grantă Shizuku permisiunea pentru Morphe din aplicația Shizuku</string>
+    <string name="installer_status_shizuku_permission">Grantă Shizuku permisiunea pentru AutoPatch Hub din aplicația Shizuku</string>
     <string name="installer_mount_warning_install">Instalatorul principal setat la instalatorul montat radical. Această aplicație salvată nu a fost instalată folosind montaj</string>
     <string name="mount_version_mismatch_message">Versiunea aplicației de bază (%2$s) nu se potrivște cu versiunea aplicației patate (%1$s). Montează versiunea de bază potrivită, apoi reîncercați</string>
     <string name="installer_status_shizuku_unsupported">Versiunea Shizuku instalată nu este suportată</string>
@@ -693,11 +693,11 @@ Dimensiunile imaginilor trebuie să fie următoarele:
     <string name="settings_system_export_keystore_failed">A eșuat exportul keystore-ului</string>
     <string name="settings_system_show_password_field">Arată parolă</string>
     <string name="settings_system_hide_password_field">Ascunde parolă</string>
-    <string name="settings_system_morphe_settings">Setări Morphe</string>
-    <string name="settings_system_import_manager_settings_description">Realizează copii de rezervă și restaurează setările Morphe</string>
-    <string name="settings_system_import_manager_settings_fail">Eșec la importarea setărilor Morphe: %s</string>
-    <string name="settings_system_import_manager_settings_success">Setările Morphe au fost importate</string>
-    <string name="settings_system_import_manager_settings_mode_title">Importă setări Morphe</string>
+    <string name="settings_system_morphe_settings">Setări AutoPatch Hub</string>
+    <string name="settings_system_import_manager_settings_description">Realizează copii de rezervă și restaurează setările AutoPatch Hub</string>
+    <string name="settings_system_import_manager_settings_fail">Eșec la importarea setărilor AutoPatch Hub: %s</string>
+    <string name="settings_system_import_manager_settings_success">Setările AutoPatch Hub au fost importate</string>
+    <string name="settings_system_import_manager_settings_mode_title">Importă setări AutoPatch Hub</string>
     <string name="settings_system_import_manager_settings_mode_description">Alegeți modul în care setările și sursele importate trebuie aplicate</string>
     <string name="settings_system_import_selections_mode_title">Importă selecții de patch-uri</string>
     <string name="settings_system_import_selections_mode_description">Alegeți modul în care selecțiile și opțiunile de corecție importate ar trebui aplicate</string>
@@ -705,8 +705,8 @@ Dimensiunile imaginilor trebuie să fie următoarele:
     <string name="import_mode_replace_description">Corespondența exactă cu copia de rezervă. Elementele lipsă din copia de rezervă vor fi eliminate</string>
     <string name="import_mode_merge_title">Combinare cu cele existente</string>
     <string name="import_mode_merge_description">Adăugare elemente lipsă din copia de rezervă. Elementele existente rămân neschimbate</string>
-    <string name="settings_system_export_manager_settings_fail">A eșuat exportarea setărilor Morphe: %s</string>
-    <string name="settings_system_export_manager_settings_success">Setările Morphe au fost exportate</string>
+    <string name="settings_system_export_manager_settings_fail">A eșuat exportarea setărilor AutoPatch Hub: %s</string>
+    <string name="settings_system_export_manager_settings_success">Setările AutoPatch Hub au fost exportate</string>
     <string name="settings_system_debug">Depanare</string>
     <string name="settings_system_export_debug_logs_description">Salvează jurnalele de sistem pentru depanare</string>
     <string name="settings_system_export_debug_logs_export_read_failed">A eșuat citirea jurnalelor (cod de retur %s)</string>
@@ -762,7 +762,7 @@ Dimensiunile imaginilor trebuie să fie următoarele:
     <string name="settings_system_no_patches_or_options">Nicio pachet sau opțiune salvată</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Selector de fișiere personalizat</string>
-    <string name="settings_system_custom_file_picker_description">Răsfoiește stocarea cu selectorul de fișiere integrat Morphe în loc de cel implicit al sistemului</string>
+    <string name="settings_system_custom_file_picker_description">Răsfoiește stocarea cu selectorul de fișiere integrat AutoPatch Hub în loc de cel implicit al sistemului</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Director anterior</string>
     <string name="file_picker_no_files">Nu există fișiere aici</string>
@@ -780,7 +780,7 @@ Dimensiunile imaginilor trebuie să fie următoarele:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Despre</string>
     <string name="settings_system_share_website">Partajează website</string>
-    <string name="settings_system_share_website_description">Împărtășește site-ul oficial Morphe</string>
+    <string name="settings_system_share_website_description">Împărtășește site-ul oficial AutoPatch Hub</string>
     <string name="settings_system_manager_description">Un proiect open-source pentru patch-uri moderne și simplificate ale aplicațiilor Android populare, ghidat de feedback-ul și contribuțiile comunității</string>
     <string name="credits">Credite</string>
     <string name="credits_current_development">Dezvoltare curentă</string>
@@ -912,7 +912,7 @@ Doriți totuși să continuați?"</string>
     <string name="onboarding_sources_desc">Gestionează sursele de patch-uri. Fiecare sursă oferă patch-uri care pot fi aplicate aplicațiilor tale</string>
     <string name="onboarding_swipe_title">Gesturi de glisare</string>
     <string name="onboarding_swipe_desc">Glisează spre dreapta pe o carte de aplicație pentru a vedea patch-urile disponibile. Glisează spre stânga pentru a ascunde cardul de pe ecranul principal</string>
-    <string name="onboarding_settings_desc">Personalizează Morphe: aspect, opțiuni avansate și instrumente de sistem</string>
+    <string name="onboarding_settings_desc">Personalizează AutoPatch Hub: aspect, opțiuni avansate și instrumente de sistem</string>
     <string name="onboarding_sources_patches_desc">Atinge pentru a vedea toate patch-urile disponibile din această sursă</string>
     <string name="onboarding_sources_version_desc">Atinge versiunea pentru a vedea istoricul complet al modificărilor pentru această sursă</string>
     <string name="onboarding_sources_prerelease_desc">Activează această opțiune pentru a primi versiuni de patch-uri pre-lansare de la această sursă</string>
@@ -927,8 +927,8 @@ Doriți totuși să continuați?"</string>
     <string name="onboarding_system_file_picker_desc">Activează pentru a utiliza browserul de fișiere încorporat în loc de selectorul de sistem când selectezi fișiere APK sau stocări de chei</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Tur rapid de prezentare</string>
-    <string name="tour_prompt_desc">Dorești un tur rapid al funcțiilor cheie Morphe?</string>
+    <string name="tour_prompt_desc">Dorești un tur rapid al funcțiilor cheie AutoPatch Hub?</string>
     <string name="tour_prompt_confirm">Arată-mi</string>
     <string name="onboarding_restart_title">Tur de prezentare</string>
-    <string name="onboarding_restart_desc">Fă un tur ghidat al funcțiilor cheie Morphe</string>
+    <string name="onboarding_restart_desc">Fă un tur ghidat al funcțiilor cheie AutoPatch Hub</string>
 </resources>

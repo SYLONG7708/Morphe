@@ -32,6 +32,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
+import app.morphe.manager.domain.update.InstallableUpdate
 import app.morphe.manager.ui.model.navigation.ComplexParameter
 import app.morphe.manager.ui.model.navigation.HomeScreen
 import app.morphe.manager.ui.model.navigation.Patcher
@@ -92,6 +94,7 @@ class MainActivity : AppCompatActivity() {
 
         val vm: MainViewModel = getActivityViewModel()
 
+        handleUpdateIntent(intent, vm)
         // Handle deep link on cold start
         handleDeepLinkIntent(intent, vm)
 
@@ -117,10 +120,27 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val vm: MainViewModel = getActivityViewModel()
-        if (intent.getBooleanExtra(UpdateNotificationManager.EXTRA_TRIGGER_UPDATE_CHECK, false)) {
+        handleUpdateIntent(intent, vm)
+        handleDeepLinkIntent(intent, vm)
+    }
+
+    private fun handleUpdateIntent(intent: Intent?, vm: MainViewModel) {
+        if (intent?.getBooleanExtra(
+                UpdateNotificationManager.EXTRA_TRIGGER_UPDATE_CHECK,
+                false,
+            ) == true
+        ) {
             vm.pendingUpdateCheck = true
         }
-        handleDeepLinkIntent(intent, vm)
+        vm.pendingEcosystemAction = intent
+            ?.getStringExtra(UpdateNotificationManager.EXTRA_UPDATE_ACTION)
+            ?.takeIf {
+                it in setOf(
+                    UpdateNotificationManager.ACTION_MANAGER,
+                    UpdateNotificationManager.ACTION_YOUTUBE,
+                    UpdateNotificationManager.ACTION_MICROG,
+                )
+            }
     }
 
     /**
@@ -183,6 +203,7 @@ private fun MorpheManager(vm: MainViewModel) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val prefs: PreferencesManager = koinInject()
+    val updateCoordinator: EcosystemUpdateCoordinator = koinInject()
     val themeViewModel: ThemeSettingsViewModel = koinViewModel()
     val backgroundType by prefs.backgroundType.getAsState()
     val enableParallax by prefs.enableBackgroundParallax.getAsState()
@@ -205,6 +226,22 @@ private fun MorpheManager(vm: MainViewModel) {
     val homeViewModel: HomeViewModel = koinViewModel(
         viewModelStoreOwner = LocalActivity.current as ComponentActivity
     )
+
+    LaunchedEffect(vm.pendingEcosystemAction) {
+        val action = vm.pendingEcosystemAction ?: return@LaunchedEffect
+        vm.pendingEcosystemAction = null
+        navController.popBackStack(HomeScreen, false)
+        when (action) {
+            UpdateNotificationManager.ACTION_YOUTUBE ->
+                homeViewModel.showPatchDialog(EcosystemUpdateCoordinator.YOUTUBE_PACKAGE)
+
+            UpdateNotificationManager.ACTION_MANAGER ->
+                runCatching { updateCoordinator.installPrepared(InstallableUpdate.MANAGER) }
+
+            UpdateNotificationManager.ACTION_MICROG ->
+                runCatching { updateCoordinator.installPrepared(InstallableUpdate.MICROG) }
+        }
+    }
 
     // Handle deep link source
     LaunchedEffect(vm.pendingDeepLinkSource) {
