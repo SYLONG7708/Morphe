@@ -157,11 +157,16 @@ jobs:
         run: |
           set -euo pipefail
           tag="autopatch-v$RELEASE_VERSION"
-          gh release create "$tag" \
-            --target "$GITHUB_SHA" \
-            --title "AutoPatch Hub v$RELEASE_VERSION" \
-            --notes "Signed zero-configuration update channel. Google YouTube APK is not included; YouTube is patched locally on the device." \
-            dist/*.apk dist/*.mpp dist/*.sig dist/update-manifest.json
+          assets=(dist/*.apk dist/*.mpp dist/*.sig dist/update-manifest.json)
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "${assets[@]}" --clobber
+          else
+            gh release create "$tag" \
+              --target "$GITHUB_SHA" \
+              --title "AutoPatch Hub v$RELEASE_VERSION" \
+              --notes "Signed zero-configuration update channel. Google YouTube APK is not included; YouTube is patched locally on the device." \
+              "${assets[@]}"
+          fi
 
       - name: Attest manager APK
         if: steps.gate.outputs.publish == 'true'
@@ -181,5 +186,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app-release.json patches-bundle.json
           git commit -m "chore: update signed release discovery metadata [skip ci]"
+          git restore app/gradle.properties
           git pull --rebase origin main
           git push origin HEAD:main
