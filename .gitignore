@@ -127,6 +127,8 @@ node_modules/
 .idea/
 
 .kotlin/
+__pycache__/
+*.py[cod]
 
 local.properties
 .secrets/
