@@ -2,6 +2,7 @@ package app.morphe.manager.domain.bundles
 
 import app.morphe.manager.domain.bundles.RemotePatchBundle.Companion.CHANGELOG_CACHE_TTL
 import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.domain.update.DetachedSignatureVerifier
 import app.morphe.manager.network.api.MorpheAPI
 import app.morphe.manager.network.dto.MorpheAsset
 import app.morphe.manager.network.service.HttpService
@@ -52,6 +53,7 @@ sealed class RemotePatchBundle(
     enabled: Boolean,
 ) : PatchBundleSource(name, uid, displayName, createdAt, updatedAt, error, directory, enabled), KoinComponent {
     protected val http: HttpService by inject()
+    private val detachedSignatureVerifier: DetachedSignatureVerifier by inject()
 
     protected abstract suspend fun getLatestInfo(): MorpheAsset
     abstract fun copy(
@@ -83,6 +85,15 @@ sealed class RemotePatchBundle(
                     builder = { url(info.downloadUrl) },
                     onProgress = onProgress
                 )
+                info.signatureDownloadUrl?.let { signatureUrl ->
+                    val detached = http.request<String> {
+                        url(signatureUrl)
+                        header("Cache-Control", "no-cache")
+                    }.getOrThrow()
+                    check(detachedSignatureVerifier.verifyFile(patchesFile, detached)) {
+                        "Patch bundle detached-signature verification failed"
+                    }
+                }
                 patchesFile.setReadOnly()
                 requireNonEmptyPatchesFile("Downloading patch bundle")
             } catch (t: Throwable) {

@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Ошибка Android 11</string>
     <string name="android_11_bug_dialog_description">Для нормальной работы приложения необходимо предварительно предоставить разрешение на установку, чтобы избежать ошибки в системе Android 11, которая может негативно сказаться на пользовательском опыте</string>
     <string name="deep_link_add_source_title">Добавить источник</string>
-    <string name="deep_link_add_source_message">Вы хотите добавить этот источник патча в Morphe?</string>
+    <string name="deep_link_add_source_message">Вы хотите добавить этот источник патча в AutoPatch Hub?</string>
     <string name="deep_link_add_source_warning">Добавляйте источники, которым вы доверяете</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Доступно обновление Morphe</string>
+    <string name="home_update_available">Доступно обновление AutoPatch Hub</string>
     <string name="home_update_available_subtitle">Новая версия готова к установке.</string>
     <string name="home_update_error">Обновление не удалось</string>
     <string name="home_update_error_subtitle">Проверьте подключение к Интернету и повторите попытку</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Практика — залог успеха, и у вас всё получается 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Все еще не здесь… все еще не здесь… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">ОК, я уважаю вашу целеустремлённость 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Теперь вы официальный тестер кнопки Morphe 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Теперь вы официальный тестер кнопки AutoPatch Hub 🏅</string>
     <string name="home_download_instructions_step3">Дождитесь завершения загрузки и &lt;b&gt;не устанавливайте&lt;/b&gt; APK</string>
     <string name="home_download_instructions_step3_mount">Дождитесь завершения загрузки, затем &lt;b&gt;установите APK&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">После завершения загрузки, вернитесь в Morphe</string>
-    <string name="home_download_instructions_step4_mount">После установки оригинального APK, вернитесь в Morphe</string>
+    <string name="home_download_instructions_step4">После завершения загрузки, вернитесь в AutoPatch Hub</string>
+    <string name="home_download_instructions_step4_mount">После установки оригинального APK, вернитесь в AutoPatch Hub</string>
     <string name="home_download_instructions_continue">Перейти на APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Выберите загруженный APK</string>
@@ -306,7 +306,7 @@
     <string name="home_app_info_patch_update_available">Доступно обновление патчей</string>
     <string name="home_app_info_patch_update_available_description">Доступна более новая версия патчей. Обновите приложение, чтобы получить последние улучшения и исправления.</string>
     <string name="home_app_info_app_deleted_warning">Приложение было удалено.</string>
-    <string name="home_app_info_app_deleted_description">Это приложение было удалено вне устройства Morphe. Переустановите его, чтобы восстановить работоспособность.</string>
+    <string name="home_app_info_app_deleted_description">Это приложение было удалено вне устройства AutoPatch Hub. Переустановите его, чтобы восстановить работоспособность.</string>
     <string name="home_app_info_apk_size">Размер APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Для использования режима root требуется предварительная установка оригинального APK-файла на ваше устройство перед применением патча.</string>
@@ -342,7 +342,7 @@
     <string name="patcher_conflict_subtitle">Вам необходимо удалить существующую версию</string>
     <string name="patcher_conflict_hint">Исправленный файл приложения использует другой сертификат, чем установленная версия. Удаление приведет к удалению всех данных приложения</string>
     <string name="patcher_installed_conflict_title">Требуется удаление</string>
-    <string name="patcher_installed_conflict_body">"Morphe подписывает пропатченные приложения своим собственным сертификатом, который отличается от оригинального. Android требует удаления существующей версии перед установкой пропатченного приложения.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub подписывает пропатченные приложения своим собственным сертификатом, который отличается от оригинального. Android требует удаления существующей версии перед установкой пропатченного приложения.
 
 Удаление приведет к безвозвратному удалению всех данных приложения"</string>
     <string name="patcher_install_error_title">Ошибка установки</string>
@@ -351,9 +351,9 @@
     <string name="patcher_ready_to_mount_subtitle">Нажмите кнопку ниже, чтобы смонтировать</string>
     <string name="patcher_storage_permission_dialog_title">Невозможно получить доступ к пути хранения</string>
     <string name="patcher_incompatible_patcher_title">Требуется обновление</string>
-    <string name="patcher_incompatible_patcher_description">Для пакета &lt;b&gt;%1$s&lt;/b&gt; требуется версия патчера &lt;b&gt;%2$s&lt;/b&gt; или более поздняя. Пожалуйста, обновите Morphe, чтобы пропатчить это приложение</string>
-    <string name="patcher_incompatible_patcher_update_button">Скачать и обновить Morphe</string>
-    <string name="patcher_storage_permission_description_api30">Один или несколько параметров патча указывают на пути, которые Morphe не может прочесть. Предоставьте доступ к хранилищу и нажмите кнопку, после чего патч начнется автоматически</string>
+    <string name="patcher_incompatible_patcher_description">Для пакета &lt;b&gt;%1$s&lt;/b&gt; требуется версия патчера &lt;b&gt;%2$s&lt;/b&gt; или более поздняя. Пожалуйста, обновите AutoPatch Hub, чтобы пропатчить это приложение</string>
+    <string name="patcher_incompatible_patcher_update_button">Скачать и обновить AutoPatch Hub</string>
+    <string name="patcher_storage_permission_description_api30">Один или несколько параметров патча указывают на пути, которые AutoPatch Hub не может прочесть. Предоставьте доступ к хранилищу и нажмите кнопку, после чего патч начнется автоматически</string>
     <string name="patcher_storage_permission_description_legacy">Один или несколько параметров патча указывают на пути, к которым нельзя получить доступ. Обновите пути в параметрах патча и повторите попытку</string>
     <string name="patcher_storage_permission_grant">Предоставить доступ к хранилищу</string>
     <string name="patcher_storage_permission_denied_warning">Отказано в доступе к хранилищу. Предоставьте разрешение на использование этого пути или переместите файлы в личный каталог приложения.</string>
@@ -372,7 +372,7 @@
     <string name="patcher_step_sign_apk">Подпись пропатченного APK-файла</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Защита от патчей в фоновом режиме</string>
-    <string name="battery_optimization_dialog_description">На некоторых устройствах патчер может быть остановлен, когда приложение свернуто. Разрешите Morphe работать без ограничений заряда батареи, чтобы гарантировать надежное завершение патчинга.</string>
+    <string name="battery_optimization_dialog_description">На некоторых устройствах патчер может быть остановлен, когда приложение свернуто. Разрешите AutoPatch Hub работать без ограничений заряда батареи, чтобы гарантировать надежное завершение патчинга.</string>
     <string name="battery_optimization_not_now">Не сейчас</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Идет установка исправлений…</string>
@@ -388,7 +388,7 @@
     <string name="patcher_message_6">Посмотрите в окно, там солнечно… 🌤️</string>
     <string name="patcher_message_7">Настраиваем 1\'s из 0\'s… 🤖</string>
     <string name="patcher_message_8">Распутываем цифровые спагетти… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Исправляем ошибки в пропатченном приложении… 🪲</string>
     <string name="patcher_message_10">Хорошие патчи стоят ожидания… ⏳</string>
     <string name="patcher_message_11">Полируем пиксели до блеска… 💎</string>
@@ -492,9 +492,9 @@
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Обновления</string>
     <string name="settings_advanced_updates_use_prereleases">Предварительные релизы</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Ранний доступ к новым версиям приложения Morphe. Включите предрелизы для каждого источника в источниках патчей</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Ранний доступ к новым версиям приложения AutoPatch Hub. Включите предрелизы для каждого источника в источниках патчей</string>
     <string name="settings_advanced_updates_allow_metered">Обновления через мобильные данные</string>
-    <string name="settings_advanced_updates_allow_metered_description">Разрешить загрузку обновлений Morphe и патчей через мобильные данные</string>
+    <string name="settings_advanced_updates_allow_metered_description">Разрешить загрузку обновлений AutoPatch Hub и патчей через мобильные данные</string>
     <string name="settings_advanced_updates_background_notifications">Уведомления о фоновых обновлениях</string>
     <string name="settings_advanced_updates_background_notifications_description">Периодически проверять наличие обновлений в фоновом режиме и сообщать об их доступности</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Получайте мгновенные push-уведомления о новых релизах, даже когда приложение закрыто</string>
@@ -507,21 +507,21 @@
     <string name="settings_advanced_update_interval_chip_subtitle">Частота фоновой проверки</string>
     <string name="settings_advanced_update_interval_battery_warning">Фоновые проверки могут не работать надежно на некоторых устройствах. Производители, такие как Xiaomi, Huawei, Samsung и OnePlus, часто агрессивно ограничивают фоновые процессы для экономии батареи</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Доступно обновление Morphe</string>
+    <string name="notification_manager_update_title">Доступно обновление AutoPatch Hub</string>
     <string name="notification_bundle_update_title">Доступны новые патчи</string>
     <string name="notification_update_text">Версия %s готова к загрузке</string>
-    <string name="notification_bundle_update_text_unversioned">Нажмите, чтобы открыть Morphe и обновить</string>
+    <string name="notification_bundle_update_text_unversioned">Нажмите, чтобы открыть AutoPatch Hub и обновить</string>
     <string name="notification_permission_dialog_title">Разрешить уведомления</string>
-    <string name="notification_permission_dialog_description">Morphe требует разрешения на уведомление, чтобы сообщать вам о доступных обновлениях в фоновом режиме</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub требует разрешения на уведомление, чтобы сообщать вам о доступных обновлениях в фоновом режиме</string>
     <string name="notification_post_patch_dialog_title">Хотите ли вы получать уведомления, когда будут доступны обновления?</string>
     <string name="notification_channel_fcm_updates">Уведомления об обновлении</string>
-    <string name="notification_channel_fcm_updates_description">Уведомления о новых версиях Morphe и патчах</string>
+    <string name="notification_channel_fcm_updates_description">Уведомления о новых версиях AutoPatch Hub и патчах</string>
     <string name="notification_channel_patcher">Патчинг</string>
-    <string name="notification_channel_patcher_description">Отображается во время установки Morphe патча для приложения в фоновом режиме</string>
+    <string name="notification_channel_patcher_description">Отображается во время установки AutoPatch Hub патча для приложения в фоновом режиме</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Экспертные настройки</string>
     <string name="settings_advanced_expert_mode">Режим эксперта</string>
-    <string name="settings_advanced_expert_mode_description">Включить комплексные настройки патчей Morphe и параметры настройки</string>
+    <string name="settings_advanced_expert_mode_description">Включить комплексные настройки патчей AutoPatch Hub и параметры настройки</string>
     <string name="settings_advanced_expert_mode_dialog_title">Включить режим эксперта?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Экспертный режим предоставляет больше контроля над применением патчей, но неправильная настройка параметров в экспертном режиме может привести к нетрудоспособности программы.</string>
     <string name="settings_advanced_strip_unused_libs">Оптимизация для архитектуры устройства</string>
@@ -542,7 +542,7 @@
     <string name="settings_advanced_github_pat_dialog_title">Установить Персональный Токен Доступа GitHub</string>
     <string name="settings_advanced_github_pat_dialog_description">Установите Персональный Токен Доступа GitHub, чтобы добавить запросы на слияние как внешние источники. Создайте Токен с областью видимости. public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Включить в настройки экспорта</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Добавляет этот Токен к экспортируемым настройкам Morphe</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Добавляет этот Токен к экспортируемым настройкам AutoPatch Hub</string>
     <string name="settings_advanced_github_pat_export_warning">Не распространяйте свой Токен. Если вы включаете его в экспорт настроек, сохраните этот файл приватным, поскольку он содержит токен</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Параметры патчей</string>
@@ -639,7 +639,7 @@ morphe_header_custom_dark.png
     <string name="installer_status_not_supported">Не поддерживается для этого действия</string>
     <string name="installer_status_shizuku_not_installed">Установите Shizuku или Sui, чтобы использовать эту опцию</string>
     <string name="installer_status_shizuku_not_running">Запустите Shizuku или Sui и повторите попытку</string>
-    <string name="installer_status_shizuku_permission">Предоставить разрешение Shizuku для Morphe из приложения Shizuku</string>
+    <string name="installer_status_shizuku_permission">Предоставить разрешение Shizuku для AutoPatch Hub из приложения Shizuku</string>
     <string name="installer_mount_warning_install">Ваш основной установщик настроен на установщик с корневым монтированием. Это сохраненное приложение не было установлено с помощью монтирования</string>
     <string name="mount_version_mismatch_message">Версия запатченного приложения (%1$s) не совпадает с версией запатченного приложения (%2$s). Замонтируйте совпадающую версию запатченного приложения, затем повторите попытку</string>
     <string name="installer_status_shizuku_unsupported">Версия установленного Shizuku не поддерживается</string>
@@ -693,11 +693,11 @@ morphe_header_custom_dark.png
     <string name="settings_system_export_keystore_failed">Не удалось экспортировать хранилище ключей</string>
     <string name="settings_system_show_password_field">Показать пароль</string>
     <string name="settings_system_hide_password_field">Скрыть пароль</string>
-    <string name="settings_system_morphe_settings">Настройки Morphe</string>
-    <string name="settings_system_import_manager_settings_description">Создает резервные копии и восстанавливает настройки Morphe</string>
-    <string name="settings_system_import_manager_settings_fail">Не удалось импортировать настройки Morphe: %s</string>
-    <string name="settings_system_import_manager_settings_success">Morphe настройки импортированы</string>
-    <string name="settings_system_import_manager_settings_mode_title">Импортировать настройки Morphe</string>
+    <string name="settings_system_morphe_settings">Настройки AutoPatch Hub</string>
+    <string name="settings_system_import_manager_settings_description">Создает резервные копии и восстанавливает настройки AutoPatch Hub</string>
+    <string name="settings_system_import_manager_settings_fail">Не удалось импортировать настройки AutoPatch Hub: %s</string>
+    <string name="settings_system_import_manager_settings_success">AutoPatch Hub настройки импортированы</string>
+    <string name="settings_system_import_manager_settings_mode_title">Импортировать настройки AutoPatch Hub</string>
     <string name="settings_system_import_manager_settings_mode_description">Выберите, как применить импортированные настройки и источники</string>
     <string name="settings_system_import_selections_mode_title">Импортировать выбор патчей</string>
     <string name="settings_system_import_selections_mode_description">Выберите, как применять импортированные выбранные элементы и параметры патча</string>
@@ -705,8 +705,8 @@ morphe_header_custom_dark.png
     <string name="import_mode_replace_description">Точно соответствовать резервной копии. Элементы, отсутствующие в резервной копии, будут удалены</string>
     <string name="import_mode_merge_title">Объединить с существующими</string>
     <string name="import_mode_merge_description">Добавить отсутствующие элементы из резервной копии. Существующие элементы остаются без изменений</string>
-    <string name="settings_system_export_manager_settings_fail">Не удалось экспортировать настройки Morphe: %s</string>
-    <string name="settings_system_export_manager_settings_success">Morphe настройки экспортированы</string>
+    <string name="settings_system_export_manager_settings_fail">Не удалось экспортировать настройки AutoPatch Hub: %s</string>
+    <string name="settings_system_export_manager_settings_success">AutoPatch Hub настройки экспортированы</string>
     <string name="settings_system_debug">Отладка</string>
     <string name="settings_system_export_debug_logs_description">Сохраняет системные журналы для отладки</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Не удалось прочитать журналы (код выхода %s)</string>
@@ -762,7 +762,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_no_patches_or_options">Нет сохраненных патчей или параметров</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Пользовательский файловый менеджер</string>
-    <string name="settings_system_custom_file_picker_description">Использовать встроенный файловый менеджер Morphe вместо системного по умолчанию</string>
+    <string name="settings_system_custom_file_picker_description">Использовать встроенный файловый менеджер AutoPatch Hub вместо системного по умолчанию</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Предыдущий каталог</string>
     <string name="file_picker_no_files">Здесь нет файлов</string>
@@ -780,7 +780,7 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Об интеграции</string>
     <string name="settings_system_share_website">Поделиться веб-сайтом</string>
-    <string name="settings_system_share_website_description">Делится официальным веб-сайтом Morphe</string>
+    <string name="settings_system_share_website_description">Делится официальным веб-сайтом AutoPatch Hub</string>
     <string name="settings_system_manager_description">Проект с открытым исходным кодом для современного, упрощенного патчинга популярных Android-приложений, развиваемый на основе отзывов и вкладов сообщества</string>
     <string name="credits">Благодарности</string>
     <string name="credits_current_development">Текущая разработка</string>
@@ -912,7 +912,7 @@ morphe_header_custom_dark.png
     <string name="onboarding_sources_desc">Управляйте источниками патчей. Каждый источник предоставляет патчи, которые можно применить к вашим приложениям</string>
     <string name="onboarding_swipe_title">Жесты смахивания</string>
     <string name="onboarding_swipe_desc">Смахните вправо по карте приложения, чтобы просмотреть доступные патчи. Смахните влево, чтобы скрыть карту с главного экрана</string>
-    <string name="onboarding_settings_desc">Настройте Morphe: внешний вид, дополнительные параметры и системные инструменты</string>
+    <string name="onboarding_settings_desc">Настройте AutoPatch Hub: внешний вид, дополнительные параметры и системные инструменты</string>
     <string name="onboarding_sources_patches_desc">Нажмите, чтобы просмотреть все патчи, доступные из этого источника</string>
     <string name="onboarding_sources_version_desc">Нажмите на версию, чтобы просмотреть полный журнал изменений для этого источника</string>
     <string name="onboarding_sources_prerelease_desc">Включите это, чтобы получать версии патчей, выпущенные до релиза, из этого источника</string>
@@ -927,8 +927,8 @@ morphe_header_custom_dark.png
     <string name="onboarding_system_file_picker_desc">Включите, чтобы использовать встроенный файловый менеджер вместо системного выбора при выборе APK или хранилищ ключей</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Быстрый ознакомительный тур</string>
-    <string name="tour_prompt_desc">Хотите быстро ознакомиться с основными функциями Morphe?</string>
+    <string name="tour_prompt_desc">Хотите быстро ознакомиться с основными функциями AutoPatch Hub?</string>
     <string name="tour_prompt_confirm">Показать мне всё</string>
     <string name="onboarding_restart_title">Ознакомительный тур</string>
-    <string name="onboarding_restart_desc">Пройдите интерактивный тур по основным функциям Morphe</string>
+    <string name="onboarding_restart_desc">Пройдите интерактивный тур по основным функциям AutoPatch Hub</string>
 </resources>

@@ -93,7 +93,12 @@ fun AdvancedTabContent(
 
         UpdatesSettingsItem(
             settingsViewModel = settingsViewModel,
-            onManagerPrereleasesToggle = { homeViewModel.triggerUpdateCheck() }
+            onManagerPrereleasesToggle = { homeViewModel.triggerUpdateCheck() },
+            onYouTubeUpdate = {
+                homeViewModel.showPatchDialog(
+                    app.morphe.manager.domain.update.EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
+                )
+            },
         )
 
         // Expert settings section

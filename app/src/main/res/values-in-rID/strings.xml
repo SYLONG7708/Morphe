@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Kekutu Android 11</string>
     <string name="android_11_bug_dialog_description">Izin pemasangan aplikasi harus diberikan terlebih dahulu untuk menghindari bug pada sistem Android 11 yang akan berdampak negatif pada pengalaman pengguna</string>
     <string name="deep_link_add_source_title">Tambah sumber</string>
-    <string name="deep_link_add_source_message">Apakah Anda ingin menambahkan sumber tambalan ini ke Morphe?</string>
+    <string name="deep_link_add_source_message">Apakah Anda ingin menambahkan sumber tambalan ini ke AutoPatch Hub?</string>
     <string name="deep_link_add_source_warning">Hanya tambahkan sumber yang Anda percayai</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Pembaruan Morphe tersedia</string>
+    <string name="home_update_available">Pembaruan AutoPatch Hub tersedia</string>
     <string name="home_update_available_subtitle">Versi baru siap dipasang</string>
     <string name="home_update_error">Pembaruan gagal</string>
     <string name="home_update_error_subtitle">Periksa koneksi internet Anda dan coba lagi</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Latihan membuat sempurna dan kamu sudah hampir sampai 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Masih belum di sini… masih belum di sini… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Oke, saya menghormati dedikasinya 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Selamat Anda sekarang adalah penguji resmi tombol Morphe 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Selamat Anda sekarang adalah penguji resmi tombol AutoPatch Hub 🏅</string>
     <string name="home_download_instructions_step3">Tunggu hingga unduhan selesai, dan &lt;b&gt;jangan pasang&lt;/b&gt; APK</string>
     <string name="home_download_instructions_step3_mount">Tunggu hingga unduhan selesai, kemudian &lt;b&gt;pasang APK&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Setelah proses unduh selesai, kembali ke Morphe</string>
-    <string name="home_download_instructions_step4_mount">Setelah memasang APK asli, kembali ke Morphe</string>
+    <string name="home_download_instructions_step4">Setelah proses unduh selesai, kembali ke AutoPatch Hub</string>
+    <string name="home_download_instructions_step4_mount">Setelah memasang APK asli, kembali ke AutoPatch Hub</string>
     <string name="home_download_instructions_continue">Lanjutkan ke APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Pilih APK yang telah diunduh</string>
@@ -307,7 +307,7 @@ Zona luar (putus-putus): mungkin terpotong oleh masker launcher - jaga detail pe
     <string name="home_app_info_patch_update_available">Pembaruan tambalan tersedia</string>
     <string name="home_app_info_patch_update_available_description">Versi tambalan lebih baru tersedia. Tambal ulang aplikasi Anda untuk mendapatkan pembaruan terbaru dan perbaikan</string>
     <string name="home_app_info_app_deleted_warning">Aplikasi telah dihapus</string>
-    <string name="home_app_info_app_deleted_description">Aplikasi ini telah dihapus di luar Morphe. Tambal ulang untuk mengembalikan fungsinya</string>
+    <string name="home_app_info_app_deleted_description">Aplikasi ini telah dihapus di luar AutoPatch Hub. Tambal ulang untuk mengembalikan fungsinya</string>
     <string name="home_app_info_apk_size">Ukuran APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Mode root memerlukan APK asli untuk dipasang di perangkat Anda sebelum menambal</string>
@@ -343,7 +343,7 @@ Zona luar (putus-putus): mungkin terpotong oleh masker launcher - jaga detail pe
     <string name="patcher_conflict_subtitle">Anda perlu mencopot pemasangan versi yang ada</string>
     <string name="patcher_conflict_hint">Aplikasi yang ditambal menggunakan sertifikat yang berbeda dari versi yang terpasang. Mencopot pemasangan akan menghapus semua data aplikasi</string>
     <string name="patcher_installed_conflict_title">Diperlukan mencopot pemasangan</string>
-    <string name="patcher_installed_conflict_body">"Morphe menandatangani aplikasi yang ditambal dengan sertifikatnya sendiri, yang berbeda dari yang asli. Android mengharuskan penghapusan versi yang sudah ada sebelum aplikasi yang ditambal dapat dipasang.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub menandatangani aplikasi yang ditambal dengan sertifikatnya sendiri, yang berbeda dari yang asli. Android mengharuskan penghapusan versi yang sudah ada sebelum aplikasi yang ditambal dapat dipasang.
 
 Mencopot pemasangannya akan menghapus semua data aplikasi secara permanen"</string>
     <string name="patcher_install_error_title">Kesalahan pemasangan</string>
@@ -352,9 +352,9 @@ Mencopot pemasangannya akan menghapus semua data aplikasi secara permanen"</stri
     <string name="patcher_ready_to_mount_subtitle">Tekan tombol di bawah untuk mount</string>
     <string name="patcher_storage_permission_dialog_title">Tidak dapat mengakses jalur penyimpanan</string>
     <string name="patcher_incompatible_patcher_title">Pembaruan diperlukan</string>
-    <string name="patcher_incompatible_patcher_description">Bundle &lt;b&gt;%1$s&lt;/b&gt; memerlukan versi penambal &lt;b&gt;%2$s&lt;/b&gt; atau lebih baru. Silahkan perbarui Morphe untuk menambal aplikasi ini</string>
-    <string name="patcher_incompatible_patcher_update_button">Unduh dan perbarui Morphe</string>
-    <string name="patcher_storage_permission_description_api30">Satu atau lebih pilihan tambalan yang mengarah pada jalur Morphe tidak dapat dibaca. Beri akses penyimpanan dan ketuk tombol lalu penambalan akan dimulai secara otomatis</string>
+    <string name="patcher_incompatible_patcher_description">Bundle &lt;b&gt;%1$s&lt;/b&gt; memerlukan versi penambal &lt;b&gt;%2$s&lt;/b&gt; atau lebih baru. Silahkan perbarui AutoPatch Hub untuk menambal aplikasi ini</string>
+    <string name="patcher_incompatible_patcher_update_button">Unduh dan perbarui AutoPatch Hub</string>
+    <string name="patcher_storage_permission_description_api30">Satu atau lebih pilihan tambalan yang mengarah pada jalur AutoPatch Hub tidak dapat dibaca. Beri akses penyimpanan dan ketuk tombol lalu penambalan akan dimulai secara otomatis</string>
     <string name="patcher_storage_permission_description_legacy">Satu atau lebih pilihan tambalan yang mengarah ke jalur yang tidak dapat diakses. Perbarui jalur dalam pilihan tambalan dan coba lagi</string>
     <string name="patcher_storage_permission_grant">Beri izin penyimpanan</string>
     <string name="patcher_storage_permission_denied_warning">Izin penyimpanan ditolak. Beri izin untuk menggunakan jalur ini, atau pindahkan berkas ke direktori pribadi aplikasi</string>
@@ -373,7 +373,7 @@ Mencopot pemasangannya akan menghapus semua data aplikasi secara permanen"</stri
     <string name="patcher_step_sign_apk">Menandatangani berkas APK yang ditambal</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Perlindungan penambalan latar belakang</string>
-    <string name="battery_optimization_dialog_description">Beberapa perangkat mungkin menghentikan proses penambal ketika aplikasi diminimalkan. Izinkan Morphe berjalan tanpa batasan penggunaan baterai agar proses penambalan dapat diselesaikan dengan lancar</string>
+    <string name="battery_optimization_dialog_description">Beberapa perangkat mungkin menghentikan proses penambal ketika aplikasi diminimalkan. Izinkan AutoPatch Hub berjalan tanpa batasan penggunaan baterai agar proses penambalan dapat diselesaikan dengan lancar</string>
     <string name="battery_optimization_not_now">Nanti saja</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Penyematan sedang berlangsung…</string>
@@ -389,7 +389,7 @@ Mencopot pemasangannya akan menghapus semua data aplikasi secara permanen"</stri
     <string name="patcher_message_6">Lihatlah ke luar, indah sekali di sana… 🌤️</string>
     <string name="patcher_message_7">Menyesuaikan 1 dan 0… 🤖</string>
     <string name="patcher_message_8">Mengurai kekacauan digital… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Memperbaiki bug di aplikasi asli… 🪲</string>
     <string name="patcher_message_10">Tambalan hebat pantas ditunggu… ⏳</string>
     <string name="patcher_message_11">Memoles piksel hingga berkilau… 💎</string>
@@ -493,9 +493,9 @@ Mencopot pemasangannya akan menghapus semua data aplikasi secara permanen"</stri
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Pembaruan</string>
     <string name="settings_advanced_updates_use_prereleases">Pembaruan pra-rilis</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Akses awal ke versi aplikasi Morphe yang baru. Aktifkan pra-rilis per sumber di sumber tambalan</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Akses awal ke versi aplikasi AutoPatch Hub yang baru. Aktifkan pra-rilis per sumber di sumber tambalan</string>
     <string name="settings_advanced_updates_allow_metered">Pembaruan data seluler</string>
-    <string name="settings_advanced_updates_allow_metered_description">Mengizinkan Morphe dan pembaruan tambalan untuk diunduh melalui data seluler</string>
+    <string name="settings_advanced_updates_allow_metered_description">Mengizinkan AutoPatch Hub dan pembaruan tambalan untuk diunduh melalui data seluler</string>
     <string name="settings_advanced_updates_background_notifications">Pemberitahuan pembaruan latar belakang</string>
     <string name="settings_advanced_updates_background_notifications_description">Periksa pembaruan secara berkala di latar belakang dan beritahu saat pembaruan tersedia</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Pemberitahuan dorong untuk rilis terbaru, bahkan saat aplikasi sedang ditutup</string>
@@ -508,21 +508,21 @@ Mencopot pemasangannya akan menghapus semua data aplikasi secara permanen"</stri
     <string name="settings_advanced_update_interval_chip_subtitle">Jadwal periksa latar belakang</string>
     <string name="settings_advanced_update_interval_battery_warning">Periksa latar belakang mungkin tidak bekerja dengan baik pada beberapa perangkat. Produsen seperti Xiaomi, Huawei, Samsung, dan OnePlus sering membatasi proses latar belakang untuk menghemat baterai</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Pembaruan Morphe tersedia</string>
+    <string name="notification_manager_update_title">Pembaruan AutoPatch Hub tersedia</string>
     <string name="notification_bundle_update_title">Patches baru tersedia</string>
     <string name="notification_update_text">Versi %s siap untuk diunduh</string>
-    <string name="notification_bundle_update_text_unversioned">Ketuk untuk membuka Morphe dan memperbarui</string>
+    <string name="notification_bundle_update_text_unversioned">Ketuk untuk membuka AutoPatch Hub dan memperbarui</string>
     <string name="notification_permission_dialog_title">Izinkan pemberitahuan</string>
-    <string name="notification_permission_dialog_description">Morphe memerlukan izin pemberitahuan untuk memberi tahu Anda saat pembaruan tersedia di latar belakang</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub memerlukan izin pemberitahuan untuk memberi tahu Anda saat pembaruan tersedia di latar belakang</string>
     <string name="notification_post_patch_dialog_title">Apakah Anda ingin menerima pemberitahuan ketika pembaruan tersedia?</string>
     <string name="notification_channel_fcm_updates">Pemberitahuan pembaruan</string>
-    <string name="notification_channel_fcm_updates_description">Pemberitahuan tentang rilis Morphe dan tambalan baru</string>
+    <string name="notification_channel_fcm_updates_description">Pemberitahuan tentang rilis AutoPatch Hub dan tambalan baru</string>
     <string name="notification_channel_patcher">Penambalan</string>
-    <string name="notification_channel_patcher_description">Ditampilkan saat Morphe menambal aplikasi di latar belakang</string>
+    <string name="notification_channel_patcher_description">Ditampilkan saat AutoPatch Hub menambal aplikasi di latar belakang</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Pengaturan ahli</string>
     <string name="settings_advanced_expert_mode">Mode ahli</string>
-    <string name="settings_advanced_expert_mode_description">Mengaktifkan pengaturan penambalan Morphe yang kompleks dan penyesuaian pilihan</string>
+    <string name="settings_advanced_expert_mode_description">Mengaktifkan pengaturan penambalan AutoPatch Hub yang kompleks dan penyesuaian pilihan</string>
     <string name="settings_advanced_expert_mode_dialog_title">Aktifkan mode Ahli?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Mode ahli memberikan kontrol yang lebih banyak terhadap bagaimana penambalan diterapkan, tetapi pengaturan yang salah dalam mode ahli dapat menyebabkan aplikasi tidak berfungsi</string>
     <string name="settings_advanced_strip_unused_libs">Optimalkan untuk arsitektur perangkat</string>
@@ -543,7 +543,7 @@ Mencopot pemasangannya akan menghapus semua data aplikasi secara permanen"</stri
     <string name="settings_advanced_github_pat_dialog_title">Atur Token Akses Personal GitHub</string>
     <string name="settings_advanced_github_pat_dialog_description">Atur Token Akses Personal GitHub untuk dapat menambahkan Permintaan Penarikan sebagai sumber eksternal. Buat PAT dengan cakupan public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Masukkan dalam ekspor pengaturan</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Menambahkan PAT ini ke pengaturan Morphe yang diekspor</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Menambahkan PAT ini ke pengaturan AutoPatch Hub yang diekspor</string>
     <string name="settings_advanced_github_pat_export_warning">Jangan bagikan PAT Anda. Jika Anda menyertakannya dalam ekspor pengaturan, simpan berkas tersebut secara pribadi karena berisi token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Pilihan tambalan</string>
@@ -640,7 +640,7 @@ Dimensi gambar harus sebagai berikut:
     <string name="installer_status_not_supported">Tidak didukung untuk aksi ini</string>
     <string name="installer_status_shizuku_not_installed">Pasang Shizuku atau Sui untuk menggunakan pilihan ini</string>
     <string name="installer_status_shizuku_not_running">Jalankan Shizuku atau Sui dan coba lagi</string>
-    <string name="installer_status_shizuku_permission">Berikan izin Shizuku ke Morphe dari aplikasi Shizuku</string>
+    <string name="installer_status_shizuku_permission">Berikan izin Shizuku ke AutoPatch Hub dari aplikasi Shizuku</string>
     <string name="installer_mount_warning_install">Pemasang utama Anda diatur ke pemasang mount ber-root. Aplikasi tersimpan ini tidak dipasang menggunakan mount</string>
     <string name="mount_version_mismatch_message">Versi aplikasi bawaan (%2$s) tidak cocok dengan versi aplikasi dipatch (%1$s). Pasang versi bawaan yang cocok, lalu coba lagi</string>
     <string name="installer_status_shizuku_unsupported">Versi Shizuku yang terpasang tidak didukung</string>
@@ -694,11 +694,11 @@ Dimensi gambar harus sebagai berikut:
     <string name="settings_system_export_keystore_failed">Gagal mengekspor keystore</string>
     <string name="settings_system_show_password_field">Tampilkan kata sandi</string>
     <string name="settings_system_hide_password_field">Sembunyikan kata sandi</string>
-    <string name="settings_system_morphe_settings">Pengaturan Morphe</string>
-    <string name="settings_system_import_manager_settings_description">Mencadangkan dan mengembalikan pengaturan Morphe Anda</string>
-    <string name="settings_system_import_manager_settings_fail">Gagal mengimpor pengaturan Morphe: %s</string>
-    <string name="settings_system_import_manager_settings_success">Pengaturan Morphe diimpor</string>
-    <string name="settings_system_import_manager_settings_mode_title">Impor pengaturan Morphe</string>
+    <string name="settings_system_morphe_settings">Pengaturan AutoPatch Hub</string>
+    <string name="settings_system_import_manager_settings_description">Mencadangkan dan mengembalikan pengaturan AutoPatch Hub Anda</string>
+    <string name="settings_system_import_manager_settings_fail">Gagal mengimpor pengaturan AutoPatch Hub: %s</string>
+    <string name="settings_system_import_manager_settings_success">Pengaturan AutoPatch Hub diimpor</string>
+    <string name="settings_system_import_manager_settings_mode_title">Impor pengaturan AutoPatch Hub</string>
     <string name="settings_system_import_manager_settings_mode_description">Pilih cara menerapkan pengaturan dan sumber yang telah diimpor</string>
     <string name="settings_system_import_selections_mode_title">Impor pemilihan tambalan</string>
     <string name="settings_system_import_selections_mode_description">Pilih cara menerapkan pemilihan dan pilihan tambalan yang telah diimpor</string>
@@ -706,8 +706,8 @@ Dimensi gambar harus sebagai berikut:
     <string name="import_mode_replace_description">Cocokkan persis dengan cadangan. Item yang hilang dari cadangan akan dihapus</string>
     <string name="import_mode_merge_title">Gabungkan dengan yang sudah ada</string>
     <string name="import_mode_merge_description">Tambahkan item yang hilang dari cadangan. Item yang sudah ada tetap tidak berubah</string>
-    <string name="settings_system_export_manager_settings_fail">Gagal mengekspor pengaturan Morphe: %s</string>
-    <string name="settings_system_export_manager_settings_success">Pengaturan Morphe diekspor</string>
+    <string name="settings_system_export_manager_settings_fail">Gagal mengekspor pengaturan AutoPatch Hub: %s</string>
+    <string name="settings_system_export_manager_settings_success">Pengaturan AutoPatch Hub diekspor</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_description">Menyimpan catatan sistem untuk pemecahan masalah</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Gagal membaca catatan (kode keluaran %s)</string>
@@ -763,7 +763,7 @@ Dimensi gambar harus sebagai berikut:
     <string name="settings_system_no_patches_or_options">Tidak ada tambalan atau pilihan yang disimpan</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Pemilih berkas khusus</string>
-    <string name="settings_system_custom_file_picker_description">Telusuri penyimpanan dengan pemilih berkas bawaan Morphe daripada pemilih berkas bawaan sistem</string>
+    <string name="settings_system_custom_file_picker_description">Telusuri penyimpanan dengan pemilih berkas bawaan AutoPatch Hub daripada pemilih berkas bawaan sistem</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Direktori sebelumnya</string>
     <string name="file_picker_no_files">Tidak ada berkas di sini</string>
@@ -781,7 +781,7 @@ Dimensi gambar harus sebagai berikut:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Tentang</string>
     <string name="settings_system_share_website">Bagikan situs web</string>
-    <string name="settings_system_share_website_description">Membagikan situs web resmi Morphe</string>
+    <string name="settings_system_share_website_description">Membagikan situs web resmi AutoPatch Hub</string>
     <string name="settings_system_manager_description">Sebuah proyek sumber terbuka untuk penambalan yang modern dan efisien pada aplikasi Android populer, dikembangkan berdasarkan masukan dan kontribusi dari komunitas</string>
     <string name="credits">Kredits</string>
     <string name="credits_current_development">Pengembangan saat ini</string>
@@ -913,7 +913,7 @@ Apakah Anda masih ingin melanjutkan?"</string>
     <string name="onboarding_sources_desc">Kelola sumber tambalan Anda. Setiap sumber menyediakan tambalan yang dapat diterapkan ke aplikasi Anda</string>
     <string name="onboarding_swipe_title">Gerakan usapan</string>
     <string name="onboarding_swipe_desc">Usap ke kanan pada kartu aplikasi untuk melihat tambalan yang tersedia. Usap ke kiri untuk menyembunyikan kartu dari layar utama</string>
-    <string name="onboarding_settings_desc">Sesuaikan Morphe: tampilan, pilihan lanjutan, dan peralatan sistem</string>
+    <string name="onboarding_settings_desc">Sesuaikan AutoPatch Hub: tampilan, pilihan lanjutan, dan peralatan sistem</string>
     <string name="onboarding_sources_patches_desc">Ketuk untuk melihat semua tambalan yang tersedia dari sumber ini</string>
     <string name="onboarding_sources_version_desc">Ketuk versi untuk melihat seluruh catatan perubahan untuk sumber ini</string>
     <string name="onboarding_sources_prerelease_desc">Aktifkan ini untuk menerima versi tambalan pra-rilis dari sumber ini</string>
@@ -928,8 +928,8 @@ Apakah Anda masih ingin melanjutkan?"</string>
     <string name="onboarding_system_file_picker_desc">Aktifkan untuk menggunakan penjelajah berkas bawaan daripada pemilih sistem saat memilih APK atau keystore</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Tur fitur cepat</string>
-    <string name="tour_prompt_desc">Ingin tur cepat fitur utama Morphe?</string>
+    <string name="tour_prompt_desc">Ingin tur cepat fitur utama AutoPatch Hub?</string>
     <string name="tour_prompt_confirm">Tunjukkan</string>
     <string name="onboarding_restart_title">Tur fitur</string>
-    <string name="onboarding_restart_desc">Ikuti tur terpandu fitur utama Morphe</string>
+    <string name="onboarding_restart_desc">Ikuti tur terpandu fitur utama AutoPatch Hub</string>
 </resources>

@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 -virhe</string>
     <string name="android_11_bug_dialog_description">Sovelluksen asennusoikeus on myönnettävä etukäteen, jotta vältetään Android 11 -järjestelmän virhe, joka heikentää käyttökokemusta.</string>
     <string name="deep_link_add_source_title">Lisää lähde</string>
-    <string name="deep_link_add_source_message">Haluatko lisätä tämän lisäosien lähteen Morpheen?</string>
+    <string name="deep_link_add_source_message">Haluatko lisätä tämän lisäosien lähteen AutoPatch Huben?</string>
     <string name="deep_link_add_source_warning">Lisää vain lähteitä, joihin luotat</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Morphe-päivitys saatavilla</string>
+    <string name="home_update_available">AutoPatch Hub-päivitys saatavilla</string>
     <string name="home_update_available_subtitle">Uusi versio valmis asennettavaksi</string>
     <string name="home_update_error">Päivitys epäonnistui</string>
     <string name="home_update_error_subtitle">Tarkista internetyhteys ja yritä uudelleen</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Harjoitus tekee mestarin, ja olet jo pitkällä 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Ei vielä täällä… ei vielä täällä… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">OK, kunnioitan omistautumista 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Olet nyt virallinen Morphe-painikoiden testaaja 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Olet nyt virallinen AutoPatch Hub-painikoiden testaaja 🏅</string>
     <string name="home_download_instructions_step3">Odota, että lataus valmistuu. &lt;b&gt;Älä asenna&lt;/b&gt; APK:ta</string>
     <string name="home_download_instructions_step3_mount">Odota, että lataus valmistuu, ja &lt;b&gt;asenna sitten APK&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Kun lataus on valmis, palaa Morpheen</string>
-    <string name="home_download_instructions_step4_mount">Kun olet asentanut alkuperäisen APK:n, palaa Morpheen</string>
+    <string name="home_download_instructions_step4">Kun lataus on valmis, palaa AutoPatch Huben</string>
+    <string name="home_download_instructions_step4_mount">Kun olet asentanut alkuperäisen APK:n, palaa AutoPatch Huben</string>
     <string name="home_download_instructions_continue">Jatka sivustolle APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Valitse ladattu APK</string>
@@ -307,7 +307,7 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <string name="home_app_info_patch_update_available">Lisäosien päivitys saatavilla</string>
     <string name="home_app_info_patch_update_available_description">Uudempi lisäosien versio on saatavilla. Muokkaa sovellusta uudestaan saadaksesi uusimmat parannukset ja korjaukset</string>
     <string name="home_app_info_app_deleted_warning">Sovellus poistettiin</string>
-    <string name="home_app_info_app_deleted_description">Tämä sovellus poistettiin Morphen ulkopuolelta. Muokkaa sitä uudelleen palauttaaksesi toiminnot</string>
+    <string name="home_app_info_app_deleted_description">Tämä sovellus poistettiin AutoPatch Hubn ulkopuolelta. Muokkaa sitä uudelleen palauttaaksesi toiminnot</string>
     <string name="home_app_info_apk_size">APK:n koko</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Pääkäyttäjätila edellyttää, että alkuperäinen APK on asennettuna laitteeseesi ennen muokkaamista</string>
@@ -339,7 +339,7 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <string name="patcher_conflict_subtitle">Sinun on poistettava olemassa oleva versio</string>
     <string name="patcher_conflict_hint">Korjattu sovellus käyttää erilaista varmentajaa kuin asennettu versio. Poistaminen poistaa kaikki sovelluksen tiedot</string>
     <string name="patcher_installed_conflict_title">Poisto vaaditaan</string>
-    <string name="patcher_installed_conflict_body">"Morphe allekirjoittaa korjatut sovellukset omalla sertifikaatillaan, joka poikkeaa alkuperäisestä. Android edellyttää olemassa olevan version poistamista, ennen kuin korjattua sovellusta voidaan asentaa.
+    <string name="patcher_installed_conflict_body">"AutoPatch Hub allekirjoittaa korjatut sovellukset omalla sertifikaatillaan, joka poikkeaa alkuperäisestä. Android edellyttää olemassa olevan version poistamista, ennen kuin korjattua sovellusta voidaan asentaa.
 
 Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_install_error_title">Asennusvirhe</string>
@@ -348,9 +348,9 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_ready_to_mount_subtitle">Liitä napauttamalla alla olevaa painiketta</string>
     <string name="patcher_storage_permission_dialog_title">Tallennuspolkua ei voida käyttää</string>
     <string name="patcher_incompatible_patcher_title">Päivitys vaaditaan</string>
-    <string name="patcher_incompatible_patcher_description">Paketti &lt;b&gt;%1$s&lt;/b&gt; vaatii muokkaustyökalun version &lt;b&gt;%2$s&lt;/b&gt; tai uudemman. Päivitä Morphe muokataksesi tätä sovellusta</string>
-    <string name="patcher_incompatible_patcher_update_button">Lataa ja päivitä Morphe</string>
-    <string name="patcher_storage_permission_description_api30">Yksi tai useampi lisäosien asetus osoittaa polkuihin, joita Morphe ei voi lukea. Anna lupa tallennustilan käyttöön ja napauta painiketta, niin muokkaus alkaa automaattisesti</string>
+    <string name="patcher_incompatible_patcher_description">Paketti &lt;b&gt;%1$s&lt;/b&gt; vaatii muokkaustyökalun version &lt;b&gt;%2$s&lt;/b&gt; tai uudemman. Päivitä AutoPatch Hub muokataksesi tätä sovellusta</string>
+    <string name="patcher_incompatible_patcher_update_button">Lataa ja päivitä AutoPatch Hub</string>
+    <string name="patcher_storage_permission_description_api30">Yksi tai useampi lisäosien asetus osoittaa polkuihin, joita AutoPatch Hub ei voi lukea. Anna lupa tallennustilan käyttöön ja napauta painiketta, niin muokkaus alkaa automaattisesti</string>
     <string name="patcher_storage_permission_description_legacy">Yksi tai useampi lisäosien asetus osoittaa polkuihin, joita ei voida käyttää. Päivitä polut lisäosien asetuksissa ja yritä uudelleen</string>
     <string name="patcher_storage_permission_grant">Anna lupa tallennustilan käyttöön</string>
     <string name="patcher_storage_permission_denied_warning">Lupa tallennustilan käyttöön evättiin. Anna lupa käyttää tätä polkua tai siirrä tiedostot sovelluksen yksityiseen kansioon</string>
@@ -369,7 +369,7 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_step_sign_apk">Allekirjoitetaan muokattua APK-tiedostoa</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Taustakorjaussuojaus</string>
-    <string name="battery_optimization_dialog_description">Jotkin laitteet saattavat pysäyttää korjausohjelman, kun sovellus minimoidaan. Salli Morphen toimia ilman virransäästörajoituksia varmistaaksesi, että korjaus suoritetaan luotettavasti.</string>
+    <string name="battery_optimization_dialog_description">Jotkin laitteet saattavat pysäyttää korjausohjelman, kun sovellus minimoidaan. Salli AutoPatch Hubn toimia ilman virransäästörajoituksia varmistaaksesi, että korjaus suoritetaan luotettavasti.</string>
     <string name="battery_optimization_not_now">Ei nyt</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Muokkaus käynnissä…</string>
@@ -385,7 +385,7 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_message_6">Katso ulos, siellä on kaunista… 🌤️</string>
     <string name="patcher_message_7">Säädetään ykkösiä ja nollia… 🤖</string>
     <string name="patcher_message_8">Selvitetään digitaalista spagettia… 🍝</string>
-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Korjataan virheitä muokkaamattomasta sovelluksesta… 🪲</string>
     <string name="patcher_message_10">Hienot lisäosat ovat odotuksen arvoisia… ⏳</string>
     <string name="patcher_message_11">Kiillotetaan pikseleitä, kunnes ne loistavat… 💎</string>
@@ -489,9 +489,9 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Päivitykset</string>
     <string name="settings_advanced_updates_use_prereleases">Ennakkovalmistelujen päivitykset</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Varhainen pääsy uusiin Morphe-sovellusversioihin. Ota ennakkovalmistelut käyttöön per lähde paikkauslähteissä</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Varhainen pääsy uusiin AutoPatch Hub-sovellusversioihin. Ota ennakkovalmistelut käyttöön per lähde paikkauslähteissä</string>
     <string name="settings_advanced_updates_allow_metered">Mobiilidatan päivitykset</string>
-    <string name="settings_advanced_updates_allow_metered_description">Salli Morphen ja paikkausten päivitysten lataaminen mobiilidatalla</string>
+    <string name="settings_advanced_updates_allow_metered_description">Salli AutoPatch Hubn ja paikkausten päivitysten lataaminen mobiilidatalla</string>
     <string name="settings_advanced_updates_background_notifications">Taustapäivitysten ilmoitukset</string>
     <string name="settings_advanced_updates_background_notifications_description">Tarkista päivitykset säännöllisesti taustalla ja ilmoita, kun niitä on saatavilla</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Saat välittömästi ilmoituksia uusista julkaisuista, vaikka sovellus ei ole päällä</string>
@@ -504,21 +504,21 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Taustatarkistuksen tiheys</string>
     <string name="settings_advanced_update_interval_battery_warning">Taustatarkistukset eivät välttämättä toimi luotettavasti kaikilla laitteilla. Valmistajat, kuten Xiaomi, Huawei, Samsung ja OnePlus, rajoittavat usein aggressiivisesti taustaprosesseja säästääkseen akkua</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Morphe-päivitys saatavilla</string>
+    <string name="notification_manager_update_title">AutoPatch Hub-päivitys saatavilla</string>
     <string name="notification_bundle_update_title">Uusia lisäosia saatavilla</string>
     <string name="notification_update_text">Versio %s on valmis ladattavaksi</string>
-    <string name="notification_bundle_update_text_unversioned">Avaa Morphe ja päivitä napauttamalla</string>
+    <string name="notification_bundle_update_text_unversioned">Avaa AutoPatch Hub ja päivitä napauttamalla</string>
     <string name="notification_permission_dialog_title">Salli ilmoitukset</string>
-    <string name="notification_permission_dialog_description">Morphe tarvitsee ilmoitusluvan, jotta voit saada ilmoituksen päivityksistä, kun sovellus on taustalla</string>
+    <string name="notification_permission_dialog_description">AutoPatch Hub tarvitsee ilmoitusluvan, jotta voit saada ilmoituksen päivityksistä, kun sovellus on taustalla</string>
     <string name="notification_post_patch_dialog_title">Haluatko saada ilmoitusta, kun päivityksiä on saatavilla?</string>
     <string name="notification_channel_fcm_updates">Päivitysilmoitukset</string>
-    <string name="notification_channel_fcm_updates_description">Ilmoitukset uusista Morphe- ja lisäosaversioista</string>
+    <string name="notification_channel_fcm_updates_description">Ilmoitukset uusista AutoPatch Hub- ja lisäosaversioista</string>
     <string name="notification_channel_patcher">Muokkaaminen</string>
-    <string name="notification_channel_patcher_description">Näytetään, kun Morphe paikkaa sovellusta taustalla</string>
+    <string name="notification_channel_patcher_description">Näytetään, kun AutoPatch Hub paikkaa sovellusta taustalla</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Asiantuntijan asetukset</string>
     <string name="settings_advanced_expert_mode">Asiantuntijatila</string>
-    <string name="settings_advanced_expert_mode_description">Ota Morphen monimutkaiset muokkausasetukset ja mukautusvaihtoehdot käyttöön</string>
+    <string name="settings_advanced_expert_mode_description">Ota AutoPatch Hubn monimutkaiset muokkausasetukset ja mukautusvaihtoehdot käyttöön</string>
     <string name="settings_advanced_expert_mode_dialog_title">Ota asiantuntijatila käyttöön?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Asiantuntijatila antaa enemmän mahdollisuuksia hallita lisäosien käyttöönottoa, mutta asetusten virheellinen määrittäminen asiantuntijatilassa voi johtaa siihen, ettei sovellus toimi</string>
     <string name="settings_advanced_strip_unused_libs">Optimoi laitearkkitehtuurille</string>
@@ -539,7 +539,7 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_advanced_github_pat_dialog_title">Aseta GitHubin henkilökohtainen käyttöoikeustunnus</string>
     <string name="settings_advanced_github_pat_dialog_description">Aseta GitHub Personal Access Token, jotta voit lisätä pull requestejä ulkoisina lähteinä. Luo PAT skopilla public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Sisällytä asetuksien viedossa</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Lisää tämä henkilökohtainen käyttöoikeustunnus vientiin vietäviin Morphen asetuksiin</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Lisää tämä henkilökohtainen käyttöoikeustunnus vientiin vietäviin AutoPatch Hubn asetuksiin</string>
     <string name="settings_advanced_github_pat_export_warning">Älä jaka tämä PAT. Jos sisällytät sen asetuksien viedossa, pidä tiedosto yksityisenä, koska se sisältää tokenin</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Lisäosien asetukset</string>
@@ -636,7 +636,7 @@ Kuvien mittojen on oltava seuraavat:
     <string name="installer_status_not_supported">Tätä toimitusta ei tueta tälle toiminnolle.</string>
     <string name="installer_status_shizuku_not_installed">Asenna Shizuku tai Sui käyttääksesi tämän vaihtoehdon.</string>
     <string name="installer_status_shizuku_not_running">Käynnistä Shizuku tai Sui ja yritä uudelleen.</string>
-    <string name="installer_status_shizuku_permission">Myönnä Shizukulle lupa Morphelle Shizuku-sovelluksesta.</string>
+    <string name="installer_status_shizuku_permission">Myönnä Shizukulle lupa AutoPatch Hublle Shizuku-sovelluksesta.</string>
     <string name="installer_mount_warning_install">Pääasennuksesi on asetettu juurtimen asennukseen. Tämä tallennettu sovellus ei ole asennettu juurtimella.</string>
     <string name="mount_version_mismatch_message">Perusversion (%2$s) ei vastaa korjattua sovellusta (%1$s). Juurta korjatun perusversion kanssa, sitten yritä uudelleen.</string>
     <string name="installer_status_shizuku_unsupported">Asennettu Shizuku-versio ei ole tuettu.</string>
@@ -690,11 +690,11 @@ Kuvien mittojen on oltava seuraavat:
     <string name="settings_system_export_keystore_failed">Avainsäilön vienti epäonnistui</string>
     <string name="settings_system_show_password_field">Näytä salasana</string>
     <string name="settings_system_hide_password_field">Piilota salasana</string>
-    <string name="settings_system_morphe_settings">Morphe-asetukset</string>
-    <string name="settings_system_import_manager_settings_description">Varmuuskopioi ja palauta Morphen asetukset</string>
-    <string name="settings_system_import_manager_settings_fail">Morphen asetusten tuonti epäonnistui: %s</string>
-    <string name="settings_system_import_manager_settings_success">Morphen asetukset tuotu</string>
-    <string name="settings_system_import_manager_settings_mode_title">Tuo Morphen asetukset</string>
+    <string name="settings_system_morphe_settings">AutoPatch Hub-asetukset</string>
+    <string name="settings_system_import_manager_settings_description">Varmuuskopioi ja palauta AutoPatch Hubn asetukset</string>
+    <string name="settings_system_import_manager_settings_fail">AutoPatch Hubn asetusten tuonti epäonnistui: %s</string>
+    <string name="settings_system_import_manager_settings_success">AutoPatch Hubn asetukset tuotu</string>
+    <string name="settings_system_import_manager_settings_mode_title">Tuo AutoPatch Hubn asetukset</string>
     <string name="settings_system_import_manager_settings_mode_description">Valitse, miten tuodut asetukset ja lähteet käytetään</string>
     <string name="settings_system_import_selections_mode_title">Tuo korjausvalinnat</string>
     <string name="settings_system_import_selections_mode_description">Valitse, miten tuodut valinnat ja korjausvaihtoehdot käytetään.</string>
@@ -702,8 +702,8 @@ Kuvien mittojen on oltava seuraavat:
     <string name="import_mode_replace_description">Täsmää varmuuskopion kanssa täsmälleen. Varmuuskopiosta puuttuvat kohteet poistetaan.</string>
     <string name="import_mode_merge_title">Yhdistä olemassaoleviin</string>
     <string name="import_mode_merge_description">Lisää varmuuskopiosta puuttuvat kohteet. Olemassaolevat kohteet säilytetään muuttumattomina.</string>
-    <string name="settings_system_export_manager_settings_fail">Morphen asetusten vienti epäonnistui: %s</string>
-    <string name="settings_system_export_manager_settings_success">Morphen asetukset viety</string>
+    <string name="settings_system_export_manager_settings_fail">AutoPatch Hubn asetusten vienti epäonnistui: %s</string>
+    <string name="settings_system_export_manager_settings_success">AutoPatch Hubn asetukset viety</string>
     <string name="settings_system_debug">Virheenkorjaus</string>
     <string name="settings_system_export_debug_logs_description">Tallenna järjestelmälokit vianetsintää varten</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Lokien lukeminen epäonnistui (poistumiskoodi %s)</string>
@@ -759,7 +759,7 @@ Kuvien mittojen on oltava seuraavat:
     <string name="settings_system_no_patches_or_options">Ei lisäosia tai asetuksia tallennettu</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Mukautettu tiedostonvalitsin</string>
-    <string name="settings_system_custom_file_picker_description">Käytä Morphen sisäänrakennettua tiedostonvalitsinta järjestelmän oletusarvon sijaan</string>
+    <string name="settings_system_custom_file_picker_description">Käytä AutoPatch Hubn sisäänrakennettua tiedostonvalitsinta järjestelmän oletusarvon sijaan</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Edellinen hakemisto</string>
     <string name="file_picker_no_files">Täällä ei ole tiedostoja</string>
@@ -777,7 +777,7 @@ Kuvien mittojen on oltava seuraavat:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Tietoja</string>
     <string name="settings_system_share_website">Jaa verkkosivusto</string>
-    <string name="settings_system_share_website_description">Jaa Morphen virallinen verkkosivusto</string>
+    <string name="settings_system_share_website_description">Jaa AutoPatch Hubn virallinen verkkosivusto</string>
     <string name="settings_system_manager_description">Avoimen lähdekoodin projekti suosittujen Android-sovellusten moderniin ja suoraviivaiseen muokkaukseen, jota ohjaavat yhteisön palaute ja panokset</string>
     <string name="credits">Tekijät</string>
     <string name="credits_current_development">Nykyinen kehitys</string>
@@ -907,7 +907,7 @@ Haluatko silti jatkaa?"</string>
     <string name="onboarding_sources_desc">Hallitse korjauslähteitäsi. Jokainen lähde tarjoaa korjauksia, jotka voidaan soveltaa sovelluksiisi</string>
     <string name="onboarding_swipe_title">Pyyhkäisyeleet</string>
     <string name="onboarding_swipe_desc">Pyyhkäise oikealle sovelluskortissa nähdäksesi sen käytettävissä olevat korjaukset. Pyyhkäise vasemmalle piilottaaksesi kortin aloitusnäytöltä</string>
-    <string name="onboarding_settings_desc">Muokkaa Morphea: ulkoasua, lisäasetuksia ja järjestelmätyökaluja</string>
+    <string name="onboarding_settings_desc">Muokkaa AutoPatch Huba: ulkoasua, lisäasetuksia ja järjestelmätyökaluja</string>
     <string name="onboarding_sources_patches_desc">Napauta nähdäksesi kaikki tästä lähteestä saatavilla olevat korjaukset</string>
     <string name="onboarding_sources_version_desc">Napauta versiota nähdäksesi tämän lähteen täydelliset muutoshistoria</string>
     <string name="onboarding_sources_prerelease_desc">Ota tämä käyttöön saadaksesi ennakkokorjauksia tästä lähteestä</string>
@@ -922,8 +922,8 @@ Haluatko silti jatkaa?"</string>
     <string name="onboarding_system_file_picker_desc">Ota tämä käyttöön käyttääksesi sisäänrakennettua tiedostoselainta järjestelmän valitsimen sijaan APK-tiedostoja tai avaimia valittaessa</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Nopea ominaisuusesittely</string>
-    <string name="tour_prompt_desc">Haluatko pikatutoriaalin Morphen tärkeimmistä ominaisuuksista?</string>
+    <string name="tour_prompt_desc">Haluatko pikatutoriaalin AutoPatch Hubn tärkeimmistä ominaisuuksista?</string>
     <string name="tour_prompt_confirm">Näytä minulle</string>
     <string name="onboarding_restart_title">Ominaisuusesittely</string>
-    <string name="onboarding_restart_desc">Käy opastetulla kierroksella Morphen tärkeimmissä ominaisuuksissa</string>
+    <string name="onboarding_restart_desc">Käy opastetulla kierroksella AutoPatch Hubn tärkeimmissä ominaisuuksissa</string>
 </resources>

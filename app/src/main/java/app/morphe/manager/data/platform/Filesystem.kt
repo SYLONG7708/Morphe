@@ -39,6 +39,8 @@ class Filesystem(private val app: Application) {
      * Unlike temporary directories, these files persist across app restarts.
      */
     val originalApksDir: File = app.getDir("original-apks", Context.MODE_PRIVATE).apply { mkdirs() }
+    /** Verified release assets retained across restarts until installed or superseded. */
+    val updatesDir: File = app.getDir("verified-updates", Context.MODE_PRIVATE).apply { mkdirs() }
 
     private fun usesManagePermission() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
@@ -68,7 +70,7 @@ class Filesystem(private val app: Application) {
      */
     fun logStorageContents() {
         Log.i(TAG, "=== Storage contents ===")
-        for (dir in listOf(tempDir, uiTempDir, patchedAppsDir, originalApksDir)) {
+        for (dir in listOf(tempDir, uiTempDir, patchedAppsDir, originalApksDir, updatesDir)) {
             logDir(dir.name, dir)
         }
         Log.i(TAG, "=== End of storage contents ===")

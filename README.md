@@ -1,127 +1,62 @@
-<div align="center"> 
-<picture>
-    <source
-      width="512px"
-      media="(prefers-color-scheme: dark)"
-      srcset="https://raw.githubusercontent.com/MorpheApp/.github/refs/heads/main/profile/assets/morphe-wordmark/morphe_wordmark_dark.svg"
-    />
-    <img 
-      width="512px"
-      src="https://raw.githubusercontent.com/MorpheApp/.github/refs/heads/main/profile/assets/morphe-wordmark/morphe_wordmark_light.svg"
-    />
-</picture>
+# AutoPatch Hub
 
-[![Website badge](https://img.shields.io/badge/Website-gray.svg?logo=data:image/svg%2bxml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ29weXJpZ2h0IDIwMjUgTW9ycGhlLiBUaGlzIGlzIGNvcHlyaWdodGVkIGNvbnRlbnQsIGFuZCBub3QgbGljZW5zZWQgdW5kZXIgb3BlbiBzb3VyY2UgdGVybXMuCiAgICAgU2VlIGh0dHBzOi8vZ2l0aHViLmNvbS9Nb3JwaGVBcHAvbW9ycGhlLWJyYW5kaW5nIC0tPgoKPHN2ZwogICB3aWR0aD0iNTEyIgogICBoZWlnaHQ9IjUxMiIKICAgdmlld0JveD0iMCAwIDUxMiA1MTIiCiAgIHZlcnNpb249IjEuMSIKICAgaWQ9InN2ZzIiCiAgIHNvZGlwb2RpOmRvY25hbWU9Im1vcnBoZV9sb2dvX2xpZ2h0LnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS40LjIgKGViZjBlOTQwZDAsIDIwMjUtMDUtMDgpIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0ibmFtZWR2aWV3MiIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiMwMDAwMDAiCiAgICAgYm9yZGVyb3BhY2l0eT0iMC4yNSIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOnpvb209IjEuMTU0Mjk2OSIKICAgICBpbmtzY2FwZTpjeD0iMjU2IgogICAgIGlua3NjYXBlOmN5PSIyNTYiCiAgICAgaW5rc2NhcGU6d2luZG93LXdpZHRoPSIxNDQwIgogICAgIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9IjgzNiIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzIiPgogICAgPGlua3NjYXBlOnBhZ2UKICAgICAgIHg9IjAiCiAgICAgICB5PSIwIgogICAgICAgd2lkdGg9IjUxMiIKICAgICAgIGhlaWdodD0iNTEyIgogICAgICAgaWQ9InBhZ2UyIgogICAgICAgbWFyZ2luPSIwIgogICAgICAgYmxlZWQ9IjAiIC8+CiAgPC9zb2RpcG9kaTpuYW1lZHZpZXc+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPCEtLSBMZXR0ZXIgLS0+CiAgPGcKICAgICBpZD0iTGV0dGVyIgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjEiPgogICAgPHBhdGgKICAgICAgIGlkPSJMZWZ0IgogICAgICAgZD0ibSAxMjMsMTQwIGMgLTIxLDAgLTM5LDE3IC00MCwzOCB2IDE5MiBjIDEsMjEgMTksMzggNDAsMzggMjEsMCAzOSwtMTcgNDAsLTM4IFYgMTc4IGMgLTEsLTIxIC0xOSwtMzggLTQwLC0zOCB6IgogICAgICAgZmlsbD0iIzFFNUFBOCIKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjEiIC8+CiAgICA8cGF0aAogICAgICAgaWQ9IlJpZ2h0IgogICAgICAgZD0ibSAzNDksMjg1IHYgODUgYyAxLDIxIDE5LDM4IDQwLDM4IDIxLDAgMzksLTE3IDQwLC0zOCBWIDE4MiBjIC0xMSwtMTQgLTc0LDYzIC04MCwxMDMgeiIKICAgICAgIGZpbGw9IiMwMEFGQUUiCiAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmO2ZpbGwtb3BhY2l0eToxIiAvPgogICAgPHBhdGgKICAgICAgIGlkPSJNaWRkbGUiCiAgICAgICBkPSJtIDEyNywxMDggYyAtMzQsMCAtNDQsMjUgLTQ0LDQwIHYgNTQgYyAzMCwtMzMgNzUsMjcgODAsMzMgMjgsMzIgNDQsODcgOTMsODkgNDgsLTIgNjcsLTU2IDkzLC04OSAwLDAgNDUsLTc0IDgwLC04MCAwLC0yOCAtMTEsLTQ3IC00NCwtNDcgLTM0LDAgLTU4LDUwIC03NSw3MiAtMTcsMjIgLTI1LDQ2IC01NCw0NiAtMjksMCAtMzgsLTI1IC01NCwtNDYgLTE3LC0yMiAtNDEsLTcyIC03NSwtNzIgeiIKICAgICAgIGZpbGw9InVybCgjbGluZWFyR3JhZGllbnQyKSIKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmY7ZmlsbC1vcGFjaXR5OjEiIC8+CiAgPC9nPgo8L3N2Zz4K&style=for-the-badge)](https://morphe.software) [![Documentation badge](https://img.shields.io/badge/Documentation-gray?style=for-the-badge&logo=github)](https://github.com/MorpheApp/morphe-documentation#readme) [![Subreddit badge](https://img.shields.io/badge/Reddit-gray?style=for-the-badge&logo=reddit&logoColor=white)](https://www.reddit.com/r/MorpheApp) [![Crowdin badge](https://img.shields.io/badge/Translations-gray?style=for-the-badge&logo=crowdin)](https://morphe.software/translate)
-<br>
-</div>
+AutoPatch Hub is a distinctly branded, GPL-3.0-or-later derivative of
+[Morphe Manager](https://github.com/MorpheApp/morphe-manager). It provides a
+signed, device-aware update channel for the manager, unmodified patch bundles,
+locally patched YouTube, and MicroG-RE.
 
-&nbsp;
-<p align="center">
-  <a href="https://morphe.software" title="Download Morphe">
-    <img src="https://raw.githubusercontent.com/MorpheApp/.github/refs/heads/main/profile/assets/download-morphe.svg" alt="Download Morphe" width="240"/>
-  </a>
-</p>
-&nbsp;
+> This project is not the official Morphe project and is not endorsed by it.
+> “Morphe” is used only where necessary to identify upstream software and
+> interoperability. The application name, package ID, icons, signing keys, and
+> release channel are independent.
 
-# 💊 Morphe
+[繁體中文說明](README.zh-TW.md) ·
+[Architecture and security](docs/架構與安全性.md) ·
+[Zero-configuration guide](docs/零配置操作指南.html)
 
-> Want to watch ads? Us neither.
+## What is automatic
 
-Morphe is an Android app that patches YouTube, YouTube Music, and Reddit - stripping ads and giving you back control over your experience. No root required.
+- Checks the signed GitHub Release manifest hourly through WorkManager.
+- Resolves artifacts against Android SDK level and supported CPU ABIs.
+- Downloads Manager and MicroG-RE in the background.
+- Verifies a pinned RSA signature, SHA-256, length, package name, version,
+  Android minimum SDK, APK signer, and installed signing lineage.
+- Updates the patch bundle before deciding which YouTube version is compatible.
+- Uses an exact compatible installed/saved original YouTube source and patches
+  it entirely on the device.
+- Opens the appropriate one-tap action from update notifications and displays
+  all four components in the in-app Verified Update Center.
 
-## ✨ Why Morphe?
+## Android security boundary
 
-Modern apps are full of ads and dark patterns designed to grab your attention. Morphe patches them at the bytecode level - modifying the app directly on your device, without any of your data leaving it. The result is a cleaner version of the app you already know, exactly the way you want it.
+Ordinary Android apps cannot silently replace other apps. AutoPatch Hub
+therefore launches Android's installation confirmation on an unprivileged
+device. Installation can be silent only when the user has already granted
+Shizuku or root authority. This is an Android platform security requirement,
+not an unfinished setting.
 
-## 📲 Download
+The project deliberately does **not** download, mirror, or publish Google's
+original YouTube APK and does not publish a prepatched YouTube APK. It extracts
+an eligible installed copy or uses a copy the user previously saved, then
+patches locally with the user's persistent signing key.
 
-**[→ Download at morphe.software](https://morphe.software)**
+## Build
 
-The website will guide you to the latest release for your device. No account needed.
+Requirements: Java 21, Android SDK Platform 37.0, Build Tools 37.0.0,
+NDK 28.2.13676358, and CMake 3.22.1.
 
-## 🚀 How it works
+```bash
+./gradlew lintRelease assembleRelease -PsignAsDebug
+```
 
-1. **Install Morphe** from [morphe.software](https://morphe.software).
-2. **Pick an app** - YouTube, YouTube Music, or Reddit are supported out of the box.
-3. **Choose your mode:**
-  - **Simple mode** - designed for a one-tap experience. Just tap Patch and Morphe handles the rest with sensible defaults. No configuration needed.
-  - **Expert mode** - gives you full control. Choose exactly which of the 100+ patches to apply, configure per-patch options (colors, toggles, and more), and fine-tune everything before patching.
-4. **Provide the APK** - Morphe guides you through obtaining the original app file via step-by-step dialogs. The patching itself happens entirely on your device. *(If you can't select the APK file, try moving it out of the Downloads folder to the root of your internal storage.)*
-5. **Install and enjoy** - once patching is complete, install the result like any normal APK.
+Release signing uses `app/keystore.jks` plus `KEYSTORE_PASSWORD`,
+`KEYSTORE_ENTRY_ALIAS`, and `KEYSTORE_ENTRY_PASSWORD`. Update metadata uses the
+separate offline RSA key documented in
+[docs/架構與安全性.md](docs/架構與安全性.md).
 
-Everything happens locally. Morphe never uploads your APKs or personal data anywhere.
+## License and source
 
-## 🔧 Features
-
-**Patching**
-- Simple mode for one-tap patching with curated defaults
-- Expert mode for full patch selection, per-patch configuration, and experimental version support
-- Expert mode also shows an expanded patching screen with real-time logs and live RAM usage monitoring during patching
-- 100+ patches for YouTube, YouTube Music, and Reddit
-- Support for split APKs
-- Skips split APK modules for unsupported CPU architectures, locales, and screen densities during merge
-- Strips native libraries for unsupported architectures from plain APKs after patching
-
-**Patch options** *(Simple mode: available in the Advanced tab; Expert mode: available on the patch selection screen)*
-- Custom app display name and header logo per app
-- App theme colors (background color presets)
-- Hide Shorts app shortcut and widget (YouTube)
-- And more, depending on installed patch bundles
-
-**Patch sources**
-- Add any compatible patch bundle via GitHub URL or deep link
-- Per-source pre-release toggle to get early patch access
-- Automatic background update notifications (even when the app is closed)
-
-**Installer**
-- Standard Android installer
-- Root installer with Magisk module support (mount-based, no data loss on update)
-- Any third-party installer apps detected on the system are also available as an option
-- Prompt-on-install option to choose per session
-
-**Appearance**
-- System / Light / Dark / Material You themes
-- Pure Black mode for OLED screens
-- Accent color selection
-- Animated background selection
-- App icon selection
-
-**Advanced**
-- Import/export your Morphe settings as JSON
-- Import/export your signing keystore
-- Manage saved original APKs and patched APKs
-- Manage saved patch selections per app
-- GitHub Personal Access Token support for higher API rate limits
-- Process runtime - run patching in a separate process for better stability, with configurable memory limit
-- Bytecode processing mode - controls how bytecode is processed during patching, affecting patching speed, memory usage, and output APK size
-- Export debug logs for troubleshooting
-
-## ❓ New to GitHub?
-
-If you ended up here but aren't sure what to do next - no worries. Here's the short version:
-
-1. Go to the **[Releases page](https://github.com/MorpheApp/morphe-manager/releases/latest)**.
-2. Under **Assets**, tap the file ending in `.apk` to download it.
-3. Open the downloaded file on your Android device and tap **Install**.
-4. If Android asks you to allow installs from unknown sources, follow the prompt to enable it - this is required for any app not from the Play Store.
-
-That's it. Once Morphe is installed, everything else happens inside the app.
-
-For guides, FAQs, and troubleshooting, visit **[morphe.software](https://morphe.software)** or join the community on **[Reddit](https://www.reddit.com/r/MorpheApp)**.
-
-## 📙 Contributing
-
-Thank you for considering contributing to Morphe Manager.
-You can find the contribution guidelines [here](CONTRIBUTING.md).
-
-## ❗ About
-
-Morphe is built on the foundation of [ReVanced Manager](https://github.com/ReVanced/revanced-manager) and [URV](https://github.com/Jman-Github/Universal-ReVanced-Manager). All changes made by Morphe are documented in the Git history.
-
-## 📜 License
-
-Morphe is licensed under the [GNU General Public License v3.0](LICENSE), with additional conditions under GPLv3 Section 7:
-
-- **Name & Branding Restrictions (7c & 7e):** Derivative works must use their own distinct branding. The **"Morphe"** name, logos, and trademarks may not be used for the branding or title of derivative works (e.g., names like *"Morphe Plus"*, *"Morphe Expanded"*, or *"Morphe UserXYZ"* are strictly prohibited).
-
-See the [LICENSE](LICENSE) file for the full GPLv3 terms and the [NOTICE](NOTICE) file for full conditions of GPLv3 Section 7.
+GPL-3.0-or-later. Upstream additional terms are preserved in [NOTICE](NOTICE).
+Modification and dependency provenance is recorded in
+[NOTICE-AUTOPATCH-HUB.md](NOTICE-AUTOPATCH-HUB.md) and
+[THIRD_PARTY_SOURCE.md](THIRD_PARTY_SOURCE.md).

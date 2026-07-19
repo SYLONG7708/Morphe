@@ -7,6 +7,9 @@ import app.morphe.manager.domain.manager.AppIconManager
 import app.morphe.manager.domain.manager.HomeAppButtonPreferences
 import app.morphe.manager.domain.manager.KeystoreManager
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
+import app.morphe.manager.domain.update.DetachedSignatureVerifier
+import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
+import app.morphe.manager.domain.update.SignedUpdateManifestRepository
 import app.morphe.manager.util.AppCoroutineScope
 import app.morphe.manager.util.PM
 import app.morphe.manager.util.UpdateNotificationManager
@@ -24,4 +27,7 @@ val managerModule = module {
     singleOf(::UpdateNotificationManager)
     singleOf(::HomeAppButtonPreferences)
     singleOf(::AppCoroutineScope)
+    singleOf(::DetachedSignatureVerifier)
+    singleOf(::SignedUpdateManifestRepository)
+    singleOf(::EcosystemUpdateCoordinator)
 }

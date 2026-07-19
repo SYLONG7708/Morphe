@@ -1,0 +1,123 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../morphe-library/1.3.0/morphe-library-1.3.0.module",
+    "group": "app.morphe",
+    "module": "morphe-library",
+    "version": "1.3.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.9"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "morphe-library-jvm-1.3.0.jar",
+          "url": "morphe-library-jvm-1.3.0.jar",
+          "size": 36795,
+          "sha512": "a77e6fcef9250b9214f46f6d11fd57186feaea81f91d1dee0b3bf74fa2560f29d52b744f3ce2cae5479658aaed71be4bec9b0da1deb191cc4e15cfb9571c9b38",
+          "sha256": "f0eefd6301eed9fbc9ff52012a466ab541226a05dac4b715a230d296c687e6a6",
+          "sha1": "ba9797eb5b4fb160183697a02e1b8ffde383526b",
+          "md5": "22945483646c1685220c455dffd5d2e0"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.21"
+          }
+        },
+        {
+          "group": "com.google.guava",
+          "module": "guava",
+          "version": {
+            "requires": "33.5.0-jre"
+          }
+        },
+        {
+          "group": "app.morphe",
+          "module": "jadb",
+          "version": {
+            "requires": "1.2.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "2.0.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "morphe-library-jvm-1.3.0.jar",
+          "url": "morphe-library-jvm-1.3.0.jar",
+          "size": 36795,
+          "sha512": "a77e6fcef9250b9214f46f6d11fd57186feaea81f91d1dee0b3bf74fa2560f29d52b744f3ce2cae5479658aaed71be4bec9b0da1deb191cc4e15cfb9571c9b38",
+          "sha256": "f0eefd6301eed9fbc9ff52012a466ab541226a05dac4b715a230d296c687e6a6",
+          "sha1": "ba9797eb5b4fb160183697a02e1b8ffde383526b",
+          "md5": "22945483646c1685220c455dffd5d2e0"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "morphe-library-jvm-1.3.0-sources.jar",
+          "url": "morphe-library-jvm-1.3.0-sources.jar",
+          "size": 12174,
+          "sha512": "101ef4e6f248787e1eb8d09f485d55fdc4c8994895523a8bbe21753927a9cdfbbcdcbae070c3b482cd5b4c804f81cbc1042f5d1baf2306c7cc840ee404039169",
+          "sha256": "a3e9781f74e396ed9889ab3fe829dba04a98af93c3c262ef0b19fb55b5288a4e",
+          "sha1": "df496e06b7b662ccd73560d4f5ee88acc381ce7c",
+          "md5": "a3061b3cf99919beb6836c944611f85b"
+        }
+      ]
+    }
+  ]
+}

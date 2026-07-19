@@ -19,6 +19,9 @@ fun githubToken(): String? =
 
 pluginManagement {
     repositories {
+        // Reproducible GPL dependency snapshot built from the exact source revisions
+        // documented in THIRD_PARTY_SOURCE.md. This avoids private package credentials.
+        maven(rootDir.resolve("vendor/m2"))
         mavenLocal()
         mavenCentral()
         google()
@@ -28,6 +31,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven(rootDir.resolve("vendor/m2"))
         mavenLocal()
         mavenCentral()
         google()
@@ -51,21 +55,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "morphe-manager"
+rootProject.name = "autopatch-hub"
 include(":app")
-
-// Include morphe-patcher and morphe-library as composite builds if they exist locally
-mapOf(
-    "morphe-patcher" to "app.morphe:morphe-patcher",
-//    "morphe-library" to "app.morphe:morphe-library", // FIXME: Must upgrade library gradle to use this
-//    "ARSCLib" to "com.github.REAndroid:arsclib"
-).forEach { (libraryPath, libraryName) ->
-    val libDir = file("../$libraryPath")
-    if (libDir.exists()) {
-        includeBuild(libDir) {
-            dependencySubstitution {
-                substitute(module(libraryName)).using(project(":"))
-            }
-        }
-    }
-}

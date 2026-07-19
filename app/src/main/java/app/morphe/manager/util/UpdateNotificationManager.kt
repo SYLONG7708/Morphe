@@ -18,7 +18,7 @@ import app.morphe.manager.util.UpdateNotificationManager.Companion.CHANNEL_FCM_U
 import app.morphe.manager.util.UpdateNotificationManager.Companion.EXTRA_TRIGGER_UPDATE_CHECK
 
 /**
- * Manages Android system notifications for Morphe Manager update events.
+ * Manages Android system notifications for AutoPatch Hub ecosystem updates.
  *
  * All notifications use a single [CHANNEL_FCM_UPDATES] (IMPORTANCE_HIGH) channel,
  * regardless of the delivery source (FCM push or WorkManager background check).
@@ -62,8 +62,7 @@ class UpdateNotificationManager(private val context: Context) {
 
     /**
      * Post a notification that a new Morphe Manager version is available.
-     * Called from [app.morphe.manager.worker.UpdateCheckWorker] on non-GMS devices
-     * and from [app.morphe.manager.service.MorpheFcmService] on GMS devices.
+     * Called from [app.morphe.manager.worker.UpdateCheckWorker].
      */
     fun showManagerUpdateNotification(version: String? = null) {
         postNotification(
@@ -72,14 +71,14 @@ class UpdateNotificationManager(private val context: Context) {
                 context.getString(R.string.notification_update_text, version)
             else
                 context.getString(R.string.notification_manager_update_title),
-            notificationId = NOTIFICATION_ID_MANAGER_UPDATE
+            notificationId = NOTIFICATION_ID_MANAGER_UPDATE,
+            action = ACTION_MANAGER,
         )
     }
 
     /**
      * Post a notification that new patch bundle updates are available.
-     * Called from [app.morphe.manager.worker.UpdateCheckWorker] on non-GMS devices
-     * and from [app.morphe.manager.service.MorpheFcmService] on GMS devices.
+     * Called from [app.morphe.manager.worker.UpdateCheckWorker].
      */
     fun showBundleUpdateNotification(version: String? = null) {
         postNotification(
@@ -88,7 +87,32 @@ class UpdateNotificationManager(private val context: Context) {
                 context.getString(R.string.notification_update_text, version)
             else
                 context.getString(R.string.notification_bundle_update_text_unversioned),
-            notificationId = NOTIFICATION_ID_BUNDLE_UPDATE
+            notificationId = NOTIFICATION_ID_BUNDLE_UPDATE,
+            action = ACTION_YOUTUBE,
+        )
+    }
+
+    fun showYouTubeUpdateNotification(version: String? = null) {
+        postNotification(
+            titleRes = R.string.notification_youtube_update_title,
+            contentText = if (!version.isNullOrBlank())
+                context.getString(R.string.notification_update_text, version)
+            else
+                context.getString(R.string.notification_youtube_update_text),
+            notificationId = NOTIFICATION_ID_YOUTUBE_UPDATE,
+            action = ACTION_YOUTUBE,
+        )
+    }
+
+    fun showMicroGUpdateNotification(version: String? = null) {
+        postNotification(
+            titleRes = R.string.notification_microg_update_title,
+            contentText = if (!version.isNullOrBlank())
+                context.getString(R.string.notification_update_text, version)
+            else
+                context.getString(R.string.notification_microg_update_text),
+            notificationId = NOTIFICATION_ID_MICROG_UPDATE,
+            action = ACTION_MICROG,
         )
     }
 
@@ -97,13 +121,18 @@ class UpdateNotificationManager(private val context: Context) {
      * Uses IMPORTANCE_HIGH so the device wakes from Doze. Tapping the notification
      * opens [MainActivity] and triggers an update check via [EXTRA_TRIGGER_UPDATE_CHECK].
      */
-    private fun postNotification(titleRes: Int, contentText: String, notificationId: Int) {
+    private fun postNotification(
+        titleRes: Int,
+        contentText: String,
+        notificationId: Int,
+        action: String,
+    ) {
         val notification = NotificationCompat.Builder(context, CHANNEL_FCM_UPDATES)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(titleRes))
             .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(buildOpenAppIntent())
+            .setContentIntent(buildOpenAppIntent(action, notificationId))
             .setAutoCancel(true)
             .build()
 
@@ -116,15 +145,16 @@ class UpdateNotificationManager(private val context: Context) {
      * The [EXTRA_TRIGGER_UPDATE_CHECK] extra is picked up by [MainActivity] via
      * [app.morphe.manager.ui.viewmodel.MainViewModel.pendingUpdateCheck].
      */
-    private fun buildOpenAppIntent(): PendingIntent {
+    private fun buildOpenAppIntent(action: String, requestCode: Int): PendingIntent {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(EXTRA_TRIGGER_UPDATE_CHECK, true)
+            putExtra(EXTRA_UPDATE_ACTION, action)
         }
         @SuppressLint("WrongConstant")
         return PendingIntent.getActivity(
             context,
-            REQUEST_CODE_UPDATE_CHECK,
+            requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -136,8 +166,13 @@ class UpdateNotificationManager(private val context: Context) {
 
         private const val NOTIFICATION_ID_MANAGER_UPDATE = 2001
         private const val NOTIFICATION_ID_BUNDLE_UPDATE  = 2002
+        private const val NOTIFICATION_ID_YOUTUBE_UPDATE = 2003
+        private const val NOTIFICATION_ID_MICROG_UPDATE = 2004
 
-        private const val REQUEST_CODE_UPDATE_CHECK = 1
+        const val ACTION_MANAGER = "manager"
+        const val ACTION_YOUTUBE = "youtube"
+        const val ACTION_MICROG = "microg"
+        const val EXTRA_UPDATE_ACTION = "ecosystem_update_action"
 
         /**
          * Intent extra key. When set to `true`, [MainActivity] triggers a bundle/manager
