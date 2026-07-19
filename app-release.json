@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-07-19T16:42:45Z",
+  "created_at": "2026-07-19T17:25:09Z",
   "description": "AutoPatch Hub signed stable release",
-  "download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/AutoPatch-Hub-1.0.3.apk",
-  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/AutoPatch-Hub-1.0.3.apk.sig",
-  "version": "1.0.3"
+  "download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/AutoPatch-Hub-1.0.4.apk",
+  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/AutoPatch-Hub-1.0.4.apk.sig",
+  "version": "1.0.4"
 }
