@@ -51,8 +51,8 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: autopatch-hub-verification
-          archive: false
           if-no-files-found: warn
+          compression-level: 0
           path: |
             app/build/outputs/apk/release/*.apk
             app/build/reports/**
