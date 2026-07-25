@@ -18,12 +18,25 @@ locally patched YouTube, and MicroG-RE.
 
 - Checks the signed GitHub Release manifest hourly through WorkManager.
 - Resolves artifacts against Android SDK level and supported CPU ABIs.
-- Downloads Manager and MicroG-RE in the background.
+- Downloads Manager and safely replaceable MicroG-RE updates on cold start and during
+  background checks. A verified MicroG update is handed directly to Android's installer;
+  Shizuku/root can complete it silently while ordinary devices retain the system confirmation.
+- Detects a preinstalled MicroG signed by a different vendor before downloading and keeps it
+  untouched, because Android cannot safely install an official update over a different signer.
 - Verifies a pinned RSA signature, SHA-256, length, package name, version,
   Android minimum SDK, APK signer, and installed signing lineage.
-- Updates the patch bundle before deciding which YouTube version is compatible.
-- Uses an exact compatible installed/saved original YouTube source and patches
-  it entirely on the device.
+- Refreshes the official bundle from
+  [MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches) before deciding
+  which YouTube version is compatible.
+- Stages every new bundle, checks its declared `Patcher-Version`, and fully loads its
+  metadata before atomically replacing the last known-good compatible bundle.
+- On cold start, automatically uses a bundle-compatible installed/saved original YouTube
+  source. For this private-use build, if no compatible local source exists, it resolves the
+  exact version code from the patch bundle, downloads that original APK on the device, and
+  verifies its APK signature, Google signer, package, version name, and version code before
+  saving and patching it.
+- Leaves an already-current Morphe YouTube untouched and shows the recommended
+  source version instead of forcing an incompatible YouTube through the patcher.
 - Opens the appropriate one-tap action from update notifications and displays
   all four components in the in-app Verified Update Center.
 
@@ -35,10 +48,13 @@ device. Installation can be silent only when the user has already granted
 Shizuku or root authority. This is an Android platform security requirement,
 not an unfinished setting.
 
-The project deliberately does **not** download, mirror, or publish Google's
-original YouTube APK and does not publish a prepatched YouTube APK. It extracts
-an eligible installed copy or uses a copy the user previously saved, then
-patches locally with the user's persistent signing key.
+The project does **not** mirror or publish Google's original YouTube APK and does not publish
+a prepatched YouTube APK. This private-use build can retrieve an exact compatible original
+from APKPure's download service when no local source is available. The downloaded file is
+accepted only when Android package metadata and independent APK Signature Scheme verification
+match the official patch bundle. APKPure's terms and the user's local laws still apply; the
+existing manual APKMirror/file-picker route remains available if automatic retrieval fails.
+Patching and signing always happen locally with the user's persistent signing key.
 
 ## Build
 

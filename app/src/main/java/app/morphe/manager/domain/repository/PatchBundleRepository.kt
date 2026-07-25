@@ -1355,6 +1355,12 @@ class PatchBundleRepository(
 
     /**
      * Same as [updateCheck] but suspends until the update job fully completes.
+     *
+     * The official Morphe source is always included even though its database entry deliberately
+     * keeps [RemotePatchBundle.autoUpdate] disabled for the generic source-management UI. The
+     * ecosystem updater owns that source and must refresh it before deciding which YouTube
+     * versions are compatible.
+     *
      * Waits for any in-progress update to finish first, then runs its own update directly.
      */
     suspend fun updateCheckAndAwait(allowUnsafeNetwork: Boolean = false) {
@@ -1364,7 +1370,9 @@ class PatchBundleRepository(
             showToast = false,
             allowUnsafeNetwork = allowUnsafeNetwork,
             onPerBundleProgress = null,
-            predicate = { it.autoUpdate && it.enabled }
+            predicate = {
+                it.enabled && (it.uid == DEFAULT_SOURCE_UID || it.autoUpdate)
+            }
         )
     }
 

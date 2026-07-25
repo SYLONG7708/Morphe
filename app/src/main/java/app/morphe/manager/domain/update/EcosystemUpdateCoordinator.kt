@@ -209,6 +209,24 @@ class EcosystemUpdateCoordinator(
         val remoteCode = artifact.versionCode ?: component.versionCode
         val updateAvailable = installed == null || remoteCode == null ||
                 installedCode == null || remoteCode > installedCode
+        if (installed != null && updateAvailable && artifact.signerSha256.isNotEmpty()) {
+            val installedSigners = pm.getInstalledSignatureHashes(packageName)
+                .map(String::lowercase)
+                .toSet()
+            val updateSigners = artifact.signerSha256
+                .map(String::lowercase)
+                .toSet()
+            if (installedSigners.isNotEmpty() && installedSigners.intersect(updateSigners).isEmpty()) {
+                return ComponentUpdateState(
+                    status = UpdateStatus.UNSUPPORTED,
+                    installedVersion = installed.versionName,
+                    availableVersion = component.version,
+                    artifact = artifact,
+                    detail = "Installed MicroG uses a different signing certificate; " +
+                        "Android cannot safely replace it",
+                )
+            }
+        }
         return ComponentUpdateState(
             status = if (updateAvailable) UpdateStatus.UPDATE_AVAILABLE else UpdateStatus.UP_TO_DATE,
             installedVersion = installed?.versionName,
@@ -230,6 +248,14 @@ class EcosystemUpdateCoordinator(
             artifact = component.artifacts.firstOrNull(),
         )
     }
+
+    /**
+     * Inspects the local YouTube source and the currently installed Morphe YouTube.
+     *
+     * This deliberately performs no download and is safe to call from the home-screen
+     * auto-patch entry point after the patch-bundle pipeline has finished loading.
+     */
+    suspend fun inspectYouTube(): ComponentUpdateState = resolveYouTube()
 
     private suspend fun resolveYouTube(): ComponentUpdateState {
         val source = resolveCompatibleYouTubeSource()

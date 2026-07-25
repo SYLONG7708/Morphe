@@ -13,7 +13,7 @@ const val tag = "AutoPatch Hub"
 
 const val SOURCE_NAME = "AutoPatch Hub Verified Patches"
 const val MANAGER_REPO_URL = "https://github.com/SYLONG7708/Morphe"
-const val SOURCE_REPO_URL = "https://github.com/SYLONG7708/Morphe"
+const val SOURCE_REPO_URL = "https://github.com/MorpheApp/morphe-patches"
 const val MORPHE_API_URL = "https://api.morphe.software"
 const val MORPHE_WEBSITE_URL = "https://morphe.software"
 

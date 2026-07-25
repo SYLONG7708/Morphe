@@ -57,6 +57,7 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Morphe
+    implementation(libs.apksig)
     implementation(libs.arsclib)
     implementation(libs.morphe.patcher)
     implementation(libs.morphe.library)
@@ -120,6 +121,8 @@ dependencies {
 
     // Semantic versioning parser
     implementation(libs.semver.parser)
+
+    testImplementation(kotlin("test-junit"))
 }
 
 android {

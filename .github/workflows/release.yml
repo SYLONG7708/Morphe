@@ -74,6 +74,12 @@ jobs:
           curl --fail --location --retry 3 "$patch_url" --output "dist/patches-$patch_version.mpp"
           curl --fail --location --retry 3 "$microg_url" --output "dist/microg-$microg_version.apk"
 
+      - name: Verify Manager and patch-bundle compatibility
+        run: |
+          python tools/check_patch_bundle_compat.py \
+            --bundle "dist/patches-${{ steps.upstream.outputs.patch_version }}.mpp" \
+            --catalog gradle/libs.versions.toml
+
       - name: Skip unchanged scheduled release
         id: gate
         env:
@@ -168,7 +174,10 @@ jobs:
           This single ZIP contains the signed AutoPatch Hub manager, MicroG-RE,
           Morphe patch bundle, signed manifest, and detached signatures.
           Install AutoPatch Hub first, then open its Security Update Center to install
-          MicroG-RE and patch the compatible YouTube APK already installed on the device.
+          MicroG-RE and patch YouTube locally. This private-use build can automatically
+          retrieve the exact patch-bundle-compatible original YouTube APK when no suitable
+          local source exists, then verifies its Google signer, package, version, and
+          versionCode before patching.
           The Google YouTube APK is intentionally not included. Android still installs
           the manager and MicroG-RE as separate packages because Google login requires
           the MicroG package identity. Enable Automatic ecosystem updates in Settings
@@ -196,7 +205,7 @@ jobs:
             gh release create "$tag" \
               --target "$GITHUB_SHA" \
               --title "AutoPatch Hub v$RELEASE_VERSION" \
-              --notes "Signed zero-configuration update channel. Google YouTube APK is not included; YouTube is patched locally on the device." \
+              --notes "Signed zero-configuration update channel. The private-use manager can retrieve and verify an exact compatible original YouTube APK, then patches it locally; no Google or prepatched YouTube APK is included in this release." \
               "${assets[@]}"
           fi
 
