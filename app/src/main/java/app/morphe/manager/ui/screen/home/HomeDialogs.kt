@@ -77,7 +77,14 @@ fun HomeDialogs(
 
     // APK selection processing overlay - blocks interaction while APK is loaded/validated in background
     MorpheOverlay(visible = homeViewModel.processingApkSelection) {
-        PulsingLogoWithCaption(caption = stringResource(R.string.processing_apk))
+        val progress = homeViewModel.automaticYouTubeDownloadProgressPercent
+        PulsingLogoWithCaption(
+            caption = if (progress == null) {
+                stringResource(R.string.processing_apk)
+            } else {
+                "${stringResource(R.string.processing_apk)} · $progress%"
+            }
+        )
     }
 
     // Dialog 1: APK availability

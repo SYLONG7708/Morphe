@@ -27,10 +27,13 @@
   <h2>每次更新會自動完成</h2>
   <div class="flow"><span>簽章清單</span><span>SDK／ABI 選版</span><span>背景下載</span>
     <span>SHA-256</span><span>APK 身分</span><span>簽署鏈</span><span>安裝或本機修補</span></div>
-  <h2>YouTube 為什麼不同？</h2>
-  <p>本專案不散布 Google 原始或預先修補的 YouTube APK。App 只會檢查手機中已安裝
-  或已保存的合法來源，確認修補套件精確支援後才在手機內合併 split、修補及簽署。
-  不相容時會等待，不會硬套版本。</p>
+  <p>若裝置預載的 MicroG 使用不同廠商簽章，App 會在下載前安全跳過，不會嘗試
+  覆蓋一個 Android 必定拒絕的版本。</p>
+  <h2>YouTube 如何自動處理？</h2>
+  <p>App 會優先使用手機中已安裝或已保存的相容原版；若沒有，私人使用版會依官方
+  補釘包宣告的精確版本碼在裝置端下載。檔案必須通過 APK 簽章完整性、Google 憑證、
+  套件名稱、版本名稱與版本碼核對，全部相符才會保存、修補及簽署。任何一步失敗都會
+  刪除下載檔並回到手動選檔，不會硬套版本或散布預先修補 APK。</p>
   <div class="note"><strong>Android 必要限制：</strong>未授權的普通 App 不能無提示安裝。
   所以一般手機仍會看到一次系統安裝確認；已授權 Shizuku／Root 才能完全靜默。</div>
   <h2>查看狀態</h2>

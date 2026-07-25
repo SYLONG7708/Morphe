@@ -1,5 +1,6 @@
 package app.morphe.manager.domain.bundles
 
+import app.morphe.manager.BuildConfig
 import app.morphe.manager.domain.bundles.RemotePatchBundle.Companion.CHANGELOG_CACHE_TTL
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.update.DetachedSignatureVerifier
@@ -7,6 +8,7 @@ import app.morphe.manager.network.api.MorpheAPI
 import app.morphe.manager.network.dto.MorpheAsset
 import app.morphe.manager.network.service.HttpService
 import app.morphe.manager.network.utils.getOrThrow
+import app.morphe.manager.patcher.patch.PatchBundle
 import app.morphe.manager.util.ChangelogEntry
 import app.morphe.manager.util.compareVersions
 import app.morphe.manager.util.releasePageUrl
@@ -30,6 +32,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.zip.ZipInputStream
 
 data class PatchBundleDownloadResult(
@@ -77,11 +81,13 @@ sealed class RemotePatchBundle(
 
     protected open suspend fun download(info: MorpheAsset, onProgress: PatchBundleDownloadProgress? = null) =
         withContext(Dispatchers.IO) {
+            val candidate = directory.resolve("${patchesFile.name}.part")
             try {
                 patchesFile.parentFile?.mkdirs()
-                patchesFile.setWritable(true, true)
+                candidate.setWritable(true, true)
+                candidate.delete()
                 http.downloadToFile(
-                    saveLocation = patchesFile,
+                    saveLocation = candidate,
                     builder = { url(info.downloadUrl) },
                     onProgress = onProgress
                 )
@@ -90,15 +96,33 @@ sealed class RemotePatchBundle(
                         url(signatureUrl)
                         header("Cache-Control", "no-cache")
                     }.getOrThrow()
-                    check(detachedSignatureVerifier.verifyFile(patchesFile, detached)) {
+                    check(detachedSignatureVerifier.verifyFile(candidate, detached)) {
                         "Patch bundle detached-signature verification failed"
                     }
                 }
+
+                validateCandidate(candidate)
+                patchesFile.setWritable(true, true)
+                runCatching {
+                    Files.move(
+                        candidate.toPath(),
+                        patchesFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE,
+                    )
+                }.getOrElse {
+                    Files.move(
+                        candidate.toPath(),
+                        patchesFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING,
+                    )
+                }
                 patchesFile.setReadOnly()
-                requireNonEmptyPatchesFile("Downloading patch bundle")
             } catch (t: Throwable) {
-                runCatching { patchesFile.setWritable(true, true) }
-                runCatching { patchesFile.delete() }
+                // Never destroy the last known-good bundle when a new upstream release is
+                // truncated, requires a newer patcher API, or fails to load.
+                runCatching { candidate.setWritable(true, true) }
+                runCatching { candidate.delete() }
                 throw t
             }
 
@@ -109,6 +133,40 @@ sealed class RemotePatchBundle(
                 }.getOrNull()
             )
         }
+
+    /**
+     * Proves that a downloaded bundle can be consumed by this exact Manager build before it
+     * replaces the last known-good file. Manifest comparison gives a clear diagnostic, while
+     * loading metadata catches binary/API incompatibilities that are not declared correctly.
+     */
+    private fun validateCandidate(candidate: File) {
+        if (!candidate.isFile || candidate.length() < MIN_PATCH_BUNDLE_BYTES) {
+            throw IOException(
+                "Downloading patch bundle produced an empty or truncated file " +
+                    "(size=${candidate.length()})"
+            )
+        }
+
+        // Android 14+ only permits loading dex containers that are read-only.
+        check(candidate.setReadOnly() || !candidate.canWrite()) {
+            "Unable to make downloaded patch bundle read-only"
+        }
+        val bundle = PatchBundle(candidate.absolutePath)
+        val requiredPatcher = bundle.manifestAttributes?.patcherVersion
+        if (
+            requiredPatcher != null &&
+            compareVersions(requiredPatcher, BuildConfig.PATCHER_VERSION) > 0
+        ) {
+            throw IllegalStateException(
+                "Patch bundle requires morphe-patcher $requiredPatcher, " +
+                    "but this Manager provides ${BuildConfig.PATCHER_VERSION}"
+            )
+        }
+
+        check(PatchBundle.Loader.metadata(bundle).isNotEmpty()) {
+            "Patch bundle contains no loadable patches"
+        }
+    }
 
     /**
      * Downloads the latest version regardless if there is a new update available.
@@ -210,6 +268,7 @@ sealed class RemotePatchBundle(
         const val BRANCH_STABLE = "main"
         const val BRANCH_DEV = "dev"
 
+        private const val MIN_PATCH_BUNDLE_BYTES = 8L
         internal const val CHANGELOG_CACHE_TTL = 10 * 60 * 1000L
         private val changelogCacheMutex = Mutex()
         private val changelogCache = mutableMapOf<String, CachedChangelog>()

@@ -112,9 +112,34 @@ fun HomeScreen(
         usingMountInstallState.value = homeViewModel.usingMountInstall
     }
 
-    // Set up HomeViewModel
-    LaunchedEffect(Unit) {
+    // Set up HomeViewModel. Keep this callback ready before cold-start automation can run.
+    LaunchedEffect(onStartQuickPatch) {
         homeViewModel.onStartQuickPatch = onStartQuickPatch
+    }
+
+    // Zero-configuration cold start: wait until bundle/home initialization is complete,
+    // then let the activity-scoped ViewModel inspect and patch the installed YouTube once.
+    // Explicit notification actions and onboarding retain priority over this automatic path.
+    LaunchedEffect(
+        homeAppState,
+        availablePatches,
+        bundleUpdateProgress,
+        onboardingState,
+        globalOnboardingState,
+        patchTriggerPackage,
+        onStartQuickPatch,
+    ) {
+        homeViewModel.onStartQuickPatch = onStartQuickPatch
+        if (
+            homeAppState != null &&
+            availablePatches > 0 &&
+            bundleUpdateProgress == null &&
+            onboardingState == null &&
+            globalOnboardingState == null &&
+            patchTriggerPackage == null
+        ) {
+            homeViewModel.startAutomaticYouTubePatchOnce()
+        }
     }
 
     val openApkPicker = rememberAdaptiveFilePicker(

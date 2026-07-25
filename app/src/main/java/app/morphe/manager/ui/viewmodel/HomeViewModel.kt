@@ -35,6 +35,13 @@ import app.morphe.manager.domain.manager.HomeAppSortMode
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.*
 import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
+import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
+import app.morphe.manager.domain.update.InstallableUpdate
+import app.morphe.manager.domain.update.UpdateStatus
+import app.morphe.manager.domain.update.VerifiedYouTubeSourceDownloader
+import app.morphe.manager.domain.update.YouTubeSourceDownloadResult
+import app.morphe.manager.domain.update.YouTubeSourceResolver
+import app.morphe.manager.domain.update.YouTubeVersionBuild
 import app.morphe.manager.network.api.MorpheAPI
 import app.morphe.manager.patcher.patch.BundleAppMetadata
 import app.morphe.manager.patcher.patch.PatchBundleInfo
@@ -185,7 +192,9 @@ class HomeViewModel(
     val rootInstaller: RootInstaller,
     private val filesystem: Filesystem,
     private val homeAppButtonPrefs: HomeAppButtonPreferences,
-    private val appDataResolver: AppDataResolver
+    private val appDataResolver: AppDataResolver,
+    private val ecosystemUpdateCoordinator: EcosystemUpdateCoordinator,
+    private val verifiedYouTubeSourceDownloader: VerifiedYouTubeSourceDownloader,
 ) : ViewModel() {
     val availablePatches = patchBundleRepository.bundleInfoFlow.map { it.values.sumOf { bundle -> bundle.patches.size } }
     val bundleUpdateProgress = patchBundleRepository.bundleUpdateProgress
@@ -279,6 +288,8 @@ class HomeViewModel(
     var installedAppsForPicker by mutableStateOf<List<InstalledAppPickerItem>>(emptyList())
     // True while APK loading/processing runs in the background
     var processingApkSelection by mutableStateOf(false)
+    var automaticYouTubeDownloadProgressPercent by mutableStateOf<Int?>(null)
+        private set
 
     // Error/warning dialogs
     var showUnsupportedVersionDialog by mutableStateOf<UnsupportedVersionDialogState?>(null)
@@ -647,6 +658,8 @@ class HomeViewModel(
 
     // Callback for starting patch
     var onStartQuickPatch: ((QuickPatchParams) -> Unit)? = null
+    private var automaticYouTubePatchHandled = false
+    private var automaticYouTubeSourceSelection = false
 
     init {
         triggerUpdateCheck()
@@ -1469,7 +1482,18 @@ class HomeViewModel(
      * - SKIP dialog and auto-use saved APK when:
      *   - Simple mode + saved APK == recommended version
      */
-    fun showPatchDialog(packageName: String) {
+    fun showPatchDialog(packageName: String) =
+        showPatchDialog(packageName, automaticYouTubeSource = false)
+
+    private fun showPatchDialog(
+        packageName: String,
+        automaticYouTubeSource: Boolean,
+    ) {
+        if (packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE) {
+            // A manual/deep-link request supersedes the cold-start automation.
+            automaticYouTubePatchHandled = true
+            automaticYouTubeSourceSelection = automaticYouTubeSource
+        }
         pendingPackageName = packageName
         pendingAppName = bundleAppMetadataFlow.value[packageName]?.displayName
             ?: KnownApps.getAppName(packageName)
@@ -1485,6 +1509,98 @@ class HomeViewModel(
         // Guard: if there is a pending bundle update on metered data, show the outdated-patches
         // dialog before proceeding with the actual APK selection flow.
         guardPatching { showPatchDialogInternal(packageName) }
+    }
+
+    /**
+     * Starts the zero-configuration ecosystem flow once per active home session.
+     *
+     * The signed ecosystem manifest, official Morphe patch bundle, and MicroG are refreshed
+     * before YouTube compatibility is evaluated. A downloaded MicroG update is handed directly
+     * to the selected Android installer; ordinary devices may still show the mandatory system
+     * confirmation while Shizuku/root devices can complete it silently.
+     *
+     * A compatible installed (including split) YouTube is copied into the existing safe
+     * quick-patch pipeline. If there is no local compatible source, the exact bundle-declared
+     * original is downloaded and independently verified before patching. Any failure opens the
+     * normal manual availability dialog, while an already current Morphe install is untouched.
+     */
+    fun startAutomaticYouTubePatchOnce() {
+        if (automaticYouTubePatchHandled || onStartQuickPatch == null) return
+        automaticYouTubePatchHandled = true
+
+        viewModelScope.launch {
+            runCatching {
+                ecosystemUpdateCoordinator.refresh(downloadAssets = true)
+            }.onSuccess { snapshot ->
+                if (snapshot.microg.status == UpdateStatus.DOWNLOADED) {
+                    Log.i(
+                        tag,
+                        "AutoPatch: verified MicroG ${snapshot.microg.availableVersion} is ready; " +
+                            "starting installation"
+                    )
+                    runCatching {
+                        ecosystemUpdateCoordinator.installPrepared(InstallableUpdate.MICROG)
+                    }.onFailure { error ->
+                        Log.e(tag, "AutoPatch: failed to start the prepared MicroG update", error)
+                    }
+                } else {
+                    Log.i(
+                        tag,
+                        "AutoPatch: MicroG ${snapshot.microg.status}" +
+                            snapshot.microg.detail?.let { " ($it)" }.orEmpty()
+                    )
+                }
+
+                val youtube = snapshot.youtube
+                when (youtube.status) {
+                    UpdateStatus.UPDATE_AVAILABLE,
+                    UpdateStatus.WAITING_FOR_COMPATIBLE_SOURCE,
+                    UpdateStatus.NOT_INSTALLED -> {
+                        Log.i(tag, "AutoPatch: starting YouTube source selection (${youtube.status})")
+                        showPatchDialog(
+                            EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
+                            automaticYouTubeSource = true,
+                        )
+                    }
+
+                    UpdateStatus.UP_TO_DATE -> {
+                        Log.i(tag, "AutoPatch: Morphe YouTube is already current")
+                    }
+
+                    else -> {
+                        Log.w(tag, "AutoPatch: YouTube inspection ended with ${youtube.status}")
+                    }
+                }
+            }.onFailure { error ->
+                Log.e(tag, "AutoPatch: failed to refresh the automatic ecosystem", error)
+                // A signed-manifest/network failure must not make the existing local patch flow
+                // unusable. Fall back to local inspection without downloading anything.
+                runCatching { ecosystemUpdateCoordinator.inspectYouTube() }
+                    .onSuccess { youtube ->
+                    when (youtube.status) {
+                        UpdateStatus.UPDATE_AVAILABLE,
+                        UpdateStatus.WAITING_FOR_COMPATIBLE_SOURCE,
+                        UpdateStatus.NOT_INSTALLED -> {
+                            Log.i(tag, "AutoPatch: starting YouTube source selection (${youtube.status})")
+                            showPatchDialog(
+                                EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
+                                automaticYouTubeSource = true,
+                            )
+                        }
+
+                        UpdateStatus.UP_TO_DATE -> {
+                            Log.i(tag, "AutoPatch: Morphe YouTube is already current")
+                        }
+
+                        else -> {
+                            Log.w(tag, "AutoPatch: YouTube inspection ended with ${youtube.status}")
+                        }
+                    }
+                }.onFailure { localError ->
+                    Log.e(tag, "AutoPatch: failed to inspect the local YouTube source", localError)
+                }
+            }
+        }
     }
 
     private suspend fun showPatchDialogInternal(packageName: String) {
@@ -1525,6 +1641,21 @@ class HomeViewModel(
                 .filter { (_, patches) -> patches.isNotEmpty() }
 
             if (candidates.size > 1) {
+                if (automaticYouTubeSourceSelection) {
+                    val preferredUid = pendingCompatibleVersions
+                        .firstOrNull { it.target.version == pendingRecommendedVersion?.version }
+                        ?.bundleUid
+                        ?: candidates.first().first.uid
+                    pendingSelectedBundleUid = preferredUid
+                    recommendedBundleVersions[packageName]
+                        ?.get(preferredUid)
+                        ?.let { recommended ->
+                            pendingRecommendedVersion = recommended
+                            pendingSelectedDownloadVersion = recommended
+                        }
+                    continueApkSelectionFlow(packageName)
+                    return
+                }
                 simpleBundleSelectCandidates = candidates
                 showSimpleBundleSelectDialog = true
                 return
@@ -1558,20 +1689,139 @@ class HomeViewModel(
         }
 
         val recommendedVersion = pendingRecommendedVersion
+        val mayAutoUseCompatibleInstalledYouTube =
+            automaticYouTubeSourceSelection &&
+                packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE
+        val installedMatchesRecommendation =
+            recommendedVersion != null &&
+                pendingInstalledApkInfo?.version == recommendedVersion.version
 
         val shouldAutoUseInstalled = !expertMode &&
                 pendingInstalledApkInfo != null &&
-                recommendedVersion != null &&
-                pendingInstalledApkInfo!!.version == recommendedVersion.version
+                (mayAutoUseCompatibleInstalledYouTube || installedMatchesRecommendation)
         val shouldAutoUseSaved = !expertMode &&
                 pendingSavedApkInfo != null &&
-                recommendedVersion != null &&
-                pendingSavedApkInfo!!.version == recommendedVersion.version
+                (
+                    mayAutoUseCompatibleInstalledYouTube &&
+                        isInstalledVersionCompatible(
+                            pendingSavedApkInfo!!.version,
+                            pendingSavedApkInfo!!.versionCode,
+                        ) ||
+                        recommendedVersion != null &&
+                        pendingSavedApkInfo!!.version == recommendedVersion.version
+                    )
 
         when {
             shouldAutoUseInstalled -> handleInstalledApkSelection()
             shouldAutoUseSaved -> handleSavedApkSelection()
+            mayAutoUseCompatibleInstalledYouTube && !expertMode -> {
+                if (!downloadAndProcessAutomaticYouTubeSource()) {
+                    showApkAvailabilityDialog = true
+                }
+            }
             else -> showApkAvailabilityDialog = true
+        }
+    }
+
+    /**
+     * Resolves, downloads, verifies, and stores the exact YouTube build declared by the
+     * currently loaded patch bundle. Returns false so callers can expose the manual fallback.
+     */
+    private suspend fun downloadAndProcessAutomaticYouTubeSource(): Boolean {
+        val candidates = YouTubeSourceResolver.resolve(
+            recommendedVersion = pendingRecommendedVersion?.version,
+            selectedBundleUid = pendingSelectedBundleUid,
+            compatibleVersions = pendingCompatibleVersions.map { entry ->
+                YouTubeVersionBuild(
+                    version = entry.target.version,
+                    bundleUid = entry.bundleUid,
+                    versionCodes = entry.buildCodes,
+                )
+            },
+        )
+        val expectedSignatures =
+            bundleAppMetadataFlow.value[EcosystemUpdateCoordinator.YOUTUBE_PACKAGE]?.signatures
+                .orEmpty()
+        if (candidates.isEmpty() || expectedSignatures.isEmpty()) {
+            Log.w(
+                tag,
+                "AutoPatch: exact YouTube versionCode or trusted signer metadata is unavailable; " +
+                    "using the manual source flow"
+            )
+            return false
+        }
+
+        processingApkSelection = true
+        automaticYouTubeDownloadProgressPercent = 0
+        try {
+            for (candidate in candidates) {
+                Log.i(
+                    tag,
+                    "AutoPatch: downloading original YouTube ${candidate.version} " +
+                        "(${candidate.versionCode})"
+                )
+                val result = verifiedYouTubeSourceDownloader.download(
+                    candidate = candidate,
+                    expectedSignerSha256 = expectedSignatures,
+                    onProgress = { bytesRead, contentLength ->
+                        val percent = contentLength
+                            ?.takeIf { it > 0L }
+                            ?.let { ((bytesRead * 100L) / it).coerceIn(0L, 100L).toInt() }
+                        if (percent != null) {
+                            viewModelScope.launch(Dispatchers.Main.immediate) {
+                                automaticYouTubeDownloadProgressPercent = percent
+                            }
+                        }
+                    },
+                )
+                when (result) {
+                    is YouTubeSourceDownloadResult.Failure -> {
+                        Log.w(
+                            tag,
+                            "AutoPatch: rejected YouTube ${candidate.version} " +
+                                "(${candidate.versionCode}): ${result.reason}",
+                            result.cause,
+                        )
+                    }
+
+                    is YouTubeSourceDownloadResult.Success -> {
+                        val source = result.source
+                        Log.i(
+                            tag,
+                            "AutoPatch: verified YouTube ${source.version} " +
+                                "(${source.versionCode}) sha256=${source.sha256}"
+                        )
+                        val savedFile = originalApkRepository.saveOriginalApk(
+                            packageName = source.packageName,
+                            version = source.version,
+                            sourceFile = source.file,
+                        )
+                        val patchInput = savedFile ?: source.file
+                        val temporary = savedFile == null
+                        processingApkSelection = false
+                        automaticYouTubeDownloadProgressPercent = null
+                        processSelectedApp(
+                            SelectedApp.Local(
+                                packageName = source.packageName,
+                                version = source.version,
+                                versionCode = source.versionCode,
+                                file = patchInput,
+                                temporary = temporary,
+                            ),
+                            skipSplitCheck = true,
+                        )
+                        if (savedFile != null) {
+                            source.file.delete()
+                        }
+                        return true
+                    }
+                }
+            }
+            app.toast("無法安全下載相容的 YouTube 原版，已切換為手動選檔")
+            return false
+        } finally {
+            processingApkSelection = false
+            automaticYouTubeDownloadProgressPercent = null
         }
     }
 
@@ -1611,8 +1861,12 @@ class HomeViewModel(
      * or if the compatible list is empty / contains an "any version" target.
      */
     private fun isInstalledVersionCompatible(installedVersion: String, installedVersionCode: Long?): Boolean {
-        val compatible = pendingCompatibleVersions
-        if (compatible.isEmpty() || compatible.any { it.target.version == null }) return true
+        if (pendingCompatibleVersions.isEmpty()) return true
+        val compatible = pendingCompatibleVersions.filter {
+            pendingSelectedBundleUid == null || it.bundleUid == pendingSelectedBundleUid
+        }
+        if (compatible.isEmpty()) return false
+        if (compatible.any { it.target.version == null }) return true
         return compatible.any { entry ->
             entry.target.version == installedVersion &&
                 (entry.buildCodes == null || installedVersionCode == null || installedVersionCode.toInt() in entry.buildCodes)
