@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-07-25T12:05:18Z",
+  "created_at": "2026-07-27T06:07:19Z",
   "description": "Unmodified Morphe patch bundle mirror with AutoPatch Hub transport signature",
-  "download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.36.0.mpp",
-  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.36.0.mpp.sig",
-  "version": "1.36.0"
+  "download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.37.0.mpp",
+  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.37.0.mpp.sig",
+  "version": "1.37.0"
 }
