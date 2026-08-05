@@ -161,14 +161,15 @@ jobs:
           unsigned_microg="$(find upstream/microg-re/play-services-core/build/outputs/apk/default/release \
             -name '*.apk' -type f | head -n1)"
           test -f "$unsigned_microg"
-          apksigner sign \
+          "$ANDROID_HOME/build-tools/37.0.0/apksigner" sign \
             --ks app/keystore.jks \
             --ks-key-alias "$KEYSTORE_ENTRY_ALIAS" \
             --ks-pass env:KEYSTORE_PASSWORD \
             --key-pass env:KEYSTORE_ENTRY_PASSWORD \
             --out "dist/microg-$MICROG_VERSION.apk" \
             "$unsigned_microg"
-          apksigner verify --verbose --print-certs "dist/microg-$MICROG_VERSION.apk"
+          "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --verbose --print-certs \
+            "dist/microg-$MICROG_VERSION.apk"
 
       - name: Verify Manager and derived patch-bundle compatibility
         if: steps.gate.outputs.publish == 'true'
