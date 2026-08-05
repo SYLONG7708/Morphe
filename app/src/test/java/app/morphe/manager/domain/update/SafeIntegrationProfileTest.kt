@@ -16,6 +16,18 @@ class SafeIntegrationProfileTest {
             "${SafeIntegrationProfile.vendorGroup}.android.gms",
             SafeIntegrationProfile.microgPackage,
         )
+        assertEquals(
+            SafeIntegrationProfile.microgPackage,
+            SafeIntegrationProfile.compatiblePackagePairs[
+                SafeIntegrationProfile.patchedYouTubePackage
+            ],
+        )
+        assertEquals(
+            "com.sylong.autopatch.aio7870test.android.gms",
+            SafeIntegrationProfile.compatiblePackagePairs[
+                "com.sylong.autopatch.aio7870test.android.youtube"
+            ],
+        )
     }
 
     @Test

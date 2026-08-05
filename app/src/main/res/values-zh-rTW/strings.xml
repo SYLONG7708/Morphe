@@ -850,7 +850,9 @@ morphe_header_custom_dark.png
     <string name="one_tap_local_youtube">本機 YouTube</string>
     <string name="one_tap_recommended_youtube">Morphe 推薦版本</string>
     <string name="one_tap_recommended_detail">自動下載精確相容的原版、完成驗證並直接開始修補</string>
-    <string name="one_tap_microg">MicroG</string>
+    <string name="one_tap_microg">SyMorphe MicroG</string>
+    <string name="one_tap_existing_patched_title">已偵測到既有 Morphe 播放器</string>
+    <string name="one_tap_existing_patched_detail">已安裝 %1$s %2$s，配對 MicroG 為 %3$s。語音搜尋可直接使用；若選擇推薦流程，SyMorphe 會另外建立目前正式管理的配對，不會覆蓋既有版本。</string>
     <string name="one_tap_not_installed">尚未安裝</string>
     <string name="one_tap_unavailable">暫時無法取得</string>
     <string name="one_tap_local_ready">版本相容，可以直接使用本機 APK 修補</string>

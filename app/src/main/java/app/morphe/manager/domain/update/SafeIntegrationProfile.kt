@@ -25,6 +25,25 @@ object SafeIntegrationProfile {
     val microgPackage: String = BuildConfig.SAFE_MICROG_PACKAGE
     val revision: Int = BuildConfig.SAFE_PROFILE_REVISION
 
+    /**
+     * Package pairs emitted by earlier SyLong/AutoPatch test profiles.
+     *
+     * They are detected for migration and voice-player continuity only. New patch runs always
+     * use [patchedYouTubePackage] and [microgPackage], so an older test package can never silently
+     * change the signer or destination of the production profile.
+     */
+    val compatiblePackagePairs: Map<String, String>
+        get() = linkedMapOf(
+            patchedYouTubePackage to microgPackage,
+            "com.sylong.symorphe.android.youtube" to
+                "com.sylong.symorphe.android.gms",
+            "com.sylong.autopatch.aio7870test.android.youtube" to
+                "com.sylong.autopatch.aio7870test.android.gms",
+            "com.sylong.autopatch.test.android.youtube" to
+                "com.sylong.autopatch.test.android.gms",
+            "app.morphe.android.youtube" to "app.morphe.android.gms",
+        )
+
     init {
         require(patchedYouTubePackage == "$vendorGroup.android.youtube")
         require(microgPackage == "$vendorGroup.android.gms")

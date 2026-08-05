@@ -145,6 +145,36 @@ fun OneTapYouTubeDialog(
             detail = microgDetail(state),
         )
 
+        state.existingPatchedYouTubePackage?.let { packageName ->
+            Spacer(Modifier.height(10.dp))
+            Surface(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = stringResource(R.string.one_tap_existing_patched_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.one_tap_existing_patched_detail,
+                            packageName,
+                            state.existingPatchedYouTubeVersion
+                                ?: stringResource(R.string.one_tap_unavailable),
+                            state.existingPatchedMicrogVersion
+                                ?: stringResource(R.string.one_tap_not_installed),
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+        }
+
         state.errorMessage?.takeIf(String::isNotBlank)?.let { message ->
             Spacer(Modifier.height(12.dp))
             Surface(

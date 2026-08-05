@@ -149,7 +149,16 @@ data class OneTapHubUiState(
     val microgInstalledVersion: String? = null,
     val microgAvailableVersion: String? = null,
     val microgStatus: UpdateStatus? = null,
+    val existingPatchedYouTubePackage: String? = null,
+    val existingPatchedYouTubeVersion: String? = null,
+    val existingPatchedMicrogVersion: String? = null,
     val errorMessage: String? = null,
+)
+
+private data class ExistingPatchedPair(
+    val youtubePackage: String,
+    val youtubeVersion: String?,
+    val microgVersion: String?,
 )
 
 /** Saved APK information for display in APK selection dialog. */
@@ -1573,6 +1582,20 @@ class HomeViewModel(
                     .takeIf { BuildConfig.BUNDLED_ECOSYSTEM_ENABLED && it.isNotBlank() }
             val installedMicrog = pm.getPackageInfo(EcosystemUpdateCoordinator.MICROG_PACKAGE)
                 ?.versionName
+            val existingPair = SafeIntegrationProfile.compatiblePackagePairs
+                .asSequence()
+                .filter { (youtubePackage, _) ->
+                    youtubePackage != SafeIntegrationProfile.patchedYouTubePackage
+                }
+                .mapNotNull { (youtubePackage, microgPackage) ->
+                    val youtube = pm.getPackageInfo(youtubePackage) ?: return@mapNotNull null
+                    ExistingPatchedPair(
+                        youtubePackage = youtubePackage,
+                        youtubeVersion = youtube.versionName,
+                        microgVersion = pm.getPackageInfo(microgPackage)?.versionName,
+                    )
+                }
+                .firstOrNull()
 
             oneTapHubUiState = OneTapHubUiState(
                 checking = false,
@@ -1584,6 +1607,9 @@ class HomeViewModel(
                 microgAvailableVersion = snapshot?.microg?.availableVersion,
                 microgStatus = snapshot?.microg?.status
                     ?: if (installedMicrog == null) UpdateStatus.NOT_INSTALLED else UpdateStatus.UP_TO_DATE,
+                existingPatchedYouTubePackage = existingPair?.youtubePackage,
+                existingPatchedYouTubeVersion = existingPair?.youtubeVersion,
+                existingPatchedMicrogVersion = existingPair?.microgVersion,
                 errorMessage = snapshotResult.exceptionOrNull()?.message,
             )
         }

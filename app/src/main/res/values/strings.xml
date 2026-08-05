@@ -922,6 +922,8 @@ The image dimensions must be as follows:
     <string name="one_tap_recommended_youtube">Morphe recommendation</string>
     <string name="one_tap_recommended_detail">Downloads the exact compatible original, verifies it, and starts patching automatically</string>
     <string name="one_tap_microg">MicroG</string>
+    <string name="one_tap_existing_patched_title">Existing Morphe player detected</string>
+    <string name="one_tap_existing_patched_detail">%1$s %2$s is installed with paired MicroG %3$s. Voice search can use it now; the recommended workflow creates the current SyMorphe-managed pair separately.</string>
     <string name="one_tap_not_installed">Not installed</string>
     <string name="one_tap_unavailable">Unavailable</string>
     <string name="one_tap_local_ready">Compatible and ready for direct local patching</string>
