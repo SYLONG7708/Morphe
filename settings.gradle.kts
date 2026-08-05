@@ -55,5 +55,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "autopatch-hub"
+rootProject.name = "symorphe"
 include(":app")

@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 səhvi</string>
     <string name="android_11_bug_dialog_description">Tətbiq quraşdırılması icazəsi istifadəçi təcrübəsinə mənfi təsir edəcək Android 11 sistemindəki səhvə mane olmaq üçün əvvəlcədən qəbul edilməlidir</string>
     <string name="deep_link_add_source_title">Mənbə əlavə et</string>
-    <string name="deep_link_add_source_message">Bu yamaq mənbəyin AutoPatch Hub-yə əlavə etmək istəyirsiniz?</string>
+    <string name="deep_link_add_source_message">Bu yamaq mənbəyin SyMorphe-yə əlavə etmək istəyirsiniz?</string>
     <string name="deep_link_add_source_warning">Yalnız etibar etdiyiniz mənbələri əlavə edin</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Əlçatan AutoPatch Hub yenilənməsi</string>
+    <string name="home_update_available">Əlçatan SyMorphe yenilənməsi</string>
     <string name="home_update_available_subtitle">Yeni versiya quraşdırılmağa hazırdır</string>
     <string name="home_update_error">Yenilənmə uğursuz oldu</string>
     <string name="home_update_error_subtitle">İnternet bağlantınızı yoxlayın və təkrar cəhd edin</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Təcrübə mükəmməlləşdirir və siz hədəfə yaxınlaşırsınız 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Hələ burada deyil... hələ burada deyil... 🙈 </string>
     <string name="home_download_instructions_download_button_toast_5">Yaxşı, inadkarlığa hörmət edirəm 🫡 </string>
-    <string name="home_download_instructions_download_button_toast_6">Artıq rəsmi AutoPatch Hub düyməsi sınaqçısısınız 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Artıq rəsmi SyMorphe düyməsi sınaqçısısınız 🏅</string>
     <string name="home_download_instructions_step3">Endirmənin tamamlanmasını gözləyin və &lt;/b&gt;APK quraşdırmayın&lt;/b&gt;</string>
     <string name="home_download_instructions_step3_mount">Endirmənin tamamlanmasını gözləyin, sonra &lt;b&gt;APK quraşdırın&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Yükləmə bitəndən sonra AutoPatch Hub-yə qayıt</string>
-    <string name="home_download_instructions_step4_mount">Əsil APK-nı quraşdırandan sonra, AutoPatch Hub-yə qayıt</string>
+    <string name="home_download_instructions_step4">Yükləmə bitəndən sonra SyMorphe-yə qayıt</string>
+    <string name="home_download_instructions_step4_mount">Əsil APK-nı quraşdırandan sonra, SyMorphe-yə qayıt</string>
     <string name="home_download_instructions_continue">APKMirror.com-a keçin</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Yüklənilmiş APK-nı seç</string>
@@ -306,7 +306,7 @@ Xarici sahə (ştrixli): başladıcı örtüyündən kəsilə bilər - mühüm h
     <string name="home_app_info_patch_update_available">Yamaq yenilənməsi var</string>
     <string name="home_app_info_patch_update_available_description">Yamaqların daha yeni versiyası var. Ən son təkmilləşdirmələr və düzəlişlər üçün tətbiqinizi təkrar yamaqlayın</string>
     <string name="home_app_info_app_deleted_warning">Tətbiq quraşdırması silindi</string>
-    <string name="home_app_info_app_deleted_description">Bu tətbiq AutoPatch Hub xarici silindi. Funksionallığı qaytarmaq üçün onu təkrar quraşdır</string>
+    <string name="home_app_info_app_deleted_description">Bu tətbiq SyMorphe xarici silindi. Funksionallığı qaytarmaq üçün onu təkrar quraşdır</string>
     <string name="home_app_info_apk_size">APK həcmi</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Root rejimi yamaqdan əvvəl orijinal APK-nın cihazınızda quraşdırılmasını tələb edir</string>
@@ -342,7 +342,7 @@ Xarici sahə (ştrixli): başladıcı örtüyündən kəsilə bilər - mühüm h
     <string name="patcher_conflict_subtitle">Mövcud versiyanı silməlisiniz</string>
     <string name="patcher_conflict_hint">Yamaqlanan tətbiq quraşdırılan versiyadan fərqli sertifikat istifadə edir. Quraşdırma ləğvi bütün tətbiq məlumatını siləcək</string>
     <string name="patcher_installed_conflict_title">Silinmə tələb olunur</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub, yamaqlanan tətbiqləri orijinaldan fərqlənən öz sertifikatı ilə imzalayır. Android yamaqlanan tətbiqi quraşdıra bilməsi öncəsi mövcud versiyanı silməyi tələb edir.
+    <string name="patcher_installed_conflict_body">"SyMorphe, yamaqlanan tətbiqləri orijinaldan fərqlənən öz sertifikatı ilə imzalayır. Android yamaqlanan tətbiqi quraşdıra bilməsi öncəsi mövcud versiyanı silməyi tələb edir.
 
 Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="patcher_install_error_title">Quraşdırma xətası</string>
@@ -351,9 +351,9 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="patcher_ready_to_mount_subtitle">Montajlamaq üçün aşağıdakı düyməyə toxun</string>
     <string name="patcher_storage_permission_dialog_title">Yaddaş keçidinə keçmək olmur</string>
     <string name="patcher_incompatible_patcher_title">Yenilənmə tələb olundu</string>
-    <string name="patcher_incompatible_patcher_description">&lt;b&gt;%1$s&lt;/b&gt; paketi &lt;b&gt;%2$s&lt;/b&gt; və ya daha yeni versiya yamaqlayıcı tələb edir. Xahiş olunur, bu tətbiqi yamaqlamaq üçün AutoPatch Hub-ni yenilə</string>
-    <string name="patcher_incompatible_patcher_update_button">AutoPatch Hub-ni yüklə və yenilə</string>
-    <string name="patcher_storage_permission_description_api30">Bir və ya daha çox yamaq seçimi AutoPatch Hub-nin oxuya bilmədiyi yolları işarə edir. Yaddaş girişin qəbul et və düyməyə toxun, sonra yamaqlanma birbaşa başlayacaq</string>
+    <string name="patcher_incompatible_patcher_description">&lt;b&gt;%1$s&lt;/b&gt; paketi &lt;b&gt;%2$s&lt;/b&gt; və ya daha yeni versiya yamaqlayıcı tələb edir. Xahiş olunur, bu tətbiqi yamaqlamaq üçün SyMorphe-ni yenilə</string>
+    <string name="patcher_incompatible_patcher_update_button">SyMorphe-ni yüklə və yenilə</string>
+    <string name="patcher_storage_permission_description_api30">Bir və ya daha çox yamaq seçimi SyMorphe-nin oxuya bilmədiyi yolları işarə edir. Yaddaş girişin qəbul et və düyməyə toxun, sonra yamaqlanma birbaşa başlayacaq</string>
     <string name="patcher_storage_permission_description_legacy">Bir və ya daha çox yamaq seçimi keçmək olmayan yolları göstərir. Yamaq seçimlərindəki yolları yeniləyin və təkrar cəhd edin</string>
     <string name="patcher_storage_permission_grant">Yaddaş icazəsin qəbul et</string>
     <string name="patcher_storage_permission_denied_warning">Yaddaş icazəsi rədd edildi. Bu yolu istifadə etmək üçün icazəni qəbul et və ya faylları tətbiqin şəxsi qovluğuna köçür</string>
@@ -372,7 +372,7 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="patcher_step_sign_apk">Yamaqlanan APK faylı imzalanır</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Fon yamaqlanma müdafiəsi</string>
-    <string name="battery_optimization_dialog_description">Bəzi cihazlar tətbiqi qısanda yamaqlayıcını dayandıra bilər. Etibarlı tamamlanan yamaqlanmaya əmin olmaq üçün AutoPatch Hub-ni batareya məhdudiyyətləri olmadan işlətməyə icazə ver</string>
+    <string name="battery_optimization_dialog_description">Bəzi cihazlar tətbiqi qısanda yamaqlayıcını dayandıra bilər. Etibarlı tamamlanan yamaqlanmaya əmin olmaq üçün SyMorphe-ni batareya məhdudiyyətləri olmadan işlətməyə icazə ver</string>
     <string name="battery_optimization_not_now">İndi deyil</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Yamaqlanma irəliləyişdədir...</string>
@@ -388,7 +388,7 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="patcher_message_6">Bayıra bax, orada hava çox gözəldir… 🌤️</string>
     <string name="patcher_message_7">1 və 0-ların sazlanması… 🤖 </string>
     <string name="patcher_message_8">Rəqəmsal makaron açılır... 🍝 </string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Yamaqlanmayan tətbiqdəki səhvləri bərpa edir...  🪲</string>
     <string name="patcher_message_10">Əla yamaqlar, gözləməyə dəyər... ⏳ </string>
     <string name="patcher_message_11">Piksellər parıldayana qədər cilalanır... 💎 </string>
@@ -492,9 +492,9 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Yenilənmələr</string>
     <string name="settings_advanced_updates_use_prereleases">İlkin-buraxılış yeniləmələri</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Yeni AutoPatch Hub tətbiq versiyalarına erkən keçid. Hər mənbənin ilkin buraxılışın yamaq mənbələrində aktivləşdir</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Yeni SyMorphe tətbiq versiyalarına erkən keçid. Hər mənbənin ilkin buraxılışın yamaq mənbələrində aktivləşdir</string>
     <string name="settings_advanced_updates_allow_metered">Mobil data yenilənmələri</string>
-    <string name="settings_advanced_updates_allow_metered_description">AutoPatch Hub və yamaq yeniləmələrini mobil məlumat üzərindən yükləməyə icazə verilir</string>
+    <string name="settings_advanced_updates_allow_metered_description">SyMorphe və yamaq yeniləmələrini mobil məlumat üzərindən yükləməyə icazə verilir</string>
     <string name="settings_advanced_updates_background_notifications">Fon yenilənmə bildirişləri</string>
     <string name="settings_advanced_updates_background_notifications_description">Fonda yeniləmələri dövri yoxla və əlçatandırsa elan et</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Hətta tətbiq bağlandıqda, yeni buraxılışlar üçün təkan bildirişləri</string>
@@ -507,21 +507,21 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Fon yoxlanma tezliyi</string>
     <string name="settings_advanced_update_interval_battery_warning">Fon yoxlamaları bəzi cihazlarda davamlı işləməyə bilər. Xiaomi, Huawei, Samsung və OnePlus kimi istehsalçılar batareyanı qorumaq üçün dəfələrlə fon proseslərini ciddi şəkildə məhdudlaşdırırlar</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Əlçatan AutoPatch Hub yenilənməsi</string>
+    <string name="notification_manager_update_title">Əlçatan SyMorphe yenilənməsi</string>
     <string name="notification_bundle_update_title">Yeni yamaqlar var</string>
     <string name="notification_update_text">%s versiyası yüklənilməyə hazırdır</string>
-    <string name="notification_bundle_update_text_unversioned">AutoPatch Hub-ni açmaq və yeniləmək üçün toxun</string>
+    <string name="notification_bundle_update_text_unversioned">SyMorphe-ni açmaq və yeniləmək üçün toxun</string>
     <string name="notification_permission_dialog_title">Bildirişləri qəbul et</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub fonda yeniləmələr əlçatan olduqda sizə bildirmək üçün bildiriş icazəsi istəyir</string>
+    <string name="notification_permission_dialog_description">SyMorphe fonda yeniləmələr əlçatan olduqda sizə bildirmək üçün bildiriş icazəsi istəyir</string>
     <string name="notification_post_patch_dialog_title">Yeniləmələr əlçatandırsa bildiriş almaq istərdiniz?</string>
     <string name="notification_channel_fcm_updates">Yenilənmə bildirişləri</string>
-    <string name="notification_channel_fcm_updates_description">Yeni AutoPatch Hub və yamaq buraxılışları haqqında bildirişlər </string>
+    <string name="notification_channel_fcm_updates_description">Yeni SyMorphe və yamaq buraxılışları haqqında bildirişlər </string>
     <string name="notification_channel_patcher">Yamaqlanır</string>
-    <string name="notification_channel_patcher_description">AutoPatch Hub tətbiqi fonda yamaqlayarkən görünür</string>
+    <string name="notification_channel_patcher_description">SyMorphe tətbiqi fonda yamaqlayarkən görünür</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Mütəxəssis tənzimləmələri</string>
     <string name="settings_advanced_expert_mode">Mütəxəssis rejimi</string>
-    <string name="settings_advanced_expert_mode_description">Qəliz AutoPatch Hub yamaqlanma tənzimləmələrin və fərdiləşdirmə seçimlərin aktivləşdirir</string>
+    <string name="settings_advanced_expert_mode_description">Qəliz SyMorphe yamaqlanma tənzimləmələrin və fərdiləşdirmə seçimlərin aktivləşdirir</string>
     <string name="settings_advanced_expert_mode_dialog_title">Mütəxəssis rejimi aktivləşdirilsin?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Mütəxəssis rejimi yamaqların necə tətbiq olunduğuna daha çox nəzarət verir, lakin mütəxəssis rejimindəki tənzimləmələri səhv qurma tətbiqi funksional pozuntuya sala bilər</string>
     <string name="settings_advanced_strip_unused_libs">Cihaz quruluşu üçün optimallaşdır</string>
@@ -542,7 +542,7 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="settings_advanced_github_pat_dialog_title">GitHub Şəxsi Giriş Token-ini Yerləşdir</string>
     <string name="settings_advanced_github_pat_dialog_description">Xarici mənbələr kimi pull request-ləri əlavə edə bilmək üçün GitHub Şəxsi Giriş Token-ini təyin et. public_repo github.com fəaliyyət sahəsi ilə PAT yarat</string>
     <string name="settings_advanced_github_pat_export_include_label">Tənzimləmələr ixracında yerləşdir</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Bu PAT-ı ixrac edilən AutoPatch Hub tənzimləmələrinə əlavə edir</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Bu PAT-ı ixrac edilən SyMorphe tənzimləmələrinə əlavə edir</string>
     <string name="settings_advanced_github_pat_export_warning">PAT-ınızı paylaşmayın. Bunu tənzimləmələr ixracına daxil etsəniz, o faylı gizli saxlayın, çünki onun token-i var</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Yamaq seçimləri</string>
@@ -638,7 +638,7 @@ morphe_header_custom_light.png morphe_header_custom_dark.png
     <string name="installer_status_not_supported">Bu fəaliyyət üçün dəstəklənən deyil</string>
     <string name="installer_status_shizuku_not_installed">Bu seçimi istifadə etmək üçün Shizuku və ya Sui quraşdır</string>
     <string name="installer_status_shizuku_not_running">Shizuku yaxud Sui-ni başlat və təkrar sına</string>
-    <string name="installer_status_shizuku_permission">Shizuku tətbiqindən AutoPatch Hub üçün Shizuku icazəsin qəbul et</string>
+    <string name="installer_status_shizuku_permission">Shizuku tətbiqindən SyMorphe üçün Shizuku icazəsin qəbul et</string>
     <string name="installer_mount_warning_install">İlkin quraşdırıcınız rootlu montaj quraşdırıcısına tənzimlənib. Saxlanılan bu tətbiq montaj istifadə edilərək quraşdırılan deyil</string>
     <string name="mount_version_mismatch_message">Əsas tətbiq versiyası (%2$s) yamaqlanan tətbiq versiyasına (%1$s) uyğun deyil. Uyuşan əsas versiyanı montajla, sonra təkrar sına</string>
     <string name="installer_status_shizuku_unsupported">Quraşdırılan Shizuku versiyası dəstəklənmir</string>
@@ -692,11 +692,11 @@ morphe_header_custom_light.png morphe_header_custom_dark.png
     <string name="settings_system_export_keystore_failed">Keystore-u ixrac etmək olmadı</string>
     <string name="settings_system_show_password_field">Parolu göstər</string>
     <string name="settings_system_hide_password_field">Parolu gizlət</string>
-    <string name="settings_system_morphe_settings">AutoPatch Hub tənzimləmələri</string>
-    <string name="settings_system_import_manager_settings_description">AutoPatch Hub tənzimləmələrinizi nüsxələyir və bərpa edir</string>
-    <string name="settings_system_import_manager_settings_fail">AutoPatch Hub tənzimləmələrin idxal etmək olmadı: %s</string>
-    <string name="settings_system_import_manager_settings_success">AutoPatch Hub tənzimləmələri idxal edildi</string>
-    <string name="settings_system_import_manager_settings_mode_title">AutoPatch Hub tənzimləmələrin idxal et</string>
+    <string name="settings_system_morphe_settings">SyMorphe tənzimləmələri</string>
+    <string name="settings_system_import_manager_settings_description">SyMorphe tənzimləmələrinizi nüsxələyir və bərpa edir</string>
+    <string name="settings_system_import_manager_settings_fail">SyMorphe tənzimləmələrin idxal etmək olmadı: %s</string>
+    <string name="settings_system_import_manager_settings_success">SyMorphe tənzimləmələri idxal edildi</string>
+    <string name="settings_system_import_manager_settings_mode_title">SyMorphe tənzimləmələrin idxal et</string>
     <string name="settings_system_import_manager_settings_mode_description">İdxal olunmuş tənzimləmələrin və mənbələrin necə tətbiq olunacağını seç</string>
     <string name="settings_system_import_selections_mode_title">Yamaq seçimlərini idxal et</string>
     <string name="settings_system_import_selections_mode_description">İdxal olunmuş seçimlərin və yamaq üstünlüklərinin necə tətbiq olunacağını seç</string>
@@ -704,8 +704,8 @@ morphe_header_custom_light.png morphe_header_custom_dark.png
     <string name="import_mode_replace_description">Nüsxələməni tam olaraq uyğunlaşdır. Nüsxələmədən çatışmayan elementlər silinəcək</string>
     <string name="import_mode_merge_title">Mövcud olanla birləşdir</string>
     <string name="import_mode_merge_description">Nüsxələmədən çatışmayan elementləri əlavə et. Mövcud elementlər dəyişməz saxlanılır</string>
-    <string name="settings_system_export_manager_settings_fail">AutoPatch Hub tənzimləmələrin ixrac etmək olmadı: %s</string>
-    <string name="settings_system_export_manager_settings_success">AutoPatch Hub tənzimləmələri ixrac olundu</string>
+    <string name="settings_system_export_manager_settings_fail">SyMorphe tənzimləmələrin ixrac etmək olmadı: %s</string>
+    <string name="settings_system_export_manager_settings_success">SyMorphe tənzimləmələri ixrac olundu</string>
     <string name="settings_system_debug">Yaxşılaşdırma</string>
     <string name="settings_system_export_debug_logs_description">Problemlərin düzəldilməsi üçün sistem jurnalların saxlayır</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Jurnalları oxumaq olmadı (çıxış şifrəsi %s)</string>
@@ -761,7 +761,7 @@ morphe_header_custom_light.png morphe_header_custom_dark.png
     <string name="settings_system_no_patches_or_options">Yamaqlar və ya seçimlər saxlanılmayıb</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Fərdi fayl seçici</string>
-    <string name="settings_system_custom_file_picker_description">Sistem standartı əvəzində AutoPatch Hub-nin qurulu fayl seçicisi ilə yaddaşı araşdır</string>
+    <string name="settings_system_custom_file_picker_description">Sistem standartı əvəzində SyMorphe-nin qurulu fayl seçicisi ilə yaddaşı araşdır</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Əvvəlki kataloq</string>
     <string name="file_picker_no_files">Burada fayl yoxdur</string>
@@ -779,7 +779,7 @@ morphe_header_custom_light.png morphe_header_custom_dark.png
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Haqqında</string>
     <string name="settings_system_share_website">Veb saytı paylaş</string>
-    <string name="settings_system_share_website_description">Rəsmi AutoPatch Hub veb saytı paylaşılır</string>
+    <string name="settings_system_share_website_description">Rəsmi SyMorphe veb saytı paylaşılır</string>
     <string name="settings_system_manager_description">İcma əlaqələri və töhfələri ilə idarə olunan məşhur Android tətbiqlərinin müasir, rəvan yamaqlanması üçün açıq mənbəli layihə</string>
     <string name="credits">Heyət</string>
     <string name="credits_current_development">Hazırkı inkişaf</string>
@@ -911,7 +911,7 @@ Hələ də davam etmək istəyirsiniz?"</string>
     <string name="onboarding_sources_desc">Yamaq mənbələrinizi idarə edin. Hər mənbə tətbiqlərinizə tətbiq oluna bilən yamaqlar təmin edir</string>
     <string name="onboarding_swipe_title">Sürüşdürmə jestləri</string>
     <string name="onboarding_swipe_desc">Mövcud yamaqlara baxmaq üçün tətbiq kartında sağa sürüşdür. Kartı əsas ekrandan gizlətmək üçün sola sürüşdür</string>
-    <string name="onboarding_settings_desc">AutoPatch Hub-ni fərdiləşdir: görünüş, qabaqcıl seçimlər və sistem alətləri</string>
+    <string name="onboarding_settings_desc">SyMorphe-ni fərdiləşdir: görünüş, qabaqcıl seçimlər və sistem alətləri</string>
     <string name="onboarding_sources_patches_desc">Bu mənbədən əlçatan bütün yamaqlara baxmaq üçün toxun</string>
     <string name="onboarding_sources_version_desc">Bu mənbə üçün tam dəyişiklik jurnalına baxmaq məqsədilə versiyaya toxun</string>
     <string name="onboarding_sources_prerelease_desc">Bu mənbədən ilkin buraxılış yamaq versiyalarını almaq üçün bunu aktivləşdir</string>
@@ -926,8 +926,8 @@ Hələ də davam etmək istəyirsiniz?"</string>
     <string name="onboarding_system_file_picker_desc">APK və ya açar ehtiyatları seçəndə sistem seçicisi əvəzinə qurulu fayl tədqiqin istifadə etmək məqsədilə aktivləşdir</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Sürətli xüsusiyyət tanışlığı</string>
-    <string name="tour_prompt_desc">AutoPatch Hub-nin əsas xüsusiyyətlərinə qısa baxış istəyirsiniz?</string>
+    <string name="tour_prompt_desc">SyMorphe-nin əsas xüsusiyyətlərinə qısa baxış istəyirsiniz?</string>
     <string name="tour_prompt_confirm">Mənə göstər</string>
     <string name="onboarding_restart_title">Xüsusiyyət tanışlığı</string>
-    <string name="onboarding_restart_desc">AutoPatch Hub-nin əsas xüsusiyyətlərinin bələdçi turuna başla</string>
+    <string name="onboarding_restart_desc">SyMorphe-nin əsas xüsusiyyətlərinin bələdçi turuna başla</string>
 </resources>

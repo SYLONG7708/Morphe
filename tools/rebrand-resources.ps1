@@ -8,7 +8,7 @@ $files = git -C $Root grep -Il -- "Morphe" -- "app/src/main/res/**/strings.xml"
 foreach ($relative in $files) {
     $path = Join-Path $Root $relative
     $text = [System.IO.File]::ReadAllText($path)
-    $updated = $text.Replace("Morphe Manager", "AutoPatch Hub").Replace("Morphe", "AutoPatch Hub")
+    $updated = $text.Replace("Morphe Manager", "SyMorphe").Replace("Morphe", "SyMorphe")
     if ($updated -ne $text) {
         [System.IO.File]::WriteAllText($path, $updated, $utf8)
     }

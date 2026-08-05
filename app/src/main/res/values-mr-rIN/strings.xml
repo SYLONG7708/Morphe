@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">अँड्रॉइड 11 दोष</string>
     <string name="android_11_bug_dialog_description">अँड्रॉइड 11 सिस्टिममधील एक दोष टाळण्यासाठी, ॲप स्थापनेची परवानगी आधीच देणे आवश्यक आहे; अन्यथा त्याचा वापरकर्त्याच्या अनुभवावर वाईट परिणाम होईल.</string>
     <string name="deep_link_add_source_title">मूळ जोडा</string>
-    <string name="deep_link_add_source_message">तुम्हाला \'AutoPatch Hub\' मध्ये ही सुधारणा मूळ जोडायची आहे का?</string>
+    <string name="deep_link_add_source_message">तुम्हाला \'SyMorphe\' मध्ये ही सुधारणा मूळ जोडायची आहे का?</string>
     <string name="deep_link_add_source_warning">फक्त तुम्ही विश्वास ठेवता अशा स्त्रोतांनाच जोडा</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">AutoPatch Hub नवीन सुधारणा उपलब्ध आहे</string>
+    <string name="home_update_available">SyMorphe नवीन सुधारणा उपलब्ध आहे</string>
     <string name="home_update_available_subtitle">नवीन सुधारणा स्थापनेसाठी तयार आहे</string>
     <string name="home_update_error">सुधारणा अयशस्वी झाली</string>
     <string name="home_update_error_subtitle">तुमचे नेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">सरावाने माणूस पारंगत होतो आणि तुम्ही तिथे पोहोचत आहात 💪</string>
     <string name="home_download_instructions_download_button_toast_4">अजून इथे नाही... अजून इथे नाही... 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">ठीक आहे, मी तुमच्या समर्पणाचा आदर करतो 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">आता तुम्ही अधिकृत AutoPatch Hub बटण परीक्षक आहात 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">आता तुम्ही अधिकृत SyMorphe बटण परीक्षक आहात 🏅</string>
     <string name="home_download_instructions_step3">डाउनलोड पूर्ण होऊ द्या, पण APK  &lt;b&gt;इन्स्टॉल करू नका.&lt;b&gt;</string>
     <string name="home_download_instructions_step3_mount">डाउनलोड पूर्ण होण्याची प्रतीक्षा करा, त्यानंतर  &lt;b&gt;APK इन्स्टॉल करा&lt;b&gt;</string>
-    <string name="home_download_instructions_step4">डाउनलोड झाल्यावर पुन्हा AutoPatch Hub उघडा.</string>
-    <string name="home_download_instructions_step4_mount">इन्स्टॉलेशन पूर्ण झाल्यावर AutoPatch Hub कडे परत वळा.</string>
+    <string name="home_download_instructions_step4">डाउनलोड झाल्यावर पुन्हा SyMorphe उघडा.</string>
+    <string name="home_download_instructions_step4_mount">इन्स्टॉलेशन पूर्ण झाल्यावर SyMorphe कडे परत वळा.</string>
     <string name="home_download_instructions_continue">APKMirror.com उघडा</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">डाउनलोड केलेली APK निवडा</string>
@@ -305,7 +305,7 @@
     <string name="home_app_info_patch_update_available">पॅच अपडेट उपलब्ध आहे</string>
     <string name="home_app_info_patch_update_available_description">पॅचची नवीन आवृत्ती उपलब्ध आहे. नवीनतम सुधारणा आणि निराकरणे मिळवण्यासाठी तुमचे ॲप पुन्हा पॅच करा</string>
     <string name="home_app_info_app_deleted_warning">ॲप अनइंस्टॉल केले होते</string>
-    <string name="home_app_info_app_deleted_description">हे ॲप AutoPatch Hub बाहेर अनइंस्टॉल केले गेले होते. कार्यक्षमता पुनर्संचयित करण्यासाठी ते पुन्हा पॅच करा</string>
+    <string name="home_app_info_app_deleted_description">हे ॲप SyMorphe बाहेर अनइंस्टॉल केले गेले होते. कार्यक्षमता पुनर्संचयित करण्यासाठी ते पुन्हा पॅच करा</string>
     <string name="home_app_info_apk_size">APK आकार</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">रूट मोडसाठी तुमच्या डिव्हाइसवर मूळ APK स्थापित करणे आवश्यक आहे, पॅचिंग करण्यापूर्वी</string>
@@ -341,7 +341,7 @@
     <string name="patcher_conflict_subtitle">तुम्हालाExisting व्हर्जन अनइंस्टॉल करणे आवश्यक आहे</string>
     <string name="patcher_conflict_hint">पॅच केलेले ॲप इंस्टॉल केलेल्या आवृत्तीपेक्षा वेगळे प्रमाणपत्र वापरते. अनइंस्टॉल केल्याने ॲपचा सर्व डेटा पुसला जाईल.</string>
     <string name="patcher_installed_conflict_title">अस्थापित करणे आवश्यक आहे</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub तुमच्या स्थापित ॲप्सना स्वतःच्या प्रमाणपत्राने प्रमाणित करते, जे मूळ प्रमाणपत्रापेक्षा वेगळे आहे. प्रमाणित ॲप स्थापित करण्यापूर्वी, Android ला विद्यमान आवृत्ती काढणे आवश्यक आहे.
+    <string name="patcher_installed_conflict_body">"SyMorphe तुमच्या स्थापित ॲप्सना स्वतःच्या प्रमाणपत्राने प्रमाणित करते, जे मूळ प्रमाणपत्रापेक्षा वेगळे आहे. प्रमाणित ॲप स्थापित करण्यापूर्वी, Android ला विद्यमान आवृत्ती काढणे आवश्यक आहे.
 
 अस्थिर केल्याने ॲपचा सर्व डेटा कायमचा नष्ट होईल."</string>
     <string name="patcher_install_error_title">इंस्टॉलेशन एरर</string>
@@ -350,9 +350,9 @@
     <string name="patcher_ready_to_mount_subtitle">माउंट करण्यासाठी खालील बटण दाबा</string>
     <string name="patcher_storage_permission_dialog_title">स्टोरेज पाथ ॲक्सेस करू शकत नाही</string>
     <string name="patcher_incompatible_patcher_title">अद्यतन आवश्यक आहे</string>
-    <string name="patcher_incompatible_patcher_description">बंडल &lt;b&gt;%1$s&lt;/b&gt; ला पॅचर व्हर्जन &lt;b&gt;%2$s&lt;/b&gt; किंवा नवीनची आवश्यकता आहे. कृपया हे ॲप पॅच करण्यासाठी AutoPatch Hub अपडेट करा.</string>
-    <string name="patcher_incompatible_patcher_update_button">AutoPatch Hub डाउनलोड आणि अपडेट करा</string>
-    <string name="patcher_storage_permission_description_api30">एक किंवा अधिक पॅच पर्याय अशा मार्गांकडे निर्देशित करतात जे AutoPatch Hub वाचू शकत नाही. स्टोरेज प्रवेश द्या आणि नंतर पॅचिंग आपोआप सुरू होईल</string>
+    <string name="patcher_incompatible_patcher_description">बंडल &lt;b&gt;%1$s&lt;/b&gt; ला पॅचर व्हर्जन &lt;b&gt;%2$s&lt;/b&gt; किंवा नवीनची आवश्यकता आहे. कृपया हे ॲप पॅच करण्यासाठी SyMorphe अपडेट करा.</string>
+    <string name="patcher_incompatible_patcher_update_button">SyMorphe डाउनलोड आणि अपडेट करा</string>
+    <string name="patcher_storage_permission_description_api30">एक किंवा अधिक पॅच पर्याय अशा मार्गांकडे निर्देशित करतात जे SyMorphe वाचू शकत नाही. स्टोरेज प्रवेश द्या आणि नंतर पॅचिंग आपोआप सुरू होईल</string>
     <string name="patcher_storage_permission_description_legacy">एक किंवा अधिक पॅच पर्याय अशा मार्गांकडे निर्देशित करतात जे ॲक्सेस केले जाऊ शकत नाहीत. पॅच पर्यायामधील मार्ग अद्यतनित करा आणि पुन्हा प्रयत्न करा</string>
     <string name="patcher_storage_permission_grant">स्टोरेज परवानग्या द्या</string>
     <string name="patcher_storage_permission_denied_warning">स्टोरेज परवानगी नाकारली गेली. ही परवानगी देण्यासाठी किंवा फाइल्स ॲपच्या खाजगी निर्देशिकेत हलवा</string>
@@ -387,7 +387,7 @@
     <string name="patcher_message_6">बाहेर पहा, हवामान छान आहे… 🌤️</string>
     <string name="patcher_message_7">1 आणि 0 समायोजित करत आहे… 🤖</string>
     <string name="patcher_message_8">डिजिटल स्पॅगेटी सोडवत आहे… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">नॉन-पॅच केलेल्या ॲपमधील बग फिक्स करत आहे… 🪲</string>
     <string name="patcher_message_10">महान पॅचची वाट पाहणे योग्य आहे… ⏳</string>
     <string name="patcher_message_11">पिक्सेल चमकत आहेत तोपर्यंत पॉलिश करत आहे… 💎</string>
@@ -471,7 +471,7 @@
     <!-- Settings - Appearance Tab - Language Selector -->
     <string name="settings_appearance_app_language">वर्तमान भाषा</string>
     <string name="settings_appearance_app_language_current">काही भाषांसाठी भाषांतर गहाळ किंवा अपूर्ण असू शकतात</string>
-    <string name="settings_appearance_translations_info_title">नवीन भाषांचे भाषांतर करण्यासाठी किंवा विद्यमान भाषांतरे सुधारण्यासाठी, येथे भेट द्या %s</string>
+    <string name="settings_appearance_translations_info_title">काही भाषांमधील भाषांतरे उपलब्ध नसू शकतात किंवा अपूर्ण असू शकतात</string>
     <string name="settings_appearance_translations_info_text">नवीन भाषांतर करण्यासाठी किंवा विद्यमान भाषांतरांमध्ये सुधारणा करण्यासाठी, %s ला भेट द्या</string>
     <!-- Settings - Appearance Tab - Home Screen Section -->
     <string name="settings_appearance_home_screen">मुख्य स्क्रीन</string>
@@ -491,9 +491,9 @@
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">अपडेट</string>
     <string name="settings_advanced_updates_use_prereleases">प्रायोगिक सुधारणा अद्यतने</string>
-    <string name="settings_advanced_updates_use_prereleases_description">नवीन AutoPatch Hub ॲप आवृत्तीमध्ये लवकर प्रवेश. पॅच स्त्रोतांमध्ये प्रति स्रोत पूर्व-रिलीझ सक्षम करा</string>
+    <string name="settings_advanced_updates_use_prereleases_description">नवीन SyMorphe ॲप आवृत्तीमध्ये लवकर प्रवेश. पॅच स्त्रोतांमध्ये प्रति स्रोत पूर्व-रिलीझ सक्षम करा</string>
     <string name="settings_advanced_updates_allow_metered">मोबाईल डेटा अद्यतने</string>
-    <string name="settings_advanced_updates_allow_metered_description">AutoPatch Hub आणि पॅच अद्यतने मोबाईल डेटावर डाउनलोड करण्याची परवानगी देते</string>
+    <string name="settings_advanced_updates_allow_metered_description">SyMorphe आणि पॅच अद्यतने मोबाईल डेटावर डाउनलोड करण्याची परवानगी देते</string>
     <string name="settings_advanced_updates_background_notifications">पार्श्वभूमी अद्यतन सूचना</string>
     <string name="settings_advanced_updates_background_notifications_description">अद्यतने उपलब्ध झाल्यावर पार्श्वभूमीमध्ये वेळोवेळी तपासणी करा आणि सूचित करा</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">ॲप बंद असतानाही नवीन रिलीझसाठी पुश सूचना</string>
@@ -506,21 +506,21 @@
     <string name="settings_advanced_update_interval_chip_subtitle">पार्श्वभूमी तपासणी वारंवारता</string>
     <string name="settings_advanced_update_interval_battery_warning">काही उपकरणांवर पार्श्वभूमी तपासणी विश्वसनीयपणे कार्य करू शकत नाही. Xiaomi, Huawei, Samsung आणि OnePlus सारख्या उत्पादकांकडून बॅटरी वाचवण्यासाठी पार्श्वभूमी प्रक्रियांवर जोरदार निर्बंध लादले जातात</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">AutoPatch Hub अपडेट उपलब्ध आहे</string>
+    <string name="notification_manager_update_title">SyMorphe अपडेट उपलब्ध आहे</string>
     <string name="notification_bundle_update_title">नवीन पॅच उपलब्ध आहेत</string>
     <string name="notification_update_text">Version %s डाउनलोडसाठी तयार आहे</string>
-    <string name="notification_bundle_update_text_unversioned">AutoPatch Hub उघडण्यासाठी टॅप करा आणि अपडेट करा</string>
+    <string name="notification_bundle_update_text_unversioned">SyMorphe उघडण्यासाठी टॅप करा आणि अपडेट करा</string>
     <string name="notification_permission_dialog_title">सूचनांना परवानगी द्या</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub ला अपडेट उपलब्ध असताना तुम्हाला सूचित करण्यासाठी सूचना परवानगीची आवश्यकता आहे</string>
+    <string name="notification_permission_dialog_description">SyMorphe ला अपडेट उपलब्ध असताना तुम्हाला सूचित करण्यासाठी सूचना परवानगीची आवश्यकता आहे</string>
     <string name="notification_post_patch_dialog_title">अद्यतने उपलब्ध झाल्यावर तुम्हाला सूचित केले जाऊ इच्छिते?</string>
     <string name="notification_channel_fcm_updates">अपडेट सूचना</string>
-    <string name="notification_channel_fcm_updates_description">नवीन AutoPatch Hub आणि पॅच रिलीझबद्दल सूचना</string>
+    <string name="notification_channel_fcm_updates_description">नवीन SyMorphe आणि पॅच रिलीझबद्दल सूचना</string>
     <string name="notification_channel_patcher">पॅचिंग</string>
-    <string name="notification_channel_patcher_description">AutoPatch Hub पार्श्वभूमीमध्ये ॲप पॅच करत असताना दर्शविले जाते</string>
+    <string name="notification_channel_patcher_description">SyMorphe पार्श्वभूमीमध्ये ॲप पॅच करत असताना दर्शविले जाते</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">तज्ञ सेटिंग्ज</string>
     <string name="settings_advanced_expert_mode">तज्ञ मोड</string>
-    <string name="settings_advanced_expert_mode_description">AutoPatch Hub पॅचिंग सेटिंग्ज आणि सानुकूलन पर्याय सक्षम करते</string>
+    <string name="settings_advanced_expert_mode_description">SyMorphe पॅचिंग सेटिंग्ज आणि सानुकूलन पर्याय सक्षम करते</string>
     <string name="settings_advanced_expert_mode_dialog_title">तज्ञ मोड सक्षम करायचा?</string>
     <string name="settings_advanced_expert_mode_dialog_message">तज्ञ मोड पॅच कसे लागू केले जातात यावर अधिक नियंत्रण देतो, परंतु तज्ञ मोडमधील सेटिंग्ज चुकीच्या कॉन्फिगर केल्यास ॲप कार्यान्वित होऊ शकत नाही</string>
     <string name="settings_advanced_strip_unused_libs">उपकरणाच्या आर्किटेक्चरसाठी अनुकूल करा</string>
@@ -541,7 +541,7 @@
     <string name="settings_advanced_github_pat_dialog_title">GitHub पर्सनल एक्सेस टोकन सेट करा</string>
     <string name="settings_advanced_github_pat_dialog_description">बाह्य स्रोतांकडून पुल विनंती जोडण्यास सक्षम होण्यासाठी GitHub वैयक्तिक ॲक्सेस टोकन सेट करा. सार्वजनिक_रिपो स्कोप github.com सह PAT तयार करा</string>
     <string name="settings_advanced_github_pat_export_include_label">सेटिंग्ज एक्सपोर्टमध्ये समाविष्ट करा</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">निर्यात केलेल्या AutoPatch Hub सेटिंग्जमध्ये हे PAT जोडते</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">निर्यात केलेल्या SyMorphe सेटिंग्जमध्ये हे PAT जोडते</string>
     <string name="settings_advanced_github_pat_export_warning">तुमचे PAT सामायिक करू नका. तुम्ही ते सेटिंग्ज एक्सपोर्टमध्ये समाविष्ट केल्यास, ती फाईल खाजगी ठेवा कारण त्यात टोकन आहे</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">पॅच पर्याय</string>
@@ -638,7 +638,7 @@ morphe_header_custom_dark.png
     <string name="installer_status_not_supported">या कृतीसाठी समर्थित नाही</string>
     <string name="installer_status_shizuku_not_installed">या पर्यायाचा वापर करण्यासाठी Shizuku किंवा Sui स्थापित करा</string>
     <string name="installer_status_shizuku_not_running">Shizuku किंवा Sui सुरू करा आणि पुन्हा प्रयत्न करा</string>
-    <string name="installer_status_shizuku_permission">Shizuku ॲपमधून AutoPatch Hub ला परवानग्या द्या</string>
+    <string name="installer_status_shizuku_permission">Shizuku ॲपमधून SyMorphe ला परवानग्या द्या</string>
     <string name="installer_mount_warning_install">तुमचा प्राथमिक इंस्टॉलर रूटेड माउंट इंस्टॉलरवर सेट आहे. हे सेव्ह केलेले ॲप माउंट वापरून स्थापित केलेले नव्हते</string>
     <string name="mount_version_mismatch_message">स्टॉक ॲप आवृत्ती (%2$s) पॅच केलेल्या ॲप आवृत्तीशी जुळत नाही (%1$s). जुळणारी स्टॉक आवृत्ती माउंट करा, नंतर पुन्हा प्रयत्न करा</string>
     <string name="installer_status_shizuku_unsupported">स्थापित Shizuku आवृत्ती समर्थित नाही</string>
@@ -693,9 +693,9 @@ morphe_header_custom_dark.png
     <string name="settings_system_show_password_field">पासवर्ड दाखवा</string>
     <string name="settings_system_hide_password_field">पासवर्ड लपवा</string>
     <string name="settings_system_morphe_settings">मॉर्फ सेटिंग्ज</string>
-    <string name="settings_system_import_manager_settings_description">तुमच्या AutoPatch Hub सेटिंग्जचा बॅकअप घेते आणि पुनर्संचयित करते</string>
-    <string name="settings_system_import_manager_settings_fail">AutoPatch Hub सेटिंग्ज आयात करण्यात अयशस्वी: %s</string>
-    <string name="settings_system_import_manager_settings_success">AutoPatch Hub सेटिंग्ज आयात केली</string>
+    <string name="settings_system_import_manager_settings_description">तुमच्या SyMorphe सेटिंग्जचा बॅकअप घेते आणि पुनर्संचयित करते</string>
+    <string name="settings_system_import_manager_settings_fail">SyMorphe सेटिंग्ज आयात करण्यात अयशस्वी: %s</string>
+    <string name="settings_system_import_manager_settings_success">SyMorphe सेटिंग्ज आयात केली</string>
     <string name="settings_system_import_manager_settings_mode_title">मॉर्फ सेटिंग्स आयात करा</string>
     <string name="settings_system_import_manager_settings_mode_description">आयात केलेल्या सेटिंग्स आणि स्त्रोत कसे लागू करायचे ते निवडा</string>
     <string name="settings_system_import_selections_mode_title">आयात पॅच निवड</string>
@@ -704,8 +704,8 @@ morphe_header_custom_dark.png
     <string name="import_mode_replace_description">बॅकअप तंतोतंत जुळवा. बॅकअपमधून गहाळ आयटम काढले जातील</string>
     <string name="import_mode_merge_title">अस्तित्वाबरोबर विलीन करा</string>
     <string name="import_mode_merge_description">बॅकअपमधील गहाळ आयटम जोडा. अस्तित्वात असलेले आयटम जैसे थे ठेवले जातील</string>
-    <string name="settings_system_export_manager_settings_fail">AutoPatch Hub सेटिंग्ज निर्यात करण्यात अयशस्वी: %s</string>
-    <string name="settings_system_export_manager_settings_success">AutoPatch Hub सेटिंग्ज निर्यात केली</string>
+    <string name="settings_system_export_manager_settings_fail">SyMorphe सेटिंग्ज निर्यात करण्यात अयशस्वी: %s</string>
+    <string name="settings_system_export_manager_settings_success">SyMorphe सेटिंग्ज निर्यात केली</string>
     <string name="settings_system_debug">डीबग</string>
     <string name="settings_system_export_debug_logs_description">समस्यानिवारणासाठी सिस्टम लॉग जतन करते</string>
     <string name="settings_system_export_debug_logs_export_read_failed">लॉग वाचण्यात अयशस्वी (एक्झिट कोड %s)</string>
@@ -779,7 +779,7 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">बद्दल</string>
     <string name="settings_system_share_website">वेबसाइट शेअर करा</string>
-    <string name="settings_system_share_website_description">अधिकृत AutoPatch Hub वेबसाइट शेअर करते</string>
+    <string name="settings_system_share_website_description">अधिकृत SyMorphe वेबसाइट शेअर करते</string>
     <string name="settings_system_manager_description">हे लोकप्रिय Android ॲप्सच्या आधुनिक, सुव्यवस्थित पॅचिंगसाठी एक मुक्त-स्रोत प्रकल्प आहे, जो समुदाय अभिप्राय आणि योगदानातून चालतो.</string>
     <string name="credits">श्रेय</string>
     <string name="credits_current_development">सध्याचे विकास</string>
@@ -911,7 +911,7 @@ morphe_header_custom_dark.png
     <string name="onboarding_sources_desc">तुमचे पॅच स्रोत व्यवस्थापित करा. प्रत्येक स्रोत असे पॅच प्रदान करतो जे तुमच्या ॲप्सवर लागू केले जाऊ शकतात.</string>
     <string name="onboarding_swipe_title">स्वॅप हावभाव</string>
     <string name="onboarding_swipe_desc">ॲप कार्डवर स्वाइप करून त्याचे उपलब्ध पॅच पहा. होम स्क्रीनवरून कार्ड लपवण्यासाठी डावीकडे स्वाइप करा.</string>
-    <string name="onboarding_settings_desc">AutoPatch Hub सानुकूलित करा: स्वरूप, प्रगत पर्याय आणि सिस्टम साधने</string>
+    <string name="onboarding_settings_desc">SyMorphe सानुकूलित करा: स्वरूप, प्रगत पर्याय आणि सिस्टम साधने</string>
     <string name="onboarding_sources_patches_desc">या स्रोतामधून उपलब्ध असलेले सर्व पॅच पाहण्यासाठी टॅप करा</string>
     <string name="onboarding_sources_version_desc">या स्रोतासाठी संपूर्ण बदलॉग पाहण्यासाठी आवृत्तीवर टॅप करा</string>
     <string name="onboarding_sources_prerelease_desc">या स्रोताकडून प्री-रिलीझ पॅच आवृत्त्या प्राप्त करण्यासाठी हे सक्षम करा</string>
@@ -926,8 +926,8 @@ morphe_header_custom_dark.png
     <string name="onboarding_system_file_picker_desc">APK किंवा कीस्टोअर निवडताना सिस्टम पिकरऐवजी अंगभूत फाइल ब्राउझर वापरण्यासाठी सक्षम करा</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">त्वरित वैशिष्ट्य दौरा</string>
-    <string name="tour_prompt_desc">तुम्हाला AutoPatch Hub च्या मुख्य वैशिष्ट्यांचा त्वरित दौरा हवा आहे का?</string>
+    <string name="tour_prompt_desc">तुम्हाला SyMorphe च्या मुख्य वैशिष्ट्यांचा त्वरित दौरा हवा आहे का?</string>
     <string name="tour_prompt_confirm">मला दाखवा</string>
     <string name="onboarding_restart_title">वैशिष्ट्य दौरा</string>
-    <string name="onboarding_restart_desc">AutoPatch Hub च्या मुख्य वैशिष्ट्यांचा मार्गदर्शन दौरा घ्या</string>
+    <string name="onboarding_restart_desc">SyMorphe च्या मुख्य वैशिष्ट्यांचा मार्गदर्शन दौरा घ्या</string>
 </resources>

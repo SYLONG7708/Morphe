@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.annotation.StringRes
+import app.morphe.manager.BuildConfig
 import app.morphe.manager.R
 import app.morphe.manager.data.platform.NetworkInfo
 import app.morphe.manager.data.redux.Action
@@ -41,6 +42,8 @@ import java.net.URISyntaxException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
@@ -335,6 +338,30 @@ class PatchBundleRepository(
     }
 
     /**
+     * Dispatches a serialized store mutation and waits until its validation and reload work has
+     * actually completed. This prevents a provisioning caller from advancing while the action is
+     * merely queued.
+     */
+    private suspend inline fun dispatchActionAndAwait(
+        name: String,
+        crossinline block: suspend ActionContext.(current: BundleState) -> BundleState,
+    ) {
+        val completion = CompletableDeferred<Unit>()
+        store.dispatch(object : Action<BundleState> {
+            override suspend fun ActionContext.execute(current: BundleState): BundleState =
+                try {
+                    block(current).also { completion.complete(Unit) }
+                } catch (error: Throwable) {
+                    completion.completeExceptionally(error)
+                    throw error
+                }
+
+            override fun toString() = name
+        })
+        completion.await()
+    }
+
+    /**
      * Performs a reload. Do not call this outside of a store action.
      */
     private suspend fun doReload(): BundleState.Ready {
@@ -385,6 +412,111 @@ class PatchBundleRepository(
 
     suspend fun reload() = dispatchAction("Full reload") {
         doReload()
+    }
+
+    /**
+     * Installs the build-pinned UIS7870 bundle as source 0.
+     *
+     * All-in-one builds deliberately convert the default source to local storage so a generic
+     * upstream refresh cannot replace the vendor-group-derived bundle with an incompatible one.
+     * The previous known-good file is only replaced after hash, patcher API, and metadata checks
+     * have all succeeded.
+     */
+    suspend fun installBundledDefault(
+        expectedSha256: String,
+        expectedVersion: String,
+        createStream: () -> InputStream,
+    ): String {
+        require(expectedSha256.matches(Regex("^[a-fA-F0-9]{64}$"))) {
+            "Invalid bundled patch SHA-256"
+        }
+        require(expectedVersion.isNotBlank()) {
+            "Invalid bundled patch version"
+        }
+
+        dispatchActionAndAwait("Install bundled default patches") {
+            val target = directoryOf(DEFAULT_SOURCE_UID).resolve("patches.jar")
+            val currentProps = dao.getProps(DEFAULT_SOURCE_UID)
+            val alreadyInstalled =
+                currentProps?.source is SourceInfo.Local &&
+                    target.sha256OrNull()?.equals(expectedSha256, ignoreCase = true) == true
+
+            if (!alreadyInstalled) {
+                val candidate = withContext(Dispatchers.IO) {
+                    File.createTempFile("bundled_patches", ".mpp", app.cacheDir).also { temp ->
+                        try {
+                            createStream().use { input ->
+                                temp.outputStream().use(input::copyTo)
+                            }
+                            check(
+                                temp.sha256OrNull()?.equals(expectedSha256, ignoreCase = true) == true
+                            ) {
+                                "Bundled patch hash mismatch"
+                            }
+                            check(temp.setReadOnly() || !temp.canWrite()) {
+                                "Unable to make bundled patch candidate read-only"
+                            }
+
+                            val bundle = PatchBundle(temp.absolutePath)
+                            val requiredPatcher = bundle.manifestAttributes?.patcherVersion
+                            if (
+                                requiredPatcher != null &&
+                                compareVersions(requiredPatcher, BuildConfig.PATCHER_VERSION) > 0
+                            ) {
+                                error(
+                                    "Bundled patches require morphe-patcher $requiredPatcher, " +
+                                        "but this Manager provides ${BuildConfig.PATCHER_VERSION}"
+                                )
+                            }
+                            check(PatchBundle.Loader.metadata(bundle).isNotEmpty()) {
+                                "Bundled patch file contains no loadable patches"
+                            }
+                        } catch (error: Throwable) {
+                            runCatching { temp.setWritable(true, true) }
+                            runCatching { temp.delete() }
+                            throw error
+                        }
+                    }
+                }
+
+                withContext(Dispatchers.IO) {
+                    target.parentFile?.mkdirs()
+                    target.setWritable(true, true)
+                    runCatching {
+                        Files.move(
+                            candidate.toPath(),
+                            target.toPath(),
+                            StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.ATOMIC_MOVE,
+                        )
+                    }.getOrElse {
+                        Files.move(
+                            candidate.toPath(),
+                            target.toPath(),
+                            StandardCopyOption.REPLACE_EXISTING,
+                        )
+                    }
+                    target.setReadOnly()
+                }
+            }
+
+            val verifiedBundle = PatchBundle(target.absolutePath)
+            verifiedBundle.manifestAttributes?.version?.let { manifestVersion ->
+                check(manifestVersion == expectedVersion) {
+                    "Bundled patch version $manifestVersion does not match $expectedVersion"
+                }
+            }
+            val manifestName = verifiedBundle.manifestAttributes?.name.orEmpty()
+            createEntity(
+                name = manifestName,
+                source = SourceInfo.Local,
+                uid = DEFAULT_SOURCE_UID,
+                displayName = SOURCE_NAME,
+            )
+            doReload()
+        }
+
+        return expectedVersion
     }
 
     private suspend fun loadFromDb(): List<PatchBundleEntity> {

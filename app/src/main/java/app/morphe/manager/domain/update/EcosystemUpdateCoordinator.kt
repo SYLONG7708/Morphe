@@ -1,5 +1,5 @@
 /*
- * AutoPatch Hub modification, 2026.
+ * SyMorphe modification, 2026.
  */
 
 package app.morphe.manager.domain.update
@@ -12,6 +12,7 @@ import app.morphe.manager.data.platform.NetworkInfo
 import app.morphe.manager.domain.installer.InstallResult
 import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
+import app.morphe.manager.domain.installer.SessionDeadException
 import app.morphe.manager.domain.installer.SessionInstaller
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.InstalledAppRepository
@@ -66,6 +67,7 @@ class EcosystemUpdateCoordinator(
     private val originalApkRepository: OriginalApkRepository,
     private val sessionInstaller: SessionInstaller,
     private val rootInstaller: RootInstaller,
+    private val bundledEcosystemProvisioner: BundledEcosystemProvisioner,
 ) {
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow<EcosystemUpdateState>(EcosystemUpdateState.Idle)
@@ -74,9 +76,34 @@ class EcosystemUpdateCoordinator(
     suspend fun refresh(
         downloadAssets: Boolean = true,
         allowUnsafeNetwork: Boolean = false,
+        forcePrepareMicrog: Boolean = false,
     ): EcosystemUpdateSnapshot = mutex.withLock {
         mutableState.value = EcosystemUpdateState.Checking
         try {
+            if (BuildConfig.BUNDLED_ECOSYSTEM_ENABLED) {
+                val bundled = bundledEcosystemProvisioner.provision()
+                val snapshot = EcosystemUpdateSnapshot(
+                    checkedAt = System.currentTimeMillis(),
+                    sequence = BuildConfig.SAFE_PROFILE_REVISION.toLong(),
+                    manager = ComponentUpdateState(
+                        status = UpdateStatus.UP_TO_DATE,
+                        installedVersion = BuildConfig.VERSION_NAME,
+                        availableVersion = BuildConfig.VERSION_NAME,
+                        detail = "UIS7870 all-in-one build",
+                    ),
+                    patches = ComponentUpdateState(
+                        status = UpdateStatus.UP_TO_DATE,
+                        installedVersion = bundled.patchVersion,
+                        availableVersion = bundled.patchVersion,
+                        detail = "Verified bundle embedded in this APK",
+                    ),
+                    microg = bundled.microg,
+                    youtube = resolveYouTube(),
+                )
+                mutableState.value = EcosystemUpdateState.Ready(snapshot)
+                return@withLock snapshot
+            }
+
             patchBundleRepository.updateCheckAndAwait(allowUnsafeNetwork)
             val manifest = manifestRepository.fetch()
             val profile = DeviceProfile(Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS.toList())
@@ -86,14 +113,17 @@ class EcosystemUpdateCoordinator(
 
             val mayUseCurrentNetwork =
                 prefs.allowMeteredUpdates.get() || !networkInfo.isMetered()
-            if (downloadAssets &&
-                prefs.automaticEcosystemUpdates.get() &&
-                mayUseCurrentNetwork
-            ) {
+            val prepareBackgroundUpdates =
+                prefs.automaticEcosystemUpdates.get() && mayUseCurrentNetwork
+            if (downloadAssets && (forcePrepareMicrog || prepareBackgroundUpdates)) {
                 coroutineScope {
-                    val managerJob = async { prepareIfNeeded(manager) }
+                    val managerJob = if (prepareBackgroundUpdates) {
+                        async { prepareIfNeeded(manager) }
+                    } else {
+                        null
+                    }
                     val microgJob = async { prepareIfNeeded(microg) }
-                    manager = managerJob.await()
+                    manager = managerJob?.await() ?: manager
                     microg = microgJob.await()
                 }
             }
@@ -142,6 +172,18 @@ class EcosystemUpdateCoordinator(
                 InstallResult.Success
             }
 
+            component == InstallableUpdate.MICROG -> try {
+                // Suspend until Android reports the user's confirmation result. This prevents
+                // the YouTube patch/install stage from racing ahead of its MicroG dependency.
+                sessionInstaller.installInternal(localFile)
+            } catch (_: SessionDeadException) {
+                sessionInstaller.launchIntentInstall(localFile)
+                InstallResult.Failure(
+                    "Android opened its fallback installer; reopen SyMorphe after " +
+                        "confirming MicroG to continue"
+                )
+            }
+
             else -> {
                 // Android deliberately requires confirmation for ordinary installers. Launching
                 // the system UI is the maximum automation available without privileged access.
@@ -152,6 +194,11 @@ class EcosystemUpdateCoordinator(
 
         if (result !is InstallResult.Success) {
             updateComponentState(component, componentState.copy(status = UpdateStatus.ERROR))
+        } else if (
+            component == InstallableUpdate.MICROG &&
+            BuildConfig.BUNDLED_ECOSYSTEM_ENABLED
+        ) {
+            updateComponentState(component, bundledEcosystemProvisioner.provision().microg)
         }
         return result
     }
@@ -258,18 +305,22 @@ class EcosystemUpdateCoordinator(
     suspend fun inspectYouTube(): ComponentUpdateState = resolveYouTube()
 
     private suspend fun resolveYouTube(): ComponentUpdateState {
-        val source = resolveCompatibleYouTubeSource()
-            ?: return ComponentUpdateState(
+        val preferredVersion = preferredYouTubeVersion()
+        val source = resolveCompatibleYouTubeSource(preferredVersion)
+        val targetVersion = preferredVersion ?: source?.versionName
+        if (targetVersion == null) {
+            return ComponentUpdateState(
                 status = UpdateStatus.WAITING_FOR_COMPATIBLE_SOURCE,
                 installedVersion = installedYouTubeVersion(PATCHED_YOUTUBE_PACKAGE),
                 detail = "Waiting for an installed or saved YouTube version supported by the patch bundle",
             )
+        }
 
         val records = installedAppRepository.getAll().first()
         val record = records.firstOrNull { it.originalPackageName == YOUTUBE_PACKAGE }
         val patchedPackage = record?.currentPackageName ?: PATCHED_YOUTUBE_PACKAGE
         val patchedInfo = pm.getPackageInfo(patchedPackage)
-        val sourceChanged = patchedInfo?.versionName != source.versionName
+        val sourceChanged = patchedInfo?.versionName != targetVersion
         val bundleChanged = if (record == null) {
             patchedInfo != null
         } else {
@@ -284,9 +335,11 @@ class EcosystemUpdateCoordinator(
         return ComponentUpdateState(
             status = if (updateNeeded) UpdateStatus.UPDATE_AVAILABLE else UpdateStatus.UP_TO_DATE,
             installedVersion = patchedInfo?.versionName,
-            availableVersion = source.versionName,
+            availableVersion = targetVersion,
             detail = when {
                 patchedInfo == null -> "Ready for first local patch"
+                sourceChanged && preferredVersion != null ->
+                    "Stable YouTube $preferredVersion is preferred by the patch bundle"
                 sourceChanged -> "Compatible YouTube source update detected"
                 bundleChanged -> "New patch bundle detected"
                 else -> "Patched YouTube is current"
@@ -296,21 +349,61 @@ class EcosystemUpdateCoordinator(
 
     private data class YouTubeSource(val versionName: String, val versionCode: Long?)
 
-    private suspend fun resolveCompatibleYouTubeSource(): YouTubeSource? {
-        val installed = pm.getPackageInfo(YOUTUBE_PACKAGE)
-        if (installed != null) {
-            val candidate = YouTubeSource(installed.versionName.orEmpty(), pm.getVersionCode(installed))
-            if (candidate.versionName.isNotBlank() && youtubeVersionSupported(candidate)) return candidate
+    private suspend fun resolveCompatibleYouTubeSource(
+        preferredVersion: String?,
+    ): YouTubeSource? {
+        val saved = originalApkRepository.get(YOUTUBE_PACKAGE)?.let { original ->
+            val file = File(original.filePath).takeIf(File::isFile) ?: return@let null
+            val archive = pm.getPackageInfo(file) ?: return@let null
+            YouTubeSource(
+                archive.versionName ?: original.version,
+                pm.getVersionCode(archive),
+            ).takeIf { it.versionName.isNotBlank() && youtubeVersionSupported(it) }
         }
+        val installed = pm.getPackageInfo(YOUTUBE_PACKAGE)
+            ?.let { packageInfo ->
+                YouTubeSource(
+                    packageInfo.versionName.orEmpty(),
+                    pm.getVersionCode(packageInfo),
+                ).takeIf { it.versionName.isNotBlank() && youtubeVersionSupported(it) }
+            }
 
-        val saved = originalApkRepository.get(YOUTUBE_PACKAGE) ?: return null
-        val file = File(saved.filePath).takeIf(File::isFile) ?: return null
-        val archive = pm.getPackageInfo(file) ?: return null
-        val candidate = YouTubeSource(
-            archive.versionName ?: saved.version,
-            pm.getVersionCode(archive),
-        )
-        return candidate.takeIf { it.versionName.isNotBlank() && youtubeVersionSupported(it) }
+        if (preferredVersion != null) {
+            return saved?.takeIf { it.versionName == preferredVersion }
+                ?: installed?.takeIf { it.versionName == preferredVersion }
+        }
+        return installed ?: saved
+    }
+
+    /**
+     * Mirrors the simple-mode recommendation rule: prefer the newest stable version supported on
+     * this SDK, and only fall back to an experimental version when no stable target exists.
+     */
+    private suspend fun preferredYouTubeVersion(): String? {
+        val enabledUids = patchBundleRepository.sources.first()
+            .filter { it.enabled }
+            .mapTo(mutableSetOf()) { it.uid }
+        val candidates = patchBundleRepository.bundleInfoFlow.first()
+            .filterKeys { it in enabledUids }
+            .values
+            .flatMap { it.patches }
+            .flatMap { it.compatiblePackages.orEmpty() }
+            .filter { it.packageName == YOUTUBE_PACKAGE }
+            .flatMap { compatibility ->
+                compatibility.versions.orEmpty().mapNotNull { version ->
+                    val minSdk = compatibility.versionMinSdks?.get(version)
+                    if (minSdk != null && Build.VERSION.SDK_INT < minSdk) {
+                        null
+                    } else {
+                        version to (compatibility.experimentalVersions?.contains(version) == true)
+                    }
+                }
+            }
+            .distinctBy { it.first }
+        val eligible = candidates.filterNot { it.second }.ifEmpty { candidates }
+        return eligible.maxWithOrNull { left, right ->
+            compareVersions(left.first, right.first)
+        }?.first
     }
 
     private suspend fun youtubeVersionSupported(source: YouTubeSource): Boolean =
@@ -405,9 +498,7 @@ class EcosystemUpdateCoordinator(
             if (pm.getVersionCode(info) != expected) return false
         }
         info.applicationInfo?.let { applicationInfo ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-                applicationInfo.minSdkVersion > Build.VERSION.SDK_INT
-            ) return false
+            if (applicationInfo.minSdkVersion > Build.VERSION.SDK_INT) return false
         }
 
         if (artifact.signerSha256.isNotEmpty()) {
@@ -434,9 +525,9 @@ class EcosystemUpdateCoordinator(
     }
 
     companion object {
-        const val YOUTUBE_PACKAGE = "com.google.android.youtube"
-        const val PATCHED_YOUTUBE_PACKAGE = "app.morphe.android.youtube"
-        const val MICROG_PACKAGE = "app.revanced.android.gms"
+        const val YOUTUBE_PACKAGE = SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE
+        val PATCHED_YOUTUBE_PACKAGE = SafeIntegrationProfile.patchedYouTubePackage
+        val MICROG_PACKAGE = SafeIntegrationProfile.microgPackage
 
         private val ALLOWED_DOWNLOAD_HOSTS = setOf(
             "github.com",

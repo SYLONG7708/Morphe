@@ -87,6 +87,16 @@ fun HomeDialogs(
         )
     }
 
+    if (homeViewModel.showOneTapYouTubeDialog) {
+        OneTapYouTubeDialog(
+            state = homeViewModel.oneTapHubUiState,
+            onUseLocal = homeViewModel::startOneTapLocalYouTubePatch,
+            onUseRecommended = homeViewModel::startOneTapRecommendedYouTubePatch,
+            onRefresh = homeViewModel::openOneTapHubDialog,
+            onDismiss = homeViewModel::dismissOneTapHubDialog,
+        )
+    }
+
     // Dialog 1: APK availability
     AnimatedVisibility(
         visible = homeViewModel.showApkAvailabilityDialog &&

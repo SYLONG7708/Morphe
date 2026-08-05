@@ -17,13 +17,13 @@ included in the source repositories and embedded where provided by the builds.
 Release automation mirrors the unmodified latest `.mpp` from
 [`MorpheApp/morphe-patches`](https://github.com/MorpheApp/morphe-patches) and
 the unmodified latest APK from
-[`MorpheApp/MicroG-RE`](https://github.com/MorpheApp/MicroG-RE). AutoPatch Hub's
+[`MorpheApp/MicroG-RE`](https://github.com/MorpheApp/MicroG-RE). SyMorphe's
 detached signature authenticates the mirrored bytes and does not claim
 authorship of those upstream works.
 
-For the explicitly private-use device workflow, AutoPatch Hub can request one exact
+For the explicitly private-use device workflow, SyMorphe can request one exact
 Google-signed YouTube APK by package name and patch-bundle-declared version code from
-[APKPure](https://apkpure.net/). AutoPatch Hub does not mirror or redistribute that APK.
+[APKPure](https://apkpure.net/). SyMorphe does not mirror or redistribute that APK.
 The response is rejected unless its APK signature, signer certificate, package name,
 version name, and version code all match the verified compatibility metadata. Use of that
 service remains subject to the [APKPure Terms](https://apkpure.net/terms.html).

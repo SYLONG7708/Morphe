@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Parcelable
 import android.provider.Settings
 import android.util.Log
+import com.android.apksig.ApkVerifier
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.Immutable
 import androidx.core.content.pm.PackageInfoCompat
@@ -171,12 +172,32 @@ class PM(
     fun getApkFileSignatureHashes(file: File): Set<String> {
         return try {
             val info = app.packageManager.getPackageArchiveInfo(file.absolutePath, signingFlags())
-                ?: return emptySet()
-            info.applicationInfo?.apply {
-                sourceDir = file.absolutePath
-                publicSourceDir = file.absolutePath
+            val platformHashes = info?.let { packageInfo ->
+                packageInfo.applicationInfo?.apply {
+                    sourceDir = file.absolutePath
+                    publicSourceDir = file.absolutePath
+                }
+                packageInfo.extractSignatures()?.toSha256Hashes().orEmpty()
             }
-            info.extractSignatures()?.toSha256Hashes() ?: emptySet()
+            if (!platformHashes.isNullOrEmpty()) {
+                platformHashes
+            } else {
+                // Some Android 10 vendor PackageManager builds parse v2/v3-only APK metadata but
+                // expose no SigningInfo for an archive. apksig verifies the complete APK and
+                // provides the same leaf certificates without relying on that platform bug.
+                val verification = ApkVerifier.Builder(file).build().verify()
+                if (!verification.isVerified) {
+                    Log.e(TAG, "APK signature verification failed: ${verification.errors.take(3)}")
+                    emptySet()
+                } else {
+                    val digest = MessageDigest.getInstance("SHA-256")
+                    verification.signerCertificates.mapTo(mutableSetOf()) { certificate ->
+                        digest.reset()
+                        digest.digest(certificate.encoded)
+                            .joinToString("") { byte -> "%02x".format(byte) }
+                    }
+                }
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to read APK file signatures", e)
             emptySet()

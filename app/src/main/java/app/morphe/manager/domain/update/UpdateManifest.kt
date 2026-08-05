@@ -1,5 +1,5 @@
 /*
- * AutoPatch Hub modification, 2026.
+ * SyMorphe modification, 2026.
  */
 
 package app.morphe.manager.domain.update

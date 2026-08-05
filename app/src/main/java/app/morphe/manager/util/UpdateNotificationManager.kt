@@ -18,7 +18,7 @@ import app.morphe.manager.util.UpdateNotificationManager.Companion.CHANNEL_FCM_U
 import app.morphe.manager.util.UpdateNotificationManager.Companion.EXTRA_TRIGGER_UPDATE_CHECK
 
 /**
- * Manages Android system notifications for AutoPatch Hub ecosystem updates.
+ * Manages Android system notifications for SyMorphe ecosystem updates.
  *
  * All notifications use a single [CHANNEL_FCM_UPDATES] (IMPORTANCE_HIGH) channel,
  * regardless of the delivery source (FCM push or WorkManager background check).

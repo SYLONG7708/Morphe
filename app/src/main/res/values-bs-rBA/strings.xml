@@ -35,7 +35,7 @@
     <!-- Battery optimization pre-flight dialog -->
     <!-- Patcher Screen - Patcher Worker -->
     <!-- Patcher Screen - Patcher Messages -->
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <!-- "bytecode" can be translated from "the app code" -->
     <!-- Space flight communications callout. -->
     <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
@@ -70,7 +70,7 @@
     <!-- Settings - System Tab - Custom file picker -->
     <!-- File Picker -->
     <!-- Settings - System Tab - About Section -->
-    <string name="settings_system_about">O AutoPatch Hub</string>
+    <string name="settings_system_about">O SyMorphe</string>
     <!-- Shared strings -->
     <!-- Onboarding coach marks -->
     <!-- %1$d = current step number, %2$d = total number of steps (e.g. "3 of 13") -->

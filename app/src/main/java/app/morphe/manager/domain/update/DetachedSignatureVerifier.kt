@@ -1,5 +1,5 @@
 /*
- * AutoPatch Hub modification, 2026.
+ * SyMorphe modification, 2026.
  * Released under GPL-3.0-or-later with the upstream NOTICE conditions.
  */
 

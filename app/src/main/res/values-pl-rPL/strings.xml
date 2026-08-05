@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Błąd Androida 11</string>
     <string name="android_11_bug_dialog_description">Uprawnienie do instalowania aplikacji musi zostać przyznane wcześniej, aby uniknąć błędu w systemie Android 11, który negatywnie wpływa na działanie aplikacji</string>
     <string name="deep_link_add_source_title">Dodaj źródło</string>
-    <string name="deep_link_add_source_message">Czy chcesz dodać to źródło modyfikacji do AutoPatch Hub?</string>
+    <string name="deep_link_add_source_message">Czy chcesz dodać to źródło modyfikacji do SyMorphe?</string>
     <string name="deep_link_add_source_warning">Dodawaj tylko zaufane źródła</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Dostępna aktualizacja AutoPatch Hub</string>
+    <string name="home_update_available">Dostępna aktualizacja SyMorphe</string>
     <string name="home_update_available_subtitle">Nowa wersja gotowa do instalacji</string>
     <string name="home_update_error">Błąd aktualizacji</string>
     <string name="home_update_error_subtitle">Sprawdź połączenie z internetem i spróbuj ponownie</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Praktyka czyni mistrza, jesteś na dobrej drodze 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Dalej nie tu… dalej nie tu… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Okej, szanuję zaangażowanie 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Zostajesz oficjalnym testerem przycisków AutoPatch Hub 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Zostajesz oficjalnym testerem przycisków SyMorphe 🏅</string>
     <string name="home_download_instructions_step3">Poczekaj na zakończenie pobierania i &lt;b&gt;nie instaluj&lt;/b&gt; pliku APK</string>
     <string name="home_download_instructions_step3_mount">Poczekaj na zakończenie pobierania, a następnie &lt;b&gt;zainstaluj plik APK&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Po zakończeniu pobierania wróć do AutoPatch Hub</string>
-    <string name="home_download_instructions_step4_mount">Po zainstalowaniu oryginalnego pliku APK wróć do AutoPatch Hub</string>
+    <string name="home_download_instructions_step4">Po zakończeniu pobierania wróć do SyMorphe</string>
+    <string name="home_download_instructions_step4_mount">Po zainstalowaniu oryginalnego pliku APK wróć do SyMorphe</string>
     <string name="home_download_instructions_continue">Przejdź do APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Wybierz pobrany plik APK</string>
@@ -306,7 +306,7 @@ Strefa zewnętrzna (linia przerywana): może zostać przycięta - najważniejsze
     <string name="home_app_info_patch_update_available">Dostępna aktualizacja modyfikacji</string>
     <string name="home_app_info_patch_update_available_description">Dostępna jest nowsza wersja modyfikacji. Zmodyfikuj aplikację ponownie, aby otrzymać najnowsze ulepszenia i poprawki</string>
     <string name="home_app_info_app_deleted_warning">Aplikacja została odinstalowana</string>
-    <string name="home_app_info_app_deleted_description">Ta aplikacja została odinstalowana poza AutoPatch Hub. Zmodyfikuj ją ponownie, aby przywrócić jej funkcjonalność</string>
+    <string name="home_app_info_app_deleted_description">Ta aplikacja została odinstalowana poza SyMorphe. Zmodyfikuj ją ponownie, aby przywrócić jej funkcjonalność</string>
     <string name="home_app_info_apk_size">Rozmiar pliku APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Tryb root wymaga zainstalowania oryginalnego pliku APK na urządzeniu przed zmodyfikowaniem</string>
@@ -342,7 +342,7 @@ Strefa zewnętrzna (linia przerywana): może zostać przycięta - najważniejsze
     <string name="patcher_conflict_subtitle">Musisz odinstalować obecną wersję</string>
     <string name="patcher_conflict_hint">Zmodyfikowana aplikacja używa innego certyfikatu niż zainstalowana wersja. Odinstalowanie wyczyści wszystkie dane aplikacji</string>
     <string name="patcher_installed_conflict_title">Wymagane odinstalowanie</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub podpisuje zmodyfikowane aplikacje własnym certyfikatem, który różni się od oryginalnego. Android wymaga usunięcia istniejącej wersji, zanim będzie można zainstalować zmodyfikowaną aplikację.
+    <string name="patcher_installed_conflict_body">"SyMorphe podpisuje zmodyfikowane aplikacje własnym certyfikatem, który różni się od oryginalnego. Android wymaga usunięcia istniejącej wersji, zanim będzie można zainstalować zmodyfikowaną aplikację.
 
 Odinstalowanie bezpowrotnie usunie wszystkie dane aplikacji"</string>
     <string name="patcher_install_error_title">Błąd instalacji</string>
@@ -351,9 +351,9 @@ Odinstalowanie bezpowrotnie usunie wszystkie dane aplikacji"</string>
     <string name="patcher_ready_to_mount_subtitle">Naciśnij przycisk poniżej, aby zamontować</string>
     <string name="patcher_storage_permission_dialog_title">Brak dostępu do ścieżki pamięci</string>
     <string name="patcher_incompatible_patcher_title">Wymagana aktualizacja</string>
-    <string name="patcher_incompatible_patcher_description">Pakiet &lt;b&gt;%1$s&lt;/b&gt; wymaga modyfikatora w wersji &lt;b&gt;%2$s&lt;/b&gt; lub nowszej. Zaktualizuj AutoPatch Hub, aby zmodyfikować tę aplikację</string>
-    <string name="patcher_incompatible_patcher_update_button">Pobierz i zaktualizuj AutoPatch Hub</string>
-    <string name="patcher_storage_permission_description_api30">Przynajmniej jedna opcja modyfikacji wskazuje na ścieżki, których AutoPatch Hub nie może odczytać. Przyznaj dostęp do pamięci i dotknij przycisk, a modyfikowanie rozpocznie się automatycznie</string>
+    <string name="patcher_incompatible_patcher_description">Pakiet &lt;b&gt;%1$s&lt;/b&gt; wymaga modyfikatora w wersji &lt;b&gt;%2$s&lt;/b&gt; lub nowszej. Zaktualizuj SyMorphe, aby zmodyfikować tę aplikację</string>
+    <string name="patcher_incompatible_patcher_update_button">Pobierz i zaktualizuj SyMorphe</string>
+    <string name="patcher_storage_permission_description_api30">Przynajmniej jedna opcja modyfikacji wskazuje na ścieżki, których SyMorphe nie może odczytać. Przyznaj dostęp do pamięci i dotknij przycisk, a modyfikowanie rozpocznie się automatycznie</string>
     <string name="patcher_storage_permission_description_legacy">Przynajmniej jedna opcji modyfikacji wskazuje na ścieżki, do których nie można uzyskać dostępu. Zaktualizuj ścieżki w opcjach i spróbuj ponownie</string>
     <string name="patcher_storage_permission_grant">Przyznaj uprawnienia dostępu do pamięci</string>
     <string name="patcher_storage_permission_denied_warning">Odmówiono uprawnień do pamięci. Przyznaj uprawnienia, aby korzystać z tej ścieżki, lub przenieś pliki do prywatnego folderu aplikacji</string>
@@ -372,7 +372,7 @@ Odinstalowanie bezpowrotnie usunie wszystkie dane aplikacji"</string>
     <string name="patcher_step_sign_apk">Podpisywanie zmodyfikowanego pliku APK</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Ochrona modyfikowania w tle</string>
-    <string name="battery_optimization_dialog_description">Niektóre urządzenia mogą zatrzymać modyfikator, gdy aplikacja jest zminimalizowana. Zezwól AutoPatch Hub na działanie bez ograniczeń baterii, aby proces modyfikowania zakończył się pomyślnie</string>
+    <string name="battery_optimization_dialog_description">Niektóre urządzenia mogą zatrzymać modyfikator, gdy aplikacja jest zminimalizowana. Zezwól SyMorphe na działanie bez ograniczeń baterii, aby proces modyfikowania zakończył się pomyślnie</string>
     <string name="battery_optimization_not_now">Nie teraz</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Modyfikowanie w toku…</string>
@@ -388,7 +388,7 @@ Odinstalowanie bezpowrotnie usunie wszystkie dane aplikacji"</string>
     <string name="patcher_message_6">Wyjrzyj za okno, ładna dziś pogoda… 🌤️</string>
     <string name="patcher_message_7">Przestawianie zer i jedynek… 🤖</string>
     <string name="patcher_message_8">Rozplątywanie cyfrowego spaghetti… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Naprawianie błędów w oryginalnej aplikacji… 🪲</string>
     <string name="patcher_message_10">Na dobre modyfikacje warto poczekać… ⏳</string>
     <string name="patcher_message_11">Polerowanie pikseli, aż zaczną lśnić… 💎</string>
@@ -492,9 +492,9 @@ Odinstalowanie bezpowrotnie usunie wszystkie dane aplikacji"</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Aktualizacje</string>
     <string name="settings_advanced_updates_use_prereleases">Przedpremierowe aktualizacje</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Wczesny dostęp do nowych wersji aplikacji AutoPatch Hub. Włącz wersje przedpremierowe dla konkretnych źródeł w menu źródeł modyfikacji</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Wczesny dostęp do nowych wersji aplikacji SyMorphe. Włącz wersje przedpremierowe dla konkretnych źródeł w menu źródeł modyfikacji</string>
     <string name="settings_advanced_updates_allow_metered">Aktualizacje przez dane mobilne</string>
-    <string name="settings_advanced_updates_allow_metered_description">Umożliwia pobieranie aktualizacji AutoPatch Hub i modyfikacji przez sieć komórkową</string>
+    <string name="settings_advanced_updates_allow_metered_description">Umożliwia pobieranie aktualizacji SyMorphe i modyfikacji przez sieć komórkową</string>
     <string name="settings_advanced_updates_background_notifications">Powiadomienia o aktualizacjach w tle</string>
     <string name="settings_advanced_updates_background_notifications_description">Okresowo sprawdzaj aktualizacje w tle i powiadamiaj, gdy będą dostępne</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Powiadomienia push o nowych wersjach, nawet gdy aplikacja jest zamknięta</string>
@@ -507,21 +507,21 @@ Odinstalowanie bezpowrotnie usunie wszystkie dane aplikacji"</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Częstotliwość sprawdzania w tle</string>
     <string name="settings_advanced_update_interval_battery_warning">Sprawdzanie w tle może nie działać stabilnie na niektórych urządzeniach. Producenci tacy jak Xiaomi, Huawei, Samsung czy OnePlus często agresywnie ograniczają procesy w tle, aby oszczędzać baterię</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Dostępna aktualizacja AutoPatch Hub</string>
+    <string name="notification_manager_update_title">Dostępna aktualizacja SyMorphe</string>
     <string name="notification_bundle_update_title">Dostępne nowe modyfikacje</string>
     <string name="notification_update_text">Wersja %s jest gotowa do pobrania</string>
-    <string name="notification_bundle_update_text_unversioned">Dotknij, aby otworzyć AutoPatch Hub i zaktualizować</string>
+    <string name="notification_bundle_update_text_unversioned">Dotknij, aby otworzyć SyMorphe i zaktualizować</string>
     <string name="notification_permission_dialog_title">Zezwól na powiadomienia</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub wymaga uprawnień do powiadomień, aby informować Cię o dostępnych aktualizacjach w tle</string>
+    <string name="notification_permission_dialog_description">SyMorphe wymaga uprawnień do powiadomień, aby informować Cię o dostępnych aktualizacjach w tle</string>
     <string name="notification_post_patch_dialog_title">Czy chcesz otrzymywać powiadomienia o dostępnych aktualizacjach?</string>
     <string name="notification_channel_fcm_updates">Powiadomienia o aktualizacjach</string>
-    <string name="notification_channel_fcm_updates_description">Powiadomienia o nowych wersjach AutoPatch Hub oraz modyfikacji</string>
+    <string name="notification_channel_fcm_updates_description">Powiadomienia o nowych wersjach SyMorphe oraz modyfikacji</string>
     <string name="notification_channel_patcher">Modyfikowanie</string>
-    <string name="notification_channel_patcher_description">Wyświetlane, gdy AutoPatch Hub modyfikuje aplikację w tle</string>
+    <string name="notification_channel_patcher_description">Wyświetlane, gdy SyMorphe modyfikuje aplikację w tle</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Ustawienia eksperckie</string>
     <string name="settings_advanced_expert_mode">Tryb ekspercki</string>
-    <string name="settings_advanced_expert_mode_description">Włącza zaawansowane ustawienia modyfikowania i opcje personalizacji AutoPatch Hub</string>
+    <string name="settings_advanced_expert_mode_description">Włącza zaawansowane ustawienia modyfikowania i opcje personalizacji SyMorphe</string>
     <string name="settings_advanced_expert_mode_dialog_title">Włączyć tryb ekspercki?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Tryb ekspercki zapewnia większą kontrolę nad procesem modyfikacji, jednak błędna konfiguracja ustawień może sprawić, że aplikacja przestanie działać</string>
     <string name="settings_advanced_strip_unused_libs">Optymalizuj pod kątem architektury urządzenia</string>
@@ -542,7 +542,7 @@ Odinstalowanie bezpowrotnie usunie wszystkie dane aplikacji"</string>
     <string name="settings_advanced_github_pat_dialog_title">Ustaw token GitHub</string>
     <string name="settings_advanced_github_pat_dialog_description">Ustaw token GitHub, aby móc dodawać Pull Requesty jako zewnętrzne źródła. Utwórz token PAT z uprawnieniem public_repo na github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Uwzględnij w eksporcie ustawień</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Dodaje ten token do eksportu ustawień AutoPatch Hub</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Dodaje ten token do eksportu ustawień SyMorphe</string>
     <string name="settings_advanced_github_pat_export_warning">Nie udostępniaj swojego tokena. Jeśli dołączysz go do eksportu ustawień, zachowaj ten plik prywatnie, ponieważ zawiera on token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Opcje modyfikacji</string>
@@ -639,7 +639,7 @@ Wymagane są następujące wymiary obrazów:
     <string name="installer_status_not_supported">Niewspierane dla tej akcji</string>
     <string name="installer_status_shizuku_not_installed">Zainstaluj Shizuku lub Sui, aby użyć tej opcji</string>
     <string name="installer_status_shizuku_not_running">Uruchom Shizuku lub Sui i spróbuj ponownie</string>
-    <string name="installer_status_shizuku_permission">Przyznaj uprawnienia AutoPatch Hub w aplikacji Shizuku</string>
+    <string name="installer_status_shizuku_permission">Przyznaj uprawnienia SyMorphe w aplikacji Shizuku</string>
     <string name="installer_mount_warning_install">Główny instalator został ustawiony na instalator z montowaniem. Ta zapisana aplikacja nie została zainstalowana przy użyciu montowania</string>
     <string name="mount_version_mismatch_message">Wersja oryginalnej aplikacji (%2$s) nie jest zgodna z wersją zmodyfikowanej aplikacji (%1$s). Zamontuj zgodną wersję oryginalną, a następnie spróbuj ponownie</string>
     <string name="installer_status_shizuku_unsupported">Zainstalowana wersja Shizuku nie jest wspierana</string>
@@ -693,11 +693,11 @@ Wymagane są następujące wymiary obrazów:
     <string name="settings_system_export_keystore_failed">Nie udało się wyeksportować magazynu kluczy</string>
     <string name="settings_system_show_password_field">Pokaż hasło</string>
     <string name="settings_system_hide_password_field">Ukryj hasło</string>
-    <string name="settings_system_morphe_settings">Ustawienia AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_description">Tworzy kopię zapasową i przywraca ustawienia AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_fail">Nie udało się zaimportować ustawień AutoPatch Hub: %s</string>
-    <string name="settings_system_import_manager_settings_success">Zaimportowano ustawienia AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_mode_title">Importuj ustawienia AutoPatch Hub</string>
+    <string name="settings_system_morphe_settings">Ustawienia SyMorphe</string>
+    <string name="settings_system_import_manager_settings_description">Tworzy kopię zapasową i przywraca ustawienia SyMorphe</string>
+    <string name="settings_system_import_manager_settings_fail">Nie udało się zaimportować ustawień SyMorphe: %s</string>
+    <string name="settings_system_import_manager_settings_success">Zaimportowano ustawienia SyMorphe</string>
+    <string name="settings_system_import_manager_settings_mode_title">Importuj ustawienia SyMorphe</string>
     <string name="settings_system_import_manager_settings_mode_description">Wybierz sposób zastosowania zaimportowanych ustawień i źródeł</string>
     <string name="settings_system_import_selections_mode_title">Importuj wybrane modyfikacje</string>
     <string name="settings_system_import_selections_mode_description">Wybierz sposób zastosowania zaimportowanych modyfikacji i ich opcji</string>
@@ -705,8 +705,8 @@ Wymagane są następujące wymiary obrazów:
     <string name="import_mode_replace_description">Odtwórz dokładnie z kopii zapasowej. Elementy brakujące w kopii zostaną usunięte</string>
     <string name="import_mode_merge_title">Scal z istniejącymi</string>
     <string name="import_mode_merge_description">Dodaj brakujące elementy z kopii zapasowej. Istniejące elementy pozostaną bez zmian</string>
-    <string name="settings_system_export_manager_settings_fail">Nie udało się wyeksportować ustawień AutoPatch Hub: %s</string>
-    <string name="settings_system_export_manager_settings_success">Wyeksportowano ustawienia AutoPatch Hub</string>
+    <string name="settings_system_export_manager_settings_fail">Nie udało się wyeksportować ustawień SyMorphe: %s</string>
+    <string name="settings_system_export_manager_settings_success">Wyeksportowano ustawienia SyMorphe</string>
     <string name="settings_system_debug">Debugowanie</string>
     <string name="settings_system_export_debug_logs_description">Zapisuje logi systemowe w celu rozwiązywania problemów</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Nie udało się odczytać logów (kod wyjścia %s)</string>
@@ -762,7 +762,7 @@ Wymagane są następujące wymiary obrazów:
     <string name="settings_system_no_patches_or_options">Brak zapisanych modyfikacji lub opcji</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Własna przeglądarka plików</string>
-    <string name="settings_system_custom_file_picker_description">Przeglądaj pamięć za pomocą wbudowanej przeglądarki plików AutoPatch Hub zamiast domyślnej systemowej</string>
+    <string name="settings_system_custom_file_picker_description">Przeglądaj pamięć za pomocą wbudowanej przeglądarki plików SyMorphe zamiast domyślnej systemowej</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Poprzedni folder</string>
     <string name="file_picker_no_files">Brak plików</string>
@@ -780,7 +780,7 @@ Wymagane są następujące wymiary obrazów:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Informacje</string>
     <string name="settings_system_share_website">Udostępnij stronę</string>
-    <string name="settings_system_share_website_description">Udostępnia oficjalną stronę internetową AutoPatch Hub</string>
+    <string name="settings_system_share_website_description">Udostępnia oficjalną stronę internetową SyMorphe</string>
     <string name="settings_system_manager_description">Projekt otwartoźródłowy służący do nowoczesnego i sprawnego modyfikowania popularnych aplikacji na Androida, rozwijany dzięki opiniom i zaangażowaniu społeczności</string>
     <string name="credits">Podziękowania</string>
     <string name="credits_current_development">Obecni twórcy</string>
@@ -912,7 +912,7 @@ Czy mimo to chcesz kontynuować?"</string>
     <string name="onboarding_sources_desc">Zarządzaj źródłami. Każde z nich oferuje modyfikacje, które możesz zastosować w swoich aplikacjach</string>
     <string name="onboarding_swipe_title">Gesty przesunięcia</string>
     <string name="onboarding_swipe_desc">Przesuń kartę aplikacji w prawo, aby zobaczyć dostępne modyfikacje. Przesuń w lewo, aby ukryć ją z ekranu głównego</string>
-    <string name="onboarding_settings_desc">Dostosuj AutoPatch Hub: wygląd, opcje zaawansowane i narzędzia systemowe</string>
+    <string name="onboarding_settings_desc">Dostosuj SyMorphe: wygląd, opcje zaawansowane i narzędzia systemowe</string>
     <string name="onboarding_sources_patches_desc">Dotknij, aby zobaczyć wszystkie modyfikacje z tego źródła</string>
     <string name="onboarding_sources_version_desc">Dotknij numeru wersji, aby zobaczyć pełną listę zmian dla tego źródła</string>
     <string name="onboarding_sources_prerelease_desc">Włącz, aby otrzymywać przedpremierowe wersje modyfikacji z tego źródła</string>
@@ -927,8 +927,8 @@ Czy mimo to chcesz kontynuować?"</string>
     <string name="onboarding_system_file_picker_desc">Włącz, aby przy wyborze plików APK lub magazynu kluczy używać wbudowanej przeglądarki plików zamiast systemowej</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Szybki przewodnik</string>
-    <string name="tour_prompt_desc">Chcesz szybko poznać najważniejsze funkcje AutoPatch Hub?</string>
+    <string name="tour_prompt_desc">Chcesz szybko poznać najważniejsze funkcje SyMorphe?</string>
     <string name="tour_prompt_confirm">Pokaż mi</string>
     <string name="onboarding_restart_title">Przewodnik po funkcjach</string>
-    <string name="onboarding_restart_desc">Przejdź przez krótki przewodnik, aby poznać najważniejsze funkcje AutoPatch Hub</string>
+    <string name="onboarding_restart_desc">Przejdź przez krótki przewodnik, aby poznać najważniejsze funkcje SyMorphe</string>
 </resources>

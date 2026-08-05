@@ -1,6 +1,6 @@
-# AutoPatch Hub
+# SyMorphe
 
-AutoPatch Hub 是獨立品牌的 GPL-3.0-or-later 衍生專案，來源為
+SyMorphe 是獨立品牌的 GPL-3.0-or-later 衍生專案，來源為
 [Morphe Manager](https://github.com/MorpheApp/morphe-manager)。它把管理器、
 修補套件、YouTube 本機修補及 MicroG-RE 整合為一個已簽章、可判斷裝置版本的
 自動更新通道。
@@ -12,7 +12,7 @@ AutoPatch Hub 是獨立品牌的 GPL-3.0-or-later 衍生專案，來源為
 
 - 預設每小時由 Android WorkManager 檢查一次。
 - 自動辨識 Android SDK 與 CPU ABI，選擇相符版本。
-- 冷啟動及背景檢查時，自動下載 AutoPatch Hub 與可安全覆蓋的 MicroG-RE；
+- 冷啟動及背景檢查時，自動下載 SyMorphe 與可安全覆蓋的 MicroG-RE；
   MicroG 有更新時直接交給 Android 安裝器，Shizuku／Root 可靜默完成，一般裝置
   只保留系統確認。
 - 若車機預載的 MicroG 是其他廠商簽章，會在下載前辨識並保持原狀；Android
@@ -45,7 +45,7 @@ AutoPatch Hub 是獨立品牌的 GPL-3.0-or-later 衍生專案，來源為
 
 ## 一般使用
 
-1. 從 GitHub Releases 安裝 AutoPatch Hub。
+1. 從 GitHub Releases 安裝 SyMorphe。
 2. 首次開啟時允許通知；若要全靜默安裝，可另外授權 Shizuku 或 Root。
 3. 開啟 App；會先更新補釘與 MicroG，再自動使用或下載精確相容的 YouTube 原版，
    驗證通過後在本機開始修補。

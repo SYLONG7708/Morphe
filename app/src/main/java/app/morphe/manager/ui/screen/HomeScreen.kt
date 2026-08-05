@@ -21,6 +21,7 @@ import app.morphe.manager.R
 import app.morphe.manager.domain.manager.HomeAppSortMode
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.PatchBundleRepository
+import app.morphe.manager.domain.update.SafeIntegrationProfile
 import app.morphe.manager.ui.model.HomeAppItem
 import app.morphe.manager.ui.screen.home.*
 import app.morphe.manager.ui.screen.settings.system.PrePatchInstallerDialog
@@ -117,9 +118,8 @@ fun HomeScreen(
         homeViewModel.onStartQuickPatch = onStartQuickPatch
     }
 
-    // Zero-configuration cold start: wait until bundle/home initialization is complete,
-    // then let the activity-scoped ViewModel inspect and patch the installed YouTube once.
-    // Explicit notification actions and onboarding retain priority over this automatic path.
+    // One-tap cold start: wait for the patch metadata, inspect the installed YouTube,
+    // Morphe recommendation, and MicroG, then present both browser-free choices.
     LaunchedEffect(
         homeAppState,
         availablePatches,
@@ -138,7 +138,7 @@ fun HomeScreen(
             globalOnboardingState == null &&
             patchTriggerPackage == null
         ) {
-            homeViewModel.startAutomaticYouTubePatchOnce()
+            homeViewModel.inspectOneTapHubOptions()
         }
     }
 
@@ -161,7 +161,7 @@ fun HomeScreen(
 
     val installAppsPermissionLauncher = rememberLauncherForActivityResult(
         contract = RequestInstallAppsContract
-    ) { homeViewModel.showAndroid11Dialog = false }
+    ) { granted -> homeViewModel.onInstallAppsPermissionResult(granted) }
 
     // Handle patch trigger from dialog
     LaunchedEffect(patchTriggerPackage) {
@@ -239,15 +239,22 @@ fun HomeScreen(
                 ),
                 appActions = HomeAppActions(
                     onAppClick = { item ->
-                        homeViewModel.handleAppClick(
-                            packageName = item.packageName,
-                            availablePatches = availablePatches,
-                            bundleUpdateInProgress = false,
-                            android11BugActive = homeViewModel.android11BugActive,
-                            installedApp = item.installedApp
-                        )
-                        item.installedApp?.let {
-                            homeViewModel.openInstalledAppInfo(it.currentPackageName)
+                        if (
+                            item.packageName == SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE &&
+                            item.installedApp == null
+                        ) {
+                            homeViewModel.openOneTapHubDialog()
+                        } else {
+                            homeViewModel.handleAppClick(
+                                packageName = item.packageName,
+                                availablePatches = availablePatches,
+                                bundleUpdateInProgress = false,
+                                android11BugActive = homeViewModel.android11BugActive,
+                                installedApp = item.installedApp
+                            )
+                            item.installedApp?.let {
+                                homeViewModel.openInstalledAppInfo(it.currentPackageName)
+                            }
                         }
                     },
                     onHideApp = { packageName -> homeViewModel.hideApp(packageName) },

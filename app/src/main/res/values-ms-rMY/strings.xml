@@ -143,11 +143,11 @@
     <string name="home_download_instructions_download_button_toast_3">Alah bisa tegal biasa dan anda semakin hampir 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Belum lagi… belum lagi… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Okey, saya menghormati dedikasi ini 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Anda kini penguji butang AutoPatch Hub yang rasmi 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Anda kini penguji butang SyMorphe yang rasmi 🏅</string>
     <string name="home_download_instructions_step3">Tunggu untuk muat turun selesai, dan &lt;b&gt;jangan muat turun&lt;/b&gt; APK itu</string>
     <string name="home_download_instructions_step3_mount">Tunggu untuk mhat turun selesai, kemudian &lt;b&gt;instal APK itu&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Selepas muat turun selesai, pulang ke AutoPatch Hub</string>
-    <string name="home_download_instructions_step4_mount">Selepas pasang APK asal, pulang ke AutoPatch Hub</string>
+    <string name="home_download_instructions_step4">Selepas muat turun selesai, pulang ke SyMorphe</string>
+    <string name="home_download_instructions_step4_mount">Selepas pasang APK asal, pulang ke SyMorphe</string>
     <string name="home_download_instructions_continue">Teruskan ke APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Pilih APK yang telah dimuat turun</string>
@@ -283,7 +283,7 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="home_app_info_patch_update_available">Kemas kini tampalan tersedia</string>
     <string name="home_app_info_patch_update_available_description">Versi patch yang lebih baru tersedia. Repatch aplikasi anda untuk mendapatkan penambahbaikan dan pembaikan terkini</string>
     <string name="home_app_info_app_deleted_warning">Aplikasi telah dinyahpasangkan</string>
-    <string name="home_app_info_app_deleted_description">Aplikasi ini telah dinyahpasangkan di luar AutoPatch Hub. Kembalikan ia untuk memulihkan fungsi</string>
+    <string name="home_app_info_app_deleted_description">Aplikasi ini telah dinyahpasangkan di luar SyMorphe. Kembalikan ia untuk memulihkan fungsi</string>
     <string name="home_app_info_apk_size">Saiz APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Mod root memerlukan APK asal diinstal pada peranti anda sebelum menampal</string>
@@ -314,8 +314,8 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="patcher_ready_to_mount_subtitle">Tekan butang dibawah untuk memasang</string>
     <string name="patcher_storage_permission_dialog_title">Laluan storan tidak dapat diakses</string>
     <string name="patcher_incompatible_patcher_title">Kemas kini diperlukan</string>
-    <string name="patcher_incompatible_patcher_update_button">Muat turun dan kemas kini AutoPatch Hub</string>
-    <string name="patcher_storage_permission_description_api30">Satu atau lebih pilihan tampalan menuju ke laluan yang AutoPatch Hub tidak dapat baca. Benarkan akses storan dan tekan butang kemudian tampalan akan mula secara automatik</string>
+    <string name="patcher_incompatible_patcher_update_button">Muat turun dan kemas kini SyMorphe</string>
+    <string name="patcher_storage_permission_description_api30">Satu atau lebih pilihan tampalan menuju ke laluan yang SyMorphe tidak dapat baca. Benarkan akses storan dan tekan butang kemudian tampalan akan mula secara automatik</string>
     <string name="patcher_storage_permission_description_legacy">Satu atau lebih pilihan tampalan menuju ke laluan yang tidak dapat diakses. Kemas kini laluan pada pilihan tampalan dan cuba semula</string>
     <string name="patcher_storage_permission_grant">Berikan akses storan</string>
     <string name="patcher_storage_permission_denied_warning">Akses storan ditolak. Berikan akses untuk gunakan laluan ini atau pindahkan fail-fail ke direktori peribadi aplikasi</string>
@@ -334,7 +334,7 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="patcher_step_sign_apk">Menandatangani fail APK ditampal</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Perlindungan tampalan latar belakang</string>
-    <string name="battery_optimization_dialog_description">Sesetengah peranti mungkin menghentikan penampal apabila aplikasi diminimumkan. Benarkan AutoPatch Hub berjalan tanpa keterbatasan bateri untuk memastikan tampalan selesai dengan teliti</string>
+    <string name="battery_optimization_dialog_description">Sesetengah peranti mungkin menghentikan penampal apabila aplikasi diminimumkan. Benarkan SyMorphe berjalan tanpa keterbatasan bateri untuk memastikan tampalan selesai dengan teliti</string>
     <string name="battery_optimization_not_now">Bukan sekarang</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Tampalan sedang berjalan… </string>
@@ -350,7 +350,7 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="patcher_message_6">Pandang ke luar, ia bagus di luar sana… 🌤️</string>
     <string name="patcher_message_7">Melaraskan 1 dan 0… 🤖</string>
     <string name="patcher_message_8">Menguraikan spageti digital… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Membetulkan pepijat dalam aplikasi yang belum ditampal… 🪲</string>
     <string name="patcher_message_10">Tampalan yang hebat berbaloi untuk ditunggu… ⏳</string>
     <string name="patcher_message_11">Menggilap piksel sehingga ia bersinar… 💎</string>
@@ -451,14 +451,14 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="notification_manager_update_title">Kemas kini Morphie tersedia</string>
     <string name="notification_bundle_update_title">Tampalan baharu tersedia</string>
     <string name="notification_update_text">Versi %s sedia untuk dimuat turun</string>
-    <string name="notification_bundle_update_text_unversioned">Tekan untuk buka AutoPatch Hub dan kemas kini</string>
+    <string name="notification_bundle_update_text_unversioned">Tekan untuk buka SyMorphe dan kemas kini</string>
     <string name="notification_permission_dialog_title">Benarkan notifikasi</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub memerlukan kebenaran notifikasi untuk memberitahu anda apabila kemas kini tersedia di latar belakang</string>
+    <string name="notification_permission_dialog_description">SyMorphe memerlukan kebenaran notifikasi untuk memberitahu anda apabila kemas kini tersedia di latar belakang</string>
     <string name="notification_post_patch_dialog_title">Sudikah anda untuk menerima notifikasi apabila kemas kini tersedia? </string>
     <string name="notification_channel_fcm_updates">Kemas kini notifikasi</string>
-    <string name="notification_channel_fcm_updates_description">Notifikasi tentang AutoPatch Hub baharu dan pelepasan tampalan</string>
+    <string name="notification_channel_fcm_updates_description">Notifikasi tentang SyMorphe baharu dan pelepasan tampalan</string>
     <string name="notification_channel_patcher">Menampal</string>
-    <string name="notification_channel_patcher_description">Ditunjukkan semasa AutoPatch Hub menampal aplikasi di latar belakang</string>
+    <string name="notification_channel_patcher_description">Ditunjukkan semasa SyMorphe menampal aplikasi di latar belakang</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Tetapan pakar</string>
     <string name="settings_advanced_expert_mode">Mod mahir</string>
@@ -474,7 +474,7 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="settings_advanced_github_pat_dialog_title">Tetapkan GitHub Personal Access Token</string>
     <string name="settings_advanced_github_pat_dialog_description">Tetapkan Token Akses Peribadi GitHub untuk dapat menambah permintaan tarik sebagai sumber luaran. Buat PAT dengan skop awam_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Sertakan dalam eksport tetapan</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Tambahkan PAT ini ke tetapan AutoPatch Hub dieksport</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Tambahkan PAT ini ke tetapan SyMorphe dieksport</string>
     <string name="settings_advanced_github_pat_export_warning">Jangan kongsi PAT anda. Jika anda menyertakannya dalam satu eksport tetapan, simpan fail tersebut sebagai sulit kerana ia mengandungi token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Pilihan tampalan</string>
@@ -561,7 +561,7 @@ Dimensi gambar mestilah seperti berikut:
     <string name="installer_status_not_supported">Tidak disokong untuk tindakan ini</string>
     <string name="installer_status_shizuku_not_installed">Pasang Shizuku atau Sui untuk menggunakan pilihan ini</string>
     <string name="installer_status_shizuku_not_running">Mula Shizuku atau Sui dan cuba lagi</string>
-    <string name="installer_status_shizuku_permission">Berikan kebenaran Shizuku kepada AutoPatch Hub dari aplikasi Shizuku</string>
+    <string name="installer_status_shizuku_permission">Berikan kebenaran Shizuku kepada SyMorphe dari aplikasi Shizuku</string>
     <string name="installer_mount_warning_install">Pemasang utama anda ditetapkan kepada pemasang mount berakar. Aplikasi yang disimpan ini tidak dipasang menggunakan mount</string>
     <string name="mount_version_mismatch_message">Versi aplikasi Stok (%2$s) tidak serasi dengan versi aplikasi yang dipatch (%1$s). Pasang versi Stok yang serasi, kemudian cuba lagi</string>
     <string name="installer_status_shizuku_unsupported">Pemasangan gagal. Cuba lagi atau tukar kepada pemasang yang berbeza</string>
@@ -595,10 +595,10 @@ Dimensi gambar mestilah seperti berikut:
     <string name="settings_system_export_keystore_success">Kunci simpanan dieksport</string>
     <string name="settings_system_show_password_field">Tunjukkan kata lalu</string>
     <string name="settings_system_hide_password_field">Sembunyikan kata lalu</string>
-    <string name="settings_system_import_manager_settings_fail">Gagal mengimport tetapan AutoPatch Hub: %s</string>
-    <string name="settings_system_import_manager_settings_success">Tetapan AutoPatch Hub telah diimport</string>
-    <string name="settings_system_export_manager_settings_fail">Gagal mengeksport tetapan AutoPatch Hub: %s</string>
-    <string name="settings_system_export_manager_settings_success">Tetapan AutoPatch Hub telah dieksport</string>
+    <string name="settings_system_import_manager_settings_fail">Gagal mengimport tetapan SyMorphe: %s</string>
+    <string name="settings_system_import_manager_settings_success">Tetapan SyMorphe telah diimport</string>
+    <string name="settings_system_export_manager_settings_fail">Gagal mengeksport tetapan SyMorphe: %s</string>
+    <string name="settings_system_export_manager_settings_success">Tetapan SyMorphe telah dieksport</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Gagal membaca log (kod keluar %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Gagal mengeksport log</string>
@@ -631,7 +631,7 @@ Dimensi gambar mestilah seperti berikut:
     <string name="settings_system_patch_selection_reset_all_warning">Ini akan memadam secara kekal semua pilihan tampalan yang disimpan untuk semua pakej dan sumber</string>
     <string name="settings_system_patch_selection_reset_package_warning">Ini akan memadam secara kekal semua pilihan tampalan yang disimpan untuk %s merentasi semua sumber</string>
     <string name="settings_system_patch_selection_reset_source_warning">Ini akan memadam secara kekal pilihan tampalan yang disimpan untuk %1$s dalam sumber #%2$s</string>
-    <string name="settings_system_export_source_data_fail">Gagal membaca log (kod keluar %s)</string>
+    <string name="settings_system_export_source_data_fail">Gagal mengeksport data sumber</string>
     <string name="settings_system_export_source_data_success">Data sumber dieksport dengan jayanya</string>
     <string name="settings_system_import_source_data_fail">Gagal mengimport data sumber</string>
     <string name="settings_system_import_source_data_success">Data sumber diimport dengan jayanya</string>
@@ -738,5 +738,5 @@ Adakah anda masih ingin meneruskan?"</string>
     <!-- %1$d = current step number, %2$d = total number of steps (e.g. "3 of 13") -->
     <!-- Translate "System" the same way as the System settings tab -->
     <!-- Tour prompt dialog shown after first successful patch install -->
-    <string name="onboarding_restart_desc">Ikuti lawatan terpandu bagi ciri-ciri utama AutoPatch Hub\'s</string>
+    <string name="onboarding_restart_desc">Ikuti lawatan terpandu bagi ciri-ciri utama SyMorphe\'s</string>
 </resources>

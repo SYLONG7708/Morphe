@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 hiba</string>
     <string name="android_11_bug_dialog_description">Az alkalmazástelepítési engedélyt előre el kell fogadni, hogy elkerülhető legyen az Android 11 rendszerben fellépő hiba, mely negatívan befolyásolja a felhasználói élményt</string>
     <string name="deep_link_add_source_title">Forrás hozzáadása</string>
-    <string name="deep_link_add_source_message">Hozzáadod ezt a módosításforrást a AutoPatch Hub-hez?</string>
+    <string name="deep_link_add_source_message">Hozzáadod ezt a módosításforrást a SyMorphe-hez?</string>
     <string name="deep_link_add_source_warning">Csak megbízható forrásokat adj hozzá</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">AutoPatch Hub frissítés elérhető</string>
+    <string name="home_update_available">SyMorphe frissítés elérhető</string>
     <string name="home_update_available_subtitle">Az új verzió telepítésre vár</string>
     <string name="home_update_error">A frissítés sikertelen</string>
     <string name="home_update_error_subtitle">Ellenőrizd az internetkapcsolatod és próbáld újra</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">A gyakorlás tökéletessé tesz, és már jó úton vagy 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Még mindig nem itt… még mindig nem itt… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Rendben, tiszteletben tartom a szentelt időt 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Mostantól hivatalos AutoPatch Hub gomb tesztelő lettél 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Mostantól hivatalos SyMorphe gomb tesztelő lettél 🏅</string>
     <string name="home_download_instructions_step3">Várj, amíg a letöltés befejeződik, és &lt;b&gt;ne telepítsd&lt;/b&gt; az APK-t</string>
     <string name="home_download_instructions_step3_mount">Várj, amíg a letöltés befejeződik, majd &lt;b&gt;telepítsd az APK-t&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">A letöltés után térj vissza a AutoPatch Hub alkalmazásba</string>
-    <string name="home_download_instructions_step4_mount">Az eredeti APK telepítése után térj vissza AutoPatch Hub alkalmazásba</string>
+    <string name="home_download_instructions_step4">A letöltés után térj vissza a SyMorphe alkalmazásba</string>
+    <string name="home_download_instructions_step4_mount">Az eredeti APK telepítése után térj vissza SyMorphe alkalmazásba</string>
     <string name="home_download_instructions_continue">Tovább az APKMirror.com oldalra</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Válaszd ki a letöltött APK-t</string>
@@ -342,7 +342,7 @@ Külső zóna (szaggatott): az indító maszk levághatja – tartsa a fontos r�
     <string name="patcher_conflict_subtitle">El kell távolítanod a meglévő verziót</string>
     <string name="patcher_conflict_hint">A javított alkalmazás más tanúsítványt használ, mint a telepített verzió. A eltávolítás törli az alkalmazás összes adatát.</string>
     <string name="patcher_installed_conflict_title">Eltávolítás szükséges</string>
-    <string name="patcher_installed_conflict_body">"A AutoPatch Hub saját tanúsítvánnyal írja alá a javított alkalmazásokat, ami eltér az eredetitől. Az Androidnak el kell távolítani a meglévő verziót, mielőtt a javított alkalmazást telepíteni lehet.
+    <string name="patcher_installed_conflict_body">"A SyMorphe saját tanúsítvánnyal írja alá a javított alkalmazásokat, ami eltér az eredetitől. Az Androidnak el kell távolítani a meglévő verziót, mielőtt a javított alkalmazást telepíteni lehet.
 
 Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="patcher_install_error_title">Telepítési hiba</string>
@@ -351,9 +351,9 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="patcher_ready_to_mount_subtitle">Nyomd meg az alábbi gombot a csatoláshoz</string>
     <string name="patcher_storage_permission_dialog_title">Az elérési útvonal nem hozzáférhető</string>
     <string name="patcher_incompatible_patcher_title">Frissítés szükséges</string>
-    <string name="patcher_incompatible_patcher_description">A &lt;b&gt;%1$s&lt;/b&gt; csomag a &lt;b&gt;%2$s&lt;/b&gt; vagy újabb módosításverziót igényli. Kérjük, frissítsd a AutoPatch Hub-t az alkalmazás módosításához.</string>
-    <string name="patcher_incompatible_patcher_update_button">Töltsd le és frissítsd a AutoPatch Hub alkalmazást</string>
-    <string name="patcher_storage_permission_description_api30">Egy vagy több módosítási opció olyan elérési útra mutat, amelyeket a AutoPatch Hub nem tud olvasni. Add meg a tárhely hozzáférést, majd koppints a gombra, és a módosítás automatikusan elindul</string>
+    <string name="patcher_incompatible_patcher_description">A &lt;b&gt;%1$s&lt;/b&gt; csomag a &lt;b&gt;%2$s&lt;/b&gt; vagy újabb módosításverziót igényli. Kérjük, frissítsd a SyMorphe-t az alkalmazás módosításához.</string>
+    <string name="patcher_incompatible_patcher_update_button">Töltsd le és frissítsd a SyMorphe alkalmazást</string>
+    <string name="patcher_storage_permission_description_api30">Egy vagy több módosítási opció olyan elérési útra mutat, amelyeket a SyMorphe nem tud olvasni. Add meg a tárhely hozzáférést, majd koppints a gombra, és a módosítás automatikusan elindul</string>
     <string name="patcher_storage_permission_description_legacy">Egy vagy több módosítási opció olyan elérési útra mutat, amelyekhez nem lehet hozzáférni. Frissítsd az útvonalakat a módosítási opciókban és próbáld újra</string>
     <string name="patcher_storage_permission_grant">Tárhelyhozzáférés engedélyezése</string>
     <string name="patcher_storage_permission_denied_warning">A tárhelyhozzáférési engedély megtagadva. Engedélyezd a tároló használatához, vagy helyezd át a fájlokat az alkalmazás magánkönyvtárába.</string>
@@ -372,7 +372,7 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="patcher_step_sign_apk">Módosított APK fájl aláírása</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Háttérjavítási védelem</string>
-    <string name="battery_optimization_dialog_description">Bizonyos eszközök leállíthatják a javítót, ha az alkalmazás minimalizálva van. Engedélyezze a AutoPatch Hub akadálytalan futását akkumulátor-korlátozások nélkül, hogy a javítás megbízhatóan befejeződjön.</string>
+    <string name="battery_optimization_dialog_description">Bizonyos eszközök leállíthatják a javítót, ha az alkalmazás minimalizálva van. Engedélyezze a SyMorphe akadálytalan futását akkumulátor-korlátozások nélkül, hogy a javítás megbízhatóan befejeződjön.</string>
     <string name="battery_optimization_not_now">Most nem</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Módosítás folyamatban…</string>
@@ -388,7 +388,7 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="patcher_message_6">Nézz ki, szép idő van odakint… 🌤️</string>
     <string name="patcher_message_7">1-esek és 0-k beállítása… 🤖</string>
     <string name="patcher_message_8">Digitális spagetti kibogozása… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Hibák javítása a nem módosított alkalmazásban… 🪲</string>
     <string name="patcher_message_10">A nagyszerű módosítások megérik a várakozást… ⏳</string>
     <string name="patcher_message_11">Képpontok polírozása, amíg nem ragyognak… 💎</string>
@@ -492,9 +492,9 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Frissítések</string>
     <string name="settings_advanced_updates_use_prereleases">Kiadás előtti módosítások használata</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Korai hozzáférés az új AutoPatch Hub alkalmazásverziókhoz. Engedélyezés forrásonként a módosítás forrásoknál.</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Korai hozzáférés az új SyMorphe alkalmazásverziókhoz. Engedélyezés forrásonként a módosítás forrásoknál.</string>
     <string name="settings_advanced_updates_allow_metered">Mobiladat-forgalom aktív</string>
-    <string name="settings_advanced_updates_allow_metered_description">A AutoPatch Hub és a módosítások frissítéseinek letöltése mobiladattal.</string>
+    <string name="settings_advanced_updates_allow_metered_description">A SyMorphe és a módosítások frissítéseinek letöltése mobiladattal.</string>
     <string name="settings_advanced_updates_background_notifications">Háttérfrissítési értesítések</string>
     <string name="settings_advanced_updates_background_notifications_description">A háttérben periodikusan ellenőrzi a frissítéseket és értesít, ha elérhetőek.</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Azonnali push értesítések fogadása az új kiadásokról akkor is, ha az alkalmazás be van zárva.</string>
@@ -507,21 +507,21 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Háttérellenőrzés gyakorisága</string>
     <string name="settings_advanced_update_interval_battery_warning">A háttérellenőrzések egyes eszközökön nem működnek megbízhatóan. Az olyan gyártók, mint a Xiaomi, a Huawei, a Samsung és a OnePlus gyakran agresszíven korlátozzák a háttérfolyamatokat az akkumulátor kímélése érdekében</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">AutoPatch Hub frissítés elérhető</string>
+    <string name="notification_manager_update_title">SyMorphe frissítés elérhető</string>
     <string name="notification_bundle_update_title">Új módosítások érhetők el</string>
     <string name="notification_update_text">A(z) %s verzió letöltésre kész</string>
-    <string name="notification_bundle_update_text_unversioned">Koppints a AutoPatch Hub megnyitásához és a frissítéshez</string>
+    <string name="notification_bundle_update_text_unversioned">Koppints a SyMorphe megnyitásához és a frissítéshez</string>
     <string name="notification_permission_dialog_title">Értesítések engedélyezése</string>
-    <string name="notification_permission_dialog_description">​A AutoPatch Hub-nek értesítési engedélyre van szüksége, hogy jelezni tudja, ha a háttérben frissítés válik elérhetővé</string>
+    <string name="notification_permission_dialog_description">​A SyMorphe-nek értesítési engedélyre van szüksége, hogy jelezni tudja, ha a háttérben frissítés válik elérhetővé</string>
     <string name="notification_post_patch_dialog_title">Szeretnél értesítést kapni, ha frissítések állnak rendelkezésre?</string>
     <string name="notification_channel_fcm_updates">Frissítési értesítések</string>
-    <string name="notification_channel_fcm_updates_description">Értesítések az új AutoPatch Hub és módosítás kiadásokról</string>
+    <string name="notification_channel_fcm_updates_description">Értesítések az új SyMorphe és módosítás kiadásokról</string>
     <string name="notification_channel_patcher">Módosítás</string>
-    <string name="notification_channel_patcher_description">Akkor jelenik meg, amikor a AutoPatch Hub a háttérben módosít egy alkalmazást</string>
+    <string name="notification_channel_patcher_description">Akkor jelenik meg, amikor a SyMorphe a háttérben módosít egy alkalmazást</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Szakértői beállítások</string>
     <string name="settings_advanced_expert_mode">Szakértői mód</string>
-    <string name="settings_advanced_expert_mode_description">Engedélyezi a AutoPatch Hub komplex módosítási beállításait és a testreszabási lehetőségeket.</string>
+    <string name="settings_advanced_expert_mode_description">Engedélyezi a SyMorphe komplex módosítási beállításait és a testreszabási lehetőségeket.</string>
     <string name="settings_advanced_expert_mode_dialog_title">Engedélyezed a szakértői módot?</string>
     <string name="settings_advanced_expert_mode_dialog_message">A szakértői mód nagyobb ellenőrzést biztosít a módosítások alkalmazása felett, de ebben a módban a beállítások helytelen konfigurálása az alkalmazás működésképtelenségét eredményezheti</string>
     <string name="settings_advanced_strip_unused_libs">Optimalizálás a készülék architektúrájához</string>
@@ -542,7 +542,7 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="settings_advanced_github_pat_dialog_title">GitHub Personal Access Token beállítása</string>
     <string name="settings_advanced_github_pat_dialog_description">GitHub Personal Access Token beállítása a pull requestek külső forrásként történő hozzáadásához. PAT létrehozása public_repo hatókörrel.</string>
     <string name="settings_advanced_github_pat_export_include_label">Felvétel az exportált beállítások közé</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Hozzáadja a PAT-ot a AutoPatch Hub exportált beállításaihoz</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Hozzáadja a PAT-ot a SyMorphe exportált beállításaihoz</string>
     <string name="settings_advanced_github_pat_export_warning">Soha ne oszd meg a PAT-odat! Ha exportálod a beállításokkal kezeld bizalmasan a fájlt, mert tartalmazza a tokent</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Módosítási opciók</string>
@@ -639,7 +639,7 @@ A képek méreteinek a következőknek kell lennie:
     <string name="installer_status_not_supported">Nem támogatott ehhez a művelethez</string>
     <string name="installer_status_shizuku_not_installed">Telepítsd a Shizuku vagy a Sui alkalmazást a használathoz</string>
     <string name="installer_status_shizuku_not_running">Indítsd el a Shizuku vagy a Sui alkalmazást és próbáld újra</string>
-    <string name="installer_status_shizuku_permission">Adj engedélyt a AutoPatch Hub számára a Shizuku alkalmazásból</string>
+    <string name="installer_status_shizuku_permission">Adj engedélyt a SyMorphe számára a Shizuku alkalmazásból</string>
     <string name="installer_mount_warning_install">Az elsődleges telepítő root telepítőre van állítva. Ez a mentett alkalmazás nem csatolással lett telepítve</string>
     <string name="mount_version_mismatch_message">A telepített alapverzió (%2$s) nem egyezik a módosított alkalmazás verziójával (%1$s). Csatold a megfelelő alapverziót, majd próbáld újra</string>
     <string name="installer_status_shizuku_unsupported">A telepített Shizuku verzió nem támogatott</string>
@@ -693,11 +693,11 @@ A képek méreteinek a következőknek kell lennie:
     <string name="settings_system_export_keystore_failed">A kulcstároló exportálása sikertelen</string>
     <string name="settings_system_show_password_field">Jelszó megjelenítése</string>
     <string name="settings_system_hide_password_field">Jelszó elrejtése</string>
-    <string name="settings_system_morphe_settings">AutoPatch Hub beállítások</string>
-    <string name="settings_system_import_manager_settings_description">A AutoPatch Hub beállításainak biztonsági mentése és visszaállítása.</string>
-    <string name="settings_system_import_manager_settings_fail">Hiba történt a AutoPatch Hub beállításainak importálásakor: %s</string>
-    <string name="settings_system_import_manager_settings_success">AutoPatch Hub beállítások importálva</string>
-    <string name="settings_system_import_manager_settings_mode_title">AutoPatch Hub beállítások importálása</string>
+    <string name="settings_system_morphe_settings">SyMorphe beállítások</string>
+    <string name="settings_system_import_manager_settings_description">A SyMorphe beállításainak biztonsági mentése és visszaállítása.</string>
+    <string name="settings_system_import_manager_settings_fail">Hiba történt a SyMorphe beállításainak importálásakor: %s</string>
+    <string name="settings_system_import_manager_settings_success">SyMorphe beállítások importálva</string>
+    <string name="settings_system_import_manager_settings_mode_title">SyMorphe beállítások importálása</string>
     <string name="settings_system_import_manager_settings_mode_description">Válassza ki, hogyan alkalmazzák az importált beállításokat és forrásokat</string>
     <string name="settings_system_import_selections_mode_title">Módosítások importálása</string>
     <string name="settings_system_import_selections_mode_description">Válassza ki, hogyan kell alkalmazni az importált beállításokat és javítási lehetőségeket</string>
@@ -705,8 +705,8 @@ A képek méreteinek a következőknek kell lennie:
     <string name="import_mode_replace_description">Pontosan illeszkedjen a biztonsági mentéshez. A biztonsági mentésből hiányzó elemek törlésre kerülnek.</string>
     <string name="import_mode_merge_title">Összefonódás a meglévőkkel</string>
     <string name="import_mode_merge_description">A biztonsági mentésből hiányzó elemek hozzáadása. A meglévő elemek változatlanok maradnak.</string>
-    <string name="settings_system_export_manager_settings_fail">Hiba történt a AutoPatch Hub beállításainak exportálásakor: %s</string>
-    <string name="settings_system_export_manager_settings_success">AutoPatch Hub beállítások exportálva</string>
+    <string name="settings_system_export_manager_settings_fail">Hiba történt a SyMorphe beállításainak exportálásakor: %s</string>
+    <string name="settings_system_export_manager_settings_success">SyMorphe beállítások exportálva</string>
     <string name="settings_system_debug">Hibakeresés</string>
     <string name="settings_system_export_debug_logs_description">A rendszernaplók mentése hibaelhárításhoz</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Nem sikerült a naplók olvasása (kilépési kód: %s)</string>
@@ -763,7 +763,7 @@ Forrás: #%2$s</string>
     <string name="settings_system_no_patches_or_options">Nincsenek mentett módosítások vagy beállítások</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Egyéni fájlválasztó</string>
-    <string name="settings_system_custom_file_picker_description">A AutoPatch Hub beépített fájlválasztóját használja a rendszer alapértelmezett helyett.</string>
+    <string name="settings_system_custom_file_picker_description">A SyMorphe beépített fájlválasztóját használja a rendszer alapértelmezett helyett.</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Előző mappa</string>
     <string name="file_picker_no_files">Nincs itt fájl</string>
@@ -781,7 +781,7 @@ Forrás: #%2$s</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Névjegy</string>
     <string name="settings_system_share_website">Webhely megosztása</string>
-    <string name="settings_system_share_website_description">A AutoPatch Hub hivatalos weboldalának megosztása</string>
+    <string name="settings_system_share_website_description">A SyMorphe hivatalos weboldalának megosztása</string>
     <string name="settings_system_manager_description">Egy nyílt forráskódú projekt népszerű Android-alkalmazások modern, hatékony módosításához, amelyet a közösség visszajelzései és hozzájárulásai hajtanak</string>
     <string name="credits">Közreműködők</string>
     <string name="credits_current_development">Jelenlegi fejlesztők</string>
@@ -913,7 +913,7 @@ Szeretnéd folytatni?"</string>
     <string name="onboarding_sources_desc">A patch források kezelése. Minden forrás olyan patcheket biztosít, amelyek alkalmazhatók az alkalmazásaidra</string>
     <string name="onboarding_swipe_title">Gesztusvezérléses ujjmozdulatok</string>
     <string name="onboarding_swipe_desc">Csúsztass jobbra egy alkalmazáskártyán a rendelkezésre álló patchekért. Csúsztass balra, hogy elrejtsd a kártyát a kezdőképernyőről</string>
-    <string name="onboarding_settings_desc">A AutoPatch Hub testreszabása: megjelenés, haladó beállítások és rendszereszközök</string>
+    <string name="onboarding_settings_desc">A SyMorphe testreszabása: megjelenés, haladó beállítások és rendszereszközök</string>
     <string name="onboarding_sources_patches_desc">Érintsd meg a forrásból elérhető összes patch megtekintéséhez</string>
     <string name="onboarding_sources_version_desc">Érintsd meg a verziót a forráshoz tartozó teljes változási napló megtekintéséhez</string>
     <string name="onboarding_sources_prerelease_desc">Ezt engedélyezd, ha a forrásból előzetes patch verziókat szeretnél fogadni</string>
@@ -928,8 +928,8 @@ Szeretnéd folytatni?"</string>
     <string name="onboarding_system_file_picker_desc">Engedélyezd, hogy a beépített fájlkezelő legyen használva a rendszer válogató helyett APK-k vagy kulcstárak kiválasztásakor</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Rövid funkció bemutató</string>
-    <string name="tour_prompt_desc">Szeretnél egy rövid bemutatót a AutoPatch Hub fő funkcióiról?</string>
+    <string name="tour_prompt_desc">Szeretnél egy rövid bemutatót a SyMorphe fő funkcióiról?</string>
     <string name="tour_prompt_confirm">Mutasd meg</string>
     <string name="onboarding_restart_title">Funkció bemutató</string>
-    <string name="onboarding_restart_desc">Tekints meg egy irányított bemutatót a AutoPatch Hub fő funkcióiról</string>
+    <string name="onboarding_restart_desc">Tekints meg egy irányított bemutatót a SyMorphe fő funkcióiról</string>
 </resources>

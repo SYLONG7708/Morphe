@@ -154,7 +154,7 @@ def main() -> None:
             "download_url": manager["url"],
             "signature_download_url": manager["signature_url"],
             "created_at": manifest["published_at"],
-            "description": "AutoPatch Hub signed stable release",
+            "description": "SyMorphe signed stable release",
         },
     )
     write_json(
@@ -164,7 +164,10 @@ def main() -> None:
             "download_url": patches["url"],
             "signature_download_url": patches["signature_url"],
             "created_at": manifest["published_at"],
-            "description": "Unmodified Morphe patch bundle mirror with AutoPatch Hub transport signature",
+            "description": (
+                "Morphe patch bundle derived for the signed SyMorphe "
+                "UIS7870 coexistence profile"
+            ),
         },
     )
 
