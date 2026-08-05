@@ -44,7 +44,6 @@ import app.morphe.manager.domain.update.OneTapYouTubeMode
 import app.morphe.manager.domain.update.SafeIntegrationProfile
 import app.morphe.manager.domain.update.UpdateStatus
 import app.morphe.manager.domain.update.VerifiedYouTubeSourceDownloader
-import app.morphe.manager.domain.update.YouTubeDownloadCandidate
 import app.morphe.manager.domain.update.YouTubeSourceDownloadResult
 import app.morphe.manager.domain.update.YouTubeSourceResolver
 import app.morphe.manager.domain.update.YouTubeVersionBuild
@@ -1951,7 +1950,7 @@ class HomeViewModel(
      * currently loaded patch bundle. Returns false so callers can expose the manual fallback.
      */
     private suspend fun downloadAndProcessAutomaticYouTubeSource(): Boolean {
-        var candidates = YouTubeSourceResolver.resolve(
+        val candidates = YouTubeSourceResolver.resolveWithPinnedFallback(
             recommendedVersion = pendingRecommendedVersion?.version,
             selectedBundleUid = pendingSelectedBundleUid,
             compatibleVersions = pendingCompatibleVersions.map { entry ->
@@ -1961,38 +1960,19 @@ class HomeViewModel(
                     versionCodes = entry.buildCodes,
                 )
             },
-        )
-        if (
-            candidates.isEmpty() &&
-            BuildConfig.BUNDLED_ECOSYSTEM_ENABLED &&
-            pendingRecommendedVersion?.version == BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION &&
-            isInstalledVersionCompatible(
+            allowPinnedFallback = isInstalledVersionCompatible(
                 BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION,
                 BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE.toLong(),
-            )
-        ) {
-            candidates = listOf(
-                YouTubeDownloadCandidate(
-                    packageName = EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
-                    version = BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION,
-                    versionCode = BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE,
-                    downloadUrl = YouTubeSourceResolver.buildDownloadUrl(
-                        EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
-                        BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE,
-                    ),
-                    sha256 = BuildConfig.BUNDLED_YOUTUBE_SOURCE_SHA256,
-                )
-            )
-        }
+            ),
+            pinnedVersion = BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION,
+            pinnedVersionCode = BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE,
+            pinnedSha256 = BuildConfig.BUNDLED_YOUTUBE_SOURCE_SHA256,
+        )
         val bundleExpectedSignatures =
             bundleAppMetadataFlow.value[EcosystemUpdateCoordinator.YOUTUBE_PACKAGE]?.signatures
                 .orEmpty()
         val expectedSignatures = bundleExpectedSignatures.ifEmpty {
-            if (BuildConfig.BUNDLED_ECOSYSTEM_ENABLED) {
-                setOf(BuildConfig.BUNDLED_YOUTUBE_SIGNER_SHA256)
-            } else {
-                emptySet()
-            }
+            setOf(BuildConfig.BUNDLED_YOUTUBE_SIGNER_SHA256)
         }
         if (candidates.isEmpty() || expectedSignatures.isEmpty()) {
             Log.w(

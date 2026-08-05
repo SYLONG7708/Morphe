@@ -50,4 +50,54 @@ class YouTubeSourceResolverTest {
             ).isEmpty()
         )
     }
+
+    @Test
+    fun `uses release-pinned exact source when bundle omits build codes`() {
+        val result = YouTubeSourceResolver.resolveWithPinnedFallback(
+            recommendedVersion = "21.04.223",
+            selectedBundleUid = 7,
+            compatibleVersions = listOf(
+                YouTubeVersionBuild("21.04.223", 7, null),
+            ),
+            allowPinnedFallback = true,
+            pinnedVersion = "21.04.223",
+            pinnedVersionCode = 1561052632,
+            pinnedSha256 = "78571be679f586d11a4e56fb1ce6bf9dfd958ce6b8af786c4a3bd94792ce8c7c",
+        )
+
+        assertEquals(1, result.size)
+        assertEquals(1561052632, result.single().versionCode)
+        assertEquals(
+            "78571be679f586d11a4e56fb1ce6bf9dfd958ce6b8af786c4a3bd94792ce8c7c",
+            result.single().sha256,
+        )
+    }
+
+    @Test
+    fun `rejects pinned fallback with mismatched version or invalid hash`() {
+        val compatible = listOf(YouTubeVersionBuild("21.04.223", 7, null))
+
+        assertTrue(
+            YouTubeSourceResolver.resolveWithPinnedFallback(
+                recommendedVersion = "21.04.223",
+                selectedBundleUid = 7,
+                compatibleVersions = compatible,
+                allowPinnedFallback = true,
+                pinnedVersion = "21.05.100",
+                pinnedVersionCode = 1561052632,
+                pinnedSha256 = "78571be679f586d11a4e56fb1ce6bf9dfd958ce6b8af786c4a3bd94792ce8c7c",
+            ).isEmpty()
+        )
+        assertTrue(
+            YouTubeSourceResolver.resolveWithPinnedFallback(
+                recommendedVersion = "21.04.223",
+                selectedBundleUid = 7,
+                compatibleVersions = compatible,
+                allowPinnedFallback = true,
+                pinnedVersion = "21.04.223",
+                pinnedVersionCode = 1561052632,
+                pinnedSha256 = "not-a-sha256",
+            ).isEmpty()
+        )
+    }
 }
