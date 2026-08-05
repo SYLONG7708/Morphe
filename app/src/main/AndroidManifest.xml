@@ -50,7 +50,7 @@
 
     <application
         android:name="app.morphe.manager.ManagerApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="false"
         android:fullBackupContent="@xml/backup_rules"
@@ -123,6 +123,11 @@
                     android:pathPrefix="/add-source" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="app.morphe.manager.license.DeviceActivationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AutoPatchHub" />
 
         <!-- Default launcher icon -->
         <activity-alias

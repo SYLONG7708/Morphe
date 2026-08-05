@@ -10,13 +10,13 @@
     <string name="home_app_no_hidden">沒有隱藏的應用程式</string>
     <string name="home_app_hidden_apps_title">隱藏的應用程式</string>
     <string name="home_app_hidden_apps_hint">輕觸以取消隱藏</string>
-    <string name="android_11_bug_dialog_title">Android 11 相關問題</string>
-    <string name="android_11_bug_dialog_description">請先授予應用程式安裝權限，避免 Android 11 系統的錯誤影響使用者體驗</string>
+    <string name="android_11_bug_dialog_title">需要安裝應用程式權限</string>
+    <string name="android_11_bug_dialog_description">請允許 SyMorphe 安裝未知應用程式，Android 才能依序確認內建 MicroG 與修補後 YouTube 的安裝</string>
     <string name="deep_link_add_source_title">新增來源</string>
-    <string name="deep_link_add_source_message">確定要將這個修補來源新增至 AutoPatch Hub 嗎？</string>
+    <string name="deep_link_add_source_message">確定要將這個修補來源新增至 SyMorphe 嗎？</string>
     <string name="deep_link_add_source_warning">只新增您信任的來源</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">有可用的 AutoPatch Hub 更新</string>
+    <string name="home_update_available">有可用的 SyMorphe 更新</string>
     <string name="home_update_available_subtitle">新版本已準備好安裝</string>
     <string name="home_update_error">更新失敗</string>
     <string name="home_update_error_subtitle">請檢查網際網路連線，然後再試一次</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">熟能生巧，你快要掌握了 💪</string>
     <string name="home_download_instructions_download_button_toast_4">不是這個按鈕… 這只是範例按鈕… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">好吧，您的毅力我收到了 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">您現在是 AutoPatch Hub 官方按鈕測試員 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">您現在是 SyMorphe 官方按鈕測試員 🏅</string>
     <string name="home_download_instructions_step3">等待下載完成，並且 <b>請勿安裝</b> 該 APK</string>
     <string name="home_download_instructions_step3_mount">等待下載完成，然後 <b>安裝該 APK</b></string>
-    <string name="home_download_instructions_step4">下載完成後，回到 AutoPatch Hub</string>
-    <string name="home_download_instructions_step4_mount">安裝原始 APK 後，回到 AutoPatch Hub</string>
+    <string name="home_download_instructions_step4">下載完成後，回到 SyMorphe</string>
+    <string name="home_download_instructions_step4_mount">安裝原始 APK 後，回到 SyMorphe</string>
     <string name="home_download_instructions_continue">前往 APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">選取已下載的 APK</string>
@@ -306,7 +306,7 @@
     <string name="home_app_info_patch_update_available">有可用的修補程式更新</string>
     <string name="home_app_info_patch_update_available_description">有較新版本的修補程式可用。重新修補您的應用程式以獲得最新的改進和修復</string>
     <string name="home_app_info_app_deleted_warning">應用程式已解除安裝</string>
-    <string name="home_app_info_app_deleted_description">此應用程式已在 AutoPatch Hub 外部被解除安裝。重新修補以還原功能</string>
+    <string name="home_app_info_app_deleted_description">此應用程式已在 SyMorphe 外部被解除安裝。重新修補以還原功能</string>
     <string name="home_app_info_apk_size">APK 大小</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Root 模式需要在修補之前將原始 APK 安裝在您的裝置上</string>
@@ -342,7 +342,7 @@
     <string name="patcher_conflict_subtitle">你需要解除安裝現有版本</string>
     <string name="patcher_conflict_hint">修補後的應用程式使用的憑證與已安裝版本不同。解除安裝會清除所有應用程式資料</string>
     <string name="patcher_installed_conflict_title">需要解除安裝</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub 會使用其自己的憑證來簽署已修補的應用程式，這與原始憑證不同。Android 要求在安裝已修補的應用程式之前移除現有版本。
+    <string name="patcher_installed_conflict_body">"SyMorphe 會使用其自己的憑證來簽署已修補的應用程式，這與原始憑證不同。Android 要求在安裝已修補的應用程式之前移除現有版本。
 
 解除安裝將永久刪除所有應用程式資料"</string>
     <string name="patcher_install_error_title">安裝錯誤</string>
@@ -351,9 +351,9 @@
     <string name="patcher_ready_to_mount_subtitle">點擊下方的按鈕進行掛載</string>
     <string name="patcher_storage_permission_dialog_title">無法存取儲存路徑</string>
     <string name="patcher_incompatible_patcher_title">需要更新</string>
-    <string name="patcher_incompatible_patcher_description">套件 <b>%1$s</b> 需要修補程式版本 <b>%2$s</b> 或更新版本。請更新 AutoPatch Hub 以修補此應用程式</string>
-    <string name="patcher_incompatible_patcher_update_button">下載並更新 AutoPatch Hub</string>
-    <string name="patcher_storage_permission_description_api30">一個或多個修補選項指向 AutoPatch Hub 無法讀取的路徑。授予儲存空間存取權限並輕觸按鈕，修補將自動開始</string>
+    <string name="patcher_incompatible_patcher_description">套件 <b>%1$s</b> 需要修補程式版本 <b>%2$s</b> 或更新版本。請更新 SyMorphe 以修補此應用程式</string>
+    <string name="patcher_incompatible_patcher_update_button">下載並更新 SyMorphe</string>
+    <string name="patcher_storage_permission_description_api30">一個或多個修補選項指向 SyMorphe 無法讀取的路徑。授予儲存空間存取權限並輕觸按鈕，修補將自動開始</string>
     <string name="patcher_storage_permission_description_legacy">一個或多個修補選項指向無法存取的路徑。更新修補選項中的路徑並重試</string>
     <string name="patcher_storage_permission_grant">授予儲存空間權限</string>
     <string name="patcher_storage_permission_denied_warning">儲存空間權限被拒絕。授予使用此路徑的權限，或將檔案移至應用程式的專用目錄</string>
@@ -372,7 +372,7 @@
     <string name="patcher_step_sign_apk">簽署已修補的 APK 檔案</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">背景修補保護</string>
-    <string name="battery_optimization_dialog_description">部分裝置可能在應用程式縮小時停止修補程式。允許 AutoPatch Hub 在沒有電池限制的情況下執行，以確保修補程式可靠完成。</string>
+    <string name="battery_optimization_dialog_description">部分裝置可能在應用程式縮小時停止修補程式。允許 SyMorphe 在沒有電池限制的情況下執行，以確保修補程式可靠完成。</string>
     <string name="battery_optimization_not_now">稍後再說</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">修補進行中…</string>
@@ -388,7 +388,7 @@
     <string name="patcher_message_6">看看外面，天氣很好… 🌤️</string>
     <string name="patcher_message_7">調整 1 和 0… 🤖</string>
     <string name="patcher_message_8">解開數位義大利麵… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">修復未修補應用程式中的錯誤… 🪲</string>
     <string name="patcher_message_10">好的修補程式值得等待… ⏳</string>
     <string name="patcher_message_11">拋光像素直到它們閃閃發光… 💎</string>
@@ -492,9 +492,9 @@
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">更新</string>
     <string name="settings_advanced_updates_use_prereleases">預先發布版更新</string>
-    <string name="settings_advanced_updates_use_prereleases_description">搶先體驗最新 AutoPatch Hub 應用程式版本。在修補來源中啟用預先發布版</string>
+    <string name="settings_advanced_updates_use_prereleases_description">搶先體驗最新 SyMorphe 應用程式版本。在修補來源中啟用預先發布版</string>
     <string name="settings_advanced_updates_allow_metered">行動數據更新</string>
-    <string name="settings_advanced_updates_allow_metered_description">允許 AutoPatch Hub 和修補更新在使用行動數據時進行下載</string>
+    <string name="settings_advanced_updates_allow_metered_description">允許 SyMorphe 和修補更新在使用行動數據時進行下載</string>
     <string name="settings_advanced_updates_background_notifications">背景更新通知</string>
     <string name="settings_advanced_updates_background_notifications_description">在背景定期檢查更新，並在可用時發出通知</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">即便應用程式已關閉，也能接收新版本的即時推播通知</string>
@@ -507,11 +507,11 @@
     <string name="settings_advanced_update_interval_chip_subtitle">背景檢查頻率</string>
     <string name="settings_advanced_update_interval_battery_warning">在某些裝置上，背景檢查可能無法可靠運作。小米、華為、三星和 OnePlus 等製造商通常會積極限制背景程序以節省電池電量</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">有可用的 AutoPatch Hub 更新</string>
+    <string name="notification_manager_update_title">有可用的 SyMorphe 更新</string>
     <string name="notification_bundle_update_title">有新的修補程式可用</string>
     <string name="notification_update_text">版本 %s 已準備好下載</string>
     <string name="notification_youtube_update_title">YouTube 更新已就緒</string>
-    <string name="notification_youtube_update_text">開啟 AutoPatch Hub，即可使用手機內相容版本完成本機修補</string>
+    <string name="notification_youtube_update_text">開啟 SyMorphe，即可使用手機內相容版本完成本機修補</string>
     <string name="notification_microg_update_title">MicroG-RE 更新已就緒</string>
     <string name="notification_microg_update_text">已安全下載並驗證 MicroG-RE，可直接安裝</string>
     <string name="update_center_title">安全更新中心</string>
@@ -522,7 +522,7 @@
     <string name="update_center_automatic">全生態自動更新</string>
     <string name="update_center_automatic_description">自動選擇相符的 SDK／ABI 版本、下載並完成安全驗證</string>
     <string name="update_center_versions">已安裝 %1$s／可用 %2$s</string>
-    <string name="update_component_manager">AutoPatch Hub</string>
+    <string name="update_component_manager">SyMorphe</string>
     <string name="update_component_youtube">YouTube 本機修補</string>
     <string name="update_component_patches">修補套件</string>
     <string name="update_component_microg">MicroG-RE</string>
@@ -534,18 +534,18 @@
     <string name="update_status_not_installed">尚未安裝</string>
     <string name="update_status_unsupported">此裝置沒有相容版本</string>
     <string name="update_status_error">下載或驗證失敗</string>
-    <string name="notification_bundle_update_text_unversioned">輕觸以開啟 AutoPatch Hub 並更新</string>
+    <string name="notification_bundle_update_text_unversioned">輕觸以開啟 SyMorphe 並更新</string>
     <string name="notification_permission_dialog_title">允許通知</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub 需要通知權限才能在背景有可用更新時提醒您</string>
+    <string name="notification_permission_dialog_description">SyMorphe 需要通知權限才能在背景有可用更新時提醒您</string>
     <string name="notification_post_patch_dialog_title">您希望在有可用更新時收到通知嗎？</string>
     <string name="notification_channel_fcm_updates">更新通知</string>
-    <string name="notification_channel_fcm_updates_description">有關新 AutoPatch Hub 和修補程式版本的通知</string>
+    <string name="notification_channel_fcm_updates_description">有關新 SyMorphe 和修補程式版本的通知</string>
     <string name="notification_channel_patcher">修補</string>
-    <string name="notification_channel_patcher_description">在 AutoPatch Hub 於背景修補應用程式時顯示</string>
+    <string name="notification_channel_patcher_description">在 SyMorphe 於背景修補應用程式時顯示</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">專家設定</string>
     <string name="settings_advanced_expert_mode">專家模式</string>
-    <string name="settings_advanced_expert_mode_description">啟用複雜的 AutoPatch Hub 修補設定和自訂選項</string>
+    <string name="settings_advanced_expert_mode_description">啟用複雜的 SyMorphe 修補設定和自訂選項</string>
     <string name="settings_advanced_expert_mode_dialog_title">啟用專家模式？</string>
     <string name="settings_advanced_expert_mode_dialog_message">專家模式可以更精細地控制修補程式的套用方式，但在專家模式下設定錯誤可能會導致應用程式無法運作</string>
     <string name="settings_advanced_strip_unused_libs">針對裝置架構最佳化</string>
@@ -566,7 +566,7 @@
     <string name="settings_advanced_github_pat_dialog_title">設定 GitHub 個人存取權杖 (PAT)</string>
     <string name="settings_advanced_github_pat_dialog_description">設定 GitHub 個人存取權杖以便能夠將拉取請求新增為外部來源。建立具有 public_repo github.com 範圍的 PAT</string>
     <string name="settings_advanced_github_pat_export_include_label">包含在設定匯出中</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">將此 PAT 新增至匯出的 AutoPatch Hub 設定</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">將此 PAT 新增至匯出的 SyMorphe 設定</string>
     <string name="settings_advanced_github_pat_export_warning">請勿分享您的 PAT。如果您將其包含在設定匯出中，請將該檔案保密，因為它包含該權杖</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">修補選項</string>
@@ -663,7 +663,7 @@ morphe_header_custom_dark.png
     <string name="installer_status_not_supported">不支援此操作</string>
     <string name="installer_status_shizuku_not_installed">安裝 Shizuku 或 Sui 以使用此選項</string>
     <string name="installer_status_shizuku_not_running">啟動 Shizuku 或 Sui 並重試</string>
-    <string name="installer_status_shizuku_permission">從 Shizuku 應用程式授予 AutoPatch Hub Shizuku 權限</string>
+    <string name="installer_status_shizuku_permission">從 Shizuku 應用程式授予 SyMorphe Shizuku 權限</string>
     <string name="installer_mount_warning_install">您的主要安裝程式設為根目錄掛載安裝程式。此儲存的應用程式並非使用掛載安裝</string>
     <string name="mount_version_mismatch_message">原廠應用程式版本 (%2$s) 與修補後的應用程式版本 (%1$s) 不符。掛載相符的原廠版本，然後重試</string>
     <string name="installer_status_shizuku_unsupported">安裝的 Shizuku 版本不受支援</string>
@@ -717,11 +717,11 @@ morphe_header_custom_dark.png
     <string name="settings_system_export_keystore_failed">無法匯出金鑰儲存庫</string>
     <string name="settings_system_show_password_field">顯示密碼</string>
     <string name="settings_system_hide_password_field">隱藏密碼</string>
-    <string name="settings_system_morphe_settings">AutoPatch Hub 設定</string>
-    <string name="settings_system_import_manager_settings_description">備份和還原您的 AutoPatch Hub 設定</string>
-    <string name="settings_system_import_manager_settings_fail">無法匯入 AutoPatch Hub 設定：%s</string>
-    <string name="settings_system_import_manager_settings_success">已匯入 AutoPatch Hub 設定</string>
-    <string name="settings_system_import_manager_settings_mode_title">匯入 AutoPatch Hub 設定</string>
+    <string name="settings_system_morphe_settings">SyMorphe 設定</string>
+    <string name="settings_system_import_manager_settings_description">備份和還原您的 SyMorphe 設定</string>
+    <string name="settings_system_import_manager_settings_fail">無法匯入 SyMorphe 設定：%s</string>
+    <string name="settings_system_import_manager_settings_success">已匯入 SyMorphe 設定</string>
+    <string name="settings_system_import_manager_settings_mode_title">匯入 SyMorphe 設定</string>
     <string name="settings_system_import_manager_settings_mode_description">選擇如何套用匯入的設定和來源</string>
     <string name="settings_system_import_selections_mode_title">匯入修補選擇</string>
     <string name="settings_system_import_selections_mode_description">選擇如何套用匯入的選取範圍和修補選項</string>
@@ -729,8 +729,8 @@ morphe_header_custom_dark.png
     <string name="import_mode_replace_description">完全符合備份。若備份中缺少項目，將會移除</string>
     <string name="import_mode_merge_title">與現有項目合併</string>
     <string name="import_mode_merge_description">新增備份中缺少項目。現有項目維持不變</string>
-    <string name="settings_system_export_manager_settings_fail">無法匯出 AutoPatch Hub 設定：%s</string>
-    <string name="settings_system_export_manager_settings_success">已匯出 AutoPatch Hub 設定</string>
+    <string name="settings_system_export_manager_settings_fail">無法匯出 SyMorphe 設定：%s</string>
+    <string name="settings_system_export_manager_settings_success">已匯出 SyMorphe 設定</string>
     <string name="settings_system_debug">偵錯</string>
     <string name="settings_system_export_debug_logs_description">儲存系統紀錄以進行疑難排解</string>
     <string name="settings_system_export_debug_logs_export_read_failed">無法讀取紀錄（結束代碼 %s）</string>
@@ -786,7 +786,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_no_patches_or_options">未儲存任何修補程式或選項</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">自訂檔案選擇器</string>
-    <string name="settings_system_custom_file_picker_description">改用 AutoPatch Hub 內建檔案選擇器，而不是系統預設值</string>
+    <string name="settings_system_custom_file_picker_description">改用 SyMorphe 內建檔案選擇器，而不是系統預設值</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">上一目錄</string>
     <string name="file_picker_no_files">這裡沒有檔案</string>
@@ -804,7 +804,7 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">關於</string>
     <string name="settings_system_share_website">分享網站</string>
-    <string name="settings_system_share_website_description">分享官方 AutoPatch Hub 網站</string>
+    <string name="settings_system_share_website_description">分享官方 SyMorphe 網站</string>
     <string name="settings_system_manager_description">\"這是一個開源專案，用於對熱門的 Android 應用程式進行現代、簡化的修補，並由社群的意見回饋和貢獻所驅動\"</string>
     <string name="credits">鳴謝</string>
     <string name="credits_current_development">目前開發</string>
@@ -843,6 +843,31 @@ morphe_header_custom_dark.png
     <string name="loading_older_releases">正在載入較舊的版本…</string>
     <string name="creating">正在建立…</string>
     <string name="processing_apk">正在處理 APK…</string>
+    <string name="one_tap_title">一鍵 YouTube 修補</string>
+    <string name="one_tap_description">SyMorphe 已偵測這台車機。你可以直接使用本機 YouTube，或讓 SyMorphe 自動取得並驗證 Morphe 目前推薦版本；MicroG 也會在同一流程準備，不需要開網頁或手動選檔。</string>
+    <string name="one_tap_checking">SyMorphe 正在偵測 YouTube、Morphe 修補與 MicroG…</string>
+    <string name="one_tap_refresh">重新偵測</string>
+    <string name="one_tap_local_youtube">本機 YouTube</string>
+    <string name="one_tap_recommended_youtube">Morphe 推薦版本</string>
+    <string name="one_tap_recommended_detail">自動下載精確相容的原版、完成驗證並直接開始修補</string>
+    <string name="one_tap_microg">MicroG</string>
+    <string name="one_tap_not_installed">尚未安裝</string>
+    <string name="one_tap_unavailable">暫時無法取得</string>
+    <string name="one_tap_local_ready">版本相容，可以直接使用本機 APK 修補</string>
+    <string name="one_tap_local_not_found">找不到車機已安裝的原版 YouTube</string>
+    <string name="one_tap_local_incompatible">本機 YouTube %1$s 與目前 Morphe 修補套件不相容</string>
+    <string name="one_tap_microg_ready">相符的 MicroG 已安裝，可以使用</string>
+    <string name="one_tap_microg_update_ready">將自動安裝或更新至 %1$s</string>
+    <string name="one_tap_microg_will_install">將自動準備相符的 MicroG</string>
+    <string name="one_tap_microg_incompatible">現有 MicroG 憑證不相容，無法安全覆蓋更新</string>
+    <string name="one_tap_preparing">正在準備並驗證元件；Android 仍可能要求你確認安裝。</string>
+    <string name="one_tap_use_local">直接修補本機 YouTube</string>
+    <string name="one_tap_use_recommended">自動使用 Morphe 推薦版本</string>
+    <string name="one_tap_download_failed">無法安全下載相容的 YouTube 原版，沒有安裝任何檔案。</string>
+    <string name="one_tap_workflow_failed">一鍵流程無法完成</string>
+    <string name="one_tap_microg_prepare_failed">無法安全準備相容的 MicroG</string>
+    <string name="one_tap_microg_install_incomplete">MicroG 尚未完成安裝；請在 Android 安裝畫面確認後重試。</string>
+    <string name="one_tap_install_permission_required">請允許 SyMorphe 安裝應用程式後再重試</string>
     <string name="exporting_apks">正在匯出 APK…</string>
     <string name="not_installed">未安裝</string>
     <string name="view">檢視</string>
@@ -936,7 +961,7 @@ morphe_header_custom_dark.png
     <string name="onboarding_sources_desc">管理您的修補檔案來源。每個來源都提供可用於您應用程式的修補檔案</string>
     <string name="onboarding_swipe_title">手勢</string>
     <string name="onboarding_swipe_desc">向右滑動應用程式卡片以查看其可用的修補。向左滑動可從主螢幕隱藏卡片</string>
-    <string name="onboarding_settings_desc">自訂 AutoPatch Hub：外觀、進階選項和系統工具</string>
+    <string name="onboarding_settings_desc">自訂 SyMorphe：外觀、進階選項和系統工具</string>
     <string name="onboarding_sources_patches_desc">點擊以查看此來源提供的可用修補</string>
     <string name="onboarding_sources_version_desc">點擊版本以查看此來源的完整變更紀錄</string>
     <string name="onboarding_sources_prerelease_desc">啟用此選項可從此來源接收預先發布版</string>
@@ -951,8 +976,8 @@ morphe_header_custom_dark.png
     <string name="onboarding_system_file_picker_desc">啟用此選項可在選擇 APK 或金鑰庫時使用內建檔案瀏覽器，而不是系統挑選器</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">快速功能導覽</string>
-    <string name="tour_prompt_desc">想要快速導覽 AutoPatch Hub 的主要功能嗎？</string>
+    <string name="tour_prompt_desc">想要快速導覽 SyMorphe 的主要功能嗎？</string>
     <string name="tour_prompt_confirm">帶我走一趟</string>
     <string name="onboarding_restart_title">功能導覽</string>
-    <string name="onboarding_restart_desc">進行 AutoPatch Hub 主要功能的引導式導覽</string>
+    <string name="onboarding_restart_desc">進行 SyMorphe 主要功能的引導式導覽</string>
 </resources>

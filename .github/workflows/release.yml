@@ -49,7 +49,13 @@ jobs:
       - name: Install pinned Android toolchain
         run: |
           yes | sdkmanager --licenses >/dev/null
-          sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "cmake;3.22.1" "ndk;28.2.13676358"
+          sdkmanager \
+            "platforms;android-36" \
+            "platforms;android-37.0" \
+            "build-tools;36.0.0" \
+            "build-tools;37.0.0" \
+            "cmake;3.22.1" \
+            "ndk;28.2.13676358"
 
       - name: Test release metadata generator
         run: python -m unittest discover -s tools -p 'test_*.py'
@@ -60,31 +66,37 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p dist
+          mkdir -p dist upstream
           patch_json="$(gh api repos/MorpheApp/morphe-patches/releases/latest)"
           microg_json="$(gh api repos/MorpheApp/MicroG-RE/releases/latest)"
+          patch_tag="$(jq -r '.tag_name' <<<"$patch_json")"
+          microg_tag="$(jq -r '.tag_name' <<<"$microg_json")"
           patch_version="$(jq -r '.tag_name | sub("^v"; "")' <<<"$patch_json")"
           microg_version="$(jq -r '.tag_name | sub("^v"; "")' <<<"$microg_json")"
-          patch_url="$(jq -r '.assets[] | select(.name | endswith(".mpp")) | .browser_download_url' <<<"$patch_json" | head -n1)"
-          microg_url="$(jq -r '.assets[] | select(.name | endswith(".apk")) | .browser_download_url' <<<"$microg_json" | head -n1)"
+          patch_url="$(jq -r '.assets[] | select(.name | endswith(".mpp")) | .browser_download_url' \
+            <<<"$patch_json" | head -n1)"
           test -n "$patch_url" && test "$patch_url" != "null"
-          test -n "$microg_url" && test "$microg_url" != "null"
+          revision="$(awk -F= '$1 == "profileRevision" { gsub(/[[:space:]]/, "", $2); print $2 }' \
+            config/uis7870-safe.properties)"
+          test -n "$revision"
+          derived_patch_version="$patch_version.7870.$revision"
+          derived_microg_version="$microg_version-7870.$revision"
+          git clone --filter=blob:none --depth 1 --branch "$patch_tag" \
+            https://github.com/MorpheApp/morphe-patches.git upstream/morphe-patches
+          git clone --filter=blob:none --depth 1 --branch "$microg_tag" \
+            https://github.com/MorpheApp/MicroG-RE.git upstream/microg-re
+          curl --fail --location --retry 3 "$patch_url" \
+            --output "upstream/patches-$patch_version.mpp"
           echo "patch_version=$patch_version" >> "$GITHUB_OUTPUT"
           echo "microg_version=$microg_version" >> "$GITHUB_OUTPUT"
-          curl --fail --location --retry 3 "$patch_url" --output "dist/patches-$patch_version.mpp"
-          curl --fail --location --retry 3 "$microg_url" --output "dist/microg-$microg_version.apk"
-
-      - name: Verify Manager and patch-bundle compatibility
-        run: |
-          python tools/check_patch_bundle_compat.py \
-            --bundle "dist/patches-${{ steps.upstream.outputs.patch_version }}.mpp" \
-            --catalog gradle/libs.versions.toml
+          echo "derived_patch_version=$derived_patch_version" >> "$GITHUB_OUTPUT"
+          echo "derived_microg_version=$derived_microg_version" >> "$GITHUB_OUTPUT"
 
       - name: Skip unchanged scheduled release
         id: gate
         env:
-          PATCH_VERSION: ${{ steps.upstream.outputs.patch_version }}
-          MICROG_VERSION: ${{ steps.upstream.outputs.microg_version }}
+          PATCH_VERSION: ${{ steps.upstream.outputs.derived_patch_version }}
+          MICROG_VERSION: ${{ steps.upstream.outputs.derived_microg_version }}
         run: |
           publish=true
           if [ "${{ github.event_name }}" = "schedule" ]; then
@@ -111,6 +123,60 @@ jobs:
           printf '%s' "$UPDATE_SIGNING_P12_BASE64" | base64 --decode > update-signing.p12
           chmod 600 app/keystore.jks update-signing.p12
 
+      - name: Build UIS7870 coexistence patches and MicroG
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ENTRY_ALIAS: ${{ secrets.KEYSTORE_ENTRY_ALIAS }}
+          KEYSTORE_ENTRY_PASSWORD: ${{ secrets.KEYSTORE_ENTRY_PASSWORD }}
+          UPSTREAM_PATCH_VERSION: ${{ steps.upstream.outputs.patch_version }}
+          UPSTREAM_MICROG_VERSION: ${{ steps.upstream.outputs.microg_version }}
+          PATCH_VERSION: ${{ steps.upstream.outputs.derived_patch_version }}
+          MICROG_VERSION: ${{ steps.upstream.outputs.derived_microg_version }}
+        run: |
+          set -euo pipefail
+          microg_version_code="$(date -u +%y%m%d)$(printf '%03d' "$((GITHUB_RUN_NUMBER % 1000))")"
+          python tools/prepare_uis7870_sources.py \
+            --patches-dir upstream/morphe-patches \
+            --microg-dir upstream/microg-re \
+            --profile config/uis7870-safe.properties \
+            --patch-version "$UPSTREAM_PATCH_VERSION" \
+            --microg-version "$UPSTREAM_MICROG_VERSION" \
+            --microg-version-code "$microg_version_code"
+
+          python tools/derive_uis7870_patch_bundle.py \
+            --source "upstream/patches-$UPSTREAM_PATCH_VERSION.mpp" \
+            --output "dist/patches-$PATCH_VERSION.mpp" \
+            --profile config/uis7870-safe.properties \
+            --patch-version "$UPSTREAM_PATCH_VERSION" \
+            --d8 "$ANDROID_HOME/build-tools/37.0.0/d8"
+
+          chmod +x upstream/microg-re/gradlew
+          (
+            cd upstream/microg-re
+            ./gradlew clean :play-services-core:assembleDefaultRelease --no-daemon --stacktrace
+          )
+          unsigned_microg="$(find upstream/microg-re/play-services-core/build/outputs/apk/default/release \
+            -name '*.apk' -type f | head -n1)"
+          test -f "$unsigned_microg"
+          apksigner sign \
+            --ks app/keystore.jks \
+            --ks-key-alias "$KEYSTORE_ENTRY_ALIAS" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --key-pass env:KEYSTORE_ENTRY_PASSWORD \
+            --out "dist/microg-$MICROG_VERSION.apk" \
+            "$unsigned_microg"
+          apksigner verify --verbose --print-certs "dist/microg-$MICROG_VERSION.apk"
+
+      - name: Verify Manager and derived patch-bundle compatibility
+        if: steps.gate.outputs.publish == 'true'
+        run: |
+          python tools/check_patch_bundle_compat.py \
+            --bundle "dist/patches-${{ steps.upstream.outputs.derived_patch_version }}.mpp" \
+            --catalog gradle/libs.versions.toml
+
       - name: Build signed manager
         if: steps.gate.outputs.publish == 'true'
         env:
@@ -119,13 +185,20 @@ jobs:
           KEYSTORE_ENTRY_PASSWORD: ${{ secrets.KEYSTORE_ENTRY_PASSWORD }}
         run: |
           set -euo pipefail
-          version="1.0.${GITHUB_RUN_NUMBER}"
+          version="1.1.${GITHUB_RUN_NUMBER}"
           sed -i "s/^version = .*/version = $version/" app/gradle.properties
+          expected_signer="$(keytool -exportcert \
+            -keystore app/keystore.jks \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -alias "$KEYSTORE_ENTRY_ALIAS" \
+            | sha256sum | awk '{print toupper($1)}')"
+          test "${#expected_signer}" -eq 64
+          export SYMORPHE_EXPECTED_SIGNING_CERT_SHA256="$expected_signer"
           chmod +x gradlew
           ./gradlew clean lintRelease assembleRelease --stacktrace
           apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
           test -f "$apk"
-          cp "$apk" "dist/AutoPatch-Hub-$version.apk"
+          cp "$apk" "dist/SyMorphe-$version.apk"
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Generate and sign release metadata
@@ -134,13 +207,13 @@ jobs:
           UPDATE_SIGNING_STORE_PASSWORD: ${{ secrets.UPDATE_SIGNING_STORE_PASSWORD }}
           UPDATE_SIGNING_KEY_ALIAS: ${{ secrets.UPDATE_SIGNING_KEY_ALIAS }}
           UPDATE_SIGNING_KEY_PASSWORD: ${{ secrets.UPDATE_SIGNING_KEY_PASSWORD }}
-          PATCH_VERSION: ${{ steps.upstream.outputs.patch_version }}
-          MICROG_VERSION: ${{ steps.upstream.outputs.microg_version }}
+          PATCH_VERSION: ${{ steps.upstream.outputs.derived_patch_version }}
+          MICROG_VERSION: ${{ steps.upstream.outputs.derived_microg_version }}
         run: |
           set -euo pipefail
           base="https://github.com/SYLONG7708/Morphe/releases/latest/download"
           python tools/generate_update_manifest.py \
-            --manager "dist/AutoPatch-Hub-$RELEASE_VERSION.apk" \
+            --manager "dist/SyMorphe-$RELEASE_VERSION.apk" \
             --patches "dist/patches-$PATCH_VERSION.mpp" \
             --patch-version "$PATCH_VERSION" \
             --microg "dist/microg-$MICROG_VERSION.apk" \
@@ -148,7 +221,7 @@ jobs:
             --output-dir dist
           javac -d dist tools/SignFile.java tools/VerifyFile.java
           for file in \
-            "dist/AutoPatch-Hub-$RELEASE_VERSION.apk" \
+            "dist/SyMorphe-$RELEASE_VERSION.apk" \
             "dist/patches-$PATCH_VERSION.mpp" \
             "dist/microg-$MICROG_VERSION.apk" \
             "dist/update-manifest.json"; do
@@ -158,10 +231,10 @@ jobs:
             java -cp dist VerifyFile app/src/main/res/raw/update_signing_cert.der \
               "$file" "$file.sig"
           done
-          bundle_dir="dist/AutoPatch-Hub-Ecosystem-$RELEASE_VERSION"
+          bundle_dir="dist/SyMorphe-Ecosystem-$RELEASE_VERSION"
           mkdir -p "$bundle_dir"
-          cp "dist/AutoPatch-Hub-$RELEASE_VERSION.apk" \
-            "dist/AutoPatch-Hub-$RELEASE_VERSION.apk.sig" \
+          cp "dist/SyMorphe-$RELEASE_VERSION.apk" \
+            "dist/SyMorphe-$RELEASE_VERSION.apk.sig" \
             "dist/microg-$MICROG_VERSION.apk" \
             "dist/microg-$MICROG_VERSION.apk.sig" \
             "dist/patches-$PATCH_VERSION.mpp" \
@@ -169,12 +242,15 @@ jobs:
             "dist/update-manifest.json" \
             "dist/update-manifest.json.sig" "$bundle_dir/"
           cat > "$bundle_dir/README.txt" <<EOF
-          AutoPatch Hub Ecosystem Bundle $RELEASE_VERSION
+          SyMorphe Ecosystem Bundle $RELEASE_VERSION
 
-          This single ZIP contains the signed AutoPatch Hub manager, MicroG-RE,
-          Morphe patch bundle, signed manifest, and detached signatures.
-          Install AutoPatch Hub first, then open its Security Update Center to install
-          MicroG-RE and patch YouTube locally. This private-use build can automatically
+          This single ZIP contains the signed SyMorphe manager, a UIS7870
+          coexistence build of MicroG-RE, a matching derived Morphe patch bundle,
+          the signed manifest, and detached signatures.
+          Install SyMorphe first, then open its Security Update Center to install
+          MicroG-RE and patch YouTube locally. The new packages use the stable
+          com.sylong.autopatch vendor group and do not replace factory
+          app.morphe packages. This private-use build can automatically
           retrieve the exact patch-bundle-compatible original YouTube APK when no suitable
           local source exists, then verifies its Google signer, package, version, and
           versionCode before patching.
@@ -183,7 +259,7 @@ jobs:
           the MicroG package identity. Enable Automatic ecosystem updates in Settings
           to keep the verified components current.
           EOF
-          bundle="dist/AutoPatch-Hub-Ecosystem-$RELEASE_VERSION.zip"
+          bundle="dist/SyMorphe-Ecosystem-$RELEASE_VERSION.zip"
           (cd "$bundle_dir" && zip -q -r "../$(basename "$bundle")" .)
           java -cp dist SignFile update-signing.p12 \
             "$UPDATE_SIGNING_STORE_PASSWORD" "$UPDATE_SIGNING_KEY_ALIAS" \
@@ -197,23 +273,26 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          tag="autopatch-v$RELEASE_VERSION"
+          tag="symorphe-v$RELEASE_VERSION"
           assets=(dist/*.apk dist/*.mpp dist/*.sig dist/*.zip dist/update-manifest.json)
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" "${assets[@]}" --clobber
           else
             gh release create "$tag" \
               --target "$GITHUB_SHA" \
-              --title "AutoPatch Hub v$RELEASE_VERSION" \
+              --title "SyMorphe v$RELEASE_VERSION" \
               --notes "Signed zero-configuration update channel. The private-use manager can retrieve and verify an exact compatible original YouTube APK, then patches it locally; no Google or prepatched YouTube APK is included in this release." \
               "${assets[@]}"
           fi
 
-      - name: Attest manager APK
+      - name: Attest ecosystem artifacts
         if: steps.gate.outputs.publish == 'true'
         uses: actions/attest-build-provenance@v3
         with:
-          subject-path: dist/AutoPatch-Hub-${{ env.RELEASE_VERSION }}.apk
+          subject-path: |
+            dist/SyMorphe-${{ env.RELEASE_VERSION }}.apk
+            dist/microg-${{ steps.upstream.outputs.derived_microg_version }}.apk
+            dist/patches-${{ steps.upstream.outputs.derived_patch_version }}.mpp
 
       - name: Publish static discovery metadata
         if: steps.gate.outputs.publish == 'true'

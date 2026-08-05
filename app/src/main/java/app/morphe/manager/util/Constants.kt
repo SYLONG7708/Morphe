@@ -9,11 +9,11 @@ import androidx.compose.ui.graphics.Color
 import app.morphe.manager.util.KnownApps.DEFAULT_COLORS
 import app.morphe.manager.util.KnownApps.getAppName
 
-const val tag = "AutoPatch Hub"
+const val tag = "SyMorphe"
 
-const val SOURCE_NAME = "AutoPatch Hub Verified Patches"
+const val SOURCE_NAME = "SyMorphe Verified Patches"
 const val MANAGER_REPO_URL = "https://github.com/SYLONG7708/Morphe"
-const val SOURCE_REPO_URL = "https://github.com/MorpheApp/morphe-patches"
+const val SOURCE_REPO_URL = MANAGER_REPO_URL
 const val MORPHE_API_URL = "https://api.morphe.software"
 const val MORPHE_WEBSITE_URL = "https://morphe.software"
 

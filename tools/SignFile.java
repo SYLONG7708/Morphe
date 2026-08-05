@@ -7,7 +7,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.util.Base64;
 
-/** Produces the Base64 detached SHA256withRSA format verified by AutoPatch Hub. */
+/** Produces the Base64 detached SHA256withRSA format verified by SyMorphe. */
 public final class SignFile {
     public static void main(String[] args) throws Exception {
         if (args.length != 6) {

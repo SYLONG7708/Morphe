@@ -8,6 +8,7 @@ import app.morphe.manager.domain.manager.HomeAppButtonPreferences
 import app.morphe.manager.domain.manager.KeystoreManager
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
 import app.morphe.manager.domain.update.DetachedSignatureVerifier
+import app.morphe.manager.domain.update.BundledEcosystemProvisioner
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
 import app.morphe.manager.domain.update.SignedUpdateManifestRepository
 import app.morphe.manager.util.AppCoroutineScope
@@ -28,6 +29,7 @@ val managerModule = module {
     singleOf(::HomeAppButtonPreferences)
     singleOf(::AppCoroutineScope)
     singleOf(::DetachedSignatureVerifier)
+    singleOf(::BundledEcosystemProvisioner)
     singleOf(::SignedUpdateManifestRepository)
     singleOf(::EcosystemUpdateCoordinator)
 }

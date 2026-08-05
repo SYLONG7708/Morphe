@@ -1,5 +1,5 @@
 /*
- * AutoPatch Hub modification, 2026.
+ * SyMorphe modification, 2026.
  * Upstream project: https://github.com/MorpheApp/morphe-manager
  */
 
@@ -10,7 +10,7 @@ import android.util.Log
 /**
  * Compatibility shim retained for upstream call sites.
  *
- * AutoPatch Hub deliberately uses WorkManager for every device, so the source tree and APK
+ * SyMorphe deliberately uses WorkManager for every device, so the source tree and APK
  * require no Firebase project, google-services.json, API key, or push-topic configuration.
  */
 fun syncFcmTopics(

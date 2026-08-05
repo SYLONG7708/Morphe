@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/SYLONG7708/Morphe/update-manifest.schema.json",
-  "title": "AutoPatch Hub signed update manifest",
+  "title": "SyMorphe signed update manifest",
   "type": "object",
   "required": ["schema", "sequence", "channel", "published_at", "manager", "patches", "microg"],
   "properties": {

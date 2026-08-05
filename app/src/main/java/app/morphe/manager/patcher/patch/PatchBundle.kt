@@ -9,6 +9,7 @@ import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.io.IOException
 import java.util.jar.JarFile
+import java.util.zip.ZipFile
 
 @Parcelize
 data class PatchBundle(val patchesJar: String) : Parcelable {
@@ -24,9 +25,45 @@ data class PatchBundle(val patchesJar: String) : Parcelable {
         }
     }
 
+    /**
+     * Android 10's JarFile parser may omit non-standard main attributes such as the Morphe
+     * bundle's "Version" field even though META-INF/MANIFEST.MF is valid and readable. Keep a
+     * small, continuation-aware parser as a compatibility fallback for UIS7870 devices.
+    */
+    @IgnoredOnParcel
+    private val rawManifestAttributes: Map<String, String> by lazy {
+        runCatching {
+            ZipFile(patchesJar).use { zip ->
+                val entry = zip.getEntry("META-INF/MANIFEST.MF")
+                    ?: return@use emptyMap<String, String>()
+                zip.getInputStream(entry).bufferedReader().useLines { lines ->
+                    val unfolded = mutableListOf<String>()
+                    lines.takeWhile { it.isNotEmpty() }.forEach { line ->
+                        when {
+                            line.startsWith(" ") && unfolded.isNotEmpty() -> {
+                                val last = unfolded.lastIndex
+                                unfolded[last] = unfolded[last] + line.drop(1)
+                            }
+                            else -> unfolded += line
+                        }
+                    }
+                    unfolded.mapNotNull { line ->
+                        val separator = line.indexOf(':')
+                        if (separator <= 0) {
+                            null
+                        } else {
+                            line.substring(0, separator).trim().lowercase() to
+                                line.substring(separator + 1).trim()
+                        }
+                    }.toMap()
+                }
+            }
+        }.getOrDefault(emptyMap())
+    }
+
     @IgnoredOnParcel
     val manifestAttributes by lazy {
-        if (manifest != null)
+        if (manifest != null || rawManifestAttributes.isNotEmpty())
             ManifestAttributes(
                 name = readManifestAttribute("Name"),
                 version = readManifestAttribute("Version"),
@@ -42,6 +79,8 @@ data class PatchBundle(val patchesJar: String) : Parcelable {
     }
 
     private fun readManifestAttribute(name: String) = manifest?.mainAttributes?.getValue(name)
+        ?.takeIf { it.isNotBlank() }
+        ?: rawManifestAttributes[name.lowercase()]
         ?.takeIf { it.isNotBlank() } // If empty, set it to null instead.
 
     data class ManifestAttributes(

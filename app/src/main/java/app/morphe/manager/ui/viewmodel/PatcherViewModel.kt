@@ -26,6 +26,7 @@ import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.*
 import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
+import app.morphe.manager.domain.update.SafeIntegrationProfile
 import app.morphe.manager.domain.worker.WorkerRepository
 import app.morphe.manager.patcher.logger.LogLevel
 import app.morphe.manager.patcher.logger.Logger
@@ -851,7 +852,7 @@ class PatcherViewModel(
         // Determine which patches and options to use based on mode
         val useExpertMode = prefs.useExpertMode.getBlocking()
 
-        val mergedOptions = if (useExpertMode) {
+        val requestedOptions = if (useExpertMode) {
             // Expert mode: Use options from input
             input.options
         } else {
@@ -860,11 +861,20 @@ class PatcherViewModel(
                 patchOptionsPrefs.exportPatchOptions(packageName)
             }
         }
+        val selectedPatches = SafeIntegrationProfile.enforceYouTubePatches(
+            sourcePackage = packageName,
+            patches = input.selectedPatches,
+        )
+        val mergedOptions = SafeIntegrationProfile.enforceYouTubeOptions(
+            sourcePackage = packageName,
+            patches = selectedPatches,
+            options = requestedOptions,
+        )
 
         return PatcherWorker.Args(
             selectedForRun,
             outputFile.path,
-            input.selectedPatches,
+            selectedPatches,
             mergedOptions,
             logger,
             onPatchCompleted = {
@@ -972,6 +982,13 @@ class PatcherViewModel(
     }
 
     private fun scheduleAutoInstallIfNeeded() = viewModelScope.launch {
+        // All-in-one builds are explicitly a one-entry workflow. Launch Android's regular
+        // installer as soon as the patched YouTube APK is ready; the system confirmation remains
+        // visible and cannot be bypassed by an ordinary application.
+        if (BuildConfig.BUNDLED_ECOSYSTEM_ENABLED) {
+            _autoInstallChannel.trySend(Unit)
+            return@launch
+        }
         if (!prefs.autoInstallWithShizuku.get()) return@launch
         val installerPrimary = prefs.installerPrimary.get()
         if (installerPrimary != InstallerPreferenceTokens.SHIZUKU &&

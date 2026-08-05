@@ -4,8 +4,15 @@
   "channel": "stable",
   "check_interval": "PT1H",
   "sources": {
-    "patches": "MorpheApp/morphe-patches",
-    "microg": "MorpheApp/MicroG-RE"
+    "distribution": "SYLONG7708/Morphe",
+    "upstream_patches": "MorpheApp/morphe-patches",
+    "upstream_microg": "MorpheApp/MicroG-RE"
+  },
+  "uis7870_safe_profile": {
+    "vendor_group": "com.sylong.autopatch",
+    "patched_youtube_package": "com.sylong.autopatch.android.youtube",
+    "microg_package": "com.sylong.autopatch.android.gms",
+    "preserve_factory_packages": true
   },
   "youtube": {
     "download_original_apk": false,

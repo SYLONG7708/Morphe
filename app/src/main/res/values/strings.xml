@@ -9,15 +9,15 @@
     <string name="home_app_no_hidden">No hidden apps</string>
     <string name="home_app_hidden_apps_title">Hidden apps</string>
     <string name="home_app_hidden_apps_hint">Tap to unhide</string>
-    <string name="android_11_bug_dialog_title">Android 11 bug</string>
-    <string name="android_11_bug_dialog_description">The app installation permission must be granted ahead of time to avoid a bug in the Android 11 system that will negatively affect the user experience</string>
+    <string name="android_11_bug_dialog_title">Installation permission required</string>
+    <string name="android_11_bug_dialog_description">Allow SyMorphe to install unknown apps so Android can confirm the bundled MicroG and patched YouTube installations</string>
 
     <string name="deep_link_add_source_title">Add source</string>
-    <string name="deep_link_add_source_message">Do you want to add this patch source to AutoPatch Hub?</string>
+    <string name="deep_link_add_source_message">Do you want to add this patch source to SyMorphe?</string>
     <string name="deep_link_add_source_warning">Only add sources you trust</string>
 
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">AutoPatch Hub update available</string>
+    <string name="home_update_available">SyMorphe update available</string>
     <string name="home_update_available_subtitle">New version ready to install</string>
     <string name="home_update_error">Update failed</string>
     <string name="home_update_error_subtitle">Check your internet connection and try again</string>
@@ -167,11 +167,11 @@
     <string name="home_download_instructions_download_button_toast_3">Practice makes perfect and you\'re getting there 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Still not here… still not here… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">OK I respect the dedication 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">You are now an official AutoPatch Hub button tester 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">You are now an official SyMorphe button tester 🏅</string>
     <string name="home_download_instructions_step3">Wait for the download to complete, and &lt;b&gt;do not install&lt;/b&gt; the APK</string>
     <string name="home_download_instructions_step3_mount">Wait for the download to complete, then &lt;b&gt;install the APK&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">After the download finishes, return to AutoPatch Hub</string>
-    <string name="home_download_instructions_step4_mount">After installing the original APK, return to AutoPatch Hub</string>
+    <string name="home_download_instructions_step4">After the download finishes, return to SyMorphe</string>
+    <string name="home_download_instructions_step4_mount">After installing the original APK, return to SyMorphe</string>
     <string name="home_download_instructions_continue">Continue to APKMirror.com</string>
 
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
@@ -323,7 +323,7 @@ Outer zone (dashed): may be clipped by the launcher mask - keep important detail
     <string name="home_app_info_patch_update_available">Patch update available</string>
     <string name="home_app_info_patch_update_available_description">A newer version of patches is available. Repatch your app to get the latest improvements and fixes</string>
     <string name="home_app_info_app_deleted_warning">App was uninstalled</string>
-    <string name="home_app_info_app_deleted_description">This app was uninstalled outside the AutoPatch Hub. Repatch it to restore functionality</string>
+    <string name="home_app_info_app_deleted_description">This app was uninstalled outside the SyMorphe. Repatch it to restore functionality</string>
     <string name="home_app_info_apk_size">APK size</string>
 
     <!-- Home Screen - Root Mode -->
@@ -363,7 +363,7 @@ Outer zone (dashed): may be clipped by the launcher mask - keep important detail
     <string name="patcher_conflict_subtitle">You need to uninstall the existing version</string>
     <string name="patcher_conflict_hint">The patched app uses a different certificate than the installed version. Uninstalling will erase all app data</string>
     <string name="patcher_installed_conflict_title">Uninstall required</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub signs patched apps with its own certificate, which differs from the original. Android requires removing the existing version before the patched app can be installed.
+    <string name="patcher_installed_conflict_body">"SyMorphe signs patched apps with its own certificate, which differs from the original. Android requires removing the existing version before the patched app can be installed.
 
 Uninstalling will permanently erase all app data"</string>
     <string name="patcher_install_error_title">Installation error</string>
@@ -372,9 +372,9 @@ Uninstalling will permanently erase all app data"</string>
     <string name="patcher_ready_to_mount_subtitle">Press the button below to mount</string>
     <string name="patcher_storage_permission_dialog_title">Cannot access storage path</string>
     <string name="patcher_incompatible_patcher_title">Update required</string>
-    <string name="patcher_incompatible_patcher_description">The bundle &lt;b&gt;%1$s&lt;/b&gt; requires patcher version &lt;b&gt;%2$s&lt;/b&gt; or newer. Please update AutoPatch Hub to patch this app</string>
-    <string name="patcher_incompatible_patcher_update_button">Download and update AutoPatch Hub</string>
-    <string name="patcher_storage_permission_description_api30">One or more patch options point to paths AutoPatch Hub cannot read. Grant storage access and tap the button then patching will start automatically</string>
+    <string name="patcher_incompatible_patcher_description">The bundle &lt;b&gt;%1$s&lt;/b&gt; requires patcher version &lt;b&gt;%2$s&lt;/b&gt; or newer. Please update SyMorphe to patch this app</string>
+    <string name="patcher_incompatible_patcher_update_button">Download and update SyMorphe</string>
+    <string name="patcher_storage_permission_description_api30">One or more patch options point to paths SyMorphe cannot read. Grant storage access and tap the button then patching will start automatically</string>
     <string name="patcher_storage_permission_description_legacy">One or more patch options point to paths that cannot be accessed. Update the paths in patch options and try again</string>
     <string name="patcher_storage_permission_grant">Grant storage permission</string>
     <string name="patcher_storage_permission_denied_warning">Storage permission was denied. Grant the permission to use this path, or move the files to the app\'s private directory</string>
@@ -395,7 +395,7 @@ Uninstalling will permanently erase all app data"</string>
 
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Background patching protection</string>
-    <string name="battery_optimization_dialog_description">Some devices may stop the patcher when the app is minimized. Allow AutoPatch Hub to run without battery restrictions to ensure patching completes reliably</string>
+    <string name="battery_optimization_dialog_description">Some devices may stop the patcher when the app is minimized. Allow SyMorphe to run without battery restrictions to ensure patching completes reliably</string>
     <string name="battery_optimization_not_now">Not now</string>
 
     <!-- Patcher Screen - Patcher Worker -->
@@ -413,7 +413,7 @@ Uninstalling will permanently erase all app data"</string>
     <string name="patcher_message_6">Look outside, it\'s nice out there… 🌤️</string>
     <string name="patcher_message_7">Adjusting 1\'s and 0\'s… 🤖</string>
     <string name="patcher_message_8">Untangling digital spaghetti… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Fixing bugs in the unpatched app… 🪲</string>
     <string name="patcher_message_10">Great patches are worth the wait… ⏳</string>
     <string name="patcher_message_11">Polishing pixels until they shine… 💎</string>
@@ -539,9 +539,9 @@ Uninstalling will permanently erase all app data"</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Updates</string>
     <string name="settings_advanced_updates_use_prereleases">Pre-release updates</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Early access to new AutoPatch Hub app versions. Enable pre-release per source in patch sources</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Early access to new SyMorphe app versions. Enable pre-release per source in patch sources</string>
     <string name="settings_advanced_updates_allow_metered">Mobile data updates</string>
-    <string name="settings_advanced_updates_allow_metered_description">Allows AutoPatch Hub and patch updates to download over mobile data</string>
+    <string name="settings_advanced_updates_allow_metered_description">Allows SyMorphe and patch updates to download over mobile data</string>
     <string name="settings_advanced_updates_background_notifications">Background update notifications</string>
     <string name="settings_advanced_updates_background_notifications_description">Periodically check for updates in the background and notify when available</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Push notifications for new releases, even when the app is closed</string>
@@ -555,11 +555,11 @@ Uninstalling will permanently erase all app data"</string>
     <string name="settings_advanced_update_interval_battery_warning">Background checks may not work reliably on some devices. Manufacturers like Xiaomi, Huawei, Samsung, and OnePlus often aggressively restrict background processes to save battery</string>
 
     <!-- Notification content -->
-    <string name="notification_manager_update_title">AutoPatch Hub update available</string>
+    <string name="notification_manager_update_title">SyMorphe update available</string>
     <string name="notification_bundle_update_title">New patches available</string>
     <string name="notification_update_text">Version %s is ready to download</string>
     <string name="notification_youtube_update_title">YouTube update ready</string>
-    <string name="notification_youtube_update_text">Open AutoPatch Hub to patch the compatible installed YouTube version</string>
+    <string name="notification_youtube_update_text">Open SyMorphe to patch the compatible installed YouTube version</string>
     <string name="notification_microg_update_title">MicroG-RE update ready</string>
     <string name="notification_microg_update_text">A verified MicroG-RE update is ready to install</string>
     <string name="update_center_title">Verified update center</string>
@@ -570,7 +570,7 @@ Uninstalling will permanently erase all app data"</string>
     <string name="update_center_automatic">Automatic ecosystem updates</string>
     <string name="update_center_automatic_description">Selects the correct SDK/ABI build, downloads it, and verifies it automatically</string>
     <string name="update_center_versions">Installed %1$s / available %2$s</string>
-    <string name="update_component_manager">AutoPatch Hub</string>
+    <string name="update_component_manager">SyMorphe</string>
     <string name="update_component_youtube">YouTube local patch</string>
     <string name="update_component_patches">Patch bundle</string>
     <string name="update_component_microg">MicroG-RE</string>
@@ -582,19 +582,19 @@ Uninstalling will permanently erase all app data"</string>
     <string name="update_status_not_installed">Not installed</string>
     <string name="update_status_unsupported">No compatible build for this device</string>
     <string name="update_status_error">Verification or download failed</string>
-    <string name="notification_bundle_update_text_unversioned">Tap to open AutoPatch Hub and update</string>
+    <string name="notification_bundle_update_text_unversioned">Tap to open SyMorphe and update</string>
     <string name="notification_permission_dialog_title">Allow notifications</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub needs notification permission to alert you when updates are available in the background</string>
+    <string name="notification_permission_dialog_description">SyMorphe needs notification permission to alert you when updates are available in the background</string>
     <string name="notification_post_patch_dialog_title">Would you like to be notified when updates are available?</string>
     <string name="notification_channel_fcm_updates">Update notifications</string>
-    <string name="notification_channel_fcm_updates_description">Notifications about new AutoPatch Hub and patch releases</string>
+    <string name="notification_channel_fcm_updates_description">Notifications about new SyMorphe and patch releases</string>
     <string name="notification_channel_patcher">Patching</string>
-    <string name="notification_channel_patcher_description">Shown while AutoPatch Hub is patching an app in the background</string>
+    <string name="notification_channel_patcher_description">Shown while SyMorphe is patching an app in the background</string>
 
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Expert settings</string>
     <string name="settings_advanced_expert_mode">Expert mode</string>
-    <string name="settings_advanced_expert_mode_description">Enables complex AutoPatch Hub patching settings and customization options</string>
+    <string name="settings_advanced_expert_mode_description">Enables complex SyMorphe patching settings and customization options</string>
     <string name="settings_advanced_expert_mode_dialog_title">Enable Expert mode?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Expert mode gives more control over how patches are applied, but misconfiguring settings in expert mode can result in a non-functional app</string>
     <string name="settings_advanced_strip_unused_libs">Optimize for device architecture</string>
@@ -617,7 +617,7 @@ Uninstalling will permanently erase all app data"</string>
     <string name="settings_advanced_github_pat_dialog_title">Set GitHub Personal Access Token</string>
     <string name="settings_advanced_github_pat_dialog_description">Set a GitHub Personal Access Token in order to be able to add pull requests as external sources. Create a PAT with scope public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Include in settings export</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Adds this PAT to exported AutoPatch Hub settings</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Adds this PAT to exported SyMorphe settings</string>
     <string name="settings_advanced_github_pat_export_warning">Do not share your PAT. If you include it in a settings export, keep that file private because it contains the token</string>
 
     <!-- Settings - Advanced Tab - Patch Options Section -->
@@ -720,7 +720,7 @@ The image dimensions must be as follows:
     <string name="installer_status_not_supported">Not supported for this action</string>
     <string name="installer_status_shizuku_not_installed">Install Shizuku or Sui to use this option</string>
     <string name="installer_status_shizuku_not_running">Start Shizuku or Sui and try again</string>
-    <string name="installer_status_shizuku_permission">Grant Shizuku permission to AutoPatch Hub from the Shizuku app</string>
+    <string name="installer_status_shizuku_permission">Grant Shizuku permission to SyMorphe from the Shizuku app</string>
     <string name="installer_mount_warning_install">Your primary installer is set to the rooted mount installer. This saved app was not installed using mount</string>
     <string name="mount_version_mismatch_message">Stock app version (%2$s) does not match patched app version (%1$s). Mount the matching stock version, then try again</string>
     <string name="installer_status_shizuku_unsupported">The installed Shizuku version is not supported</string>
@@ -776,11 +776,11 @@ The image dimensions must be as follows:
     <string name="settings_system_export_keystore_failed">Failed to export keystore</string>
     <string name="settings_system_show_password_field">Show password</string>
     <string name="settings_system_hide_password_field">Hide password</string>
-    <string name="settings_system_morphe_settings">AutoPatch Hub settings</string>
-    <string name="settings_system_import_manager_settings_description">Backs up and restores your AutoPatch Hub settings</string>
-    <string name="settings_system_import_manager_settings_fail">Failed to import AutoPatch Hub settings: %s</string>
-    <string name="settings_system_import_manager_settings_success">AutoPatch Hub settings imported</string>
-    <string name="settings_system_import_manager_settings_mode_title">Import AutoPatch Hub settings</string>
+    <string name="settings_system_morphe_settings">SyMorphe settings</string>
+    <string name="settings_system_import_manager_settings_description">Backs up and restores your SyMorphe settings</string>
+    <string name="settings_system_import_manager_settings_fail">Failed to import SyMorphe settings: %s</string>
+    <string name="settings_system_import_manager_settings_success">SyMorphe settings imported</string>
+    <string name="settings_system_import_manager_settings_mode_title">Import SyMorphe settings</string>
     <string name="settings_system_import_manager_settings_mode_description">Choose how the imported settings and sources should be applied</string>
     <string name="settings_system_import_selections_mode_title">Import patch selections</string>
     <string name="settings_system_import_selections_mode_description">Choose how the imported selections and patch options should be applied</string>
@@ -788,8 +788,8 @@ The image dimensions must be as follows:
     <string name="import_mode_replace_description">Match the backup exactly. Items missing from the backup will be removed</string>
     <string name="import_mode_merge_title">Merge with existing</string>
     <string name="import_mode_merge_description">Add missing items from the backup. Existing items are kept unchanged</string>
-    <string name="settings_system_export_manager_settings_fail">Failed to export AutoPatch Hub settings: %s</string>
-    <string name="settings_system_export_manager_settings_success">AutoPatch Hub settings exported</string>
+    <string name="settings_system_export_manager_settings_fail">Failed to export SyMorphe settings: %s</string>
+    <string name="settings_system_export_manager_settings_success">SyMorphe settings exported</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_description">Saves system logs for troubleshooting</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Failed to read logs (exit code %s)</string>
@@ -853,7 +853,7 @@ The image dimensions must be as follows:
 
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Custom file picker</string>
-    <string name="settings_system_custom_file_picker_description">Browse storage with AutoPatch Hub\'s built-in file picker instead of the system default</string>
+    <string name="settings_system_custom_file_picker_description">Browse storage with SyMorphe\'s built-in file picker instead of the system default</string>
 
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Previous directory</string>
@@ -873,7 +873,7 @@ The image dimensions must be as follows:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">About</string>
     <string name="settings_system_share_website">Share website</string>
-    <string name="settings_system_share_website_description">Shares the official AutoPatch Hub website</string>
+    <string name="settings_system_share_website_description">Shares the official SyMorphe website</string>
     <string name="settings_system_manager_description">An open-source project for modern, streamlined patching of popular Android apps, driven by community feedback and contributions</string>
     <string name="credits">Credits</string>
     <string name="credits_current_development">Current development</string>
@@ -881,7 +881,7 @@ The image dimensions must be as follows:
     <string name="opensource_licenses">Open-source licenses</string>
 
     <!-- Shared strings -->
-    <string name="app_name" translatable="false">AutoPatch Hub</string>
+    <string name="app_name" translatable="false">SyMorphe</string>
     <string name="select_file">Select file</string>
     <string name="select_folder">Select folder</string>
     <string name="patches">Patches</string>
@@ -914,6 +914,31 @@ The image dimensions must be as follows:
     <string name="loading_older_releases">Loading older releases…</string>
     <string name="creating">Creating…</string>
     <string name="processing_apk">Processing APK…</string>
+    <string name="one_tap_title">One-tap YouTube patch</string>
+    <string name="one_tap_description">SyMorphe detected this device. Choose the installed YouTube or let SyMorphe fetch and verify Morphe\'s current recommended version. MicroG is prepared in the same flow—no browser or file picker is needed.</string>
+    <string name="one_tap_checking">SyMorphe is checking YouTube, Morphe patches, and MicroG…</string>
+    <string name="one_tap_refresh">Check again</string>
+    <string name="one_tap_local_youtube">Installed YouTube</string>
+    <string name="one_tap_recommended_youtube">Morphe recommendation</string>
+    <string name="one_tap_recommended_detail">Downloads the exact compatible original, verifies it, and starts patching automatically</string>
+    <string name="one_tap_microg">MicroG</string>
+    <string name="one_tap_not_installed">Not installed</string>
+    <string name="one_tap_unavailable">Unavailable</string>
+    <string name="one_tap_local_ready">Compatible and ready for direct local patching</string>
+    <string name="one_tap_local_not_found">No installed original YouTube was found</string>
+    <string name="one_tap_local_incompatible">Installed YouTube %1$s is not compatible with the current Morphe patches</string>
+    <string name="one_tap_microg_ready">Matching MicroG is installed and ready</string>
+    <string name="one_tap_microg_update_ready">Version %1$s will be installed or updated automatically</string>
+    <string name="one_tap_microg_will_install">Matching MicroG will be prepared automatically</string>
+    <string name="one_tap_microg_incompatible">The installed MicroG has an incompatible certificate and cannot be replaced safely</string>
+    <string name="one_tap_preparing">Preparing verified components. Android may still ask you to confirm installation.</string>
+    <string name="one_tap_use_local">Patch installed YouTube directly</string>
+    <string name="one_tap_use_recommended">Use Morphe recommended version automatically</string>
+    <string name="one_tap_download_failed">Could not securely download the compatible original YouTube. No file was installed.</string>
+    <string name="one_tap_workflow_failed">The one-tap workflow could not be completed</string>
+    <string name="one_tap_microg_prepare_failed">A compatible MicroG could not be prepared safely</string>
+    <string name="one_tap_microg_install_incomplete">MicroG installation was not completed. Confirm the Android installer, then try again.</string>
+    <string name="one_tap_install_permission_required">Allow SyMorphe to install apps, then try again</string>
     <string name="exporting_apks">Exporting APKs…</string>
     <string name="not_installed">Not installed</string>
     <string name="view">View</string>
@@ -1011,7 +1036,7 @@ Do you still want to continue?"</string>
     <string name="onboarding_sources_desc">Manage your patch sources. Each source provides patches that can be applied to your apps</string>
     <string name="onboarding_swipe_title">Swipe gestures</string>
     <string name="onboarding_swipe_desc">Swipe right on an app card to view its available patches. Swipe left to hide the card from the home screen</string>
-    <string name="onboarding_settings_desc">Customize AutoPatch Hub: appearance, advanced options, and system tools</string>
+    <string name="onboarding_settings_desc">Customize SyMorphe: appearance, advanced options, and system tools</string>
     <string name="onboarding_sources_patches_desc">Tap to view all patches available from this source</string>
     <string name="onboarding_sources_version_desc">Tap the version to view the full changelog for this source</string>
     <string name="onboarding_sources_prerelease_desc">Enable this to receive pre-release patch versions from this source</string>
@@ -1026,8 +1051,8 @@ Do you still want to continue?"</string>
     <string name="onboarding_system_file_picker_desc">Enable to use the built-in file browser instead of the system picker when selecting APKs or keystores</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Quick feature tour</string>
-    <string name="tour_prompt_desc">Want a quick tour of AutoPatch Hub\'s key features?</string>
+    <string name="tour_prompt_desc">Want a quick tour of SyMorphe\'s key features?</string>
     <string name="tour_prompt_confirm">Show me around</string>
     <string name="onboarding_restart_title">Feature tour</string>
-    <string name="onboarding_restart_desc">Take a guided tour of AutoPatch Hub\'s key features</string>
+    <string name="onboarding_restart_desc">Take a guided tour of SyMorphe\'s key features</string>
 </resources>

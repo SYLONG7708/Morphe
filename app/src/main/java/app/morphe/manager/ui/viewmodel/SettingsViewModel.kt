@@ -39,7 +39,7 @@ class SettingsViewModel(
     installedAppRepository: InstalledAppRepository,
     private val appContext: Context,
 ) : ViewModel() {
-    /** AutoPatch Hub always uses WorkManager and needs no Firebase configuration. */
+    /** SyMorphe always uses WorkManager and needs no Firebase configuration. */
     val hasGms: Boolean = false
 
     /** True when POST_NOTIFICATIONS is granted (always true below Android 13). */

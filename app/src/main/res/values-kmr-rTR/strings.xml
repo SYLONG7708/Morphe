@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Xetaya Android 11</string>
     <string name="android_11_bug_dialog_description">Semanka zetîn pêwist be pêşbaziyê pêş de bêtin da hêz be serir xendna Androida 11 zibu vê hilenkirinê yarde ji bo seranê her serxistine ye \'</string>
     <string name="deep_link_add_source_title">Kanîna çavkaniyê zêde bike</string>
-    <string name="deep_link_add_source_message">Ma tu wê çavkaniya vê pakê ji AutoPatch Hub zêde bike?</string>
+    <string name="deep_link_add_source_message">Ma tu wê çavkaniya vê pakê ji SyMorphe zêde bike?</string>
     <string name="deep_link_add_source_warning">Têkilîyên ku bawerî li wan hebin zêde bike</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Nûvekirina AutoPatch Hub heye</string>
+    <string name="home_update_available">Nûvekirina SyMorphe heye</string>
     <string name="home_update_available_subtitle">Nûvekirin amade ye ku were sazkirin</string>
     <string name="home_update_error">Nûvekirin ji destûr ve çû</string>
     <string name="home_update_error_subtitle">Giştîrabûnê xwe kontrol bike û dîsa hewildan bike</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Ezberkirin baş e û hûn nêzîk dibin 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Hê jî li vir nînê... hîş li vir nînê... 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Tamam, adaneliğinize saygı duyuyorum 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Artık resmi bir AutoPatch Hub düğme test cihazısın 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Artık resmi bir SyMorphe düğme test cihazısın 🏅</string>
     <string name="home_download_instructions_step3">Li benda qedembûna daxistinê bibe, û &lt;b&gt;APK-ê nas neke&lt;/b&gt;</string>
     <string name="home_download_instructions_step3_mount">Binevin destpêkirina daxistnê biqedîne, paşê &lt;b&gt;APKê nas bike&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Pi serîdana daxistinê bi dawî bû, vegerin ser AutoPatch Hub</string>
-    <string name="home_download_instructions_step4_mount">Pi naskindina APK\'ya bilavkirinê, vegerin AutoPatch Hub</string>
+    <string name="home_download_instructions_step4">Pi serîdana daxistinê bi dawî bû, vegerin ser SyMorphe</string>
+    <string name="home_download_instructions_step4_mount">Pi naskindina APK\'ya bilavkirinê, vegerin SyMorphe</string>
     <string name="home_download_instructions_continue">Bibe APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">APKê daxistî hilbijêre</string>
@@ -304,7 +304,7 @@ Herêma derveyî (qutkirî): dikare ji aliyê maskeya launcher'ê ve were qutkir
     <string name="home_app_info_patch_update_available">Nûvekirina paqijkirinê peyda bûye</string>
     <string name="home_app_info_patch_update_available_description">Versîyonê nû ya qelvaton ava bûye. Bo cîgirtinê sepanê bi qelbûna herî dawî, pêşbirîyên nûîn kirin û çareseriyê bibin</string>
     <string name="home_app_info_app_deleted_warning">App hate laşkirin</string>
-    <string name="home_app_info_app_deleted_description">Epp li derve ji AutoPatch Hub hate laşkirin. Serpêş pêlavînê da serê ku serê bi sist ki.</string>
+    <string name="home_app_info_app_deleted_description">Epp li derve ji SyMorphe hate laşkirin. Serpêş pêlavînê da serê ku serê bi sist ki.</string>
     <string name="home_app_info_apk_size">Mezinahiya APK\'yê</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Tîrek xwestisê wî de qewımîr APK tê serê îzayê we ev pêwist be pêşbaziyê biqewmê pêş de bîtin da xestes numberê berıkirînda Android bi usayiastî bimezânê</string>
@@ -340,7 +340,7 @@ Herêma derveyî (qutkirî): dikare ji aliyê maskeya launcher'ê ve were qutkir
     <string name="patcher_conflict_subtitle">Divê hûn guhertoyek hebin</string>
     <string name="patcher_conflict_hint">Serîlêdana rasterkirî sertîfîka jûda li gorî guhertoya sazkirî bikar tîne. Rakirin dê hemû daneyên serîlêdanê tune bike</string>
     <string name="patcher_installed_conflict_title">Navê ku lazim e bê dîtin</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub serîlêdanên guhertî bi şehadeya xwe ya taybet îmza dike, ku ji ya orjînal cûda ye. Android hewce dike ku veguherîna heyî berî veguherîna serîlêdanê were neqişandin.
+    <string name="patcher_installed_conflict_body">"SyMorphe serîlêdanên guhertî bi şehadeya xwe ya taybet îmza dike, ku ji ya orjînal cûda ye. Android hewce dike ku veguherîna heyî berî veguherîna serîlêdanê were neqişandin.
 
 Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</string>
     <string name="patcher_install_error_title">Xetalî sazkirinê</string>
@@ -349,9 +349,9 @@ Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</strin
     <string name="patcher_ready_to_mount_subtitle">Ji bo avakirinê ser duxwe bikşînin</string>
     <string name="patcher_storage_permission_dialog_title">Nabe sererît rêyê wergirtina separe</string>
     <string name="patcher_incompatible_patcher_title">Nûvekirin hewce ye</string>
-    <string name="patcher_incompatible_patcher_description">Berhevok &lt;b&gt;%1$s&lt;/b&gt; hewiyeke guhertoyê &lt;b&gt;%2$s&lt;/b&gt; an nûtir hewiyaye. Ji kerem AutoPatch Hub nûve bike da ku vê serlêdanê guhêrî</string>
-    <string name="patcher_incompatible_patcher_update_button">Dagir bike û nûvekirina AutoPatch Hub</string>
-    <string name="patcher_storage_permission_description_api30">Yek an zêde ji vebijarkên pakê destûrên ku AutoPatch Hub nikare bixwîne, nîşan didin. Destûra separeyê daynin û ser bilêvê bikşînin û pêlê dûv re bibaşêre</string>
+    <string name="patcher_incompatible_patcher_description">Berhevok &lt;b&gt;%1$s&lt;/b&gt; hewiyeke guhertoyê &lt;b&gt;%2$s&lt;/b&gt; an nûtir hewiyaye. Ji kerem SyMorphe nûve bike da ku vê serlêdanê guhêrî</string>
+    <string name="patcher_incompatible_patcher_update_button">Dagir bike û nûvekirina SyMorphe</string>
+    <string name="patcher_storage_permission_description_api30">Yek an zêde ji vebijarkên pakê destûrên ku SyMorphe nikare bixwîne, nîşan didin. Destûra separeyê daynin û ser bilêvê bikşînin û pêlê dûv re bibaşêre</string>
     <string name="patcher_storage_permission_description_legacy">Yek an zafîn ji Patch-an rêyên wergirtinê hene ku nabe xwendin. Rêyên di Patch-an de nûve bike û sererît hewildan bike</string>
     <string name="patcher_storage_permission_grant">Îznayê separe daye</string>
     <string name="patcher_storage_permission_denied_warning">Îznayê separe hat inkar kirin. Îznayê daye sererît sererît ji bo sererît vê rêya bikar bîne, an pelan li ser rêya sepanê ya xusasiyê veko bike</string>
@@ -370,7 +370,7 @@ Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</strin
     <string name="patcher_step_sign_apk">Dosye APK-yê ya patch kirî îmdaye</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Parastina parêzgeha paşgirê</string>
-    <string name="battery_optimization_dialog_description">Heke sepan biçikînin, hin cîhazan dikarin paşgirê rawestînin. Ji bo ku paşgirê bi pêvehiyê qediya, bihêle AutoPatch Hub bêyî astengiyên serfkirina batêriyê bixebite.</string>
+    <string name="battery_optimization_dialog_description">Heke sepan biçikînin, hin cîhazan dikarin paşgirê rawestînin. Ji bo ku paşgirê bi pêvehiyê qediya, bihêle SyMorphe bêyî astengiyên serfkirina batêriyê bixebite.</string>
     <string name="battery_optimization_not_now">Niha ne</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Patch kirin di pêşbaziyê de ye…</string>
@@ -386,7 +386,7 @@ Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</strin
     <string name="patcher_message_6">Li derve belavê, baş e... 🌤️</string>
     <string name="patcher_message_7">Sxû rabike ser 1\'an û 0\'an... 🤖</string>
     <string name="patcher_message_8">Diravên dîjîtalê paqij bike... 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Aplikasyonên ne paqejîna ji pimên ji Google kontrol nekirine gihîştin 🪲</string>
     <string name="patcher_message_10">Saxkirinên mezin hezdarî bibin... ⏳</string>
     <string name="patcher_message_11">Pikselan poş bikin heta ku heybet bikin... 💎</string>
@@ -490,9 +490,9 @@ Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</strin
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Nûvekirin</string>
     <string name="settings_advanced_updates_use_prereleases">Nûvekirinên berî berhemkirinê</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Têkevinî pêşî li gorî nûvekirinên nû yên AutoPatch Hub. Çavkaniyan li gorî nûvekirinê hilbijêrin</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Têkevinî pêşî li gorî nûvekirinên nû yên SyMorphe. Çavkaniyan li gorî nûvekirinê hilbijêrin</string>
     <string name="settings_advanced_updates_allow_metered">Nûvekirinên daneya mobîl</string>
-    <string name="settings_advanced_updates_allow_metered_description">Destûrê dide AutoPatch Hub\'yê u nûvekirinên qeyikan da ku li ser danebîna mobîlê biçin</string>
+    <string name="settings_advanced_updates_allow_metered_description">Destûrê dide SyMorphe\'yê u nûvekirinên qeyikan da ku li ser danebîna mobîlê biçin</string>
     <string name="settings_advanced_updates_background_notifications">Ragahdaniyên nûvekirina paşînê</string>
     <string name="settings_advanced_updates_background_notifications_description">Ji bo melêstirkirina nûvekirinên paşîn baldarê de bibe û dema ku zafinan debedo bike.</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Agahiyên pêşniyarî ji bo nûvekirinên nû, tewra hekî app tê girtin</string>
@@ -505,21 +505,21 @@ Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</strin
     <string name="settings_advanced_update_interval_chip_subtitle">Rêjeya kontrolê paşîn</string>
     <string name="settings_advanced_update_interval_battery_warning">Kontrolên paşîn dibin sedem ku hin alavkêm nekar in. Hilberîneran weke Xiaomi, Huawei, Samsung, û OnePlus gelek caran pêvajeyên paşîn ji bo parastina bataryayê asteng dikin.</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Nûvekirina AutoPatch Hub heye</string>
+    <string name="notification_manager_update_title">Nûvekirina SyMorphe heye</string>
     <string name="notification_bundle_update_title">Patchên nû hene</string>
     <string name="notification_update_text">Versiyona %s amade ye ku dakêşin.</string>
-    <string name="notification_bundle_update_text_unversioned">Kilîkê veke AutoPatch Hub û nûve bike</string>
+    <string name="notification_bundle_update_text_unversioned">Kilîkê veke SyMorphe û nûve bike</string>
     <string name="notification_permission_dialog_title">Îznayê ragahdaniyê</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub ji bo domandina ragihînan destûrê divê ku we ji ber ku nûvekirinên li ser were agahdar kirin.</string>
+    <string name="notification_permission_dialog_description">SyMorphe ji bo domandina ragihînan destûrê divê ku we ji ber ku nûvekirinên li ser were agahdar kirin.</string>
     <string name="notification_post_patch_dialog_title">Ma tu bistîyê ku dema ku nûvekirinan zafîn, ji bo te ragahdaniyê bike?</string>
     <string name="notification_channel_fcm_updates">Nûvekarî notîfîkasyonan</string>
-    <string name="notification_channel_fcm_updates_description">Notîfîkasyonên derbarê vebûna AutoPatch Hub ya din û bernameyên çêkirî</string>
+    <string name="notification_channel_fcm_updates_description">Notîfîkasyonên derbarê vebûna SyMorphe ya din û bernameyên çêkirî</string>
     <string name="notification_channel_patcher">Çêkirin</string>
-    <string name="notification_channel_patcher_description">Di dema ku AutoPatch Hub bernameyekê di rewşê de çêdike</string>
+    <string name="notification_channel_patcher_description">Di dema ku SyMorphe bernameyekê di rewşê de çêdike</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Saziyên pispor</string>
     <string name="settings_advanced_expert_mode">Mode ekspert</string>
-    <string name="settings_advanced_expert_mode_description">Destûr dide sazkirina vegirêtinên AutoPatch Hub’yê ên pêşkeftî u hilbijartinên xwerû</string>
+    <string name="settings_advanced_expert_mode_description">Destûr dide sazkirina vegirêtinên SyMorphe’yê ên pêşkeftî u hilbijartinên xwerû</string>
     <string name="settings_advanced_expert_mode_dialog_title">Modeka pispor çêbike?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Moda pispor kontrola zêdetir ser bernameyên ku meriv pêdike, lê çêkirina bêreng di moda pispor de dikare bibe sedem ku sepan bibe nekar.</string>
     <string name="settings_advanced_strip_unused_libs">Ji arîkek cihazê ve saz bike</string>
@@ -540,7 +540,7 @@ Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</strin
     <string name="settings_advanced_github_pat_dialog_title">Token Personal Access ya GitHub saz kîn</string>
     <string name="settings_advanced_github_pat_dialog_description">Ji bo ku pêlavê rojnameyên unîwersal îzabethên ji bo derbarê zafî nxwistinê be, Token API ji bo pêla bi neyî pêlavan zafî pêla bi pêlav betonê wê pijînire. Çęs ma rakişîne a sezne zifî ma toke.</string>
     <string name="settings_advanced_github_pat_export_include_label">Di qeyrek sazî de zêde bike</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Ev PAT bi danan AutoPatch Hub sazkirina xwe vekirî</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Ev PAT bi danan SyMorphe sazkirina xwe vekirî</string>
     <string name="settings_advanced_github_pat_export_warning">PAT xwe veqêtin neyê. Ger ew di qeyrek sazî de zêde kirin, wê qeyrê têr çaveke rê bibe ji ber ew token hegirdê</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Selekîyên rayekê</string>
@@ -637,7 +637,7 @@ Qasîyên wêneyan divê wiha bin:
     <string name="installer_status_not_supported">Ji bo ev çalakîyê piştgirî nîne</string>
     <string name="installer_status_shizuku_not_installed">Ji bo vê vebijarkê Shizuku an Sui saz bike</string>
     <string name="installer_status_shizuku_not_running">Shizuku anîye yê an Suiyê dest pê bike û dîsa hewil bide</string>
-    <string name="installer_status_shizuku_permission">Ji nav Şizukuyê rêxistinê bidê AutoPatch Hubyê</string>
+    <string name="installer_status_shizuku_permission">Ji nav Şizukuyê rêxistinê bidê SyMorpheyê</string>
     <string name="installer_mount_warning_install">Îstalatorek sereke we li îstalatorek qutiyelê hatiye danîn. Ev sepan bi qutiyê nehate saz kirin</string>
     <string name="mount_version_mismatch_message">Versiyona sepanê orîjînal (%2$s) bi versiyona sepanê têra sipêde nebaxe (%1$s). Versiyona orîjînal a pêşîn saz bike, paştrê dîsa hewil bide</string>
     <string name="installer_status_shizuku_unsupported">Versiyona sazkirî ya Şizuku piştgirî nadê</string>
@@ -691,11 +691,11 @@ Qasîyên wêneyan divê wiha bin:
     <string name="settings_system_export_keystore_failed">Destûr neda exportkirina keystore\'ê</string>
     <string name="settings_system_show_password_field">Şifreyê nîşana bîne</string>
     <string name="settings_system_hide_password_field">Şifreyê veşêre</string>
-    <string name="settings_system_morphe_settings">Rêgezên AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_description">Mîhengên AutoPatch Hub’yê pişgîrî u dîsa vekirin</string>
-    <string name="settings_system_import_manager_settings_fail">Ne serketî sawekirina sazkirina AutoPatch Hub: %s</string>
-    <string name="settings_system_import_manager_settings_success">Sawekirina sazkirina AutoPatch Hub serketî</string>
-    <string name="settings_system_import_manager_settings_mode_title">AutoPatch Hub mîhengên îthalkirin</string>
+    <string name="settings_system_morphe_settings">Rêgezên SyMorphe</string>
+    <string name="settings_system_import_manager_settings_description">Mîhengên SyMorphe’yê pişgîrî u dîsa vekirin</string>
+    <string name="settings_system_import_manager_settings_fail">Ne serketî sawekirina sazkirina SyMorphe: %s</string>
+    <string name="settings_system_import_manager_settings_success">Sawekirina sazkirina SyMorphe serketî</string>
+    <string name="settings_system_import_manager_settings_mode_title">SyMorphe mîhengên îthalkirin</string>
     <string name="settings_system_import_manager_settings_mode_description">Hilbijêrin ka mîhengên îthalkirî û çavkanî çawa bên bikar anîn</string>
     <string name="settings_system_import_selections_mode_title">Vebijarkên patchê yên îthalkirî</string>
     <string name="settings_system_import_selections_mode_description">Hilbijartina ku pêşniyarên hatinî û vebijarkên patchê bên bikaranîn destnîşan bike</string>
@@ -703,8 +703,8 @@ Qasîyên wêneyan divê wiha bin:
     <string name="import_mode_replace_description">Paşgirtina hevkirinê bi tevahî. Hêmanên winda ne ji paşgirtinê dê werin nehev kirin</string>
     <string name="import_mode_merge_title">Bi heyî vekirin</string>
     <string name="import_mode_merge_description">Hêmanên winda ji paşgirtinê zêde bike. Hêmanên heyî nehatin guhertin</string>
-    <string name="settings_system_export_manager_settings_fail">Ne serketî sawekirina sazkirina AutoPatch Hub: %s</string>
-    <string name="settings_system_export_manager_settings_success">Sawekirina sazkirina AutoPatch Hub serketî</string>
+    <string name="settings_system_export_manager_settings_fail">Ne serketî sawekirina sazkirina SyMorphe: %s</string>
+    <string name="settings_system_export_manager_settings_success">Sawekirina sazkirina SyMorphe serketî</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_description">Pelên loga sîstemê ji bo çareserkirina pirsgirêkan tomar bike</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Serketina xwendina logan (koda qedandina %s)</string>
@@ -760,7 +760,7 @@ Qasîyên wêneyan divê wiha bin:
     <string name="settings_system_no_patches_or_options">Ke tu bejna yâ bejna diteya ne</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Hilbijêrkê pelan yê xwerû</string>
-    <string name="settings_system_custom_file_picker_description">Li şûna hilbijêrkê pelan yê serî yê sîstemê, hilbijêrkê pelan yê têne çêkirin yê AutoPatch Hub bikar bîne</string>
+    <string name="settings_system_custom_file_picker_description">Li şûna hilbijêrkê pelan yê serî yê sîstemê, hilbijêrkê pelan yê têne çêkirin yê SyMorphe bikar bîne</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Pêşîya rêgehê</string>
     <string name="file_picker_no_files">Li vir pel nehatine dîtin</string>
@@ -778,7 +778,7 @@ Qasîyên wêneyan divê wiha bin:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Derbarê</string>
     <string name="settings_system_share_website">Malperê parve bike</string>
-    <string name="settings_system_share_website_description">Malpera fermî ya AutoPatch Hub’yê parve bike</string>
+    <string name="settings_system_share_website_description">Malpera fermî ya SyMorphe’yê parve bike</string>
     <string name="settings_system_manager_description">Projektek ferman-çavkanî ji bo nûjenkirin, sazkirina bingeş an sepanên popûler ên Android, bi bandora vegerandinên dîmen û ji bo beşdarîyên civakê ve girêdayî ye.</string>
     <string name="credits">Kredît</string>
     <string name="credits_current_development">Gelişîna heyî</string>
@@ -910,7 +910,7 @@ Ma hûn hê jî dixwazin dom bikevin?"</string>
     <string name="onboarding_sources_desc">Çavkaniyên patchên xwe birêve bike. Her çavkanî patchên ku dikarin li ser sepanên we werin bikaranîn peyda dike</string>
     <string name="onboarding_swipe_title">Hestên swîpê</string>
     <string name="onboarding_swipe_desc">Ji bo dîtina patchên berdest li ser kartê pêşî biçipe. Ji bo veşartina kartê ji ekranê biçîpe çepê</string>
-    <string name="onboarding_settings_desc">AutoPatch Hub xweş bike: xuya, vebijarkên pêşkeftî, û amûrên sîstemê</string>
+    <string name="onboarding_settings_desc">SyMorphe xweş bike: xuya, vebijarkên pêşkeftî, û amûrên sîstemê</string>
     <string name="onboarding_sources_patches_desc">Têke bin ku hemû patchên ji vê çavkaniyê bibînin</string>
     <string name="onboarding_sources_version_desc">Têke bin serî de dîtina guhertoyên vê çavkaniyê</string>
     <string name="onboarding_sources_prerelease_desc">Vê yekê çalak bike da ku wergîrî patchên berbelav ên vê çavkaniyê bike</string>
@@ -925,8 +925,8 @@ Ma hûn hê jî dixwazin dom bikevin?"</string>
     <string name="onboarding_system_file_picker_desc">Çalak bike da ku bikaribîne gerstêrka pelan a bingehîn lê hûn hilbijêrin APKan an anahtorên</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Gerîşka taybetmendiyan a bilez</string>
-    <string name="tour_prompt_desc">Dixwazî gerîşka taybetmendiyên sereke yên AutoPatch Hub bikî?</string>
+    <string name="tour_prompt_desc">Dixwazî gerîşka taybetmendiyên sereke yên SyMorphe bikî?</string>
     <string name="tour_prompt_confirm">Min li dora te bîne</string>
     <string name="onboarding_restart_title">Gerîşka taybetmendiyan</string>
-    <string name="onboarding_restart_desc">Gerîşka taybetmendiyên sereke yên AutoPatch Hub bikî</string>
+    <string name="onboarding_restart_desc">Gerîşka taybetmendiyên sereke yên SyMorphe bikî</string>
 </resources>

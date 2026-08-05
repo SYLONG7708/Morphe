@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 AutoPatch Hub.
+ * Copyright 2026 SyMorphe.
  */
 
 package app.morphe.manager.domain.update
@@ -18,6 +18,7 @@ data class YouTubeDownloadCandidate(
     val version: String,
     val versionCode: Int,
     val downloadUrl: String,
+    val sha256: String? = null,
 )
 
 /**

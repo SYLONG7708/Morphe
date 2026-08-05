@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 ಸಮಸ್ಯೆಯಿತ್ತು</string>
     <string name="android_11_bug_dialog_description">ಆ್ಯಪ್‌ ಅನ್ನು ಸ್ಥಾಪಿಸಲು ಅನುಮತಿ ನೀಡಬೇಕು, ಇಲ್ಲವಾದರೆ Android 11 ಸಿಸ್ಟಮ್‌ನಲ್ಲಿ ಒಂದು ತಪ್ಪು ಸಂಭವಿಸುತ್ತದೆ, ಅದು ಬಳಕೆದಾರರ ಅನುಭವವನ್ನು ದುಷ್ಪರಿಣಾಮ ಬೀರುತ್ತದೆ</string>
     <string name="deep_link_add_source_title">ಉৎস ಸೇರಿಸಿ</string>
-    <string name="deep_link_add_source_message">AutoPatch Hubಗೆ ಈ ಪ್ಯಾಚ್ ಮೂಲವನ್ನು ಸೇರಿಸಬೇಕೆಂದು ನೀವು ಬಯಸುತ್ತೀರಾ?</string>
+    <string name="deep_link_add_source_message">SyMorpheಗೆ ಈ ಪ್ಯಾಚ್ ಮೂಲವನ್ನು ಸೇರಿಸಬೇಕೆಂದು ನೀವು ಬಯಸುತ್ತೀರಾ?</string>
     <string name="deep_link_add_source_warning">ನೀವು ನಂಬುವಿರುವ ಮೂಲಗಳನ್ನು ಮಾತ್ರ ಸೇರಿಸಿ</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">AutoPatch Hub ನವೀಕರಣ ಲಭ್ಯವಿದೆ</string>
+    <string name="home_update_available">SyMorphe ನವೀಕರಣ ಲಭ್ಯವಿದೆ</string>
     <string name="home_update_error_subtitle">ಇಂಟರ್‌ನೆಟ್‌ ಕನೆಕ್ಷನ್‌ ಪರಿಶೀಲಿಸಿ, ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ</string>
     <string name="home_update_skipped_metered">಑ಠಿಟವಿఅ ದ್ರಿಟಸಾ಻ನಿ಍಻ಜವಟ</string>
     <string name="home_update_skipped_metered_subtitle">ಮೊಬೈಲ್ ಡೇಟಾ ಸಕ್ರಿಯವಾಗಿದೆ</string>
@@ -117,7 +117,7 @@
     <!-- Battery optimization pre-flight dialog -->
     <!-- Patcher Screen - Patcher Worker -->
     <!-- Patcher Screen - Patcher Messages -->
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <!-- "bytecode" can be translated from "the app code" -->
     <!-- Space flight communications callout. -->
     <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->

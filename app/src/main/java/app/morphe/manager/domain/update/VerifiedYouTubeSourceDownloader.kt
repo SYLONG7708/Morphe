@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 AutoPatch Hub.
+ * Copyright 2026 SyMorphe.
  */
 
 package app.morphe.manager.domain.update
@@ -84,7 +84,7 @@ class VerifiedYouTubeSourceDownloader(
                     url(candidate.downloadUrl)
                     header(
                         HttpHeaders.UserAgent,
-                        "AutoPatch-Hub/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.SDK_INT})",
+                        "SyMorphe/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.SDK_INT})",
                     )
                 },
                 onProgress = onProgress,
@@ -177,6 +177,13 @@ class VerifiedYouTubeSourceDownloader(
         }
         val sha256 = file.sha256OrNull()
             ?: return YouTubeSourceDownloadResult.Failure("Unable to hash the downloaded APK")
+        candidate.sha256?.let { expected ->
+            if (!sha256.equals(expected, ignoreCase = true)) {
+                return YouTubeSourceDownloadResult.Failure(
+                    "APK SHA-256 does not match the build-pinned original"
+                )
+            }
+        }
 
         return YouTubeSourceDownloadResult.Success(
             VerifiedYouTubeSource(

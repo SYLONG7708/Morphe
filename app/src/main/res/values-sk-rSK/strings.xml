@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Chyba v Android 11</string>
     <string name="android_11_bug_dialog_description">Je potrebné vopred povoliť inštaláciu aplikácie, aby sa predišlo chybe v systéme Android 11, ktorá negatívne ovplyvní používateľskú skúsenosť</string>
     <string name="deep_link_add_source_title">Pridať zdroj</string>
-    <string name="deep_link_add_source_message">Chcete pridať tento zdroj záplat do AutoPatch Hub?</string>
+    <string name="deep_link_add_source_message">Chcete pridať tento zdroj záplat do SyMorphe?</string>
     <string name="deep_link_add_source_warning">Pridávajte len zdroje, ktorým dôverujete</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">Je dostupná aktualizácia AutoPatch Hub</string>
+    <string name="home_update_available">Je dostupná aktualizácia SyMorphe</string>
     <string name="home_update_available_subtitle">Nová verzia je pripravená na inštaláciu</string>
     <string name="home_update_error">Aktualizácia zlyhala</string>
     <string name="home_update_error_subtitle">Skontrolujte svoje internetové pripojenie a skúste to znova</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Praxou k dokonalosti a už sa vám to darí 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Zatiaľ nie... zatiaľ nie... 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Dobre, rešpektujem oddanosť 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Teraz ste oficiálny tester tlačidla AutoPatch Hub 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Teraz ste oficiálny tester tlačidla SyMorphe 🏅</string>
     <string name="home_download_instructions_step3">Počkajte kým sa súbor stiahne ale  &lt;b&gt;neinštalujte&lt;/b&gt; ho</string>
     <string name="home_download_instructions_step3_mount">Počkajte kým sa súbor stiahne a potom ho &lt;b&gt;nainštalujte&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Po dokončení sťahovania sa vráťte do AutoPatch Hub</string>
-    <string name="home_download_instructions_step4_mount">Po nainštalovaní pôvodného APK súboru sa vráťte do AutoPatch Hub</string>
+    <string name="home_download_instructions_step4">Po dokončení sťahovania sa vráťte do SyMorphe</string>
+    <string name="home_download_instructions_step4_mount">Po nainštalovaní pôvodného APK súboru sa vráťte do SyMorphe</string>
     <string name="home_download_instructions_continue">Prejdite na APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Vyberte stiahnutý APK súbor</string>
@@ -306,7 +306,7 @@ Vnútorná zóna (čiarkovaná): môže byť orezaná maskou spúšťača – uc
     <string name="home_app_info_patch_update_available">Je dostupná aktualizácia záplaty</string>
     <string name="home_app_info_patch_update_available_description">Je dostupná novšia verzia záplat. Znovu zaplátajte aplikácie aby ste získali najnovšie vylepšenia a opravy.</string>
     <string name="home_app_info_app_deleted_warning">Aplikácia bola odinštalovaná</string>
-    <string name="home_app_info_app_deleted_description">Táto aplikácia bola odinštalovaná mimo AutoPatch Hub. Znovu ju zaplátajte aby ste obnovili jej funkčnosť</string>
+    <string name="home_app_info_app_deleted_description">Táto aplikácia bola odinštalovaná mimo SyMorphe. Znovu ju zaplátajte aby ste obnovili jej funkčnosť</string>
     <string name="home_app_info_apk_size">Veľkosť APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Režim root vyžaduje inštaláciu pôvodného APK pred aplikovaním záplat</string>
@@ -342,7 +342,7 @@ Vnútorná zóna (čiarkovaná): môže byť orezaná maskou spúšťača – uc
     <string name="patcher_conflict_subtitle">Musíte odinštalovať existujúcu verziu</string>
     <string name="patcher_conflict_hint">Upravená aplikácia používa iný certifikát ako nainštalovaná verzia. Odinštalovaním sa vymažú všetky údaje aplikácie.</string>
     <string name="patcher_installed_conflict_title">Vyžaduje sa odinštalovanie</string>
-    <string name="patcher_installed_conflict_body">"Aplikácia AutoPatch Hub podpisuje upravené aplikácie vlastným certifikátom, ktorý sa líši od pôvodného. Android vyžaduje odstránenie existujúcej verzie pred inštaláciou upravenej aplikácie.
+    <string name="patcher_installed_conflict_body">"Aplikácia SyMorphe podpisuje upravené aplikácie vlastným certifikátom, ktorý sa líši od pôvodného. Android vyžaduje odstránenie existujúcej verzie pred inštaláciou upravenej aplikácie.
 
 Odinštalovanie trvalo vymaže všetky údaje aplikácie."</string>
     <string name="patcher_install_error_title">Chyba pri inštalácii</string>
@@ -351,9 +351,9 @@ Odinštalovanie trvalo vymaže všetky údaje aplikácie."</string>
     <string name="patcher_ready_to_mount_subtitle">Stlačte tlačidlo nižšie na pripojenie</string>
     <string name="patcher_storage_permission_dialog_title">Nedá sa získať prístup k ceste na úložisku</string>
     <string name="patcher_incompatible_patcher_title">Aktualizácia je potrebná</string>
-    <string name="patcher_incompatible_patcher_description">Balíček &lt;b&gt;%1$s&lt;/b&gt; vyžaduje verziu záplatovača &lt;b&gt;%2$s&lt;/b&gt; alebo novšiu. Aktualizujte AutoPatch Hub, aby ste mohli opraviť túto aplikáciu.</string>
-    <string name="patcher_incompatible_patcher_update_button">Stiahnuť a aktualizovať AutoPatch Hub</string>
-    <string name="patcher_storage_permission_description_api30">Jedna alebo viacero možností záplat odkazuje na cesty, ktoré AutoPatch Hub nemôže čítať. Udeľte prístup k úložisku a ťuknite na tlačidlo, opravy sa spustia automaticky</string>
+    <string name="patcher_incompatible_patcher_description">Balíček &lt;b&gt;%1$s&lt;/b&gt; vyžaduje verziu záplatovača &lt;b&gt;%2$s&lt;/b&gt; alebo novšiu. Aktualizujte SyMorphe, aby ste mohli opraviť túto aplikáciu.</string>
+    <string name="patcher_incompatible_patcher_update_button">Stiahnuť a aktualizovať SyMorphe</string>
+    <string name="patcher_storage_permission_description_api30">Jedna alebo viacero možností záplat odkazuje na cesty, ktoré SyMorphe nemôže čítať. Udeľte prístup k úložisku a ťuknite na tlačidlo, opravy sa spustia automaticky</string>
     <string name="patcher_storage_permission_description_legacy">Jedna alebo viacero možností záplat odkazuje na cesty, ktoré nie sú prístupné. Aktualizujte cesty v možnostiach záplat a skúste to znova</string>
     <string name="patcher_storage_permission_grant">Udeľte povolenia na prístup k úložisku</string>
     <string name="patcher_storage_permission_denied_warning">Prístup k úložisku bol zamietnutý. Udeľte povolenie na používanie tejto cesty, alebo premiestnite súbory do súkromnej zložky aplikácie</string>
@@ -372,7 +372,7 @@ Odinštalovanie trvalo vymaže všetky údaje aplikácie."</string>
     <string name="patcher_step_sign_apk">Podpisujem zaplátaný súbor APK</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Ochrana pred záplatami na pozadí</string>
-    <string name="battery_optimization_dialog_description">Na niektorých zariadeniach sa záplatovač môže zastaviť, keď je aplikácia minimalizovaná. Povolenie aplikácii AutoPatch Hub spúšťanie bez obmedzení batérie zabezpečí spoľahlivé dokončenie záplatovania.</string>
+    <string name="battery_optimization_dialog_description">Na niektorých zariadeniach sa záplatovač môže zastaviť, keď je aplikácia minimalizovaná. Povolenie aplikácii SyMorphe spúšťanie bez obmedzení batérie zabezpečí spoľahlivé dokončenie záplatovania.</string>
     <string name="battery_optimization_not_now">Neskoršie</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Prebieha plátanie...</string>
@@ -388,7 +388,7 @@ Odinštalovanie trvalo vymaže všetky údaje aplikácie."</string>
     <string name="patcher_message_6">Pozri sa von, je tam naozaj krásne... 🌤️</string>
     <string name="patcher_message_7">Nastavujem 1 a 0... 🤖</string>
     <string name="patcher_message_8">Rozmotávam digitálne špagety... 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Opravujem chyby v pôvodnej aplikácii… 🪲</string>
     <string name="patcher_message_10">Na dobré záplaty sa čaká… ⏳</string>
     <string name="patcher_message_11">Leštím pixely, až kým sa nebudú lesknúť… 💎</string>
@@ -492,9 +492,9 @@ Odinštalovanie trvalo vymaže všetky údaje aplikácie."</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Aktualizácie</string>
     <string name="settings_advanced_updates_use_prereleases">Predbežné vydania</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Skorý prístup k novým verziám aplikácie AutoPatch Hub. Povoliť predbežné vydania pre zdroj v zdrojoch záplat</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Skorý prístup k novým verziám aplikácie SyMorphe. Povoliť predbežné vydania pre zdroj v zdrojoch záplat</string>
     <string name="settings_advanced_updates_allow_metered">Aktualizácie cez mobilné dáta</string>
-    <string name="settings_advanced_updates_allow_metered_description">Povoliť sťahovanie aktualizácií AutoPatch Hub a záplat cez mobilné dáta</string>
+    <string name="settings_advanced_updates_allow_metered_description">Povoliť sťahovanie aktualizácií SyMorphe a záplat cez mobilné dáta</string>
     <string name="settings_advanced_updates_background_notifications">Upozornenia aktualizácie na pozadí</string>
     <string name="settings_advanced_updates_background_notifications_description">Pravidelne skontrolovať aktualizácie na pozadí a upozorniť, keď budú k dispozícii</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Prijať okamžité upozornenie o nových vydaniach, dokonca aj keď je aplikácia zatvorená</string>
@@ -507,21 +507,21 @@ Odinštalovanie trvalo vymaže všetky údaje aplikácie."</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Frekvencia kontroly na pozadí</string>
     <string name="settings_advanced_update_interval_battery_warning">Kontroly na pozadí nemusia na niektorých zariadeniach fungovať spoľahlivo. Výrobcovia, ako napr. Xiaomi, Huawei, Samsung a OnePlus, často agresívne obmedzujú procesy na pozadí, aby šetrili batériu</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Je dostupná aktualizácia AutoPatch Hub</string>
+    <string name="notification_manager_update_title">Je dostupná aktualizácia SyMorphe</string>
     <string name="notification_bundle_update_title">Sú dostupné nové záplaty</string>
     <string name="notification_update_text">Verzia %s je pripravená na stiahnutie</string>
-    <string name="notification_bundle_update_text_unversioned">Ťuknite pre otvorenie AutoPatch Hub a aktualizujte</string>
+    <string name="notification_bundle_update_text_unversioned">Ťuknite pre otvorenie SyMorphe a aktualizujte</string>
     <string name="notification_permission_dialog_title">Povoliť upozornenia</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub potrebuje povolenie na upozornenia, aby vás upozornil aj na pozadí, keď budú k dispozícii aktualizácie</string>
+    <string name="notification_permission_dialog_description">SyMorphe potrebuje povolenie na upozornenia, aby vás upozornil aj na pozadí, keď budú k dispozícii aktualizácie</string>
     <string name="notification_post_patch_dialog_title">Chceli by ste byť informovaný o dostupných aktualizáciách?</string>
     <string name="notification_channel_fcm_updates">Upozornenia na aktualizácie</string>
-    <string name="notification_channel_fcm_updates_description">Upozornenia na nové vydania AutoPatch Hub a záplaty</string>
+    <string name="notification_channel_fcm_updates_description">Upozornenia na nové vydania SyMorphe a záplaty</string>
     <string name="notification_channel_patcher">Aplikujem záplaty</string>
-    <string name="notification_channel_patcher_description">Zobrazuje sa, keď AutoPatch Hub pláta aplikácie na pozadí</string>
+    <string name="notification_channel_patcher_description">Zobrazuje sa, keď SyMorphe pláta aplikácie na pozadí</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Nastavenia pre skúsených</string>
     <string name="settings_advanced_expert_mode">Režim pre skúsených</string>
-    <string name="settings_advanced_expert_mode_description">Zapnúť rozšírené nastavenia AutoPatch Hub pre plátanie a personalizáciu</string>
+    <string name="settings_advanced_expert_mode_description">Zapnúť rozšírené nastavenia SyMorphe pre plátanie a personalizáciu</string>
     <string name="settings_advanced_expert_mode_dialog_title">Povoliť režim pre skúsených?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Režim pre skúsených poskytuje rozsiahlejšiu kontrolu nad tým, ako sa aplikujú záplaty, no nesprávna konfigurácia nastavení v tomto režime môže viesť k nefunkčnej aplikácii</string>
     <string name="settings_advanced_strip_unused_libs">Optimalizovať pre architektúru zariadenia</string>
@@ -542,7 +542,7 @@ Odinštalovanie trvalo vymaže všetky údaje aplikácie."</string>
     <string name="settings_advanced_github_pat_dialog_title">Nastavenie GitHub Personal Access Token</string>
     <string name="settings_advanced_github_pat_dialog_description">Nastavte GitHub Personal Access Token, aby ste mohli pridávať pull requesty ako externé zdroje. Vytvorte PAT s rozsahom public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Zahrnúť do exportu nastavení</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Pridá PAT do exportu nastavení AutoPatch Hub</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Pridá PAT do exportu nastavení SyMorphe</string>
     <string name="settings_advanced_github_pat_export_warning">Nezdieľajte vaše PAT. Ak ho zahrniete do exportu nastavení, uchovajte tento súbor v súkromí, pretože obsahuje token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Nastavenia záplaty</string>
@@ -639,7 +639,7 @@ Rozmery obrázka musia byť nasledovné:
     <string name="installer_status_not_supported">Nie je podporované pre túto akciu</string>
     <string name="installer_status_shizuku_not_installed">Nainštalujte Shizuku alebo Sui aby ste mohli využiť túto možnosť</string>
     <string name="installer_status_shizuku_not_running">Otvorte Shizuku alebo Sui a skúste to znova</string>
-    <string name="installer_status_shizuku_permission">Udeľte AutoPatch Hub povolenie priamo z aplikácie Shizuku</string>
+    <string name="installer_status_shizuku_permission">Udeľte SyMorphe povolenie priamo z aplikácie Shizuku</string>
     <string name="installer_mount_warning_install">Váš primárny inštalátor je nastavený na inštalátor rootovaného mountu. Táto uložená aplikácia nebola inštalovaná pomocou mountu</string>
     <string name="mount_version_mismatch_message">Verzia stock aplikácie (%2$s) sa nezhoduje s verziou patched aplikácie (%1$s). Použite mount pre zodpovedajúcu verziu stock aplikácie a skúste to znova</string>
     <string name="installer_status_shizuku_unsupported">Nainštalovaná verzia Shizuku nie je podporovaná</string>
@@ -693,11 +693,11 @@ Rozmery obrázka musia byť nasledovné:
     <string name="settings_system_export_keystore_failed">Nepodarilo sa exportovať keystore</string>
     <string name="settings_system_show_password_field">Zobraziť heslo</string>
     <string name="settings_system_hide_password_field">Skryť heslo</string>
-    <string name="settings_system_morphe_settings">Nastavenia AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_description">Zálohuje a obnovuje nastavenia AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_fail">Nepodarilo sa importovať nastavenia AutoPatch Hub: %s</string>
-    <string name="settings_system_import_manager_settings_success">Nastavenia AutoPatch Hub boli importované</string>
-    <string name="settings_system_import_manager_settings_mode_title">Importovať nastavenia AutoPatch Hub</string>
+    <string name="settings_system_morphe_settings">Nastavenia SyMorphe</string>
+    <string name="settings_system_import_manager_settings_description">Zálohuje a obnovuje nastavenia SyMorphe</string>
+    <string name="settings_system_import_manager_settings_fail">Nepodarilo sa importovať nastavenia SyMorphe: %s</string>
+    <string name="settings_system_import_manager_settings_success">Nastavenia SyMorphe boli importované</string>
+    <string name="settings_system_import_manager_settings_mode_title">Importovať nastavenia SyMorphe</string>
     <string name="settings_system_import_manager_settings_mode_description">Vyberte, ako sa majú použiť importované nastavenia a zdroje</string>
     <string name="settings_system_import_selections_mode_title">Importovať výbery záplat</string>
     <string name="settings_system_import_selections_mode_description">Vyberte, ako sa majú použiť importované výbery a možnosti záplat</string>
@@ -705,8 +705,8 @@ Rozmery obrázka musia byť nasledovné:
     <string name="import_mode_replace_description">Presne zhodovať zálohu. Položky chýbajúce v zálohe budú odstránené</string>
     <string name="import_mode_merge_title">Spojiť s existujúcimi</string>
     <string name="import_mode_merge_description">Pridať chýbajúce položky zo zálohy. Existujúce položky zostanú nezmenené</string>
-    <string name="settings_system_export_manager_settings_fail">Nepodarilo sa exportovať nastavenia AutoPatch Hub: %s</string>
-    <string name="settings_system_export_manager_settings_success">Nastavenia AutoPatch Hub boli exportované</string>
+    <string name="settings_system_export_manager_settings_fail">Nepodarilo sa exportovať nastavenia SyMorphe: %s</string>
+    <string name="settings_system_export_manager_settings_success">Nastavenia SyMorphe boli exportované</string>
     <string name="settings_system_debug">Ladenie</string>
     <string name="settings_system_export_debug_logs_description">Uložiť systémové záznamy pre pomoc s riešením problémov</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Nepodarilo sa načítať záznamy (kód %s)</string>
@@ -762,7 +762,7 @@ Rozmery obrázka musia byť nasledovné:
     <string name="settings_system_no_patches_or_options">Neboli uložené žiadne záplaty ani možnosti</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Vlastný výber súborov</string>
-    <string name="settings_system_custom_file_picker_description">Použite vlastný prehliadač súborov AutoPatch Hub namiesto štandardného systému.</string>
+    <string name="settings_system_custom_file_picker_description">Použite vlastný prehliadač súborov SyMorphe namiesto štandardného systému.</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Predchádzajúci priečinok</string>
     <string name="file_picker_no_files">Tu nie sú žiadne súbory</string>
@@ -780,7 +780,7 @@ Rozmery obrázka musia byť nasledovné:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">O aplikácii</string>
     <string name="settings_system_share_website">Zdieľať webstránku</string>
-    <string name="settings_system_share_website_description">Zdieľať oficiálnu webstránku AutoPatch Hub</string>
+    <string name="settings_system_share_website_description">Zdieľať oficiálnu webstránku SyMorphe</string>
     <string name="settings_system_manager_description">Projekt otvoreného zdroja pre moderné a zjednodušené záplatovanie populárnych aplikácií Android, poháňaný spätnou väzbou a príspevkom komunity</string>
     <string name="credits">Poďakovanie</string>
     <string name="credits_current_development">Aktuálny vývoj</string>
@@ -912,7 +912,7 @@ Chcete aj tak pokračovať?"</string>
     <string name="onboarding_sources_desc">Spravujte svoje zdroje záplat. Každý zdroj poskytuje záplaty, ktoré je možné použiť na vaše aplikácie</string>
     <string name="onboarding_swipe_title">Gestá pre posúvanie prstom</string>
     <string name="onboarding_swipe_desc">Posúňte prstom doprava na kartičke aplikácie, aby ste zobrazili dostupné záplaty. Posúňte prstom doľava, aby ste skryli kartičku z domovskej obrazovky</string>
-    <string name="onboarding_settings_desc">Prispôsobte si AutoPatch Hub: vzhľad, pokročilé možnosti a systémové nástroje</string>
+    <string name="onboarding_settings_desc">Prispôsobte si SyMorphe: vzhľad, pokročilé možnosti a systémové nástroje</string>
     <string name="onboarding_sources_patches_desc">Ťuknite na obrazovku, aby ste zobrazili všetky záplaty dostupné z tohto zdroja</string>
     <string name="onboarding_sources_version_desc">Ťuknite na verziu, aby ste zobrazili úplný zoznam zmien pre tento zdroj</string>
     <string name="onboarding_sources_prerelease_desc">Povolením tohto nastavenia budete dostávať predbežné verzie záplat z tohto zdroja</string>
@@ -927,8 +927,8 @@ Chcete aj tak pokračovať?"</string>
     <string name="onboarding_system_file_picker_desc">Povolením tohto nastavenia použijete vstavaný prehliadač súborov namiesto systémového výberu pri výbere APK alebo úložiska kľúčov</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Rýchly prehľad funkcií</string>
-    <string name="tour_prompt_desc">Chcete si rýchlo pozrieť kľúčové funkcie AutoPatch Hub?</string>
+    <string name="tour_prompt_desc">Chcete si rýchlo pozrieť kľúčové funkcie SyMorphe?</string>
     <string name="tour_prompt_confirm">Prevezmite ma</string>
     <string name="onboarding_restart_title">Prehliadka funkcií</string>
-    <string name="onboarding_restart_desc">Pozrite si prehliadku kľúčových funkcií AutoPatch Hub</string>
+    <string name="onboarding_restart_desc">Pozrite si prehliadku kľúčových funkcií SyMorphe</string>
 </resources>

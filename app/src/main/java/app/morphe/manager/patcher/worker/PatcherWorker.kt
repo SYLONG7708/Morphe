@@ -32,6 +32,8 @@ import app.morphe.manager.patcher.runtime.ProcessRuntime
 import app.morphe.manager.patcher.split.SplitApkPreparer
 import app.morphe.manager.patcher.util.NativeLibStripper
 import app.morphe.manager.ui.model.SelectedApp
+import app.morphe.manager.domain.update.SafeIntegrationProfile
+import app.morphe.manager.license.DeviceLicenseManager
 import app.morphe.manager.ui.model.State
 import app.morphe.manager.util.*
 import com.topjohnwu.superuser.Shell
@@ -155,6 +157,10 @@ class PatcherWorker(
         ManagerApplication.startedActivityCount > 0
 
     override suspend fun doWork(): Result {
+        if (!DeviceLicenseManager.isLicensed(applicationContext)) {
+            Log.e(tag, "Refusing to patch without a valid device-bound license".logFmt())
+            return Result.failure()
+        }
         if (runAttemptCount > 0) {
             Log.d(tag, "Android requested retrying but retrying is disabled.".logFmt())
             return Result.failure()
@@ -374,6 +380,29 @@ class PatcherWorker(
             updatePatcherNotification(stepName = signingApkLabel, patchProgress = null)
             keystoreManager.sign(patchedApk, File(args.output))
             updateProgress(state = State.COMPLETED) // Signing
+
+            SafeIntegrationProfile.expectedPatchedPackage(
+                sourcePackage = args.packageName,
+                patches = args.selectedPatches,
+            )?.let { expectedPackage ->
+                val output = File(args.output)
+                val actualPackage = pm.getPackageInfo(output)?.packageName
+                if (actualPackage != expectedPackage) {
+                    if (!output.delete() && output.exists()) {
+                        Log.w(
+                            tag,
+                            "Failed to delete unsafe patched output: ${output.absolutePath}".logFmt()
+                        )
+                    }
+                    throw IllegalStateException(
+                        "UIS7870 safety gate rejected patched package " +
+                            "${actualPackage ?: "<unreadable>"}; expected $expectedPackage"
+                    )
+                }
+                args.logger.info(
+                    "UIS7870 safety gate accepted output package=$actualPackage"
+                )
+            }
 
             val elapsed = System.currentTimeMillis() - startTime
 

@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 のバグ</string>
     <string name="android_11_bug_dialog_description">Android 11 では、ユーザー体験に悪影響を及ぼす不具合が確認されています。あらかじめアプリのインストール権限を許可しておいてください</string>
     <string name="deep_link_add_source_title">ソースを追加</string>
-    <string name="deep_link_add_source_message">このパッチソースを AutoPatch Hub に追加しますか？</string>
+    <string name="deep_link_add_source_message">このパッチソースを SyMorphe に追加しますか？</string>
     <string name="deep_link_add_source_warning">信頼できるソースのみを追加してください</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">AutoPatch Hub の更新が利用可能です</string>
+    <string name="home_update_available">SyMorphe の更新が利用可能です</string>
     <string name="home_update_available_subtitle">新しいバージョンがインストール可能です</string>
     <string name="home_update_error">更新に失敗しました</string>
     <string name="home_update_error_subtitle">インターネット接続を確認して、再度お試しください</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">練習あるのみ！着実に上達していますよ！💪</string>
     <string name="home_download_instructions_download_button_toast_4">ゴールはまだまだ先です…🙈</string>
     <string name="home_download_instructions_download_button_toast_5">分かりました。その熱意に敬意を表します🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">これであなたも AutoPatch Hub の公式「ボタン」テスターです🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">これであなたも SyMorphe の公式「ボタン」テスターです🏅</string>
     <string name="home_download_instructions_step3">ダウンロードが完了するまで待ち、その APK はまだ &lt;b&gt;インストールしない&lt;b&gt;</string>
     <string name="home_download_instructions_step3_mount">ダウンロードが完了するまで待ち、&lt;b&gt;その APK をインストールする&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">ダウンロード完了後、 AutoPatch Hub に戻る</string>
-    <string name="home_download_instructions_step4_mount">オリジナルの APK をインストール後、 AutoPatch Hub に戻る</string>
+    <string name="home_download_instructions_step4">ダウンロード完了後、 SyMorphe に戻る</string>
+    <string name="home_download_instructions_step4_mount">オリジナルの APK をインストール後、 SyMorphe に戻る</string>
     <string name="home_download_instructions_continue">APKMirror.com で続行</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">ダウンロードした APK を選択</string>
@@ -306,7 +306,7 @@
     <string name="home_app_info_patch_update_available">パッチの更新が利用可能です</string>
     <string name="home_app_info_patch_update_available_description">新しいバージョンのパッチが利用可能です。最新の変更を反映するには、アプリを再パッチしてください</string>
     <string name="home_app_info_app_deleted_warning">アプリがアンインストールされました</string>
-    <string name="home_app_info_app_deleted_description">AutoPatch Hub 外でアプリがアンインストールされました。機能を復元するには、再パッチしてください</string>
+    <string name="home_app_info_app_deleted_description">SyMorphe 外でアプリがアンインストールされました。機能を復元するには、再パッチしてください</string>
     <string name="home_app_info_apk_size">APK サイズ</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">root 権限モードでは、パッチ適用前にオリジナルの APK がインストールされている必要があります</string>
@@ -342,7 +342,7 @@
     <string name="patcher_conflict_subtitle">既存のバージョンをアンインストールする必要があります</string>
     <string name="patcher_conflict_hint">パッチを適用したアプリは、インストールされているバージョンとは異なる証明書を使用しています。アンインストールすると、すべてのアプリデータが消去されます</string>
     <string name="patcher_installed_conflict_title">アンインストールが必要です</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub は、元のアプリとは異なる独自の証明書でパッチ済みアプリに署名します。Android の仕様上、パッチ済みアプリをインストールする前に既存のアプリをアンインストールする必要があります。
+    <string name="patcher_installed_conflict_body">"SyMorphe は、元のアプリとは異なる独自の証明書でパッチ済みアプリに署名します。Android の仕様上、パッチ済みアプリをインストールする前に既存のアプリをアンインストールする必要があります。
 
 アンインストールすると、アプリのデータは完全に消去されます"</string>
     <string name="patcher_install_error_title">インストールエラー</string>
@@ -351,9 +351,9 @@
     <string name="patcher_ready_to_mount_subtitle">マウントするには以下のボタンを押してください</string>
     <string name="patcher_storage_permission_dialog_title">ストレージパスにアクセスできません</string>
     <string name="patcher_incompatible_patcher_title">アップデートが必要です</string>
-    <string name="patcher_incompatible_patcher_description">バンドル&lt;b&gt;%1$s&lt;/b&gt;には、パッチャーバージョン&lt;b&gt;%2$s&lt;/b&gt;以降が必要です。このアプリをパッチするには、AutoPatch Hubをアップデートしてください。</string>
-    <string name="patcher_incompatible_patcher_update_button">AutoPatch Hubをダウンロードしてアップデート</string>
-    <string name="patcher_storage_permission_description_api30">一部のパッチ オプションが、AutoPatch Hub が読み取れないパスを参照しています。ストレージへのアクセス権限を許可してボタンをタップすると、パッチ処理が自動的に開始されます。</string>
+    <string name="patcher_incompatible_patcher_description">バンドル&lt;b&gt;%1$s&lt;/b&gt;には、パッチャーバージョン&lt;b&gt;%2$s&lt;/b&gt;以降が必要です。このアプリをパッチするには、SyMorpheをアップデートしてください。</string>
+    <string name="patcher_incompatible_patcher_update_button">SyMorpheをダウンロードしてアップデート</string>
+    <string name="patcher_storage_permission_description_api30">一部のパッチ オプションが、SyMorphe が読み取れないパスを参照しています。ストレージへのアクセス権限を許可してボタンをタップすると、パッチ処理が自動的に開始されます。</string>
     <string name="patcher_storage_permission_description_legacy">一部のパッチ オプションが、アクセスできないパスを参照しています。パッチ オプション内のパスを修正して再度お試しください</string>
     <string name="patcher_storage_permission_grant">ストレージへのアクセス権限を許可する</string>
     <string name="patcher_storage_permission_denied_warning">ストレージへのアクセスが拒否されました。権限を許可するか、ファイルをアプリのプライベート ディレクトリに移動してください</string>
@@ -372,7 +372,7 @@
     <string name="patcher_step_sign_apk">パッチ済み APK ファイルに署名中</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">バックグラウンドパッチ保護</string>
-    <string name="battery_optimization_dialog_description">一部のデバイスでは、アプリを最小化するとパッチャーが停止する場合があります。確実にパッチ処理を完了するため、AutoPatch Hub をバッテリー制限の対象外にしてください</string>
+    <string name="battery_optimization_dialog_description">一部のデバイスでは、アプリを最小化するとパッチャーが停止する場合があります。確実にパッチ処理を完了するため、SyMorphe をバッテリー制限の対象外にしてください</string>
     <string name="battery_optimization_not_now">後で</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">パッチを適用中…</string>
@@ -388,7 +388,7 @@
     <string name="patcher_message_6">外を見てみて。今日はいい天気… 🌤️</string>
     <string name="patcher_message_7">1 と 0 をいじっています… 🤖</string>
     <string name="patcher_message_8">スパゲッティコード解体中… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">元のアプリのバグを直しています… 🪲</string>
     <string name="patcher_message_10">いいパッチは、待つ価値がある… ⏳</string>
     <string name="patcher_message_11">ピクセルが輝くまで磨いています… 💎</string>
@@ -492,9 +492,9 @@
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">更新</string>
     <string name="settings_advanced_updates_use_prereleases">プレリリース版のパッチを使用</string>
-    <string name="settings_advanced_updates_use_prereleases_description">新しいバージョンの AutoPatch Hub をいち早く利用できます。プレリリース版を使用するには、各パッチソースにて設定を有効にしてください</string>
+    <string name="settings_advanced_updates_use_prereleases_description">新しいバージョンの SyMorphe をいち早く利用できます。プレリリース版を使用するには、各パッチソースにて設定を有効にしてください</string>
     <string name="settings_advanced_updates_allow_metered">モバイルデータ通信で更新</string>
-    <string name="settings_advanced_updates_allow_metered_description">モバイルデータ通信での AutoPatch Hub およびパッチの更新のダウンロードを許可します</string>
+    <string name="settings_advanced_updates_allow_metered_description">モバイルデータ通信での SyMorphe およびパッチの更新のダウンロードを許可します</string>
     <string name="settings_advanced_updates_background_notifications">バックグラウンドでの更新通知</string>
     <string name="settings_advanced_updates_background_notifications_description">バックグラウンドで定期的に更新を確認し、利用可能な場合に通知します</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">アプリを閉じているときでも、新しいリリースのプッシュ通知を即時に受け取ります</string>
@@ -507,21 +507,21 @@
     <string name="settings_advanced_update_interval_chip_subtitle">バックグラウンドでの確認頻度</string>
     <string name="settings_advanced_update_interval_battery_warning">一部のデバイスでは、バックグラウンドでの確認が正常に動作しない場合があります。Xiaomi、Huawei、Samsung、OnePlus などのメーカーは、バッテリーを節約するためにバックグラウンド プロセスを厳しく制限することがよくあります。</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">AutoPatch Hub の更新が利用可能です</string>
+    <string name="notification_manager_update_title">SyMorphe の更新が利用可能です</string>
     <string name="notification_bundle_update_title">新しいパッチが利用可能です</string>
     <string name="notification_update_text">バージョン %s がダウンロード可能です</string>
-    <string name="notification_bundle_update_text_unversioned">AutoPatch Hub を開いて更新するには、タップしてください</string>
+    <string name="notification_bundle_update_text_unversioned">SyMorphe を開いて更新するには、タップしてください</string>
     <string name="notification_permission_dialog_title">通知の許可</string>
-    <string name="notification_permission_dialog_description">バックグラウンドで更新が利用可能になった際に通知するには、AutoPatch Hub に通知権限を許可する必要があります</string>
+    <string name="notification_permission_dialog_description">バックグラウンドで更新が利用可能になった際に通知するには、SyMorphe に通知権限を許可する必要があります</string>
     <string name="notification_post_patch_dialog_title">更新が利用可能になった際に通知を受け取りますか？</string>
     <string name="notification_channel_fcm_updates">アップデート通知</string>
-    <string name="notification_channel_fcm_updates_description">新しい AutoPatch Hub およびパッチのリリースに関する通知</string>
+    <string name="notification_channel_fcm_updates_description">新しい SyMorphe およびパッチのリリースに関する通知</string>
     <string name="notification_channel_patcher">パッチ処理</string>
-    <string name="notification_channel_patcher_description">バックグラウンドで AutoPatch Hub がアプリにパッチを適用しているときに表示されます</string>
+    <string name="notification_channel_patcher_description">バックグラウンドで SyMorphe がアプリにパッチを適用しているときに表示されます</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">高度な設定</string>
     <string name="settings_advanced_expert_mode">エキスパートモード</string>
-    <string name="settings_advanced_expert_mode_description">AutoPatch Hub の高度なパッチ設定とカスタマイズオプションを有効にします</string>
+    <string name="settings_advanced_expert_mode_description">SyMorphe の高度なパッチ設定とカスタマイズオプションを有効にします</string>
     <string name="settings_advanced_expert_mode_dialog_title">エキスパート モードを有効にしますか？</string>
     <string name="settings_advanced_expert_mode_dialog_message">エキスパートモードではパッチ適用の詳細設定が可能ですが、設定を誤るとアプリが正常に動作しなくなる可能性があります</string>
     <string name="settings_advanced_strip_unused_libs">デバイスのアーキテクチャに最適化</string>
@@ -542,7 +542,7 @@
     <string name="settings_advanced_github_pat_dialog_title">GitHub の Personal Access Token の設定</string>
     <string name="settings_advanced_github_pat_dialog_description">プルリクエストを外部ソースとして追加するには、 GitHub の Personal Access Token （PAT） を設定する必要があります。スコープ public_repo を設定した PAT を github.com で作成してください</string>
     <string name="settings_advanced_github_pat_export_include_label">設定のエクスポートに含める</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">この PAT をエクスポートした AutoPatch Hub の設定に追加します</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">この PAT をエクスポートした SyMorphe の設定に追加します</string>
     <string name="settings_advanced_github_pat_export_warning">PAT を共有しないでください。設定のエクスポートに含める場合、PAT が含まれるそのファイルも公開しないようにしてください</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">パッチ オプション</string>
@@ -639,7 +639,7 @@ morphe_header_custom_dark.png
     <string name="installer_status_not_supported">この操作はサポートされていません</string>
     <string name="installer_status_shizuku_not_installed">このオプションを使用するには、Shizuku または Sui をインストールしてください</string>
     <string name="installer_status_shizuku_not_running">Shizuku または Sui を起動して、もう一度お試しください</string>
-    <string name="installer_status_shizuku_permission">Shizuku アプリから AutoPatch Hub に Shizuku の権限を付与してください</string>
+    <string name="installer_status_shizuku_permission">Shizuku アプリから SyMorphe に Shizuku の権限を付与してください</string>
     <string name="installer_mount_warning_install">既定のインストーラーが root 権限マウント式インストーラーに設定されています。この保存済みアプリは、マウント方式でインストールされたものではありません</string>
     <string name="mount_version_mismatch_message">オリジナルのアプリのバージョン (%2$s) がパッチ適用済みアプリのバージョン (%1$s) と一致しません。対応するオリジナルのアプリをマウントしてから、再度お試しください</string>
     <string name="installer_status_shizuku_unsupported">インストールされている Shizuku のバージョンはサポートされていません</string>
@@ -693,11 +693,11 @@ morphe_header_custom_dark.png
     <string name="settings_system_export_keystore_failed">キーストアのエクスポートに失敗しました</string>
     <string name="settings_system_show_password_field">パスワードを表示</string>
     <string name="settings_system_hide_password_field">パスワードを非表示</string>
-    <string name="settings_system_morphe_settings">AutoPatch Hub の設定</string>
-    <string name="settings_system_import_manager_settings_description">AutoPatch Hub の設定をバックアップおよび復元します</string>
-    <string name="settings_system_import_manager_settings_fail">AutoPatch Hub の設定のインポートに失敗しました: %s</string>
-    <string name="settings_system_import_manager_settings_success">AutoPatch Hub の設定をインポートしました</string>
-    <string name="settings_system_import_manager_settings_mode_title">AutoPatch Hub の設定をインポート</string>
+    <string name="settings_system_morphe_settings">SyMorphe の設定</string>
+    <string name="settings_system_import_manager_settings_description">SyMorphe の設定をバックアップおよび復元します</string>
+    <string name="settings_system_import_manager_settings_fail">SyMorphe の設定のインポートに失敗しました: %s</string>
+    <string name="settings_system_import_manager_settings_success">SyMorphe の設定をインポートしました</string>
+    <string name="settings_system_import_manager_settings_mode_title">SyMorphe の設定をインポート</string>
     <string name="settings_system_import_manager_settings_mode_description">インポートした設定とソースの適用方法を選択してください</string>
     <string name="settings_system_import_selections_mode_title">パッチ選択をインポート</string>
     <string name="settings_system_import_selections_mode_description">インポートした選択項目とパッチオプションの適用方法を選択してください。</string>
@@ -705,8 +705,8 @@ morphe_header_custom_dark.png
     <string name="import_mode_replace_description">バックアップと完全に一致させます。バックアップにない項目は削除されます</string>
     <string name="import_mode_merge_title">既存のものをマージする</string>
     <string name="import_mode_merge_description">バックアップから不足している項目を追加します。既存の項目は変更されません</string>
-    <string name="settings_system_export_manager_settings_fail">AutoPatch Hub の設定のエクスポートに失敗しました: %s</string>
-    <string name="settings_system_export_manager_settings_success">AutoPatch Hub の設定をエクスポートしました</string>
+    <string name="settings_system_export_manager_settings_fail">SyMorphe の設定のエクスポートに失敗しました: %s</string>
+    <string name="settings_system_export_manager_settings_success">SyMorphe の設定をエクスポートしました</string>
     <string name="settings_system_debug">デバッグ</string>
     <string name="settings_system_export_debug_logs_description">トラブルシューティングのためにシステムログを保存します</string>
     <string name="settings_system_export_debug_logs_export_read_failed">ログの読み取りに失敗しました (終了コード %s)</string>
@@ -762,7 +762,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_no_patches_or_options">保存されたパッチやオプションなし</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">カスタムファイルピッカー</string>
-    <string name="settings_system_custom_file_picker_description">システム標準の代わりに、AutoPatch Hub の内蔵ファイルピッカーを使用してストレージを閲覧します</string>
+    <string name="settings_system_custom_file_picker_description">システム標準の代わりに、SyMorphe の内蔵ファイルピッカーを使用してストレージを閲覧します</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">前のディレクトリ</string>
     <string name="file_picker_no_files">ファイルが見つかりません</string>
@@ -778,9 +778,9 @@ morphe_header_custom_dark.png
     <string name="file_picker_sort_date_asc">日付（古い順）</string>
     <string name="file_picker_show_hidden_files">非表示のファイルを表示する</string>
     <!-- Settings - System Tab - About Section -->
-    <string name="settings_system_about">AutoPatch Hub について</string>
+    <string name="settings_system_about">SyMorphe について</string>
     <string name="settings_system_share_website">ウェブサイトを共有</string>
-    <string name="settings_system_share_website_description">AutoPatch Hub の公式ウェブサイトを共有します</string>
+    <string name="settings_system_share_website_description">SyMorphe の公式ウェブサイトを共有します</string>
     <string name="settings_system_manager_description">人気の Android アプリにモダンで効率的にパッチを適用するためのオープンソースプロジェクトです。コミュニティからのフィードバックや貢献によって発展しています</string>
     <string name="credits">クレジット</string>
     <string name="credits_current_development">現在の開発</string>
@@ -912,7 +912,7 @@ morphe_header_custom_dark.png
     <string name="onboarding_sources_desc">パッチソースを管理できます。各ソースは、アプリに適用できるパッチを提供します</string>
     <string name="onboarding_swipe_title">ジェスチャー操作</string>
     <string name="onboarding_swipe_desc">アプリカードを右にスワイプすると、利用可能なパッチを表示できます。左にスワイプすると、ホーム画面からカードを非表示にできます</string>
-    <string name="onboarding_settings_desc">AutoPatch Hub の外観設定や高度な設定、システムツールをカスタマイズできます</string>
+    <string name="onboarding_settings_desc">SyMorphe の外観設定や高度な設定、システムツールをカスタマイズできます</string>
     <string name="onboarding_sources_patches_desc">タップして、このソースで利用できるパッチ一覧を表示できます</string>
     <string name="onboarding_sources_version_desc">バージョンをタップすると、このソースの変更履歴を確認できます</string>
     <string name="onboarding_sources_prerelease_desc">有効にすると、このソースからプレリリース版のパッチを受け取れます</string>
@@ -927,8 +927,8 @@ morphe_header_custom_dark.png
     <string name="onboarding_system_file_picker_desc">有効にすると、APK やキーストアを選択する際に、システム標準ではなく内蔵ファイルブラウザーを使用します</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">かんたん機能ガイド</string>
-    <string name="tour_prompt_desc">AutoPatch Hub の主要な機能を簡単なツアーで見てみませんか？</string>
+    <string name="tour_prompt_desc">SyMorphe の主要な機能を簡単なツアーで見てみませんか？</string>
     <string name="tour_prompt_confirm">ガイドを開始</string>
     <string name="onboarding_restart_title">機能ガイド</string>
-    <string name="onboarding_restart_desc">AutoPatch Hub の主要な機能をガイド付きで紹介します</string>
+    <string name="onboarding_restart_desc">SyMorphe の主要な機能をガイド付きで紹介します</string>
 </resources>

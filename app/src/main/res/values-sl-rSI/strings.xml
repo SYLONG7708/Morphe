@@ -13,10 +13,10 @@
     <string name="android_11_bug_dialog_title">Android 11 napaka</string>
     <string name="android_11_bug_dialog_description">Aplikaciji je treba dovoliti dovoljenje za namestitev, da se izognete napaki v sistemu Android 11, ki bo negativno vplivala na uporabniško izkušnjo.</string>
     <string name="deep_link_add_source_title">Dodaj vir</string>
-    <string name="deep_link_add_source_message">Želite dodati ta vir popravkov v AutoPatch Hub?</string>
+    <string name="deep_link_add_source_message">Želite dodati ta vir popravkov v SyMorphe?</string>
     <string name="deep_link_add_source_warning">Dodajte samo vire, ki jim zaupate</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">AutoPatch Hub posodobitev je pripravljena</string>
+    <string name="home_update_available">SyMorphe posodobitev je pripravljena</string>
     <string name="home_update_available_subtitle">Nova verzija je pripravljena za prenos</string>
     <string name="home_update_error">Posodobitev ni uspela</string>
     <string name="home_update_error_subtitle">Preverite internetno povezavo in poskusite znova</string>
@@ -158,11 +158,11 @@
     <string name="home_download_instructions_download_button_toast_3">Vaja dela mojstra, skoraj si že tam 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Ne še tukaj… ne še tukaj… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">OK spoštujem predanost 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Zdaj ste uradni AutoPatch Hub preizkuševalec gumbov 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Zdaj ste uradni SyMorphe preizkuševalec gumbov 🏅</string>
     <string name="home_download_instructions_step3">Počakajte, da se prenos konča, in &lt;b&gt;ne namestite&lt;/b&gt; APK</string>
     <string name="home_download_instructions_step3_mount">Počakaj, da se prenos konča, nato &lt;b&gt;namešči APK&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Po končanem prenosu se vrnite v AutoPatch Hub</string>
-    <string name="home_download_instructions_step4_mount">Po namestitvi izvirnega APK se vrnite v AutoPatch Hub</string>
+    <string name="home_download_instructions_step4">Po končanem prenosu se vrnite v SyMorphe</string>
+    <string name="home_download_instructions_step4_mount">Po namestitvi izvirnega APK se vrnite v SyMorphe</string>
     <string name="home_download_instructions_continue">Nadaljuj na APKMirror.com</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Izberite prenesen APK</string>
@@ -306,7 +306,7 @@ Zunanje območje (črtkano): maska zaganjalnika ga lahko obreže – pomembne po
     <string name="home_app_info_patch_update_available">Na voljo je posodobitev popravkov</string>
     <string name="home_app_info_patch_update_available_description">Na voljo je novejša različica popravkov. Popravite svojo aplikacijo, da pridobite najnovejše izboljšave in popravke.</string>
     <string name="home_app_info_app_deleted_warning">Aplikacija je bila odstranjena</string>
-    <string name="home_app_info_app_deleted_description">Ta aplikacija je bila odstranjena izven aplikacije AutoPatch Hub. Ponovno jo popravite, da obnovite funkcionalnost</string>
+    <string name="home_app_info_app_deleted_description">Ta aplikacija je bila odstranjena izven aplikacije SyMorphe. Ponovno jo popravite, da obnovite funkcionalnost</string>
     <string name="home_app_info_apk_size">Velikost APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Za način root je potrebno, da je izvirna datoteka APK nameščena na vaši napravi, preden jo popravite.</string>
@@ -342,7 +342,7 @@ Zunanje območje (črtkano): maska zaganjalnika ga lahko obreže – pomembne po
     <string name="patcher_conflict_subtitle">Obstoječo različico morate odstraniti</string>
     <string name="patcher_conflict_hint">Popravljena aplikacija uporablja drug certifikat kot nameščena različica. Odstranitev bo izbrisala vse podatke aplikacije.</string>
     <string name="patcher_installed_conflict_title">Zahtevana je odstranitev</string>
-    <string name="patcher_installed_conflict_body">"AutoPatch Hub podpisuje spremenjene aplikacije z lastnim potrdilom, ki se razlikuje od prvotnega. Android zahteva odstranitev obstoječe različice, preden je mogoče namestiti spremenjeno aplikacijo.
+    <string name="patcher_installed_conflict_body">"SyMorphe podpisuje spremenjene aplikacije z lastnim potrdilom, ki se razlikuje od prvotnega. Android zahteva odstranitev obstoječe različice, preden je mogoče namestiti spremenjeno aplikacijo.
 
 Odstranitev bo trajno izbrisala vse podatke aplikacije."</string>
     <string name="patcher_install_error_title">Napaka pri namestitvi</string>
@@ -351,9 +351,9 @@ Odstranitev bo trajno izbrisala vse podatke aplikacije."</string>
     <string name="patcher_ready_to_mount_subtitle">Pritisnite gumb spodaj za montažo</string>
     <string name="patcher_storage_permission_dialog_title">Dostopa do poti shrambe ni možen</string>
     <string name="patcher_incompatible_patcher_title">Posodobitev je zahtevana</string>
-    <string name="patcher_incompatible_patcher_description">Paket &lt;b&gt;%1$s&lt;/b&gt; zahteva različico popravljalca &lt;b&gt;%2$s&lt;/b&gt; ali novejšo. Posodobite AutoPatch Hub, da popravite to aplikacijo</string>
-    <string name="patcher_incompatible_patcher_update_button">Prenesi in posodobi AutoPatch Hub</string>
-    <string name="patcher_storage_permission_description_api30">Ena ali več možnosti popravka se sklicujejo na poti, do katerih AutoPatch Hub ne more dostopati. Dovolite dostop do shrambe in nato pritisnite gumb, nato se bo popravljanje začelo samodejno</string>
+    <string name="patcher_incompatible_patcher_description">Paket &lt;b&gt;%1$s&lt;/b&gt; zahteva različico popravljalca &lt;b&gt;%2$s&lt;/b&gt; ali novejšo. Posodobite SyMorphe, da popravite to aplikacijo</string>
+    <string name="patcher_incompatible_patcher_update_button">Prenesi in posodobi SyMorphe</string>
+    <string name="patcher_storage_permission_description_api30">Ena ali več možnosti popravka se sklicujejo na poti, do katerih SyMorphe ne more dostopati. Dovolite dostop do shrambe in nato pritisnite gumb, nato se bo popravljanje začelo samodejno</string>
     <string name="patcher_storage_permission_description_legacy">Ena ali več možnosti popravka se sklicujejo na poti, do katerih ni mogoče dostopiti. Posodobite poti v možnostih popravka in poskusite znova</string>
     <string name="patcher_storage_permission_grant">Dovoli dostop do shrambe</string>
     <string name="patcher_storage_permission_denied_warning">Dostop do shrambe je bil zavrnjen. Dovolite, da lahko uporabite to pot, ali premaknite datoteke v zasebno mapo aplikacije</string>
@@ -372,7 +372,7 @@ Odstranitev bo trajno izbrisala vse podatke aplikacije."</string>
     <string name="patcher_step_sign_apk">Podpisovanje popravljene datoteke APK</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Zaščita popravljanja v ozadju</string>
-    <string name="battery_optimization_dialog_description">Nekatere naprave lahko ustavijo popravek, ko je aplikacija minimizirana. Dovolite programu AutoPatch Hub, da se izvaja brez omejitev baterije, da zagotovite zanesljivo dokončanje popravljanja.</string>
+    <string name="battery_optimization_dialog_description">Nekatere naprave lahko ustavijo popravek, ko je aplikacija minimizirana. Dovolite programu SyMorphe, da se izvaja brez omejitev baterije, da zagotovite zanesljivo dokončanje popravljanja.</string>
     <string name="battery_optimization_not_now">Pozneje</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Popravljanje v teku …</string>
@@ -388,7 +388,7 @@ Odstranitev bo trajno izbrisala vse podatke aplikacije."</string>
     <string name="patcher_message_6">Poglej ven, lepo je… 🌤️</string>
     <string name="patcher_message_7">Prilagajam 1 in 0… 🤖</string>
     <string name="patcher_message_8">Razrešujem digitalne špagete… 🍝</string>
-    <!-- AutoPatch Hub patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Popravljanje napak v nepopravljeni aplikaciji 🪲</string>
     <string name="patcher_message_10">Dobri popravki so vredni čakanja… ⏳</string>
     <string name="patcher_message_11">Poliranje pik do sijaja… 💎</string>
@@ -492,9 +492,9 @@ Odstranitev bo trajno izbrisala vse podatke aplikacije."</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Posodobitve</string>
     <string name="settings_advanced_updates_use_prereleases">Predčasne posodobitve</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Zgodnji dostop do novih različic aplikacije AutoPatch Hub. Omogočite predčasne posodobitve za vsak vir posebej v virih popravkov</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Zgodnji dostop do novih različic aplikacije SyMorphe. Omogočite predčasne posodobitve za vsak vir posebej v virih popravkov</string>
     <string name="settings_advanced_updates_allow_metered">Posodobitve preko mobilnih podatkov</string>
-    <string name="settings_advanced_updates_allow_metered_description">Omogoči prenos posodobitev AutoPatch Hub in posodobitev popravkov prek mobilnih podatkov</string>
+    <string name="settings_advanced_updates_allow_metered_description">Omogoči prenos posodobitev SyMorphe in posodobitev popravkov prek mobilnih podatkov</string>
     <string name="settings_advanced_updates_background_notifications">Obvestila o posodobitvah v ozadju</string>
     <string name="settings_advanced_updates_background_notifications_description">Občasno preverja prisotnost posodobitev v ozadju in obvesti, ko so na voljo</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Omogoči potisna obvestila za nove izdaje, tudi ko je aplikacija zaprta</string>
@@ -507,21 +507,21 @@ Odstranitev bo trajno izbrisala vse podatke aplikacije."</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Pogostost preverjanja v ozadju</string>
     <string name="settings_advanced_update_interval_battery_warning">Preverjanje v ozadju morda ne deluje zanesljivo na nekaterih napravah. Proizvajalci kot so Xiaomi, Huawei, Samsung in OnePlus pogosto agresivno omejujejo procese v ozadju, da varčujejo z baterijo</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Na voljo je posodobitev AutoPatch Hub</string>
+    <string name="notification_manager_update_title">Na voljo je posodobitev SyMorphe</string>
     <string name="notification_bundle_update_title">Na voljo so nove posodobitve</string>
     <string name="notification_update_text">Različica %s je pripravljena za prenos</string>
-    <string name="notification_bundle_update_text_unversioned">Dotaknite se, da odprete AutoPatch Hub in posodobite</string>
+    <string name="notification_bundle_update_text_unversioned">Dotaknite se, da odprete SyMorphe in posodobite</string>
     <string name="notification_permission_dialog_title">Omogoči obvestila</string>
-    <string name="notification_permission_dialog_description">AutoPatch Hub potrebuje dovoljenje za obvestila, da vas opozori, ko so posodobitve na voljo v ozadju</string>
+    <string name="notification_permission_dialog_description">SyMorphe potrebuje dovoljenje za obvestila, da vas opozori, ko so posodobitve na voljo v ozadju</string>
     <string name="notification_post_patch_dialog_title">Želite biti obveščeni, ko so na voljo posodobitve?</string>
     <string name="notification_channel_fcm_updates">Obvestila o posodobitvah</string>
-    <string name="notification_channel_fcm_updates_description">Obvestila o novih izdajah AutoPatch Hub in popravkov</string>
+    <string name="notification_channel_fcm_updates_description">Obvestila o novih izdajah SyMorphe in popravkov</string>
     <string name="notification_channel_patcher">Popravljanje</string>
-    <string name="notification_channel_patcher_description">Prikazano medtem ko AutoPatch Hub popravlja aplikacijo v ozadju</string>
+    <string name="notification_channel_patcher_description">Prikazano medtem ko SyMorphe popravlja aplikacijo v ozadju</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Napredne nastavitve</string>
     <string name="settings_advanced_expert_mode">Način strokovnjaka</string>
-    <string name="settings_advanced_expert_mode_description">Omogoča zapletene nastavitve in možnosti prilagoditve popravkov AutoPatch Hub</string>
+    <string name="settings_advanced_expert_mode_description">Omogoča zapletene nastavitve in možnosti prilagoditve popravkov SyMorphe</string>
     <string name="settings_advanced_expert_mode_dialog_title">Omogoči način strokovnjaka?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Način strokovnjaka zagotavlja več nadzora nad tem, kako se uporabljajo popravki, vendar lahko napačna konfiguracija nastavitev v načinu strokovnjaka povzroči nehoteno delovanje aplikacije</string>
     <string name="settings_advanced_strip_unused_libs">Optimiziraj za arhitekturo naprave</string>
@@ -542,7 +542,7 @@ Odstranitev bo trajno izbrisala vse podatke aplikacije."</string>
     <string name="settings_advanced_github_pat_dialog_title">Nastavite GitHub Personal Access Token</string>
     <string name="settings_advanced_github_pat_dialog_description">Nastavite GitHub Personal Access Token, da lahko dodajate povratne zahteve kot so zunanji viri. Ustvari PAT s področjem public_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Vključite v izvoz nastavitev</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Doda ta PAT v izvožene nastavitve AutoPatch Hub</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Doda ta PAT v izvožene nastavitve SyMorphe</string>
     <string name="settings_advanced_github_pat_export_warning">Ne delite svojega PAT. Če ga vključite v izvoz nastavitev, shranite to datoteko zasebno, saj vsebuje vaš ključ</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Možnosti popravkov</string>
@@ -639,7 +639,7 @@ Dimenzije slike morajo biti naslednje:
     <string name="installer_status_not_supported">Ni podprto za to dejanje.</string>
     <string name="installer_status_shizuku_not_installed">Za uporabo te možnosti namestite Shizuku ali Sui.</string>
     <string name="installer_status_shizuku_not_running">Zaženite Shizuku ali Sui in poskusite znova.</string>
-    <string name="installer_status_shizuku_permission">AutoPatch Hub podelite dovoljenje Shizuku iz aplikacije Shizuku.</string>
+    <string name="installer_status_shizuku_permission">SyMorphe podelite dovoljenje Shizuku iz aplikacije Shizuku.</string>
     <string name="installer_mount_warning_install">Vaš priljubljen namestitveni program je nastavljen na nameščeno montažo. Ta shranjena aplikacija ni bila nameščena z montažo.</string>
     <string name="mount_version_mismatch_message">Originalna različica aplikacije (%2$s) se ne ujema s popravljeno različico aplikacije (%1$s). Namestite ustrezno originalno različico, nato poskusite znova</string>
     <string name="installer_status_shizuku_unsupported">Nameščena različica Shizuku ni podprta.</string>
@@ -693,11 +693,11 @@ Dimenzije slike morajo biti naslednje:
     <string name="settings_system_export_keystore_failed">Izvoz shrambe ključev je spodletel</string>
     <string name="settings_system_show_password_field">Pokaži geslo</string>
     <string name="settings_system_hide_password_field">Skrij geslo</string>
-    <string name="settings_system_morphe_settings">Nastavitve AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_description">Varnostno kopira in obnovi nastavitve AutoPatch Hub</string>
-    <string name="settings_system_import_manager_settings_fail">Ni bilo mogoče uvoziti nastavitev AutoPatch Hub: %s</string>
-    <string name="settings_system_import_manager_settings_success">Nastavitve AutoPatch Hub so bile uvožene</string>
-    <string name="settings_system_import_manager_settings_mode_title">Uvoz nastavitev AutoPatch Hub</string>
+    <string name="settings_system_morphe_settings">Nastavitve SyMorphe</string>
+    <string name="settings_system_import_manager_settings_description">Varnostno kopira in obnovi nastavitve SyMorphe</string>
+    <string name="settings_system_import_manager_settings_fail">Ni bilo mogoče uvoziti nastavitev SyMorphe: %s</string>
+    <string name="settings_system_import_manager_settings_success">Nastavitve SyMorphe so bile uvožene</string>
+    <string name="settings_system_import_manager_settings_mode_title">Uvoz nastavitev SyMorphe</string>
     <string name="settings_system_import_manager_settings_mode_description">Izberite, kako naj se uporabijo uvožene nastavitve in viri.</string>
     <string name="settings_system_import_selections_mode_title">Uvoz izbire popravkov</string>
     <string name="settings_system_import_selections_mode_description">Izberite, kako naj bodo uporabljene uvožene izbire in možnosti popravka.</string>
@@ -705,8 +705,8 @@ Dimenzije slike morajo biti naslednje:
     <string name="import_mode_replace_description">Natančno ujemaj z varnostno kopijo. Postavke, ki manjkajo v varnostni kopiji, bodo odstranjene.</string>
     <string name="import_mode_merge_title">Združi z obstoječim</string>
     <string name="import_mode_merge_description">Dodaj manjkajoče postavke iz varnostne kopije. Obstoječe postavke ostanejo nespremenjene.</string>
-    <string name="settings_system_export_manager_settings_fail">Ni bilo mogoče izvoziti nastavitev AutoPatch Hub: %s</string>
-    <string name="settings_system_export_manager_settings_success">Izvožene so bile nastavitve AutoPatch Hub</string>
+    <string name="settings_system_export_manager_settings_fail">Ni bilo mogoče izvoziti nastavitev SyMorphe: %s</string>
+    <string name="settings_system_export_manager_settings_success">Izvožene so bile nastavitve SyMorphe</string>
     <string name="settings_system_debug">Razhroščevanje</string>
     <string name="settings_system_export_debug_logs_description">Shrani sistemske dnevnike za odpravljanje težav</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Ni bilo mogoče brati dnevnikov (koda izhoda %s)</string>
@@ -762,7 +762,7 @@ Dimenzije slike morajo biti naslednje:
     <string name="settings_system_no_patches_or_options">Ni shranjenih popravkov ali možnosti</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Izbira datoteke po meri</string>
-    <string name="settings_system_custom_file_picker_description">Uporabi vgrajen izbirnik datotek programa AutoPatch Hub namesto sistemskega privzetega</string>
+    <string name="settings_system_custom_file_picker_description">Uporabi vgrajen izbirnik datotek programa SyMorphe namesto sistemskega privzetega</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Prejšnji imenik</string>
     <string name="file_picker_no_files">Ni datotek tukaj</string>
@@ -780,7 +780,7 @@ Dimenzije slike morajo biti naslednje:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">O aplikaciji</string>
     <string name="settings_system_share_website">Delite spletno mesto</string>
-    <string name="settings_system_share_website_description">Deli uradno spletno stran AutoPatch Hub</string>
+    <string name="settings_system_share_website_description">Deli uradno spletno stran SyMorphe</string>
     <string name="settings_system_manager_description">Odprtokodni projekt za sodobno in prilagodljivo popravljanje priljubljenih aplikacij za Android, ki ga gonijo povratne informacije in prispevki skupnosti</string>
     <string name="credits">Zasluge</string>
     <string name="credits_current_development">Trenuten razvoj</string>
@@ -910,7 +910,7 @@ Dimenzije slike morajo biti naslednje:
     <string name="onboarding_sources_desc">Upravljajte vire popravkov. Vsak vir zagotavlja popravke, ki jih je mogoče uporabiti za vaše aplikacije</string>
     <string name="onboarding_swipe_title">Gestikulacije z drsenjem</string>
     <string name="onboarding_swipe_desc">Drgnite v desno po kartici aplikacije, da si ogledate razpoložljive popravke. Drgnite v levo, da skrijete kartico z začetnega zaslona</string>
-    <string name="onboarding_settings_desc">Prilagodite AutoPatch Hub: videz, napredne možnosti in sistemska orodja</string>
+    <string name="onboarding_settings_desc">Prilagodite SyMorphe: videz, napredne možnosti in sistemska orodja</string>
     <string name="onboarding_sources_patches_desc">Dotaknite se, da si ogledate vse popravke, ki so na voljo iz tega vira</string>
     <string name="onboarding_sources_version_desc">Dotaknite se različice, da si ogledate celoten seznam sprememb za ta vir</string>
     <string name="onboarding_sources_prerelease_desc">Omogočite to, da prejemate predizdajne različice popravkov iz tega vira</string>
@@ -925,8 +925,8 @@ Dimenzije slike morajo biti naslednje:
     <string name="onboarding_system_file_picker_desc">Omogočite uporabo vgrajenega brskalnika datotek namesto sistemskega izbirnika pri izbiri datotek APK ali shranjenih ključev</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Hiter pregled funkcij</string>
-    <string name="tour_prompt_desc">Želite hiter pregled ključnih funkcij AutoPatch Hub?</string>
+    <string name="tour_prompt_desc">Želite hiter pregled ključnih funkcij SyMorphe?</string>
     <string name="tour_prompt_confirm">Pokaži mi</string>
     <string name="onboarding_restart_title">Pregled funkcij</string>
-    <string name="onboarding_restart_desc">Izvedite voden pregled ključnih funkcij AutoPatch Hub</string>
+    <string name="onboarding_restart_desc">Izvedite voden pregled ključnih funkcij SyMorphe</string>
 </resources>

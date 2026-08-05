@@ -1,6 +1,6 @@
-# AutoPatch Hub
+# SyMorphe
 
-AutoPatch Hub is a distinctly branded, GPL-3.0-or-later derivative of
+SyMorphe is a distinctly branded, GPL-3.0-or-later derivative of
 [Morphe Manager](https://github.com/MorpheApp/morphe-manager). It provides a
 signed, device-aware update channel for the manager, unmodified patch bundles,
 locally patched YouTube, and MicroG-RE.
@@ -42,7 +42,7 @@ locally patched YouTube, and MicroG-RE.
 
 ## Android security boundary
 
-Ordinary Android apps cannot silently replace other apps. AutoPatch Hub
+Ordinary Android apps cannot silently replace other apps. SyMorphe
 therefore launches Android's installation confirmation on an unprivileged
 device. Installation can be silent only when the user has already granted
 Shizuku or root authority. This is an Android platform security requirement,

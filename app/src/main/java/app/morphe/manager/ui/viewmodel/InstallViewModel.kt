@@ -89,6 +89,16 @@ class InstallViewModel : ViewModel(), KoinComponent {
     var showInstallerSelectionDialog by mutableStateOf(false)
         private set
 
+    /**
+     * True while the UI should open Android's per-app "install unknown apps" settings.
+     *
+     * This check must happen before a PackageInstaller session is created. Some UIS7870
+     * Android 13 builds abandon the pending session when Android redirects to this settings
+     * page during confirmation.
+     */
+    var installPermissionRequestPending by mutableStateOf(false)
+        private set
+
     private var oneTimeInstallerToken: InstallerManager.Token? = null
     private var selectedInstallerToken: InstallerManager.Token? = null
 
@@ -382,6 +392,12 @@ class InstallViewModel : ViewModel(), KoinComponent {
         originalPackageName: String,
         onPersistApp: suspend (String, InstallType) -> Boolean
     ) {
+        if (!pm.canInstallPackages()) {
+            Log.i(TAG, "Install packages permission is missing; requesting it before creating a session")
+            installPermissionRequestPending = true
+            return
+        }
+
         val packageInfo = withContext(Dispatchers.IO) {
             pm.getPackageInfo(outputFile)
                 ?: throw Exception("Failed to load application info")
@@ -421,6 +437,45 @@ class InstallViewModel : ViewModel(), KoinComponent {
             is InstallResult.Failure -> handleInstallError(
                 app.getString(R.string.install_app_fail, result.message ?: "Unknown error")
             )
+        }
+    }
+
+    /**
+     * Resumes the pending standard installation after returning from Android's per-app
+     * install-source settings. A denied request leaves the APK untouched and returns the UI
+     * to its retryable state.
+     */
+    fun onInstallPermissionResult(granted: Boolean) {
+        if (!installPermissionRequestPending) return
+        installPermissionRequestPending = false
+
+        if (!granted || !pm.canInstallPackages()) {
+            Log.i(TAG, "Install packages permission was not granted")
+            installState = InstallState.Ready
+            return
+        }
+
+        val file = pendingInstallFile
+        val originalPackageName = pendingOriginalPackageName
+        val onPersistApp = pendingPersistCallback
+        if (file == null || originalPackageName == null || onPersistApp == null) {
+            handleInstallError(app.getString(R.string.install_app_fail, "Pending install data missing"))
+            return
+        }
+
+        viewModelScope.launch {
+            installState = InstallState.Installing
+            try {
+                performStandardInstall(file, originalPackageName, onPersistApp)
+            } catch (e: Exception) {
+                Log.e(TAG, "Install failed after permission grant", e)
+                handleInstallError(
+                    app.getString(
+                        R.string.install_app_fail,
+                        e.simpleMessage() ?: e.javaClass.simpleName
+                    )
+                )
+            }
         }
     }
 

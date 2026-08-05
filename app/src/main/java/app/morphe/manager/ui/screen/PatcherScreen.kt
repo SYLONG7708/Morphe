@@ -55,6 +55,7 @@ import app.morphe.manager.ui.viewmodel.InstallViewModel
 import app.morphe.manager.ui.viewmodel.PatcherViewModel
 import app.morphe.manager.util.APK_MIMETYPE
 import app.morphe.manager.util.EventEffect
+import app.morphe.manager.util.RequestInstallAppsContract
 import app.morphe.manager.util.tag
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -159,6 +160,16 @@ fun PatcherScreen(
     val autoInstallWithShizuku by prefs.autoInstallWithShizuku.getAsState()
     val primaryInstallerPref by prefs.installerPrimary.getAsState()
     val promptInstallerOnInstall by prefs.promptInstallerOnInstall.getAsState()
+
+    val installAppsPermissionLauncher = rememberLauncherForActivityResult(
+        contract = RequestInstallAppsContract,
+        onResult = installViewModel::onInstallPermissionResult
+    )
+    LaunchedEffect(installViewModel.installPermissionRequestPending) {
+        if (installViewModel.installPermissionRequestPending) {
+            installAppsPermissionLauncher.launch(context.packageName)
+        }
+    }
 
     // Auto-install: driven by ViewModel so it fires in the background even if the app is not
     // in the foreground when patching completes. UI-only guards checked here.

@@ -13,6 +13,8 @@ import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.githubAvat
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.gitlabAvatarUrl
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.PatchBundleRepository
+import app.morphe.manager.domain.update.BundledEcosystemProvisioner
+import app.morphe.manager.license.DeviceLicenseManager
 import app.morphe.manager.util.*
 import app.morphe.manager.worker.UpdateCheckWorker
 import coil.Coil
@@ -39,11 +41,17 @@ class ManagerApplication : Application() {
     private val scope = MainScope()
     private val prefs: PreferencesManager by inject()
     private val patchBundleRepository: PatchBundleRepository by inject()
+    private val bundledEcosystemProvisioner: BundledEcosystemProvisioner by inject()
     private val fs: Filesystem by inject()
     private val updateNotificationManager: UpdateNotificationManager by inject()
 
     override fun onCreate() {
         super.onCreate()
+
+        if (!AppIntegrity.isAuthentic(this)) {
+            Log.e(tag, "SyMorphe signing certificate verification failed")
+            throw SecurityException("SyMorphe installation integrity verification failed")
+        }
 
         startKoin {
             androidContext(this@ManagerApplication)
@@ -83,6 +91,12 @@ class ManagerApplication : Application() {
         // Create notification channels before any notification can be posted (required on API 26+)
         updateNotificationManager.createNotificationChannels()
 
+        if (!DeviceLicenseManager.isLicensed(this)) {
+            UpdateCheckWorker.cancel(this)
+            Log.i(tag, "SyMorphe is waiting for device-bound owner authorization")
+            return
+        }
+
         // Preload preferences and kick off background worker/FCM sync
         scope.launch {
             prefs.preload()
@@ -104,7 +118,14 @@ class ManagerApplication : Application() {
         scope.launch(Dispatchers.Default) {
             with(patchBundleRepository) {
                 reload()
-                updateCheck()
+                if (BuildConfig.BUNDLED_ECOSYSTEM_ENABLED) {
+                    runCatching { bundledEcosystemProvisioner.provision() }
+                        .onFailure { error ->
+                            Log.e(tag, "Bundled UIS7870 ecosystem provisioning failed", error)
+                        }
+                } else {
+                    updateCheck()
+                }
             }
         }
 

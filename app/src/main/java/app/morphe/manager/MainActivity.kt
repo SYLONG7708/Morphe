@@ -34,6 +34,8 @@ import androidx.navigation.compose.rememberNavController
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
 import app.morphe.manager.domain.update.InstallableUpdate
+import app.morphe.manager.license.DeviceActivationActivity
+import app.morphe.manager.license.DeviceLicenseManager
 import app.morphe.manager.ui.model.navigation.ComplexParameter
 import app.morphe.manager.ui.model.navigation.HomeScreen
 import app.morphe.manager.ui.model.navigation.Patcher
@@ -87,6 +89,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!DeviceLicenseManager.isLicensed(this)) {
+            startActivity(Intent(this, DeviceActivationActivity::class.java))
+            finish()
+            return
+        }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()

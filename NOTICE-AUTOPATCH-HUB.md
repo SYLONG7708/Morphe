@@ -1,12 +1,13 @@
-# AutoPatch Hub modification notice
+# SyMorphe modification notice
 
 - Independent project: `https://github.com/SYLONG7708/Morphe`
 - Upstream: `https://github.com/MorpheApp/morphe-manager`
 - Upstream baseline: v1.23.0
-- Modification date: 2026-07-19
-- Independent Android application ID: `com.sylong.autopatchhub`
+- Initial modification date: 2026-07-19
+- Renamed to SyMorphe: 2026-08-05
+- Independent Android application ID: `com.sylong.symorphe`
 
-This modified version is named **AutoPatch Hub** and uses independent icons,
+This modified version is named **SyMorphe** and uses independent icons,
 signing keys, update infrastructure, package identity, and release metadata.
 It is not an official Morphe release and is not endorsed by MorpheApp.
 
