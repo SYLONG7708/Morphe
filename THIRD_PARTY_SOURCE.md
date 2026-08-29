@@ -6,7 +6,7 @@ changes from these exact public revisions:
 
 | Component | Version | Commit / source |
 |---|---:|---|
-| Morphe Patcher | 1.7.0 | [`ccaa2e8b1447e459d9d5ad2a77c844cfbbdf8dc0`](https://github.com/MorpheApp/morphe-patcher/tree/ccaa2e8b1447e459d9d5ad2a77c844cfbbdf8dc0) |
+| Morphe Patcher | 1.11.0 | [`97edf384861cc706d95c1847791f9ab4faec4e94`](https://github.com/MorpheApp/morphe-patcher/tree/97edf384861cc706d95c1847791f9ab4faec4e94) |
 | Morphe Library | 1.3.0 | [`d8b9e1498924ee87a7c6c2f5dfe59f1244e47644`](https://github.com/MorpheApp/morphe-library/tree/d8b9e1498924ee87a7c6c2f5dfe59f1244e47644) |
 | Morphe JADB fork | 1.2.1 | [`4955fb15a94afb2644f52446fd03173c0f74c3c3`](https://github.com/MorpheApp/jadb/tree/4955fb15a94afb2644f52446fd03173c0f74c3c3) |
 
