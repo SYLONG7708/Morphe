@@ -9,9 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
 
 /**
  * Snapshot-backed set of selection keys shared by the home multi-select bar
@@ -19,8 +16,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
  * "selection mode" flag can live alongside if a caller needs one.
  */
 @Stable
-class SelectionState<K : Any> internal constructor(initial: Collection<K> = emptyList()) {
-    private val backing = mutableStateListOf<K>().apply { addAll(initial.distinct()) }
+class SelectionState<K : Any> internal constructor() {
+    private val backing = mutableStateListOf<K>()
 
     val keys: List<K> get() = backing
     val size: Int get() = backing.size
@@ -31,14 +28,6 @@ class SelectionState<K : Any> internal constructor(initial: Collection<K> = empt
 
     fun toggle(key: K) {
         if (!backing.remove(key)) backing.add(key)
-    }
-
-    fun add(key: K) {
-        if (key !in backing) backing.add(key)
-    }
-
-    fun remove(key: K) {
-        backing.remove(key)
     }
 
     fun setAll(keys: Collection<K>) {
@@ -59,16 +48,3 @@ class SelectionState<K : Any> internal constructor(initial: Collection<K> = empt
 @Composable
 fun <K : Any> rememberSelectionState(): SelectionState<K> =
     remember { SelectionState() }
-
-/**
- * Variant that survives configuration changes when the key type is [String].
- */
-@Composable
-fun rememberSaveableStringSelectionState(): SelectionState<String> =
-    rememberSaveable(saver = StringSelectionStateSaver) { SelectionState() }
-
-private val StringSelectionStateSaver: Saver<SelectionState<String>, Any> =
-    listSaver(
-        save = { it.keys.toList() },
-        restore = { SelectionState(it) }
-    )

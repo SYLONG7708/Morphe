@@ -36,6 +36,48 @@
         <item quantity="many">%s plików APK</item>
         <item quantity="other">%s plików APK</item>
     </plurals>
+    <plurals name="batch_install_summary">
+        <item quantity="one">Zainstalowano %s aplikację</item>
+        <item quantity="few">Zainstalowano %s aplikacje</item>
+        <item quantity="many">Zainstalowano %s aplikacji</item>
+        <item quantity="other">Zainstalowano %s aplikacji</item>
+    </plurals>
+    <plurals name="batch_reinstall_summary">
+        <item quantity="one">Ponownie zainstalowano %s aplikację</item>
+        <item quantity="few">Ponownie zainstalowano %s aplikacje</item>
+        <item quantity="many">Ponownie zainstalowano %s aplikacji</item>
+        <item quantity="other">Ponownie zainstalowano %s aplikacji</item>
+    </plurals>
+    <plurals name="batch_uninstall_summary">
+        <item quantity="one">Odinstalowano %s aplikację</item>
+        <item quantity="few">Odinstalowano %s aplikacje</item>
+        <item quantity="many">Odinstalowano %s aplikacji</item>
+        <item quantity="other">Odinstalowano %s aplikacji</item>
+    </plurals>
+    <plurals name="batch_uninstall_confirm_title">
+        <item quantity="one">Odinstalować %s aplikację?</item>
+        <item quantity="few">Odinstalować %s aplikacje?</item>
+        <item quantity="many">Odinstalować %s aplikacji?</item>
+        <item quantity="other">Odinstalować %s aplikacji?</item>
+    </plurals>
+    <plurals name="batch_patch_ready_count">
+        <item quantity="one">%s aplikacja gotowa do modyfikacji</item>
+        <item quantity="few">%s aplikacje gotowe do modyfikacji</item>
+        <item quantity="many">%s aplikacji gotowych do modyfikacji</item>
+        <item quantity="other">%s aplikacji gotowych do modyfikacji</item>
+    </plurals>
+    <plurals name="batch_patch_notification_ready">
+        <item quantity="one">%s aplikacja jest gotowa do zainstalowania</item>
+        <item quantity="few">%s aplikacje są gotowe do zainstalowania</item>
+        <item quantity="many">%s aplikacji jest gotowych do zainstalowania</item>
+        <item quantity="other">%s aplikacji jest gotowych do zainstalowania</item>
+    </plurals>
+    <plurals name="batch_skipped_summary">
+        <item quantity="one">Pominięto %s aplikację</item>
+        <item quantity="few">Pominięto %s aplikacje</item>
+        <item quantity="many">Pominięto %s aplikacji</item>
+        <item quantity="other">Pominięto %s aplikacji</item>
+    </plurals>
     <plurals name="home_app_info_repatch_cleaned_invalid_data">
         <item quantity="one">Usunięto %s przestarzałą modyfikację z zapisanych wyborów</item>
         <item quantity="few">Usunięto %s przestarzałe modyfikacje z zapisanych wyborów</item>
@@ -48,16 +90,22 @@
         <item quantity="many">%s zainstalowanych źródeł</item>
         <item quantity="other">%s zainstalowanych źródeł</item>
     </plurals>
-    <plurals name="patch_selection_total_patches">
-        <item quantity="one">%s wybrana modyfikacja</item>
-        <item quantity="few">%s wybrane modyfikacje</item>
-        <item quantity="many">%s wybranych modyfikacji</item>
-        <item quantity="other">%s wybranych modyfikacji</item>
-    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s ukryta aplikacja</item>
         <item quantity="few">%s ukryte aplikacje</item>
         <item quantity="many">%s ukrytych aplikacji</item>
         <item quantity="other">%s ukrytych aplikacji</item>
+    </plurals>
+    <plurals name="home_category_app_count">
+        <item quantity="one">%s aplikacja</item>
+        <item quantity="few">%s aplikacje</item>
+        <item quantity="many">%s aplikacji</item>
+        <item quantity="other">%s aplikacji</item>
+    </plurals>
+    <plurals name="expert_mode_copy_from_bundle_done">
+        <item quantity="one">Skopiowano %s modyfikację z wybranego pakietu</item>
+        <item quantity="few">Skopiowano %s modyfikacje z wybranego pakietu</item>
+        <item quantity="many">Skopiowano %s modyfikacji z wybranego pakietu</item>
+        <item quantity="other">Skopiowano %s modyfikacji z wybranego pakietu</item>
     </plurals>
 </resources>

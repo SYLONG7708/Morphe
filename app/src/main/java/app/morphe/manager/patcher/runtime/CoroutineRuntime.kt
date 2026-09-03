@@ -26,8 +26,10 @@ class CoroutineRuntime(private val context: Context) : Runtime(context) {
         onProgress: ProgressEventHandler,
         skipUnneededSplits: Boolean,
         onMergedApkReady: (suspend (File) -> Unit)?,
+        // This runtime patches in the app's own process and gets one attempt at it
+        onRestart: suspend () -> Unit,
     ) {
-        MemoryMonitor.startMemoryPolling(logger)
+        ResourceMonitor.startPolling(logger)
 
         try {
             val selectedBundles = selectedPatches.keys
@@ -40,14 +42,13 @@ class CoroutineRuntime(private val context: Context) : Runtime(context) {
                     .filterKeys { it in selectedBundles }
 
             val patchList = selectedPatches.flatMap { (bundle, selected) ->
-                allPatches[bundle]?.filter { it.name in selected }
+                allPatches[bundle]?.filterKeys { it in selected }?.values
                     ?: throw IllegalArgumentException("Patch bundle $bundle does not exist")
             }
 
             // Set all patch options.
             options.forEach { (bundle, bundlePatchOptions) ->
-                val patches = allPatches[bundle] ?: return@forEach
-                val patchesByName = patches.associateBy { it.name }
+                val patchesByName = allPatches[bundle] ?: return@forEach
 
                 bundlePatchOptions.forEach { (patchName, configuredPatchOptions) ->
                     // Morphe: Skip if patch doesn't exist in this bundle
@@ -98,7 +99,7 @@ class CoroutineRuntime(private val context: Context) : Runtime(context) {
                 preparation.cleanup()
             }
         } finally {
-            MemoryMonitor.stopMemoryPolling(logger)
+            ResourceMonitor.stopPolling(logger)
         }
     }
 }

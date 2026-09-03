@@ -1,5 +1,29 @@
 package app.morphe.manager.util
 
+import app.morphe.manager.BuildConfig
+import io.github.z4kn4fein.semver.Version
+
+/**
+ * Check if the patcher version [required] by a patch bundle is newer than the [current] one
+ * shipped in the manager, meaning the app has to be updated before the bundle can be used.
+ *
+ * Falls back to false (bundle considered usable) if either string cannot be parsed, so a
+ * malformed manifest attribute never blocks patching.
+ */
+fun isPatcherOutdated(required: String, current: String = BuildConfig.PATCHER_VERSION): Boolean =
+    runCatching {
+        Version.parse(required, strict = false) > Version.parse(current, strict = false)
+    }.getOrDefault(false)
+
+/**
+ * Strips a leading `v` and surrounding whitespace so version strings from different
+ * sources (GitHub tags, JSON metadata, BuildConfig) can be compared without mismatch.
+ */
+fun String.normalizeVersion(): String = removePrefix("v").trim()
+
+/** Adds the conventional display prefix without duplicating one already supplied by the app. */
+fun String.withVersionPrefix(): String = if (startsWith("v")) this else "v$this"
+
 /**
  * Compare two version strings.
  * Returns: -1 if v1 < v2, 0 if v1 == v2, 1 if v1 > v2
@@ -9,9 +33,8 @@ fun compareVersions(v1: String?, v2: String?): Int {
     if (v1 == null) return -1
     if (v2 == null) return 1
 
-    // Remove 'v' prefix if present
-    val version1 = v1.removePrefix("v").trim()
-    val version2 = v2.removePrefix("v").trim()
+    val version1 = v1.normalizeVersion()
+    val version2 = v2.normalizeVersion()
 
     if (version1 == version2) return 0
 

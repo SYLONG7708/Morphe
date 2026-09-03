@@ -33,6 +33,7 @@ object DeviceLicenseManager {
     fun isLicensed(context: Context): Boolean = status(context).valid
 
     fun status(context: Context): Status {
+        if (BuildConfig.NO_LICENSE_EDITION) return Status(true, "正式免授權版")
         if (!BuildConfig.DEVICE_LICENSE_REQUIRED) return Status(true, "開發測試授權")
         val token = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(KEY_TOKEN, null)

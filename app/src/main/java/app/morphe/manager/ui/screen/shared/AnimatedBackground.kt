@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.backgrounds.*
 
@@ -29,14 +27,26 @@ enum class BackgroundType(val displayNameResId: Int) {
     SNOW(R.string.settings_appearance_background_snow),
     GRID(R.string.settings_appearance_background_grid),
     PARTICLES(R.string.settings_appearance_background_particles),
+    MATRIX(R.string.settings_appearance_background_matrix),
     NONE(R.string.settings_appearance_background_none),
     RANDOM(R.string.settings_appearance_background_random);
 
     companion object {
         val DEFAULT = CIRCLES
 
+        /** Types the picker keeps out of sight until they are unlocked. */
+        val HIDDEN: Set<BackgroundType> = setOf(MATRIX)
+
         /** All types that can be picked when RANDOM is active (excludes NONE and RANDOM itself). */
-        val RANDOMIZABLE: List<BackgroundType> = entries.filter { it != NONE && it != RANDOM }
+        val RANDOMIZABLE: List<BackgroundType> =
+            entries.filter { it != NONE && it != RANDOM && it !in HIDDEN }
+
+        /**
+         * The pool RANDOM draws from. A hidden type joins it only once unlocked, otherwise the
+         * shuffle would hand out a background the picker still refuses to show.
+         */
+        fun randomizable(includeHidden: Boolean): List<BackgroundType> =
+            if (includeHidden) RANDOMIZABLE + HIDDEN else RANDOMIZABLE
     }
 }
 
@@ -66,13 +76,12 @@ fun AnimatedBackground(
     val resolvedSpeed = speedMultiplier()
     val resolvedPatchingCompleted = patchingCompleted()
 
+    // No background blends across its own layers, so clipping alone is enough. Compositing offscreen
+    // would allocate a full-screen render target and re-composite it every frame for nothing
     Box(
         modifier = Modifier
             .fillMaxSize()
             .clipToBounds()
-            .graphicsLayer {
-                compositingStrategy = CompositingStrategy.Offscreen
-            }
     ) {
         when (effectiveType) {
             BackgroundType.CIRCLES -> CirclesBackground(
@@ -118,6 +127,12 @@ fun AnimatedBackground(
                 patchingCompleted = resolvedPatchingCompleted
             )
             BackgroundType.PARTICLES -> ParticlesBackground(
+                modifier = Modifier.fillMaxSize(),
+                enableParallax = enableParallax,
+                speedMultiplier = resolvedSpeed,
+                patchingCompleted = resolvedPatchingCompleted
+            )
+            BackgroundType.MATRIX -> MatrixBackground(
                 modifier = Modifier.fillMaxSize(),
                 enableParallax = enableParallax,
                 speedMultiplier = resolvedSpeed,

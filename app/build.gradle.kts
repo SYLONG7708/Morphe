@@ -46,6 +46,8 @@ val releaseRequested = gradle.startParameter.taskNames.any {
     it.contains("release", ignoreCase = true)
 }
 val signAsDebugRequested = project.hasProperty("signAsDebug")
+val noDeviceLicenseRequested = project.hasProperty("noDeviceLicense")
+val editionVersionSuffix = if (noDeviceLicenseRequested) "-no-license" else ""
 val releaseKeystoreFile = providers.environmentVariable("SYMORPHE_KEYSTORE_FILE")
     .orNull
     ?.trim()
@@ -232,9 +234,6 @@ dependencies {
     // Fading Edges
     implementation(libs.fading.edges)
 
-    // Scrollbars
-    implementation(libs.scrollbars)
-
     // EnumUtil
     implementation(libs.enumutil)
     ksp(libs.enumutil.ksp)
@@ -248,7 +247,8 @@ dependencies {
     // Semantic versioning parser
     implementation(libs.semver.parser)
 
-    testImplementation(kotlin("test-junit"))
+    // Unit tests
+    testImplementation(libs.kotlin.test.junit)
 }
 
 android {
@@ -256,10 +256,14 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = safeProfileValue("managerPackage")
+        applicationId = if (noDeviceLicenseRequested) {
+            "${safeProfileValue("managerPackage")}.nolicense"
+        } else {
+            safeProfileValue("managerPackage")
+        }
         minSdk = 26
 
-        versionName = version.toString()
+        versionName = version.toString() + editionVersionSuffix
 
         // VersionCode derived from current time (1-minute intervals) + offset.
         val nowMillis = System.currentTimeMillis()
@@ -284,7 +288,9 @@ android {
             "\"$expectedSigningCertificateSha256\"",
         )
         buildConfigField("String", "LICENSE_API_BASE_URL", "\"https://yingshi-license.pppp77088.workers.dev\"")
+        buildConfigField("String", "LICENSE_PURCHASE_URL", "\"https://yingshi-license.pppp77088.workers.dev/buy\"")
         buildConfigField("String", "LICENSE_PRODUCT_ID", "\"symorphe\"")
+        buildConfigField("boolean", "NO_LICENSE_EDITION", noDeviceLicenseRequested.toString())
         buildConfigField(
             "String",
             "LICENSE_PUBLIC_KEY_SPKI_B64",
@@ -362,7 +368,11 @@ android {
             }
 
             buildConfigField("long", "BUILD_ID", "0L")
-            buildConfigField("boolean", "DEVICE_LICENSE_REQUIRED", (!signAsDebugRequested).toString())
+            buildConfigField(
+                "boolean",
+                "DEVICE_LICENSE_REQUIRED",
+                (!signAsDebugRequested && !noDeviceLicenseRequested).toString(),
+            )
         }
     }
 
@@ -427,7 +437,7 @@ android {
 
 // APK output file name
 base.archivesName.set(provider {
-    "${rootProject.name}-$version"
+    "${rootProject.name}-$version$editionVersionSuffix"
 })
 
 ksp {

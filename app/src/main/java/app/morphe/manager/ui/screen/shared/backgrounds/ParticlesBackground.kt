@@ -44,8 +44,7 @@ fun ParticlesBackground(
     val parallaxState = rememberParallaxState(
         enableParallax = enableParallax,
         sensitivity = 0.2f,
-        context = context,
-        coroutineScope = coroutineScope
+        context = context
     )
 
     // Particle state - mutable so physics loop can update positions each frame
@@ -92,9 +91,13 @@ fun ParticlesBackground(
     }
 
     // Physics loop - runs every display frame independently of Compose animation clock
-    LaunchedEffect(Unit) {
+    AnimationFrameEffect {
         var lastFrameMs = withInfiniteAnimationFrameMillis { it }
         var currentSpeed = targetSpeedState.floatValue
+        // Physics integrates the time it skipped, so a slower step moves particles the same
+        // distance in fewer, larger increments
+        var elapsedMs = 0f
+        var pendingDelta = 0f
         while (true) {
             withInfiniteAnimationFrameMillis { frameMs ->
                 val delta = (frameMs - lastFrameMs).coerceIn(0L, 64L).toFloat()
@@ -102,7 +105,14 @@ fun ParticlesBackground(
 
                 // Lerp speed for smooth transitions
                 currentSpeed += (targetSpeedState.floatValue - currentSpeed) * (delta / 1000f) * 2.5f
-                val speedScale = currentSpeed * (delta / 16.67f)
+
+                elapsedMs += delta
+                pendingDelta += delta
+                if (elapsedMs < BACKGROUND_STEP_INTERVAL_MS) return@withInfiniteAnimationFrameMillis
+                elapsedMs -= BACKGROUND_STEP_INTERVAL_MS
+
+                val speedScale = currentSpeed * (pendingDelta / 16.67f)
+                pendingDelta = 0f
 
                 particles.forEachIndexed { index, p ->
                     var nx  = p.x  + p.vx * speedScale

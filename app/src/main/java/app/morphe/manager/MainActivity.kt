@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
@@ -31,24 +33,22 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import app.morphe.manager.domain.batch.BatchTarget
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
 import app.morphe.manager.domain.update.InstallableUpdate
 import app.morphe.manager.license.DeviceActivationActivity
 import app.morphe.manager.license.DeviceLicenseManager
-import app.morphe.manager.ui.model.navigation.ComplexParameter
-import app.morphe.manager.ui.model.navigation.HomeScreen
-import app.morphe.manager.ui.model.navigation.Patcher
-import app.morphe.manager.ui.model.navigation.Settings
+import app.morphe.manager.ui.model.navigation.*
+import app.morphe.manager.ui.screen.BatchPatcherScreen
 import app.morphe.manager.ui.screen.HomeScreen
 import app.morphe.manager.ui.screen.PatcherScreen
 import app.morphe.manager.ui.screen.SettingsScreen
 import app.morphe.manager.ui.screen.home.*
 import app.morphe.manager.ui.screen.shared.AnimatedBackground
+import app.morphe.manager.ui.screen.shared.Animations
 import app.morphe.manager.ui.screen.shared.BackgroundType
-import app.morphe.manager.ui.screen.shared.MorpheAnimations
-import app.morphe.manager.ui.theme.ManagerTheme
-import app.morphe.manager.ui.theme.Theme
+import app.morphe.manager.ui.theme.*
 import app.morphe.manager.ui.viewmodel.HomeViewModel
 import app.morphe.manager.ui.viewmodel.MainViewModel
 import app.morphe.manager.ui.viewmodel.PatcherViewModel
@@ -59,6 +59,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -69,22 +70,33 @@ private enum class OnboardingPhase { HOME, SHEET, SETTINGS, DONE }
 class MainActivity : AppCompatActivity() {
 
     /**
+     * Applies the interface scale to the activity context, so every window it opens is drawn at
+     * that scale rather than only the composition inside [setContent].
+     *
      * On Android < 13, AppCompatDelegate.setApplicationLocales() is unreliable on some
      * devices and OEMs - the locale is saved correctly but never applied on cold start.
      * Wrap the base context manually to guarantee the correct locale is always applied.
      */
     override fun attachBaseContext(newBase: Context) {
+        var context = newBase
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            val storedLang = readLanguageFromPrefs(newBase)
+            val storedLang = readLanguageFromPrefs(context)
             val locale = parseLocaleCode(storedLang)
             if (locale != null) {
-                val config = newBase.resources.configuration
+                val config = context.resources.configuration
                 config.setLocale(locale)
-                super.attachBaseContext(newBase.createConfigurationContext(config))
-                return
+                context = context.createConfigurationContext(config)
             }
         }
-        super.attachBaseContext(newBase)
+
+        // Koin is started in Application.onCreate, which has already run by the time an activity
+        // attaches. A scale that cannot be read must not take the launch down with it
+        val scale = runCatching {
+            GlobalContext.get().get<PreferencesManager>().uiScale.getBlocking()
+        }.getOrDefault(UI_SCALE_DEFAULT)
+
+        super.attachBaseContext(context.withUiScale(scale))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,23 +114,41 @@ class MainActivity : AppCompatActivity() {
 
         val vm: MainViewModel = getActivityViewModel()
 
-        handleUpdateIntent(intent, vm)
-        // Handle deep link on cold start
-        handleDeepLinkIntent(intent, vm)
+        // Handle deep link on cold start. The task keeps the intent that started it, so a restore
+        // after the process was reclaimed - or any recreate - would replay a link already acted on
+        if (savedInstanceState == null) {
+            handleUpdateIntent(intent, vm)
+            handleDeepLinkIntent(intent, vm)
+        }
 
         setContent {
             val theme by vm.prefs.theme.getAsState()
-            val dynamicColor by vm.prefs.dynamicColor.getAsState()
+            val themeStyle by vm.prefs.themeStyle.getAsState()
             val pureBlackTheme by vm.prefs.pureBlackTheme.getAsState()
             val customAccentColor by vm.prefs.customAccentColor.getAsState()
             val customThemeColor by vm.prefs.customThemeColor.getAsState()
+            val appCardColorMode by vm.prefs.appCardColorMode.getAsState()
+            val customAppCardColors by vm.prefs.customAppCardColors.getAsState()
+            val appCardColorValues = remember(customAppCardColors) {
+                AppCardColorDefaults.decodeColorValues(customAppCardColors)
+            }
+            val supportsDynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+            val effectiveThemeStyle = resolveThemeStyle(themeStyle, supportsDynamicColor)
+            val darkTheme = when (theme) {
+                Theme.LIGHT -> false
+                Theme.DARK -> true
+                Theme.SYSTEM -> isSystemInDarkTheme()
+            }
 
             ManagerTheme(
-                darkTheme = theme == Theme.SYSTEM && isSystemInDarkTheme() || theme == Theme.DARK,
-                dynamicColor = dynamicColor,
+                darkTheme = darkTheme,
+                dynamicColor = effectiveThemeStyle == ThemeStyle.MATERIAL_YOU,
                 pureBlackTheme = pureBlackTheme,
+                monochromeTheme = effectiveThemeStyle == ThemeStyle.MONOCHROME,
                 accentColorHex = customAccentColor.takeUnless { it.isBlank() },
-                themeColorHex = customThemeColor.takeUnless { it.isBlank() }
+                themeColorHex = customThemeColor.takeUnless { it.isBlank() },
+                appCardColorMode = appCardColorMode,
+                appCardColorValues = appCardColorValues
             ) {
                 MorpheManager(vm)
             }
@@ -127,6 +157,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // Replaces the launch intent, so a later recreate restores this one rather than the
+        // link or update action the task was originally started from.
+        setIntent(intent)
         val vm: MainViewModel = getActivityViewModel()
         handleUpdateIntent(intent, vm)
         handleDeepLinkIntent(intent, vm)
@@ -152,13 +185,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Handles deep links for adding patch sources.
-     * Format: https://morphe.software/add-source?github=owner/repo(&name=Display+Name)
-     *         https://morphe.software/add-source?gitlab=owner/repo(&name=Display+Name)
-     * Only GitHub and GitLab URLs are accepted for safety.
+     * Handles add-source deep links from an explicit-package `intent://` fired by the website.
+     * Format: https://morphe.software/add-source?<github|gitlab>=owner/repo(&name=…)
+     * Only GitHub and GitLab URLs are accepted.
      */
     private fun handleDeepLinkIntent(intent: Intent?, vm: MainViewModel) {
-        // Handle APK-family file shared via system share sheet (.apk/.apks/.xapk/.apkm).
+        // Handled here rather than in onNewIntent so a cold start from a notification or a
+        // launcher shortcut triggers the check as well
+        if (intent?.getBooleanExtra(UpdateNotificationManager.EXTRA_TRIGGER_UPDATE_CHECK, false) == true) {
+            vm.pendingUpdateCheck = true
+            return
+        }
+
+        // Automatic re-patch notification: reopens the queue it reports about
+        if (intent?.action == ACTION_SHOW_BATCH_RESULT) {
+            vm.pendingBatchResult = true
+            return
+        }
+
+        // Launcher shortcut for one app: opens the usual patch dialog for it
+        if (intent?.action == ACTION_PATCH_APP) {
+            intent.getStringExtra(EXTRA_PATCH_PACKAGE)
+                ?.takeIf { it.isNotBlank() }
+                ?.let { vm.pendingPatchPackage = it }
+            return
+        }
+
+        // Batch patch requested by another app, for example an automation tool.
+        // The request is only recorded here; MorpheManager gates it before anything runs
+        if (intent?.action == ACTION_BATCH_PATCH) {
+            val packageNames = intent.getStringArrayExtra(EXTRA_BATCH_PACKAGES)?.toList()
+                ?: intent.getStringExtra(EXTRA_BATCH_PACKAGES)
+                    ?.split(',')
+                    ?.map(String::trim)
+                    ?.filter(String::isNotBlank)
+
+            if (packageNames.isNullOrEmpty()) {
+                // No list means the launcher shortcut, which asks the app to work out what is
+                // outdated. It only opens the preflight list, so it needs no caller gate
+                vm.pendingOutdatedBatch = true
+            } else {
+                vm.pendingBatchPatch = MainViewModel.BatchPatchRequest(
+                    // An external request names apps, so it rebuilds each one's own install
+                    targets = packageNames.map { BatchTarget(it) },
+                    // Only the system-supplied caller is trustworthy here. getReferrer() reads
+                    // EXTRA_REFERRER, which the sender fills in itself, so it could name any
+                    // package and both skip the confirmation and misname it in the dialog
+                    callerPackage = callingPackage
+                )
+            }
+            return
+        }
+
+        // Handle APK-family file shared via system share sheet (.apk/.apks/.xapk/.apkm)
         if (intent?.action == Intent.ACTION_SEND) {
             val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
@@ -203,6 +282,26 @@ class MainActivity : AppCompatActivity() {
             vm.pendingDeepLinkSource = MainViewModel.DeepLinkSource(url = url, name = name)
             return
         }
+    }
+
+    companion object {
+        /** Action other apps use to queue a batch patch run. */
+        const val ACTION_BATCH_PATCH = "app.morphe.manager.action.BATCH_PATCH"
+
+        /** Package names to patch, either a string array or a comma-separated string. */
+        const val EXTRA_BATCH_PACKAGES = "packages"
+
+        /** Action behind the per-app launcher shortcuts. */
+        const val ACTION_PATCH_APP = "app.morphe.manager.action.PATCH_APP"
+
+        /** Action behind the update check shortcut. Shortcut intents must carry one. */
+        const val ACTION_CHECK_UPDATES = "app.morphe.manager.action.CHECK_UPDATES"
+
+        /** Action that reopens the batch queue from an automatic re-patch notification. */
+        const val ACTION_SHOW_BATCH_RESULT = "app.morphe.manager.action.SHOW_BATCH_RESULT"
+
+        /** Package the per-app shortcut opens the patch dialog for. */
+        const val EXTRA_PATCH_PACKAGE = "patch_package"
     }
 }
 
@@ -267,6 +366,61 @@ private fun MorpheManager(vm: MainViewModel) {
             homeViewModel.setPendingMpp(uri)
             vm.pendingMppUri = null
         }
+    }
+
+    // Gate an incoming external batch request, then run it once approved
+    LaunchedEffect(vm.pendingBatchPatch) {
+        vm.pendingBatchPatch?.let(vm::onExternalBatchRequest)
+    }
+
+    LaunchedEffect(vm.pendingOutdatedBatch) {
+        if (vm.pendingOutdatedBatch) vm.onShortcutBatchRequest()
+    }
+
+    LaunchedEffect(vm.pendingBatchResult) {
+        if (vm.pendingBatchResult) vm.onShowBatchResult()
+    }
+
+    // Per-app shortcut reuses the trigger the installed-app dialog already goes through
+    LaunchedEffect(vm.pendingPatchPackage) {
+        vm.pendingPatchPackage?.let { packageName ->
+            vm.pendingPatchPackage = null
+            navController.popBackStack(HomeScreen, false)
+            navController.getBackStackEntry(HomeScreen)
+                .savedStateHandle["patch_trigger_package"] = packageName
+        }
+    }
+
+    val context = LocalContext.current
+    val nothingToRepatchText = stringResource(R.string.batch_patch_nothing_outdated)
+    LaunchedEffect(vm.nothingToRepatch) {
+        if (vm.nothingToRepatch) {
+            context.toast(nothingToRepatchText)
+            vm.consumeNothingToRepatch()
+        }
+    }
+
+    LaunchedEffect(vm.approvedBatchPatch) {
+        vm.approvedBatchPatch?.let { request ->
+            vm.consumeApprovedBatch()
+            navController.popBackStack(HomeScreen, false)
+            navController.navigateComplex(
+                BatchPatcher,
+                BatchPatcher.ViewModelParams(
+                    targets = request.targets,
+                    useMount = false
+                )
+            )
+        }
+    }
+
+    vm.batchPatchConfirmation?.let { request ->
+        ExternalBatchPatchDialog(
+            callerPackage = request.callerPackage,
+            packageCount = request.targets.size,
+            onConfirm = { trustCaller -> vm.approveExternalBatch(trustCaller) },
+            onDismiss = vm::dismissExternalBatch
+        )
     }
 
     // Handle .apk file shared via share sheet
@@ -349,6 +503,11 @@ private fun MorpheManager(vm: MainViewModel) {
                 onShow = { globalOnboardingState.onScrollToExpertMode?.invoke() }
             ),
             StepDef(
+                R.string.settings_system_process_runtime, R.string.onboarding_system_process_runtime_desc,
+                getBounds = { globalOnboardingState.processRuntimeBounds },
+                onShow = { globalOnboardingState.onScrollToProcessRuntime?.invoke() }
+            ),
+            StepDef(
                 R.string.onboarding_system_tab_title, R.string.onboarding_system_tab_desc,
                 getBounds = { globalOnboardingState.systemTabBounds },
                 onShow = { globalOnboardingState.onNavigateToSystemTab?.invoke() }
@@ -357,11 +516,6 @@ private fun MorpheManager(vm: MainViewModel) {
                 R.string.installer, R.string.onboarding_system_installer_desc,
                 getBounds = { globalOnboardingState.installerSectionBounds },
                 onShow = { globalOnboardingState.onScrollToInstaller?.invoke() }
-            ),
-            StepDef(
-                R.string.settings_system_process_runtime, R.string.onboarding_system_process_runtime_desc,
-                getBounds = { globalOnboardingState.processRuntimeBounds },
-                onShow = { globalOnboardingState.onScrollToProcessRuntime?.invoke() }
             ),
             StepDef(
                 R.string.settings_system_custom_file_picker, R.string.onboarding_system_file_picker_desc,
@@ -414,10 +568,10 @@ private fun MorpheManager(vm: MainViewModel) {
         NavHost(
             navController = navController,
             startDestination = HomeScreen,
-            enterTransition = { MorpheAnimations.screenEnter },
-            exitTransition = { MorpheAnimations.screenExit },
-            popEnterTransition = { MorpheAnimations.screenEnter },
-            popExitTransition = { MorpheAnimations.screenExit }
+            enterTransition = { Animations.screenEnter },
+            exitTransition = { Animations.screenExit },
+            popEnterTransition = { Animations.screenEnter },
+            popExitTransition = { Animations.screenExit }
         ) {
             composable<HomeScreen> { entry ->
                 val bundleUpdateProgress by homeViewModel.bundleUpdateProgress.collectAsStateWithLifecycle(null)
@@ -445,7 +599,19 @@ private fun MorpheManager(vm: MainViewModel) {
                                 Patcher.ViewModelParams(
                                     selectedApp = params.selectedApp,
                                     selectedPatches = params.patches,
-                                    options = params.options
+                                    options = params.options,
+                                    targetPackageName = params.targetPackageName
+                                )
+                            )
+                        }
+                    },
+                    onStartBatchPatch = { targets, useMount ->
+                        entry.lifecycleScope.launch {
+                            navController.navigateComplex(
+                                BatchPatcher,
+                                BatchPatcher.ViewModelParams(
+                                    targets = targets,
+                                    useMount = useMount
                                 )
                             )
                         }
@@ -460,11 +626,22 @@ private fun MorpheManager(vm: MainViewModel) {
                 )
             }
 
+            composable<BatchPatcher> { entry ->
+                val params = entry.getComplexArg<BatchPatcher.ViewModelParams>() ?: return@composable
+                BatchPatcherScreen(
+                    targets = params.targets,
+                    useMount = params.useMount,
+                    onBackClick = { navController.popBackStack() },
+                    onAppStateChanged = homeViewModel::notifyAppStateChanged
+                )
+            }
+
             composable<Patcher> { it ->
                 val params = it.getComplexArg<Patcher.ViewModelParams>() ?: return@composable
                 val patcherViewModel: PatcherViewModel = koinViewModel { parametersOf(params) }
                 PatcherScreen(
                     onBackClick = {
+                        patcherViewModel.stopCompletionSound()
                         patcherBackgroundSpeed.floatValue = 1f
                         patchingCompleted.value = false
                         navController.popBackStack()
@@ -485,8 +662,8 @@ private fun MorpheManager(vm: MainViewModel) {
             }
 
             composable<Settings>(
-                enterTransition = { MorpheAnimations.pushEnter },
-                popExitTransition = { MorpheAnimations.pushExit }
+                enterTransition = { Animations.pushEnter },
+                popExitTransition = { Animations.pushExit }
             ) {
                 SettingsScreen(
                     homeViewModel = homeViewModel,

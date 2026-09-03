@@ -47,8 +47,7 @@ fun SnowBackground(
     val parallaxState = rememberParallaxState(
         enableParallax = enableParallax,
         sensitivity = 0.2f,
-        context = context,
-        coroutineScope = coroutineScope
+        context = context
     )
 
     // Create cached snowflake bitmaps with different detail levels

@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -65,6 +66,11 @@ class AppDataResolver(
     // during a single session.
     private val cache = ConcurrentHashMap<Pair<String, AppDataSource>, ResolvedAppData>()
 
+    // Per-source lookups keyed by the source they came from rather than the caller's preference.
+    // The same APK is otherwise re-read once per preferredSource, and every archive read costs a
+    // full PackageManager parse that leaks an ApkAssets object until the finalizer runs.
+    private val sourceCache = ConcurrentHashMap<Pair<String, AppDataSource>, Optional<ResolvedAppData>>()
+
     /**
      * Invalidate cached data for a specific package.
      * Call this after installation, uninstallation, or any state change
@@ -72,11 +78,13 @@ class AppDataResolver(
      */
     fun invalidate(packageName: String) {
         cache.keys.removeAll { it.first == packageName }
+        sourceCache.keys.removeAll { it.first == packageName }
     }
 
     /** Invalidate all cached data. Call this when a global refresh is needed. */
     fun invalidateAll() {
         cache.clear()
+        sourceCache.clear()
     }
 
     /**
@@ -119,14 +127,7 @@ class AppDataResolver(
         }
 
         // Phase 1: find the best available icon + packageInfo from APK sources
-        val apkResult = apkSources.firstNotNullOfOrNull { source ->
-            when (source) {
-                AppDataSource.INSTALLED -> tryGetFromInstalled(packageName)
-                AppDataSource.ORIGINAL_APK -> tryGetFromOriginalApk(packageName)
-                AppDataSource.PATCHED_APK -> tryGetFromPatchedApk(packageName)
-                else -> null
-            }
-        }
+        val apkResult = apkSources.firstNotNullOfOrNull { source -> resolveFromSource(packageName, source) }
 
         // Phase 2: display name
         // apkResult already reflects the preferred source order (PATCHED_APK → ORIGINAL_APK → INSTALLED),
@@ -145,6 +146,24 @@ class AppDataResolver(
             source = apkResult?.source ?: if (bundleName != null) AppDataSource.BUNDLE_METADATA else AppDataSource.CONSTANTS
         ).also { cache[packageName to preferredSource] = it }
     }
+
+    /**
+     * Reads one source, reusing the previous answer for that exact source. A miss is remembered
+     * too, so a package without a saved APK does not reparse on every lookup.
+     */
+    private suspend fun resolveFromSource(
+        packageName: String,
+        source: AppDataSource
+    ): ResolvedAppData? = sourceCache.getOrPut(packageName to source) {
+        Optional.ofNullable(
+            when (source) {
+                AppDataSource.INSTALLED -> tryGetFromInstalled(packageName)
+                AppDataSource.ORIGINAL_APK -> tryGetFromOriginalApk(packageName)
+                AppDataSource.PATCHED_APK -> tryGetFromPatchedApk(packageName)
+                else -> null
+            }
+        )
+    }.orElse(null)
 
     /**
      * Try to get app data from installed app.
@@ -207,30 +226,24 @@ class AppDataResolver(
 
     /**
      * Try to get app data from saved patched APK.
-     * Searches both by direct package name match and by originalPackageName
-     * to handle cases where the search uses original package but app is patched with different name.
+     *
+     * The record is the one that answers to [packageName], falling back to the app's only install
+     * when the name is the app's own and patching renamed that install. An app with several
+     * installs has no such fallback: any of them could be the one meant, and describing the app
+     * as whichever came first would attribute one clone's build to another.
      */
     private suspend fun tryGetFromPatchedApk(packageName: String): ResolvedAppData? {
         return try {
-            // Try to find installed app record by package name
-            // First try direct lookup (packageName might be currentPackageName)
-            var installedApp = installedAppRepository.get(packageName)
-
-            // If not found, search all installed apps to find one with matching originalPackageName
-            // This handles case where packageName is the original package but app is patched with different name
-            if (installedApp == null) {
-                val allApps = installedAppRepository.getAll().first()
-                installedApp = allApps.firstOrNull { it.originalPackageName == packageName }
-            }
-
-            if (installedApp == null) return null
+            val installedApp = installedAppRepository.get(packageName)
+                ?: installedAppRepository.getAll().first()
+                    .filter { it.originalPackageName == packageName }
+                    .singleOrNull()
+                ?: return null
 
             // Get saved APK file from filesystem - try both current and original package names
             val savedFile = listOf(
                 filesystem.getPatchedAppFile(installedApp.currentPackageName, installedApp.version),
-                filesystem.getPatchedAppFile(installedApp.originalPackageName, installedApp.version),
-                // Also try with the search packageName in case it differs
-                filesystem.getPatchedAppFile(packageName, installedApp.version)
+                filesystem.getPatchedAppFile(installedApp.originalPackageName, installedApp.version)
             ).distinct().firstOrNull { it.exists() } ?: return null
 
             val packageInfo = packageManager.getPackageArchiveInfo(
@@ -265,7 +278,10 @@ class AppDataResolver(
      * Returns null if bundles are not yet loaded or package isn't in any bundle.
      */
     private fun tryGetFromBundleMetadata(packageName: String): ResolvedAppData? {
+        // Disabled bundles are still consulted, because a name is worth more than the package of
+        // an app whose source the user has since turned off
         val displayName = patchBundleRepository.appMetadata.value[packageName]?.displayName
+            ?: patchBundleRepository.allAppMetadata.value[packageName]?.displayName
             ?: return null
         return ResolvedAppData(
             packageName = packageName,

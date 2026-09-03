@@ -116,6 +116,27 @@ object NativeLibStripper {
         return name.substring(4, secondSlash)
     }
 
+    fun extractAbisFromApk(apkFile: File): List<String> =
+        runCatching {
+            ZipFile(apkFile).use { zip ->
+                zip.entries().asSequence()
+                    .map { it.name }
+                    .mapNotNull(::extractAbiFromEntry)
+                    .distinct()
+                    .toList()
+            }
+        }.getOrDefault(emptyList())
+
+    /**
+     * The one ABI a run keeps out of [abisInApk], which is the first of [supportedAbis] the APK
+     * has anything for. Null when it carries nothing the device runs.
+     *
+     * Public because it is also the answer to which architecture the output is built for, the
+     * one ApkArchitectureResolver reports to patches that declare availability against it.
+     */
+    fun preferredAbi(abisInApk: Set<String>, supportedAbis: List<String>): String? =
+        supportedAbis.firstOrNull { it in abisInApk }
+
     private fun determinePreferredAbi(apkFile: File, supportedAbis: List<String>): String? =
         runCatching {
             ZipFile(apkFile).use { zip ->
@@ -124,7 +145,7 @@ object NativeLibStripper {
                     .mapNotNull(::extractAbiFromEntry)
                     .toSet()
 
-                supportedAbis.firstOrNull { it in abisInApk }
+                preferredAbi(abisInApk, supportedAbis)
             }
         }.getOrNull()
 }

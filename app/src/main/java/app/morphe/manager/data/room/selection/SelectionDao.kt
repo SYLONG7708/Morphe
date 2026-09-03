@@ -133,6 +133,7 @@ abstract class SelectionDao {
         clearSeenPatches(packageName, bundleUid)
         insertSeenPatches(patchNames.map { SeenPatch(bundleUid, packageName, it) })
     }
+
 }
 
 /** Data class for selection summary query result. */

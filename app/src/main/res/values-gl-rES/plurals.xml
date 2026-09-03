@@ -10,7 +10,8 @@
     </plurals>
     <plurals name="source_count">
         <item quantity="one">%s Fonte</item>
-        <item quantity="other">%s Fontes</item>
+        <item quantity="other">
+%s Fontes</item>
     </plurals>
     <plurals name="package_count">
         <item quantity="one">%s Paquete</item>
@@ -31,10 +32,6 @@
     <plurals name="sources_management_subtitle">
         <item quantity="one">%s Fonte instalada</item>
         <item quantity="other">%s Fontes instaladas</item>
-    </plurals>
-    <plurals name="patch_selection_total_patches">
-        <item quantity="one">Parche %s seleccionado</item>
-        <item quantity="other">Parches %s seleccionados</item>
     </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s Aplicación oculta</item>

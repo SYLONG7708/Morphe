@@ -7,9 +7,7 @@ package app.morphe.manager.ui.viewmodel
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.net.Uri
@@ -18,7 +16,9 @@ import android.os.StatFs
 import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.compose.runtime.*
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.morphe.manager.R
@@ -27,14 +27,16 @@ import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.data.platform.NetworkInfo
 import app.morphe.manager.data.room.apps.installed.InstallType
 import app.morphe.manager.data.room.apps.installed.InstalledApp
-import app.morphe.manager.domain.bundles.PatchBundleSource
+import app.morphe.manager.domain.apk.*
+import app.morphe.manager.domain.batch.BatchPatchCoordinator
+import app.morphe.manager.domain.bundles.*
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.asRemoteOrNull
-import app.morphe.manager.domain.bundles.RemotePatchBundle
 import app.morphe.manager.domain.installer.InstallResult
+import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.avatarUrls
+import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
-import app.morphe.manager.domain.manager.HomeAppButtonPreferences
-import app.morphe.manager.domain.manager.HomeAppSortMode
-import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.domain.installer.UninstallCancelledException
+import app.morphe.manager.domain.manager.*
 import app.morphe.manager.domain.repository.*
 import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
@@ -48,36 +50,39 @@ import app.morphe.manager.domain.update.YouTubeSourceDownloadResult
 import app.morphe.manager.domain.update.YouTubeSourceResolver
 import app.morphe.manager.domain.update.YouTubeVersionBuild
 import app.morphe.manager.network.api.MorpheAPI
-import app.morphe.manager.patcher.patch.BundleAppMetadata
-import app.morphe.manager.patcher.patch.PatchBundleInfo
+import app.morphe.manager.patcher.patch.*
 import app.morphe.manager.patcher.patch.PatchBundleInfo.Extensions.toPatchSelection
-import app.morphe.manager.patcher.patch.PatchInfo
 import app.morphe.manager.patcher.split.SplitApkInspector
 import app.morphe.manager.patcher.split.SplitApkPreparer
-import app.morphe.manager.ui.model.HomeAppItem
-import app.morphe.manager.ui.model.SelectedApp
+import app.morphe.manager.ui.model.*
+import app.morphe.manager.ui.screen.shared.CopySelectionCandidate
 import app.morphe.manager.util.*
+import app.morphe.manager.util.PatchSelectionUtils.applyAvailability
+import app.morphe.manager.util.PatchSelectionUtils.bulkEnableHoldsUniversal
+import app.morphe.manager.util.PatchSelectionUtils.bulkEnablePatches
 import app.morphe.manager.util.PatchSelectionUtils.filterGmsCore
 import app.morphe.manager.util.PatchSelectionUtils.resetOptionsForPatch
 import app.morphe.manager.util.PatchSelectionUtils.sanitizeForPatcher
+import app.morphe.manager.util.PatchSelectionUtils.spansMultipleBundles
 import app.morphe.manager.util.PatchSelectionUtils.togglePatch
 import app.morphe.manager.util.PatchSelectionUtils.updateOption
 import app.morphe.manager.util.PatchSelectionUtils.validatePatchOptions
 import app.morphe.manager.util.PatchSelectionUtils.validatePatchSelection
+import app.morphe.patcher.patch.ApkArchitecture
 import app.morphe.patcher.patch.AppTarget
-import io.ktor.http.encodeURLPath
+import app.morphe.patcher.patch.InstallerType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.net.URLEncoder.encode
+import java.io.InputStream
+import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -88,6 +93,10 @@ enum class BundleUpdateStatus {
     Warning,  // Patches may be outdated (on metered network, updates disabled)
     Error     // Error occurred (including no internet)
 }
+
+/** Keys whose evidence was added, removed, or replaced between two snapshots. */
+internal fun <K, V> changedMapKeys(previous: Map<K, V>, current: Map<K, V>): Set<K> =
+    (previous.keys + current.keys).filterTo(mutableSetOf()) { previous[it] != current[it] }
 
 /** * Dialog state for unsupported version warning. */
 data class UnsupportedVersionDialogState(
@@ -102,17 +111,6 @@ data class UnsupportedVersionDialogState(
     val isExperimental: Boolean = false
 )
 
-/**
- * An [AppTarget] annotated with the bundle it originates from.
- * Used to group versions by bundle in the APK availability dialog.
- */
-data class BundledAppTarget(
-    val target: AppTarget,
-    val bundleUid: Int,
-    val bundleName: String,
-    /** Allowed build codes for this version, sourced from the patch bundle. Null means no constraint. */
-    val buildCodes: Set<Int>? = null
-)
 
 /** Dialog state for wrong package warning. */
 data class WrongPackageDialogState(
@@ -130,11 +128,17 @@ data class InvalidSignatureDialogState(
     val appName: String,
 )
 
-/** Quick patch parameters. */
+/**
+ * Quick patch parameters.
+ *
+ * @param targetPackageName The install being rebuilt when that is a clone rather than the app's
+ *   own, so the run can tell the name it was aimed at from the one its patches produce.
+ */
 data class QuickPatchParams(
     val selectedApp: SelectedApp,
     val patches: PatchSelection,
-    val options: Options
+    val options: Options,
+    val targetPackageName: String? = null
 )
 
 /** Device inspection shown before starting either one-tap YouTube workflow. */
@@ -160,24 +164,6 @@ private data class ExistingPatchedPair(
     val microgVersion: String?,
 )
 
-/** Saved APK information for display in APK selection dialog. */
-data class SavedApkInfo(
-    val fileName: String,
-    val filePath: String,
-    val version: String,
-    val versionCode: Long? = null
-)
-
-/** Installed APK information for display in APK selection dialog. */
-data class InstalledApkInfo(
-    val version: String,
-    val versionCode: Long? = null,
-    val apkPath: String,
-    val splitPaths: List<String> = emptyList()
-) {
-    val isSplit: Boolean get() = splitPaths.isNotEmpty()
-}
-
 /** An installed app entry shown in the universal-patch app picker. */
 data class InstalledAppPickerItem(
     val packageName: String,
@@ -194,13 +180,49 @@ data class InstalledAppPickerItem(
 data class HomeAppState(
     val visible: List<HomeAppItem>,
     val hidden: List<HomeAppItem>,
-    val sortMode: HomeAppSortMode
+    val sortMode: HomeAppSortMode,
+    val categoryState: HomeAppCategoryState,
+    val categoryViewMode: HomeAppCategoryViewMode,
+    val showCategoryViewSwitcher: Boolean,
+    val sourceGroups: List<HomeAppSourceGroup>
 )
+
+/**
+ * Apps grouped by the enabled patch source that declares them. A package can appear in
+ * multiple source groups when multiple sources declare compatible patches for it.
+ *
+ * The default (Morphe) source is treated specially: it can never be collapsed by the user
+ * ([collapsible] is false and [isDefault] is true), so its group always stays open.
+ */
+data class HomeAppSourceGroup(
+    val uid: Int,
+    val name: String,
+    val packageNames: Set<String>,
+    val packageOrder: List<String>,
+    val collapsed: Boolean,
+    val avatarUrl: String?,
+    val fallbackAvatarUrl: String?
+) {
+    val isDefault: Boolean get() = uid == DEFAULT_SOURCE_UID
+    val collapsible: Boolean get() = !isDefault
+}
 
 private data class HomePrefs(
     val hiddenPackages: Set<String>,
     val customOrder: List<String>,
-    val sortMode: HomeAppSortMode
+    val sourceOrders: Map<Int, List<String>>,
+    val sortMode: HomeAppSortMode,
+    val categoryState: HomeAppCategoryState,
+    val categoryViewMode: HomeAppCategoryViewMode,
+    val showCategoryViewSwitcher: Boolean,
+    val expandedSourceGroups: Set<Int>
+)
+
+private data class HomeCategoryPrefs(
+    val categoryState: HomeAppCategoryState,
+    val categoryViewMode: HomeAppCategoryViewMode,
+    val showCategoryViewSwitcher: Boolean,
+    val expandedSourceGroups: Set<Int>
 )
 
 /**
@@ -213,17 +235,22 @@ class HomeViewModel(
     private val originalApkRepository: OriginalApkRepository,
     private val patchSelectionRepository: PatchSelectionRepository,
     private val optionsRepository: PatchOptionsRepository,
-    private val morpheAPI: MorpheAPI,
+    private val managerUpdateRepository: ManagerUpdateRepository,
     private val networkInfo: NetworkInfo,
     val prefs: PreferencesManager,
     private val pm: PM,
     val rootInstaller: RootInstaller,
+    private val installerManager: InstallerManager,
     private val filesystem: Filesystem,
     private val homeAppButtonPrefs: HomeAppButtonPreferences,
     private val appDataResolver: AppDataResolver,
     private val ecosystemUpdateCoordinator: EcosystemUpdateCoordinator,
     private val verifiedYouTubeSourceDownloader: VerifiedYouTubeSourceDownloader,
-) : ViewModel() {
+    private val batchPatchCoordinator: BatchPatchCoordinator,
+    private val downloadUrlResolver: DownloadUrlResolver,
+    versionCatalog: AppVersionCatalog,
+    private val localApkSources: LocalApkSources
+) : ViewModel(), ApkDownloadHelperHost {
     val availablePatches = patchBundleRepository.bundleInfoFlow.map { it.values.sumOf { bundle -> bundle.patches.size } }
     val bundleUpdateProgress = patchBundleRepository.bundleUpdateProgress
     private val contentResolver: ContentResolver = app.contentResolver
@@ -270,6 +297,7 @@ class HomeViewModel(
     var pendingMppManifest by mutableStateOf<MppManifest?>(null)
 
     fun setPendingMpp(uri: Uri) {
+        dismissOpenDialogs()
         pendingMppUri = uri
         pendingMppFileName = uri.displayName(contentResolver)
         pendingMppManifest = null
@@ -303,10 +331,26 @@ class HomeViewModel(
     var expertModeOptions by mutableStateOf<Options>(emptyMap())
     // Patches that are new in the current bundle version relative to the last saved selection
     var expertModeNewPatches by mutableStateOf<Map<Int, Set<String>>>(emptyMap())
+    // Bundle and selection left behind by the last "Enable all". Universal patches are applied
+    // only while this still matches the live selection, so any other edit disarms them again
+    private var expertModeUniversalArmedFor by mutableStateOf<Pair<Int, Set<String>>?>(null)
+    // Whether the run this dialog configures reaches patches that declare other app versions,
+    // so bulk actions offer the same set the selection was built from
+    private var expertModeAllowIncompatible = false
+
+    /** Target bundle uid for the in-flight copy-from-another-bundle picker; null while the picker is closed. */
+    var expertModeCopyTargetBundleUid by mutableStateOf<Int?>(null)
+        private set
+    /** Loaded candidates for the picker; null while the initial load is in progress. */
+    var expertModeCopyCandidates by mutableStateOf<List<CopySelectionCandidate>?>(null)
+        private set
 
     // Bundle file selection
     var selectedBundleUri by mutableStateOf<Uri?>(null)
     var selectedBundlePath by mutableStateOf<String?>(null)
+
+    /** Local source waiting for a replacement file, so the picker result knows what it updates. */
+    var localBundleUpdateUid by mutableStateOf<Int?>(null)
 
     // APK selection flow dialogs
     var showApkAvailabilityDialog by mutableStateOf(false)
@@ -334,11 +378,18 @@ class HomeViewModel(
 
     // Pending data during APK selection
     var pendingPackageName by mutableStateOf<String?>(null)
+    /**
+     * The tracked install the pending flow rebuilds, or null when it produces a separate one.
+     * Patching an app that is already installed keeps that install, so a run has to say which
+     * of an app's installs it is aimed at before it can replace anything.
+     */
+    var pendingRepatchPackageName by mutableStateOf<String?>(null)
+        private set
     var pendingAppName by mutableStateOf<String?>(null)
     var pendingRecommendedVersion by mutableStateOf<AppTarget?>(null)
     var pendingCompatibleVersions by mutableStateOf<List<BundledAppTarget>>(emptyList())
     // Per-bundle recommended versions for multi-bundle display in ApkAvailabilityDialog
-    var pendingRecommendedBundleVersions by mutableStateOf<Map<Int, AppTarget>>(emptyMap())
+    var pendingRecommendedBundleVersions by mutableStateOf<Map<Int, BundleRecommendation>>(emptyMap())
     // Version selected by the user in Dialog 1 for the APK search query. Defaults to pendingRecommendedVersion
     var pendingSelectedDownloadVersion by mutableStateOf<AppTarget?>(null)
     var pendingSelectedApp by mutableStateOf<SelectedApp?>(null)
@@ -351,6 +402,11 @@ class HomeViewModel(
     // Bundle update snackbar state
     var showBundleUpdateSnackbar by mutableStateOf(false)
     var snackbarStatus by mutableStateOf(BundleUpdateStatus.Updating)
+
+    // Latches when an update cycle was skipped due to metered network; cleared on the next
+    // successful/no-change update. Independent of the transient BundleUpdateSnackbar so the
+    // user still sees a persistent alert after the transient snackbar fades
+    var updatesSkippedDueToMetered by mutableStateOf(false)
 
     // Simple mode bundle selection dialog: shown when 2+ bundles have patches for the same app
     var showSimpleBundleSelectDialog by mutableStateOf(false)
@@ -380,8 +436,8 @@ class HomeViewModel(
 
         pendingSelectedBundleUid = bundleUid
 
-        // Update recommended version to the one declared by the chosen bundle
-        val bundleRecommended = recommendedBundleVersions[packageName]?.get(bundleUid)
+        // Update recommended version to the one the chosen bundle will be used at
+        val bundleRecommended = recommendedBundleVersions[packageName]?.get(bundleUid)?.effective
         if (bundleRecommended != null) {
             pendingRecommendedVersion = bundleRecommended
             pendingSelectedDownloadVersion = bundleRecommended
@@ -411,52 +467,11 @@ class HomeViewModel(
 
     // Bundle data - reactive StateFlows derived directly from bundleInfoFlow
     val compatibleVersionsFlow: StateFlow<Map<String, List<BundledAppTarget>>> =
-        patchBundleRepository.bundleInfoFlow
-            .combine(patchBundleRepository.sources) { bundleInfo, sources ->
-                val enabledSources = sources.filter { it.enabled }
-                val enabledUids = enabledSources.map { it.uid }.toSet()
-                val bundleNames = enabledSources.associate { it.uid to it.displayTitle }
-                extractCompatibleVersions(bundleInfo, bundleNames, enabledUids)
-            }
+        versionCatalog.compatibleVersions
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     val recommendedVersionsFlow: StateFlow<Map<String, AppTarget>> =
-        combine(
-            compatibleVersionsFlow,
-            prefs.bundleExperimentalVersionsEnabled.flow,
-            patchBundleRepository.bundleInfoFlow,
-            patchBundleRepository.sources
-        ) { versionData, experimentalEnabledUids, bundleInfo, sources ->
-            val enabledUids = sources.filter { it.enabled }.map { it.uid }.toSet()
-            // Packages for which at least one enabled bundle has experimental toggle on
-            val experimentalEnabledPackages = bundleInfo
-                .filterKeys { it in enabledUids && it.toString() in experimentalEnabledUids }
-                .values
-                .flatMap { it.patches }
-                .flatMap { it.compatiblePackages.orEmpty() }
-                .mapNotNull { it.packageName }
-                .toSet()
-
-            val deviceSdk = Build.VERSION.SDK_INT
-            versionData.mapValues { (packageName, bundledTargets) ->
-                // Only consider versions whose minSdk is satisfied by the current device.
-                // Versions with no declared minSdk are always eligible
-                val compatibleTargets = bundledTargets
-                    .map { it.target }
-                    .filter { it.minSdk == null || deviceSdk >= it.minSdk!! }
-
-                // Fall back to all targets if every version requires a higher SDK than this device
-                val targets = compatibleTargets.ifEmpty { bundledTargets.map { it.target } }
-
-                if (packageName in experimentalEnabledPackages) {
-                    // Experimental mode: prefer the highest experimental version, fallback to first
-                    targets.firstOrNull { it.isExperimental } ?: targets.first()
-                } else {
-                    // Normal mode: prefer the highest stable version, fallback to first
-                    targets.firstOrNull { !it.isExperimental } ?: targets.first()
-                }
-            }
-        }
+        versionCatalog.recommendedVersions
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     // Convenience accessors - read current value synchronously for non-reactive call sites
@@ -471,49 +486,12 @@ class HomeViewModel(
      * Returns Map<PackageName, Map<BundleUid, AppTarget>> so the APK availability dialog
      * can show the correct "Recommended" badge independently for each bundle section.
      */
-    val recommendedBundleVersionsFlow: StateFlow<Map<String, Map<Int, AppTarget>>> =
-        combine(
-            compatibleVersionsFlow,
-            prefs.bundleExperimentalVersionsEnabled.flow,
-            patchBundleRepository.bundleInfoFlow,
-            patchBundleRepository.sources
-        ) { versionData, experimentalEnabledUids, bundleInfo, sources ->
-            val enabledUids = sources.filter { it.enabled }.map { it.uid }.toSet()
-            // Per-bundle set of packages that have experimental mode enabled.
-            // Key: bundleUid, Value: set of packageNames with experimental toggle on for that bundle
-            val experimentalPackagesByBundle: Map<Int, Set<String>> = bundleInfo
-                .filterKeys { it in enabledUids && it.toString() in experimentalEnabledUids }
-                .mapValues { (_, info) ->
-                    info.patches
-                        .flatMap { it.compatiblePackages.orEmpty() }
-                        .mapNotNull { it.packageName }
-                        .toSet()
-                }
-
-            val deviceSdk = Build.VERSION.SDK_INT
-            versionData.mapValues { (packageName, bundledTargets) ->
-                bundledTargets
-                    .groupBy { it.bundleUid }
-                    .mapValues { (bundleUid, targets) ->
-                        val appTargets = targets.map { it.target }
-                        // Only consider versions compatible with the current device SDK
-                        val compatibleTargets = appTargets
-                            .filter { it.minSdk == null || deviceSdk >= it.minSdk!! }
-                        // Fallback to all targets if none are SDK-compatible
-                        val candidates = compatibleTargets.ifEmpty { appTargets }
-                        val preferExperimental = experimentalPackagesByBundle[bundleUid]
-                            ?.contains(packageName) == true
-                        if (preferExperimental) {
-                            candidates.firstOrNull { it.isExperimental } ?: candidates.first()
-                        } else {
-                            candidates.firstOrNull { !it.isExperimental } ?: candidates.first()
-                        }
-                    }
-            }
-        }
+    val recommendedBundleVersionsFlow: StateFlow<Map<String, Map<Int, BundleRecommendation>>> =
+        versionCatalog.recommendedVersionsByBundle
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
-    val recommendedBundleVersions: Map<String, Map<Int, AppTarget>> get() = recommendedBundleVersionsFlow.value
+    val recommendedBundleVersions: Map<String, Map<Int, BundleRecommendation>>
+        get() = recommendedBundleVersionsFlow.value
 
     // Track available updates for installed apps
     private val _appUpdatesAvailable = MutableStateFlow<Map<String, Boolean>>(emptyMap())
@@ -521,6 +499,194 @@ class HomeViewModel(
 
     // Ticker to force homeAppState recomputation after install/uninstall without changing DB state
     private val _appStateTicker = MutableStateFlow(0L)
+    private val trackedAppInspectionSemaphore = Semaphore(4)
+
+    private data class TrackedSnapshotEntry(
+        val app: InstalledApp,
+        val snapshot: TrackedAppSnapshot
+    )
+
+    private data class TrackedInspectionInputs(
+        val apps: List<InstalledApp>,
+        val originalEvidence: Map<String, String>,
+        val bundleSignatures: Map<String, Set<String>>
+    )
+
+    // Verified tracked installs, keyed by the package the record currently occupies.
+    // Resolved away from the home state so inspecting archives never holds the cards back.
+    private val _trackedSnapshots = MutableStateFlow<Map<String, TrackedSnapshotEntry>>(emptyMap())
+
+    // Counted per package, so invalidating one app never discards results already produced for
+    // the others in the same pass
+    private val trackedInspectionGenerations = ConcurrentHashMap<String, Long>()
+
+    @Volatile
+    private var activeTrackedApps: Map<String, InstalledApp> = emptyMap()
+
+    // Both signals rebuild the same cards, so they reach the home state as one source
+    private val appStateSignal = combine(_appStateTicker, _trackedSnapshots) { ticker, snapshots ->
+        ticker to snapshots
+    }
+
+    // Package names worth reacting to, refreshed from the same flow that feeds the home cards
+    @Volatile
+    private var trackedPackageNames: Set<String> = emptySet()
+    private val pendingPackageChanges = MutableStateFlow<Set<String>>(emptySet())
+
+    private val packageChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val packageName = intent?.data?.schemeSpecificPart ?: return
+            if (packageName !in trackedPackageNames) return
+            // Stop presenting the previous verdict immediately, but keep the expensive refresh
+            // debounced until the package manager finishes its add/remove/replace broadcast burst.
+            markTrackedPackagesPending(setOf(packageName), invalidateCache = false)
+            pendingPackageChanges.update { it + packageName }
+        }
+    }
+
+    private fun trackedCurrentPackages(observedPackages: Set<String>): Set<String> {
+        val matches = activeTrackedApps.values.asSequence()
+            .filter {
+                it.currentPackageName in observedPackages ||
+                        it.originalPackageName in observedPackages
+            }
+            .mapTo(mutableSetOf()) { it.currentPackageName }
+        // The records may not be loaded yet, so an unmatched package is treated as its own key
+        if (matches.isEmpty()) matches += observedPackages
+        return matches
+    }
+
+    private fun markTrackedPackagesPending(
+        observedPackages: Set<String>,
+        invalidateCache: Boolean
+    ) {
+        if (observedPackages.isEmpty()) return
+        val currentPackages = trackedCurrentPackages(observedPackages)
+        currentPackages.forEach(::bumpTrackedInspection)
+        if (invalidateCache) currentPackages.forEach(localApkSources::invalidate)
+        _trackedSnapshots.update { snapshots -> snapshots - currentPackages }
+    }
+
+    /** Claims the next inspection for [packageName], so any result in flight for it is dropped. */
+    private fun bumpTrackedInspection(packageName: String): Long =
+        trackedInspectionGenerations.merge(packageName, 1L, Long::plus)!!
+
+    /**
+     * Coalesces package broadcasts before rebuilding the home state.
+     * A store updating apps in the background emits add, remove and replace in bursts, and every
+     * one of them would otherwise re-inspect every tracked app.
+     */
+    private fun observePackageChanges() = viewModelScope.launch {
+        pendingPackageChanges
+            .filter { it.isNotEmpty() }
+            .collectLatest { pending ->
+                delay(PACKAGE_CHANGE_DEBOUNCE_MS.milliseconds)
+                pending.forEach {
+                    appDataResolver.invalidate(it)
+                }
+                markTrackedPackagesPending(pending, invalidateCache = true)
+                _appStateTicker.update { it + 1 }
+                pendingPackageChanges.value = emptySet()
+            }
+    }
+
+    /** Rechecks only tracked evidence when storage management removes a retained patched APK. */
+    private fun observeSavedPatchedApkChanges() = viewModelScope.launch {
+        installedAppRepository.savedPatchedApkChanges.collect { packageNames ->
+            packageNames.forEach(appDataResolver::invalidate)
+            markTrackedPackagesPending(packageNames, invalidateCache = true)
+            _appStateTicker.update { it + 1 }
+        }
+    }
+
+    /**
+     * Keeps [_trackedSnapshots] in step with the records and with anything that changed a package.
+     *
+     * Inspecting a record reads its archives, so it happens here rather than inside the home
+     * state. Cards appear as soon as the bundles are known and adopt the verdict as it lands.
+     */
+    private fun observeTrackedApps() = viewModelScope.launch {
+        val originalEvidence = originalApkRepository.getAll()
+            .map { originals ->
+                originals.associate { original ->
+                    val file = File(original.filePath)
+                    original.packageName to buildString {
+                        append(original.version).append('|')
+                        append(original.filePath).append('|')
+                        append(file.length()).append(':').append(file.lastModified())
+                    }
+                }
+            }
+            .distinctUntilChanged()
+        val bundleSignatures = patchBundleRepository.appMetadata
+            .map { metadata ->
+                metadata.mapValues { (_, appMetadata) -> appMetadata.signatures.orEmpty().toSet() }
+            }
+            .distinctUntilChanged()
+
+        var previousOriginalEvidence: Map<String, String>? = null
+        var previousBundleSignatures: Map<String, Set<String>>? = null
+
+        combine(
+            installedAppRepository.getAll(),
+            _appStateTicker,
+            originalEvidence,
+            bundleSignatures
+        ) { apps, _, originals, signatures ->
+            TrackedInspectionInputs(apps, originals, signatures)
+        }.collectLatest { inputs ->
+            val appsByPackage = inputs.apps.associateBy { it.currentPackageName }
+            activeTrackedApps = appsByPackage
+            trackedPackageNames = inputs.apps.flatMapTo(mutableSetOf()) {
+                listOf(it.currentPackageName, it.originalPackageName)
+            }
+
+            val changedEvidence = buildSet {
+                previousOriginalEvidence?.let {
+                    addAll(changedMapKeys(it, inputs.originalEvidence))
+                }
+                previousBundleSignatures?.let {
+                    addAll(changedMapKeys(it, inputs.bundleSignatures))
+                }
+            }
+            previousOriginalEvidence = inputs.originalEvidence
+            previousBundleSignatures = inputs.bundleSignatures
+            markTrackedPackagesPending(changedEvidence, invalidateCache = true)
+
+            // A changed or removed database record is pending until its matching result arrives;
+            // never keep presenting a snapshot produced for the previous record.
+            _trackedSnapshots.update { snapshots ->
+                snapshots.filter { (packageName, entry) ->
+                    appsByPackage[packageName] == entry.app
+                }
+            }
+
+            trackedInspectionGenerations.keys.retainAll(appsByPackage.keys)
+
+            withContext(Dispatchers.IO) {
+                coroutineScope {
+                    inputs.apps.map { installed ->
+                        val generation = bumpTrackedInspection(installed.currentPackageName)
+                        launch {
+                            val snapshot = trackedAppInspectionSemaphore.withPermit {
+                                localApkSources.trackedAppSnapshot(installed)
+                            }
+                            if (trackedInspectionGenerations[installed.currentPackageName] != generation ||
+                                activeTrackedApps[installed.currentPackageName] != installed
+                            ) return@launch
+
+                            _trackedSnapshots.update { snapshots ->
+                                snapshots + (installed.currentPackageName to TrackedSnapshotEntry(
+                                    app = installed,
+                                    snapshot = snapshot
+                                ))
+                            }
+                        }
+                    }.joinAll()
+                }
+            }
+        }
+    }
 
     // Track when at least one third-party source is enabled
     val hasThirdPartySource: StateFlow<Boolean> =
@@ -528,23 +694,27 @@ class HomeViewModel(
             .map { sources -> sources.any { it.enabled && it.uid != DEFAULT_SOURCE_UID } }
             .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    // Track deleted apps
-    var appsDeletedStatus by mutableStateOf<Map<String, Boolean>>(emptyMap())
-        private set
-
     // Using mount install (set externally)
     var usingMountInstall: Boolean = false
 
-    // Controls the pre-patching installer selection dialog for root-capable devices.
+    // Install target passed to patch availability resolvers
+    val currentInstallerType: InstallerType
+        get() = installerTypeFor(usingMountInstall)
+
+    // Architecture of the APK the run starts from, read from it before patches are selected
+    var currentApkArchitecture: ApkArchitecture = ApkArchitecture.UNIVERSAL
+        private set
+
+    // Controls the pre-patching mode selection dialog for root-capable devices.
     var showPrePatchInstallerDialog by mutableStateOf(false)
 
-    // Stores the pending arguments while the pre-patching installer dialog is visible.
+    // Stores the pending arguments while the pre-patching mode dialog is visible.
     private var pendingPatchApp: SelectedApp? = null
     private var pendingPatchAllowIncompatible: Boolean = false
 
     /**
      * Called when a root-capable device triggers patching. Instead of starting immediately,
-     * opens the pre-patching installer dialog so the user can choose Root Mount vs Standard.
+     * opens the pre-patching mode dialog so the user can choose Root Mount vs Standard.
      */
     fun requestPrePatchInstallerSelection(
         selectedApp: SelectedApp,
@@ -556,7 +726,7 @@ class HomeViewModel(
     }
 
     /**
-     * Called when the user selects an installation method from the pre-patching dialog.
+     * Called when the user selects a patch mode from the pre-patching dialog.
      * Sets [usingMountInstall] and starts patching with the correct patch configuration.
      */
     fun resolvePrePatchInstallerChoice(useMount: Boolean) {
@@ -573,7 +743,7 @@ class HomeViewModel(
     }
 
     /**
-     * Dismisses the pre-patching installer dialog without starting patching.
+     * Dismisses the pre-patching mode dialog without starting patching.
      */
     fun dismissPrePatchInstallerDialog() {
         showPrePatchInstallerDialog = false
@@ -696,10 +866,26 @@ class HomeViewModel(
     private var automaticYouTubeMode: OneTapYouTubeMode? = null
 
     init {
+        ContextCompat.registerReceiver(
+            app,
+            packageChangeReceiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_PACKAGE_ADDED)
+                addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addAction(Intent.ACTION_PACKAGE_REPLACED)
+                addDataScheme("package")
+            },
+            // Only the system can send these protected broadcasts, so the receiver never has to
+            // be reachable by other apps.
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+        observePackageChanges()
+        observeSavedPatchedApkChanges()
+        observeTrackedApps()
+        observeManagerUpdate()
         triggerUpdateCheck()
         observeLoadingState()
         observeInstalledAppUpdates()
-        observeDeletedAppsStatus()
         observeSnackbarState()
     }
 
@@ -765,17 +951,6 @@ class HomeViewModel(
     }
 
     /**
-     * Reactively keeps [appsDeletedStatus] up to date when the installed apps list changes.
-     */
-    private fun observeDeletedAppsStatus() {
-        viewModelScope.launch {
-            installedAppRepository.getAll()
-                .filter { it.isNotEmpty() }
-                .collect { installedApps -> updateDeletedAppsStatus(installedApps) }
-        }
-    }
-
-    /**
      * Reactively maps bundle update progress to snackbar visibility and status.
      */
     private fun observeSnackbarState() {
@@ -793,6 +968,12 @@ class HomeViewModel(
                     PatchBundleRepository.BundleUpdateResult.Error -> BundleUpdateStatus.Error
                     PatchBundleRepository.BundleUpdateResult.None -> BundleUpdateStatus.Updating
                     PatchBundleRepository.BundleUpdateResult.SkippedMetered -> BundleUpdateStatus.Warning
+                }
+                updatesSkippedDueToMetered = when (progress.result) {
+                    PatchBundleRepository.BundleUpdateResult.SkippedMetered -> true
+                    PatchBundleRepository.BundleUpdateResult.Success,
+                    PatchBundleRepository.BundleUpdateResult.NoUpdates -> false
+                    else -> updatesSkippedDueToMetered
                 }
             }
         }
@@ -818,7 +999,7 @@ class HomeViewModel(
                 _isRefreshing.value = false
             }
             appDataResolver.invalidateAll()
-            _appStateTicker.value = System.currentTimeMillis()
+            _appStateTicker.update { it + 1 }
         }
     }
 
@@ -831,6 +1012,9 @@ class HomeViewModel(
         return networkInfo.isMetered()
     }
 
+    /** True while a batch queue is patching, so callers can explain why a start was ignored. */
+    val batchPatchRunning: Boolean get() = batchPatchCoordinator.isRunning
+
     /**
      * Guard entry-point for all patching flows.
      * Shows MeteredPatchingDialog when on metered network with updates disabled,
@@ -838,6 +1022,13 @@ class HomeViewModel(
      * Otherwise, launches [action] immediately.
      */
     fun guardPatching(action: suspend () -> Unit) {
+        // A batch run owns the patcher worker for its whole duration, so starting a single
+        // patch would replace the app the queue is currently working on
+        if (batchPatchCoordinator.isRunning) {
+            app.toast(app.getString(R.string.batch_patch_in_progress))
+            return
+        }
+
         // Check available storage first - low disk space is the most common cause of
         // cryptic "file not found" errors and corrupt output APKs during patching.
         val freeBytes = StatFs(app.filesDir.absolutePath).availableBytes
@@ -913,24 +1104,23 @@ class HomeViewModel(
     }
 
     /**
-     * Checks for a manager update and defers showing the banner until the APK
-     * is likely fully uploaded. If the release is newer than [MANAGER_UPDATE_SHOW_DELAY_SECONDS],
-     * the banner is shown immediately; otherwise we wait out the remaining time.
+     * Mirrors the resolved update into [updatedManagerVersion] so the banner also appears when
+     * a background check finds the release. A failed check is ignored rather than hiding a
+     * banner the user is already looking at.
+     */
+    private fun observeManagerUpdate() = viewModelScope.launch {
+        managerUpdateRepository.availableUpdate.collect { update ->
+            update?.let { updatedManagerVersion = it.version }
+        }
+    }
+
+    /**
+     * Checks for a manager update. The repository only reports releases whose APK is already
+     * downloadable, so the banner can never point at an asset that is still uploading.
      */
     suspend fun checkForManagerUpdates() {
         uiSafe(app, R.string.failed_to_check_updates, "Failed to check for updates") {
-            val update = morpheAPI.getAppUpdate() ?: return@uiSafe
-
-            val releaseAgeSeconds = (Clock.System.now().toEpochMilliseconds() -
-                    update.createdAt.toInstant(TimeZone.UTC).toEpochMilliseconds()) / 1_000L
-
-            if (releaseAgeSeconds < MANAGER_UPDATE_SHOW_DELAY_SECONDS) {
-                val remainingMs = (MANAGER_UPDATE_SHOW_DELAY_SECONDS - releaseAgeSeconds) * 1_000L
-                Log.d(tag, "Manager update ${update.version} is ${releaseAgeSeconds}s old, waiting ${remainingMs / 1000}s before showing banner")
-                delay(remainingMs.milliseconds)
-            }
-
-            updatedManagerVersion = update.version
+            managerUpdateRepository.refresh()
         }
     }
 
@@ -1059,8 +1249,16 @@ class HomeViewModel(
         }
     }
 
+    fun createLocalSource(patchBundle: Uri) = importLocalSource(patchBundle, replacingUid = null)
+
+    /**
+     * Points an existing local source at a newly picked file. Adding the updated file instead
+     * would create a second source and strand the patch selection on the old one.
+     */
+    fun updateLocalSource(uid: Int, patchBundle: Uri) = importLocalSource(patchBundle, replacingUid = uid)
+
     @SuppressLint("Recycle")
-    fun createLocalSource(patchBundle: Uri) = viewModelScope.launch {
+    private fun importLocalSource(patchBundle: Uri, replacingUid: Int?) = viewModelScope.launch {
         withContext(NonCancellable) {
             withPersistentImportToast {
                 val permissionFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -1087,10 +1285,15 @@ class HomeViewModel(
                     // Provider may not support persistable permissions; fall back to transient grant
                 }
 
+                val openStream: suspend () -> InputStream = {
+                    contentResolver.openInputStream(patchBundle)
+                        ?: throw FileNotFoundException("Unable to open $patchBundle")
+                }
                 try {
-                    patchBundleRepository.createLocal(size) {
-                        contentResolver.openInputStream(patchBundle)
-                            ?: throw FileNotFoundException("Unable to open $patchBundle")
+                    if (replacingUid != null) {
+                        patchBundleRepository.replaceLocal(replacingUid, size, openStream)
+                    } else {
+                        patchBundleRepository.createLocal(size, openStream)
                     }
                 } finally {
                     if (persistedPermission) {
@@ -1124,6 +1327,7 @@ class HomeViewModel(
      * Shows a confirmation dialog instead of adding silently.
      */
     fun handleDeepLinkAddSource(url: String, name: String?) {
+        dismissOpenDialogs()
         deepLinkPendingBundle = DeepLinkBundle(url = url, name = name)
     }
 
@@ -1139,15 +1343,31 @@ class HomeViewModel(
         deepLinkPendingBundle = null
     }
 
-    suspend fun updateMorpheBundleWithChangelogClear() {
-        patchBundleRepository.updateOnlyMorpheBundle(
-            force = false,
-            showToast = false
-        )
-        // Clear changelog cache
-        val sources = patchBundleRepository.sources.first()
-        val apiBundle = sources.firstOrNull() as? RemotePatchBundle
-        apiBundle?.clearChangelogCache()
+    /**
+     * Closes every open dialog and sheet so an incoming source confirmation is not stacked behind
+     * one, and so the flow the user resumes afterward is rebuilt from the new set of sources.
+     */
+    private fun dismissOpenDialogs() {
+        cleanupExpertModeData()
+        dismissSimpleBundleSelectDialog()
+        dismissSplitApkWarning()
+        dismissUnsupportedVersionDialog()
+        dismissExperimentalVersionDialog()
+        dismissWrongPackageDialog()
+        dismissInvalidSignatureDialog()
+        dismissPrePatchInstallerDialog()
+        dismissMeteredPatchingDialog()
+        dismissLowDiskSpaceDialog()
+        dismissInstalledAppInfo()
+        showNoCompatibleVersionsDialog = null
+        showAndroid11Dialog = false
+        showBundleManagementSheet = false
+        showRenameBundleDialog = false
+        bundleToRename = null
+        showAddSourceDialog = false
+        selectedBundleUri = null
+        selectedBundlePath = null
+        cleanupPendingData()
     }
 
     /**
@@ -1157,12 +1377,44 @@ class HomeViewModel(
     val bundleAppMetadataFlow: StateFlow<Map<String, BundleAppMetadata>> =
         patchBundleRepository.appMetadata
 
+    /**
+     * [bundleAppMetadataFlow] widened to every bundle, for the tracked records whose own source is
+     * no longer enabled and which have nothing else left describing them.
+     */
+    val allBundleAppMetadataFlow: StateFlow<Map<String, BundleAppMetadata>> =
+        patchBundleRepository.allAppMetadata
+
+    private val _homeCategoryPrefsFlow = combine(
+        homeAppButtonPrefs.categoryState,
+        homeAppButtonPrefs.categoryViewMode,
+        homeAppButtonPrefs.showCategoryViewSwitcher,
+        homeAppButtonPrefs.expandedSourceGroups,
+    ) { categoryState, categoryViewMode, showCategoryViewSwitcher, expandedSourceGroups ->
+        HomeCategoryPrefs(
+            categoryState = categoryState,
+            categoryViewMode = categoryViewMode,
+            showCategoryViewSwitcher = showCategoryViewSwitcher,
+            expandedSourceGroups = expandedSourceGroups
+        )
+    }
+
     private val _homePrefsFlow = combine(
         homeAppButtonPrefs.hiddenPackages,
         homeAppButtonPrefs.customOrder,
+        homeAppButtonPrefs.sourceOrders,
         homeAppButtonPrefs.sortMode,
-    ) { hidden, order, sortMode ->
-        HomePrefs(hiddenPackages = hidden, customOrder = order, sortMode = sortMode)
+        _homeCategoryPrefsFlow,
+    ) { hidden, order, sourceOrders, sortMode, categoryPrefs ->
+        HomePrefs(
+            hiddenPackages = hidden,
+            customOrder = order,
+            sourceOrders = sourceOrders,
+            sortMode = sortMode,
+            categoryState = categoryPrefs.categoryState,
+            categoryViewMode = categoryPrefs.categoryViewMode,
+            showCategoryViewSwitcher = categoryPrefs.showCategoryViewSwitcher,
+            expandedSourceGroups = categoryPrefs.expandedSourceGroups
+        )
     }
 
     /**
@@ -1176,115 +1428,243 @@ class HomeViewModel(
         patchBundleRepository.bundleState,
         _homePrefsFlow,
         installedAppRepository.getAll().onEach { apps ->
+            trackedPackageNames = apps.flatMapTo(mutableSetOf()) {
+                listOf(it.currentPackageName, it.originalPackageName)
+            }
             apps.forEach { app ->
                 appDataResolver.invalidate(app.currentPackageName)
                 if (app.originalPackageName != app.currentPackageName) {
                     appDataResolver.invalidate(app.originalPackageName)
                 }
-                // Reconcile DB version with the actually-installed version.
-                // Skipped for MOUNT (PM reports the stock APK) and SAVED (no live install)
-                if (app.installType != InstallType.MOUNT && app.installType != InstallType.SAVED) {
-                    val liveVersion = pm.getPackageInfo(app.currentPackageName)?.versionName
-                    if (!liveVersion.isNullOrBlank() && liveVersion != app.version) {
-                        installedAppRepository.updateInstalledVersion(app, liveVersion)
-                    }
-                }
             }
         },
         _appUpdatesAvailable,
-        _appStateTicker,
-    ) { bundleState, homePrefs, installedApps, updatesMap, _ ->
+        appStateSignal,
+    ) { bundleState, homePrefs, installedApps, updatesMap, (_, trackedSnapshots) ->
         val ready = bundleState as? PatchBundleRepository.BundleState.Ready
             ?: return@combine null
 
         val enabledInfo = ready.info.filter { (_, info) -> info.enabled }
         val metadata = BundleAppMetadata.buildFrom(enabledInfo)
+        // Names only, for records whose bundle the user has since disabled
+        val allMetadata = BundleAppMetadata.buildFrom(ready.info)
         val packages = metadata.keys
+        val sourceGroups = buildHomeAppSourceGroups(
+            enabledInfo = enabledInfo,
+            sources = ready.sources,
+            sortMode = homePrefs.sortMode,
+            sourceOrders = homePrefs.sourceOrders,
+            expandedSourceGroups = homePrefs.expandedSourceGroups
+        )
 
-        val installedMap = installedApps.associateBy { it.originalPackageName }
+        val recordsByApp = installedApps.groupBy { it.originalPackageName }
 
-        suspend fun buildItem(packageName: String): HomeAppItem {
-            val installedApp = installedMap[packageName]
+        suspend fun buildItem(slot: HomeAppSlot): HomeAppItem {
+            val packageName = slot.packageName
+            val installedApp = slot.installedApp
             val bundleMeta = metadata[packageName]
             val knownApp = KnownApps.fromPackage(packageName)
             val gradientColors = bundleMeta?.gradientColors ?: KnownApps.DEFAULT_COLORS
+            // Read under the package the card stands for: a clone is a separate install and
+            // carries its own name, icon and version
             val resolvedData = appDataResolver.resolveAppData(
-                packageName = packageName,
+                packageName = slot.id,
                 preferredSource = AppDataSource.PATCHED_APK
             )
+            // Down to the name the record kept from patch time, which is all that outlives both
+            // the artifacts and the bundle the app came from
             val displayName = resolvedData.displayName.takeIf {
                 resolvedData.source == AppDataSource.INSTALLED || resolvedData.source == AppDataSource.PATCHED_APK
-            } ?: bundleMeta?.displayName ?: KnownApps.getAppName(packageName)
-            val isDeleted = installedApp?.let { installed ->
-                val hasSavedCopy = listOf(
-                    filesystem.getPatchedAppFile(installed.currentPackageName, installed.version),
-                    filesystem.getPatchedAppFile(installed.originalPackageName, installed.version)
-                ).distinctBy { it.absolutePath }.any { it.exists() }
-                pm.isAppDeleted(
-                    packageName = installed.currentPackageName,
-                    hasSavedCopy = hasSavedCopy,
-                    wasInstalledOnDevice = installed.installType != InstallType.SAVED
-                )
-            } == true
+            }
+                ?: bundleMeta?.displayName
+                ?: allMetadata[packageName]?.displayName
+                ?: installedApp?.appLabel
+                ?: KnownApps.getAppName(packageName)
+            val trackedEntry = installedApp?.let { tracked ->
+                trackedSnapshots[tracked.currentPackageName]?.takeIf { it.app == tracked }
+            }
+            val trackedSnapshot = trackedEntry?.snapshot
+            val savedPatchedApk = trackedSnapshot?.savedPatchedApk
+            val savedPackageInfo = trackedSnapshot?.savedPatchedApkInfo
+            // Inspection resolves on its own, so a record without a snapshot has not been judged
+            // yet and must not be presented as any of the resolved states
+            val trackedPresentation = if (installedApp != null && trackedSnapshot != null) {
+                trackedInstallPresentation(installedApp.installType, trackedSnapshot.patchState)
+            } else {
+                null
+            }
+            // An unjudged record is described the way the package manager sees it
+            val isUninspectedInstall = installedApp != null &&
+                    trackedSnapshot == null &&
+                    pm.getPackageInfo(installedApp.currentPackageName) != null
+            val isInstallStatePending = installedApp != null && trackedSnapshot == null
+            val isInstalledOnDevice = trackedPresentation?.isPatched == true
             val hasUpdate = installedApp?.let {
                 updatesMap[it.currentPackageName] == true
             } == true
+
+            if (installedApp != null && trackedSnapshot != null && isInstalledOnDevice) {
+                reconcileInstalledVersion(installedApp, trackedSnapshot.installedPackageInfo)
+            }
+
             return HomeAppItem(
+                id = slot.id,
                 packageName = packageName,
                 displayName = displayName,
                 gradientColors = gradientColors,
                 installedApp = installedApp,
-                packageInfo = resolvedData.packageInfo,
+                // Confirmed installs and replacements use the package actually on the device.
+                // Unknown packages keep showing what Morphe retained rather than attributing the
+                // record to whichever package currently owns the name.
+                packageInfo = displayedHomePackageInfo(
+                    trackedPresentation = trackedPresentation,
+                    installedPackageInfo = trackedSnapshot?.installedPackageInfo,
+                    savedPackageInfo = savedPackageInfo,
+                    untrackedPackageInfo = resolvedData.packageInfo
+                ),
                 isPinnedByDefault = knownApp?.isPinnedByDefault == true,
-                isDeleted = isDeleted,
+                isInstalledOnDevice = (trackedPresentation?.showsInstalledPackage == true) ||
+                        isUninspectedInstall ||
+                        (installedApp == null && resolvedData.source == AppDataSource.INSTALLED),
+                isDeleted = trackedPresentation?.isDeleted == true,
+                isInstallStateNotPatched = trackedPresentation?.isNotPatched == true,
+                isInstallStateUnknown = trackedPresentation?.isUnknown == true,
+                isInstallStatePending = isInstallStatePending,
+                savedApkFile = savedPatchedApk,
                 hasUpdate = hasUpdate,
-                patchCount = 0
+                patchCount = 0,
+                isClone = slot.isClone
             )
         }
 
         // Include apps patched with universal patches through "Other apps": they have no bundle
         // metadata but must still appear as cards so users can reinstall/uninstall/see updates
-        val universalOnlyPackages = installedApps
-            .map { it.originalPackageName }
-            .filter { it !in packages }
-            .toSet()
+        val universalOnlyPackages = recordsByApp.keys.filter { it !in packages }.toSet()
         val allPackages = packages + universalOnlyPackages
 
-        // Active bundle packages filtered to those in patchablePackages
-        val activeHidden = homePrefs.hiddenPackages.filter { it in allPackages }
+        val allSlots = allPackages.flatMap { pkg ->
+            homeAppSlots(pkg, recordsByApp[pkg].orEmpty())
+        }
 
-        val visiblePackages = allPackages.filter { it !in homePrefs.hiddenPackages }
-        val visibleItems = ArrayList<HomeAppItem>(visiblePackages.size)
-        for (pkg in visiblePackages) visibleItems.add(buildItem(pkg))
+        val visibleSlots = allSlots.filter { it.id !in homePrefs.hiddenPackages }
+        val hiddenSlots = allSlots.filter { it.id in homePrefs.hiddenPackages }
+
+        // Fan out per-card resolution: buildItem is IO-bound and stalls at 400+ apps sequentially.
+        val builtItems = coroutineScope {
+            (visibleSlots + hiddenSlots)
+                .map { slot -> async { buildItem(slot) } }
+                .awaitAll()
+        }
+        val visibleItems = builtItems.subList(0, visibleSlots.size)
+        val hiddenItems = builtItems.subList(visibleSlots.size, builtItems.size)
+
         val visible = sortHomeAppItems(
             items = visibleItems,
             sortMode = homePrefs.sortMode,
             customOrder = homePrefs.customOrder
         )
 
-        val hiddenItems = ArrayList<HomeAppItem>(activeHidden.size)
-        for (pkg in activeHidden) hiddenItems.add(buildItem(pkg))
         val hidden = sortHomeAppItems(
             items = hiddenItems,
             sortMode = homePrefs.sortMode,
             customOrder = homePrefs.customOrder
         )
 
-        HomeAppState(visible = visible, hidden = hidden, sortMode = homePrefs.sortMode)
+        HomeAppState(
+            visible = visible,
+            hidden = hidden,
+            sortMode = homePrefs.sortMode,
+            categoryState = homePrefs.categoryState,
+            categoryViewMode = homePrefs.categoryViewMode,
+            showCategoryViewSwitcher = homePrefs.showCategoryViewSwitcher,
+            sourceGroups = sourceGroups
+        )
     }
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    /**
+     * Aligns the recorded version with the running one after an in-place update.
+     *
+     * Only a confirmed tracked install may do this: reconciling against a package that merely
+     * shares the name would rewrite the record to describe a build Morphe never produced.
+     * Skipped for MOUNT (the package manager reports the stock APK) and SAVED (no live install).
+     */
+    private suspend fun reconcileInstalledVersion(app: InstalledApp, installedPackageInfo: PackageInfo?) {
+        if (app.installType == InstallType.MOUNT || app.installType == InstallType.SAVED) return
+
+        val liveVersion = installedPackageInfo?.versionName
+        if (liveVersion.isNullOrBlank() || liveVersion == app.version) return
+
+        installedAppRepository.updateInstalledVersion(app, liveVersion)
+    }
+
+    private fun buildHomeAppSourceGroups(
+        enabledInfo: Map<Int, PatchBundleInfo.Global>,
+        sources: Map<Int, PatchBundleSource>,
+        sortMode: HomeAppSortMode,
+        sourceOrders: Map<Int, List<String>>,
+        expandedSourceGroups: Set<Int>
+    ): List<HomeAppSourceGroup> {
+        // enabledInfo is already filtered to enabled entries by the caller
+        // Keep source sections in repository order. Home sorting should reorder app cards
+        // inside each source section, not move source headers around.
+        val sourceOrder = sources.keys.mapIndexed { index, uid -> uid to index }.toMap()
+        return enabledInfo.values
+            .sortedWith(
+                compareBy(
+                    { sourceOrder[it.uid] ?: Int.MAX_VALUE },
+                    { it.uid }
+                )
+            )
+            .mapNotNull { info ->
+                val packageNames = info.patches
+                    .asSequence()
+                    .flatMap { patch -> patch.compatiblePackages.orEmpty().asSequence() }
+                    .mapNotNull { compatiblePackage -> compatiblePackage.packageName }
+                    .distinct()
+                    .toSet()
+
+                if (packageNames.isEmpty()) {
+                    null
+                } else {
+                    val packageOrder = if (sortMode == HomeAppSortMode.MANUAL) {
+                        sourceOrders[info.uid]
+                            .orEmpty()
+                            .filter { packageName -> packageName in packageNames }
+                    } else {
+                        emptyList()
+                    }
+                    val source = sources[info.uid]
+                    val avatarUrls = source?.avatarUrls
+                    val sourceName = source?.displayTitle
+                        ?.takeUnless { it.isBlank() }
+                        ?: info.name.takeUnless { it.isBlank() }
+                        ?: "#${info.uid}"
+                    HomeAppSourceGroup(
+                        uid = info.uid,
+                        name = sourceName,
+                        packageNames = packageNames,
+                        packageOrder = packageOrder,
+                        collapsed = info.uid != DEFAULT_SOURCE_UID && info.uid !in expandedSourceGroups,
+                        avatarUrl = avatarUrls?.primary,
+                        fallbackAvatarUrl = avatarUrls?.fallback
+                    )
+                }
+            }
+    }
 
     private fun sortHomeAppItems(
         items: List<HomeAppItem>,
         sortMode: HomeAppSortMode,
         customOrder: List<String>
     ): List<HomeAppItem> {
+        // Cards of the same app share a name and a package, so the card id decides between them
         val morpheComparator = compareByDescending<HomeAppItem> { it.installedApp != null }
             .thenByDescending { it.isPinnedByDefault }
             .thenByDescending { it.packageInfo != null }
             .thenBy(String.CASE_INSENSITIVE_ORDER) { it.displayName }
-            .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
+            .thenBy(String.CASE_INSENSITIVE_ORDER) { it.id }
 
         return when (sortMode) {
             HomeAppSortMode.MANUAL -> {
@@ -1292,22 +1672,22 @@ class HomeViewModel(
                 if (customOrder.isEmpty()) {
                     defaultSorted
                 } else {
-                    val indexMap = customOrder.mapIndexed { index, packageName -> packageName to index }.toMap()
-                    defaultSorted.sortedBy { indexMap[it.packageName] ?: Int.MAX_VALUE }
+                    val indexMap = customOrder.mapIndexed { index, id -> id to index }.toMap()
+                    defaultSorted.sortedBy { indexMap[it.id] ?: Int.MAX_VALUE }
                 }
             }
             HomeAppSortMode.RECOMMENDED -> items.sortedWith(morpheComparator)
             HomeAppSortMode.NAME_ASC -> items.sortedWith(
                 compareBy<HomeAppItem, String>(String.CASE_INSENSITIVE_ORDER) { it.displayName }
-                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
+                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.id }
             )
             HomeAppSortMode.NAME_DESC -> items.sortedWith(
                 compareBy<HomeAppItem, String>(String.CASE_INSENSITIVE_ORDER) { it.displayName }
-                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.packageName }
+                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.id }
                     .reversed()
             )
             HomeAppSortMode.UPDATES_FIRST -> items.sortedWith(
-                compareByDescending<HomeAppItem> { it.hasUpdate }
+                compareByDescending<HomeAppItem> { it.showsUpdateBadge }
                     .then(morpheComparator)
             )
         }
@@ -1331,7 +1711,8 @@ class HomeViewModel(
      */
     fun notifyAppStateChanged(packageName: String) {
         appDataResolver.invalidate(packageName)
-        _appStateTicker.value = System.currentTimeMillis()
+        markTrackedPackagesPending(setOf(packageName), invalidateCache = true)
+        _appStateTicker.update { it + 1 }
     }
 
     /**
@@ -1341,6 +1722,14 @@ class HomeViewModel(
     private val allBundlesInfoState: StateFlow<Map<Int, PatchBundleInfo.Global>> =
         patchBundleRepository.allBundlesInfoFlow
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    private val patchSourcesState: StateFlow<Map<Int, PatchBundleSource>> =
+        patchBundleRepository.sources
+            .map { list -> list.associateBy { it.uid } }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    /** Returns the [PatchBundleSource] with [uid], or null if it has not been loaded yet. */
+    fun getPatchSource(uid: Int): PatchBundleSource? = patchSourcesState.value[uid]
 
     /**
      * Returns all patches available for [packageName] across all enabled bundles.
@@ -1352,10 +1741,7 @@ class HomeViewModel(
             bundleInfo
                 .filter { (_, info) -> info.enabled }
                 .forEach { (uid, info) ->
-                    val patches = info.patches.filter { patch ->
-                        patch.compatiblePackages == null ||
-                                patch.compatiblePackages.any { it.packageName == packageName }
-                    }
+                    val patches = info.forPackage(packageName, null).patches
                     if (patches.isNotEmpty()) put(uid, patches)
                 }
         }
@@ -1372,9 +1758,8 @@ class HomeViewModel(
         val applied = installedAppRepository.getAppliedPatches(packageName)
         return applied.entries.mapNotNull { (uid, patchNames) ->
             if (patchNames.isEmpty()) return@mapNotNull null
-            val patchInfos = bundleInfo[uid]?.patches
+            val patchInfos = bundleInfo[uid]?.forPackage(packageName, null)?.patches
                 ?.filter { it.name in patchNames }
-                ?.distinctBy { it.name }
                 ?.sortedBy { it.name }
                 ?: return@mapNotNull null
             if (patchInfos.isEmpty()) null else uid to patchInfos
@@ -1391,12 +1776,62 @@ class HomeViewModel(
         homeAppButtonPrefs.saveOrder(packageNames)
     }
 
+    fun saveAppSourceOrder(sourceUid: Int, packageNames: List<String>) {
+        homeAppButtonPrefs.saveSourceOrder(sourceUid, packageNames)
+    }
+
     fun resetAppOrder() {
         homeAppButtonPrefs.resetOrder()
     }
 
+    fun resetAppSourceOrder(sourceUid: Int) {
+        homeAppButtonPrefs.resetSourceOrder(sourceUid)
+    }
+
+    fun saveAppSourceGroupOrder(sourceUids: List<Int>) {
+        viewModelScope.launch {
+            val visibleUids = sourceUids.distinct()
+            val visibleUidSet = visibleUids.toSet()
+            val currentUids = patchBundleRepository.sources.first().map { it.uid }
+            val mergedUids = visibleUids + currentUids.filter { it !in visibleUidSet }
+            prefs.sourceBundleSortMode.update(SourceBundleSortMode.MANUAL.name)
+            patchBundleRepository.reorderBundles(mergedUids)
+        }
+    }
+
     fun setAppSortMode(sortMode: HomeAppSortMode) {
         homeAppButtonPrefs.setSortMode(sortMode)
+    }
+
+    fun setAppCategoryViewMode(viewMode: HomeAppCategoryViewMode) {
+        homeAppButtonPrefs.setCategoryViewMode(viewMode)
+    }
+
+    fun createAppCategory(name: String): String =
+        homeAppButtonPrefs.createCategory(name)
+
+    fun renameAppCategory(categoryId: String, name: String) {
+        homeAppButtonPrefs.renameCategory(categoryId, name)
+    }
+
+    fun deleteAppCategory(categoryId: String) {
+        homeAppButtonPrefs.deleteCategory(categoryId)
+    }
+
+    fun saveAppCategoryOrder(categoryIds: List<String>) {
+        homeAppButtonPrefs.saveCategoryOrder(categoryIds)
+    }
+
+    fun toggleAppCategoryCollapsed(categoryId: String?) {
+        homeAppButtonPrefs.toggleCategoryCollapsed(categoryId)
+    }
+
+    fun toggleAppSourceGroupCollapsed(sourceUid: Int) {
+        homeAppButtonPrefs.toggleSourceGroupCollapsed(sourceUid)
+    }
+
+    fun assignAppsToCategory(packageNames: Set<String>, categoryId: String?) {
+        homeAppButtonPrefs.assignToCategory(packageNames, categoryId)
     }
 
     /**
@@ -1419,11 +1854,7 @@ class HomeViewModel(
      * Used by the UI to show "Experimental" badges on specific versions.
      */
     fun getExperimentalVersionsForPackage(packageName: String): Set<String> =
-        compatibleVersions[packageName]
-            ?.filter { it.target.isExperimental }
-            ?.mapNotNull { it.target.version }
-            ?.toSet()
-            ?: emptySet()
+        compatibleVersions[packageName].orEmpty().experimentalVersions()
 
     /** Triggers the swipe gesture hint whenever a custom bundle is added. */
     val showSwipeGestureHint = MutableStateFlow(false)
@@ -1455,21 +1886,71 @@ class HomeViewModel(
             (state?.visible?.size ?: 0) > 4 || thirdParty
         }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    /**
-     * Update deleted apps status.
-     */
-    fun updateDeletedAppsStatus(installedApps: List<InstalledApp>) {
-        appsDeletedStatus = installedApps.associate { app ->
-            val hasSavedCopy = listOf(
-                filesystem.getPatchedAppFile(app.currentPackageName, app.version),
-                filesystem.getPatchedAppFile(app.originalPackageName, app.version)
-            ).distinctBy { it.absolutePath }.any { it.exists() }
+    suspend fun persistReinstalledApp(
+        app: InstalledApp,
+        packageName: String,
+        installType: InstallType
+    ): Boolean = withContext(Dispatchers.IO) {
+        val appliedPatches = installedAppRepository.getAppliedPatches(app.currentPackageName)
+        installedAppRepository.addOrUpdate(
+            currentPackageName = packageName,
+            originalPackageName = app.originalPackageName,
+            isClone = app.isClone,
+            version = app.version,
+            installType = installType,
+            patchSelection = appliedPatches,
+            selectionPayload = app.selectionPayload,
+            patchedAt = app.patchedAt
+        )
+        notifyAppStateChanged(packageName)
+        if (packageName != app.currentPackageName) notifyAppStateChanged(app.currentPackageName)
+        true
+    }
 
-            app.currentPackageName to pm.isAppDeleted(
-                packageName = app.currentPackageName,
-                hasSavedCopy = hasSavedCopy,
-                wasInstalledOnDevice = app.installType != InstallType.SAVED
-            )
+    fun uninstallApps(items: Collection<HomeAppItem>) {
+        val apps = items.mapNotNull { it.installedApp }.distinctBy { it.currentPackageName }
+        if (apps.isEmpty()) return
+
+        viewModelScope.launch {
+            var completed = 0
+            var skipped = 0
+            var unverified = 0
+            for (installed in apps) {
+                runCatching {
+                    when (installed.installType) {
+                        // Unmounting only removes the bind mount and the module files, so it is
+                        // safe even when the underlying package can no longer be identified
+                        InstallType.MOUNT -> {
+                            installerManager.uninstallPackage(installed.currentPackageName, installed.installType)
+                            installedAppRepository.delete(installed)
+                        }
+                        else -> {
+                            if (localApkSources.trackedPatchState(installed) != InstalledPatchState.Patched) {
+                                unverified++
+                                return@runCatching false
+                            }
+                            val removed = withTimeoutOrNull(BATCH_UNINSTALL_TIMEOUT) {
+                                installerManager.uninstallPackage(installed.currentPackageName, installed.installType)
+                                true
+                            } == true
+                            if (!removed) error(app.getString(R.string.uninstall_timeout))
+                        }
+                    }
+                    true
+                }.onSuccess { removed ->
+                    if (removed) completed++ else skipped++
+                    notifyAppStateChanged(installed.currentPackageName)
+                }.onFailure { error ->
+                    skipped++
+                    if (error !is UninstallCancelledException) {
+                        app.toast(app.getString(R.string.uninstall_app_fail, error.simpleMessage()))
+                    }
+                }
+            }
+
+            if (unverified > 0) app.toast(app.getString(R.string.uninstall_app_unverified))
+            app.batchActionSummary(R.plurals.batch_uninstall_summary, completed, skipped)
+                ?.let { app.toast(it) }
         }
     }
 
@@ -1515,19 +1996,36 @@ class HomeViewModel(
      *
      * - SKIP dialog and auto-use saved APK when:
      *   - Simple mode + saved APK == recommended version
+     *
+     * @param repatchedPackageName The tracked install to rebuild. Null starts an install of its
+     *   own, which is how an app that is already patched gets a second, cloned copy.
      */
-    fun showPatchDialog(packageName: String) =
-        showPatchDialog(packageName, automaticMode = null)
+    fun showPatchDialog(packageName: String, repatchedPackageName: String? = null) =
+        showPatchDialog(packageName, repatchedPackageName, automaticMode = null)
 
     private fun showPatchDialog(
         packageName: String,
+        repatchedPackageName: String? = null,
         automaticMode: OneTapYouTubeMode?,
     ) {
+        preparePendingFlow(packageName, repatchedPackageName, automaticMode)
         if (packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE) {
             automaticYouTubeSourceSelection = automaticMode != null
             automaticYouTubeMode = automaticMode
         }
+        // Guard: if there is a pending bundle update on metered data, show the outdated-patches
+        // dialog before proceeding with the actual APK selection flow.
+        guardPatching { showPatchDialogInternal(packageName) }
+    }
+
+    /** Seeds the pending APK selection state for [packageName] from the current bundle data. */
+    private fun preparePendingFlow(
+        packageName: String,
+        repatchedPackageName: String? = null,
+        automaticMode: OneTapYouTubeMode? = null,
+    ) {
         pendingPackageName = packageName
+        pendingRepatchPackageName = repatchedPackageName
         pendingAppName = bundleAppMetadataFlow.value[packageName]?.displayName
             ?: KnownApps.getAppName(packageName)
         pendingRecommendedVersion = recommendedVersions[packageName]
@@ -1539,10 +2037,6 @@ class HomeViewModel(
         pendingSavedApkInfo = null
         pendingInstalledApkInfo = null
         pendingTargetAppInstalled = null
-
-        // Guard: if there is a pending bundle update on metered data, show the outdated-patches
-        // dialog before proceeding with the actual APK selection flow.
-        guardPatching { showPatchDialogInternal(packageName) }
     }
 
     private data class LocalYouTubeInspection(
@@ -1768,7 +2262,7 @@ class HomeViewModel(
 
     private suspend fun showPatchDialogInternal(packageName: String) {
         val savedInfo = withContext(Dispatchers.IO) {
-            loadSavedApkInfo(packageName)
+            localApkSources.saved(packageName)
         }
         pendingSavedApkInfo = savedInfo
 
@@ -1792,7 +2286,7 @@ class HomeViewModel(
             packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE
         ) {
             val (installed, info) = withContext(Dispatchers.IO) {
-                loadInstalledInfo(packageName)
+                localApkSources.installed(packageName)
             }
             pendingTargetAppInstalled = installed
             pendingInstalledApkInfo = info?.takeIf {
@@ -1854,6 +2348,7 @@ class HomeViewModel(
                     pendingSelectedBundleUid = preferredUid
                     recommendedBundleVersions[packageName]
                         ?.get(preferredUid)
+                        ?.effective
                         ?.let { recommended ->
                             pendingRecommendedVersion = recommended
                             pendingSelectedDownloadVersion = recommended
@@ -1881,16 +2376,16 @@ class HomeViewModel(
         val expertMode = isExpertMode()
         coroutineScope {
             val savedJob = if (pendingSavedApkInfo == null) {
-                async(Dispatchers.IO) { loadSavedApkInfo(packageName) }
+                async(Dispatchers.IO) { localApkSources.saved(packageName) }
             } else null
-            val installedJob = if (pendingTargetAppInstalled == null) {
-                async(Dispatchers.IO) { loadInstalledInfo(packageName) }
+            val installedJob = if (
+                (expertMode || automaticYouTubeSourceSelection) &&
+                pendingTargetAppInstalled == null
+            ) {
+                async(Dispatchers.IO) { localApkSources.installed(packageName) }
             } else null
             savedJob?.await()?.let { pendingSavedApkInfo = it }
-            installedJob?.await()?.let { (installed, info) ->
-                pendingTargetAppInstalled = installed
-                pendingInstalledApkInfo = info?.takeIf { isInstalledVersionCompatible(it.version, it.versionCode) }
-            }
+            installedJob?.await()?.let { (installed, info) -> applyInstalledApkInfo(installed, info) }
         }
 
         val recommendedVersion = pendingRecommendedVersion
@@ -2058,34 +2553,12 @@ class HomeViewModel(
     }
 
     /**
-     * Load information about saved original APK for a package.
+     * Stores the installed-app lookup, keeping the APK only when its version can be patched
+     * so every caller offers the installed source under the same condition.
      */
-    private suspend fun loadSavedApkInfo(packageName: String): SavedApkInfo? {
-        try {
-            val originalApk = originalApkRepository.get(packageName) ?: return null
-            val file = File(originalApk.filePath)
-            if (!file.exists()) return null
-
-            // Use AppDataResolver to get accurate version from APK file
-            val resolvedData = appDataResolver.resolveAppData(
-                packageName = packageName,
-                preferredSource = AppDataSource.ORIGINAL_APK
-            )
-
-            // Use resolved version
-            val version = resolvedData.version
-                ?: originalApk.version
-
-            return SavedApkInfo(
-                fileName = file.name,
-                filePath = file.absolutePath,
-                version = version,
-                versionCode = resolvedData.packageInfo?.let { pm.getVersionCode(it) }
-            )
-        } catch (e: Exception) {
-            Log.e(tag, "Failed to load saved APK info", e)
-            return null
-        }
+    private fun applyInstalledApkInfo(installed: Boolean, info: InstalledApkInfo?) {
+        pendingTargetAppInstalled = installed
+        pendingInstalledApkInfo = info?.takeIf { isInstalledVersionCompatible(it.version, it.versionCode) }
     }
 
     /**
@@ -2102,64 +2575,6 @@ class HomeViewModel(
         return compatible.any { entry ->
             entry.target.version == installedVersion &&
                 (entry.buildCodes == null || installedVersionCode == null || installedVersionCode.toInt() in entry.buildCodes)
-        }
-    }
-
-    /**
-     * Returns whether the target app is installed and, if it is a single unpatched APK, its info.
-     * First element: true if the package is installed at all (regardless of splits/version).
-     * Second element: non-null only for single-APK installs that appear to be the original app.
-     *
-     * The "Use installed APK" button is suppressed when:
-     * - Morphe tracks this package as a patched install, or
-     * - The installed signing certificate doesn't match the bundle's expected original signatures.
-     */
-    private suspend fun loadInstalledInfo(packageName: String): Pair<Boolean, InstalledApkInfo?> {
-        return try {
-            val pkgInfo = pm.getPackageInfo(packageName)
-                ?: return false to null
-
-            // Determine if the installed app is patched, in priority order:
-            // 1. Saved original APK (most reliable - direct signature comparison)
-            // 2. Bundle-declared expected signatures (fallback)
-            // 3. DB tracking (last resort - version match only)
-            val isPatched: Boolean = run {
-                val savedOriginal = originalApkRepository.get(packageName)
-                val savedFile = savedOriginal?.let { File(it.filePath) }
-                if (savedFile?.exists() == true) {
-                    val savedHashes = pm.getApkFileSignatureHashes(savedFile)
-                    if (savedHashes.isNotEmpty()) {
-                        val installedHashes = pm.getInstalledSignatureHashes(packageName)
-                        if (installedHashes.isNotEmpty()) {
-                            return@run installedHashes.none { it in savedHashes }
-                        }
-                        // Can't read installed signatures → fall through to other checks
-                    }
-                    // Can't read signatures from file → fall through to other checks
-                }
-                val expectedSignatures = bundleAppMetadataFlow.value[packageName]?.signatures
-                if (!expectedSignatures.isNullOrEmpty()) {
-                    pm.getInstalledSignatureHashes(packageName).none { it in expectedSignatures }
-                } else {
-                    val trackedPatch = installedAppRepository.get(packageName)
-                    trackedPatch != null && pkgInfo.versionName == trackedPatch.version
-                }
-            }
-            if (isPatched) return true to null
-
-            val appInfo = pkgInfo.applicationInfo
-                ?: return true to null
-            val sourceDir = appInfo.sourceDir ?: return true to null
-            if (!File(sourceDir).exists()) return true to null
-            val version = pkgInfo.versionName?.takeUnless { it.isBlank() }
-                ?: return true to null
-            val splitPaths = appInfo.splitSourceDirs
-                ?.filter { File(it).exists() }
-                ?: emptyList()
-            true to InstalledApkInfo(version = version, versionCode = pm.getVersionCode(pkgInfo), apkPath = sourceDir, splitPaths = splitPaths)
-        } catch (e: Exception) {
-            Log.e(tag, "Failed to load installed app info", e)
-            false to null
         }
     }
 
@@ -2225,6 +2640,78 @@ class HomeViewModel(
                 processingApkSelection = false
             }
         }
+    }
+
+    /**
+     * Handles a helper result where the user installed the target app outside Morphe.
+     *
+     * Reached in simple mode too, where the installed source is otherwise hidden: the helper is
+     * opt-in and the hand-off was confirmed, so the app store is the whole point of the request.
+     */
+    fun handleHelperInstalledAppSelection(packageName: String) {
+        viewModelScope.launch {
+            val pending = pendingPackageName
+            if (pending != null && pending != packageName) {
+                // The helper answered about an app the user never asked to patch
+                stopHelperHandoff(pending, R.string.home_apk_helper_wrong_package)
+                return@launch
+            }
+
+            // A hand-off through an app store can outlive Morphe, so the flow is rebuilt from the
+            // bundle data. Unknown packages are refused because without their compatible versions
+            // there is nothing left to check the installed build against
+            if (pending == null) {
+                if (packageName !in compatibleVersions) {
+                    app.toast(app.getString(R.string.home_apk_helper_installed_unavailable))
+                    cleanupPendingData()
+                    return@launch
+                }
+                preparePendingFlow(packageName)
+            }
+
+            processingApkSelection = true
+            val (installed, info) = withContext(Dispatchers.IO) {
+                localApkSources.installed(packageName)
+            }
+            applyInstalledApkInfo(installed, info)
+
+            val installedInfo = pendingInstalledApkInfo
+            if (installedInfo == null) {
+                // An app store hands out the newest build, which is regularly one no bundle covers
+                stopHelperHandoff(
+                    packageName,
+                    if (info == null) {
+                        R.string.home_apk_helper_installed_unavailable
+                    } else {
+                        R.string.home_apk_helper_installed_incompatible
+                    }
+                )
+                return@launch
+            }
+
+            // Continuing here would swallow the warning the availability dialog carries when the
+            // certificate could not be read, so that case goes back to the user
+            if (installedInfo.patchStateUnknown) {
+                stopHelperHandoff(packageName)
+                return@launch
+            }
+
+            handleInstalledApkSelection()
+        }
+    }
+
+    /**
+     * Ends a helper hand-off at the APK availability dialog, so the remaining sources stay one tap
+     * away instead of the user landing back on the home screen with nothing to act on.
+     */
+    private suspend fun stopHelperHandoff(packageName: String, @StringRes message: Int? = null) {
+        processingApkSelection = false
+        message?.let { app.toast(app.getString(it)) }
+
+        if (pendingSavedApkInfo == null) {
+            pendingSavedApkInfo = withContext(Dispatchers.IO) { localApkSources.saved(packageName) }
+        }
+        showApkAvailabilityDialog = true
     }
 
     /**
@@ -2659,9 +3146,9 @@ class HomeViewModel(
         }
 
         // Patches exist and are applicable → proceed.
-        // For root-capable devices, we must know the installation method BEFORE patching
-        // because it affects which patches are included (GmsCore is excluded for mount install).
-        // Show the pre-patching installer dialog so the user can choose.
+        // For root-capable devices, we must know the patch mode BEFORE patching
+        // because it is the install target patches declare their availability against.
+        // Show the pre-patching mode dialog so the user can choose.
         // For non-root devices, just proceed - installer selection happens after patching.
         processSelectedAppIgnoringSignature(selectedApp)
     }
@@ -2688,6 +3175,10 @@ class HomeViewModel(
         selectedApp: SelectedApp,
         allowIncompatible: Boolean
     ) {
+        // Read before the first selection is resolved, so every rule below and every later edit
+        // in the expert dialog is answered for the APK this run actually starts from
+        currentApkArchitecture = ApkArchitectureResolver.resolve(selectedApp, pm)
+
         val allBundles = patchBundleRepository
             .scopedBundleInfoFlow(selectedApp.packageName, selectedApp.version, selectedApp.versionCode)
             .first()
@@ -2701,9 +3192,15 @@ class HomeViewModel(
         // Create bundles map for validation
         val bundlesMap = allBundles.associate { it.uid to it.patches.associateBy { patch -> patch.name } }
 
-        // Helper function to apply GmsCore filter if needed
-        fun PatchSelection.applyGmsCoreFilter(): PatchSelection =
-            if (usingMountInstall) this.filterGmsCore() else this
+        val configurationKey = configurationKeyFor(selectedApp.packageName)
+
+        // Apply patch-declared rules first, then keep the legacy GmsCore filter as a safety
+        // net for bundles that have not adopted the availability API
+        // TODO: Drop this fallback together with PatchSelectionUtils.filterGmsCore
+        @Suppress("DEPRECATION")
+        fun PatchSelection.applyInstallerRules(): PatchSelection =
+            applyAvailability(currentInstallerType, currentApkArchitecture, bundlesMap)
+                .let { if (usingMountInstall) it.filterGmsCore() else it }
 
         if (isExpertMode()) {
             // Expert Mode: Load saved selections and options only for current bundles
@@ -2711,13 +3208,13 @@ class HomeViewModel(
 
             // Load selections
             val savedSelections = withContext(Dispatchers.IO) {
-                patchSelectionRepository.getAllSelectionsForPackage(selectedApp.packageName)
+                patchSelectionRepository.getAllSelectionsForPackage(configurationKey)
                     .filterKeys { it in currentBundleUids }
             }
 
             // Load options
             val savedOptions = withContext(Dispatchers.IO) {
-                optionsRepository.getAllOptionsForPackage(selectedApp.packageName, bundlesMap)
+                optionsRepository.getAllOptionsForPackage(configurationKey, bundlesMap)
                     .filterKeys { it in currentBundleUids }
             }
 
@@ -2753,7 +3250,7 @@ class HomeViewModel(
                         // Comparing against savedForBundle (only selected patches) would
                         // incorrectly re-enable patches the user explicitly deselected.
                         val seenForBundle = withContext(Dispatchers.IO) {
-                            patchSelectionRepository.getSeenPatches(selectedApp.packageName, bundle.uid)
+                            patchSelectionRepository.getSeenPatches(configurationKey, bundle.uid)
                         }
                         val knownNames = seenForBundle
                             ?: savedSelections[bundle.uid] // fallback for first run (no snapshot yet)
@@ -2762,9 +3259,9 @@ class HomeViewModel(
                         val newPatchNames = currentPatchNames - knownNames
                         if (newPatchNames.isEmpty()) return@forEach
 
-                        // Among the genuinely new patches, auto-select those with include=true
+                        // Among the genuinely new patches, auto-select those enabled by default
                         val newDefaultEnabled = bundle.patches
-                            .filter { it.name in newPatchNames && it.include }
+                            .filter { it.name in newPatchNames && it.defaultSelected(currentInstallerType, currentApkArchitecture) }
                             .mapTo(mutableSetOf()) { it.name }
 
                         if (newDefaultEnabled.isNotEmpty()) {
@@ -2777,8 +3274,10 @@ class HomeViewModel(
                 mergedPatches
             } else {
                 // No saved selections - use default for all current bundles
-                allBundles.toPatchSelection(allowIncompatible) { _, patch -> patch.include }
-            }.applyGmsCoreFilter()
+                allBundles.toPatchSelection(allowIncompatible) { _, patch ->
+                    patch.defaultSelected(currentInstallerType, currentApkArchitecture)
+                }
+            }.applyInstallerRules()
 
             // Compute new patches map for the dialog to highlight.
             // Only populated when a previous selection exists - on first run there is nothing
@@ -2791,7 +3290,7 @@ class HomeViewModel(
                 buildMap {
                     allBundles.forEach { bundle ->
                         val seenForBundle = withContext(Dispatchers.IO) {
-                            patchSelectionRepository.getSeenPatches(selectedApp.packageName, bundle.uid)
+                            patchSelectionRepository.getSeenPatches(configurationKey, bundle.uid)
                         }
                         // No snapshot yet → first time opening expert mode for this package,
                         // nothing to flag as new.
@@ -2811,12 +3310,13 @@ class HomeViewModel(
             // Save validated options if anything changed
             if (validatedOptions != savedOptions) {
                 withContext(Dispatchers.IO) {
-                    optionsRepository.saveOptions(selectedApp.packageName, validatedOptions)
+                    optionsRepository.saveOptions(configurationKey, validatedOptions)
                 }
             }
 
             expertModeSelectedApp = selectedApp
             expertModeBundles = allBundles
+            expertModeAllowIncompatible = allowIncompatible
             patches.toMutableMap().also { expertModePatches = it; expertModeInitialPatches = it }
             expertModeOptions = validatedOptions.toMutableMap()
             expertModeNewPatches = newPatchesMap
@@ -2831,7 +3331,7 @@ class HomeViewModel(
                 .filter { it.enabled }
                 .map { bundle ->
                     val patchNames = bundle.patchSequence(allowIncompatible)
-                        .filter { it.include }
+                        .filter { it.defaultSelected(currentInstallerType, currentApkArchitecture) }
                         .mapTo(mutableSetOf()) { it.name }
                     bundle to patchNames
                 }
@@ -2845,17 +3345,19 @@ class HomeViewModel(
                 val currentBundleUids = allBundles.map { it.uid }.toSet()
 
                 val savedSelections = withContext(Dispatchers.IO) {
-                    patchSelectionRepository.getAllSelectionsForPackage(selectedApp.packageName)
+                    patchSelectionRepository.getAllSelectionsForPackage(configurationKey)
                         .filterKeys { it in currentBundleUids }
                 }
                 val savedOptions = withContext(Dispatchers.IO) {
-                    optionsRepository.getAllOptionsForPackage(selectedApp.packageName, bundlesMap)
+                    optionsRepository.getAllOptionsForPackage(configurationKey, bundlesMap)
                         .filterKeys { it in currentBundleUids }
                 }
 
                 expertModeSelectedApp = selectedApp
                 expertModeBundles = allBundles
-                savedSelections.toMutableMap().also { expertModePatches = it; expertModeInitialPatches = it }
+                expertModeAllowIncompatible = allowIncompatible
+                savedSelections.applyInstallerRules().toMutableMap()
+                    .also { expertModePatches = it; expertModeInitialPatches = it }
                 expertModeOptions = savedOptions.toMutableMap()
                 showExpertModeDialog = true
                 return
@@ -2871,10 +3373,10 @@ class HomeViewModel(
                 val bundle = allBundles.find { it.uid == preSelectedUid }
                 if (bundle != null) {
                     val patchNames = bundle.patchSequence(allowIncompatible = true)
-                        .filter { it.include }
+                        .filter { it.defaultSelected(currentInstallerType, currentApkArchitecture) }
                         .mapTo(mutableSetOf()) { it.name }
                     if (patchNames.isNotEmpty()) {
-                        val patches = mapOf(bundle.uid to patchNames).applyGmsCoreFilter()
+                        val patches = mapOf(bundle.uid to patchNames).applyInstallerRules()
                         proceedWithPatching(selectedApp, patches, emptyMap())
                         return
                     }
@@ -2893,10 +3395,33 @@ class HomeViewModel(
             // Only one bundle has patches - use it directly (no prompt needed)
             val patches = bundleWithPatches
                 .associate { (bundle, patches) -> bundle.uid to patches }
-                .applyGmsCoreFilter()
+                .applyInstallerRules()
 
             proceedWithPatching(selectedApp, patches, emptyMap())
         }
+    }
+
+    /**
+     * The package the pending run reads its saved patches and options from.
+     *
+     * Patches belong to the install they were applied to, so rebuilding one reads what that
+     * install was built with. Anything else reads the app itself: a run producing a separate
+     * install starts from what the app was last patched with, and so does an install that
+     * predates configurations of their own.
+     */
+    private suspend fun configurationKeyFor(originalPackageName: String): String {
+        val repatched = pendingRepatchPackageName
+        val hasOwnConfiguration = repatched != null &&
+                repatched != originalPackageName &&
+                withContext(Dispatchers.IO) {
+                    patchSelectionRepository.getAllSelectionsForPackage(repatched).isNotEmpty()
+                }
+
+        return configurationKey(
+            originalPackageName = originalPackageName,
+            repatchedPackageName = repatched,
+            repatchedHasOwnConfiguration = hasOwnConfiguration
+        )
     }
 
     /**
@@ -2946,12 +3471,16 @@ class HomeViewModel(
             QuickPatchParams(
                 selectedApp = selectedApp,
                 patches = safePatches,
-                options = safeOptions
+                options = safeOptions,
+                // Handed over before the state below is cleared, since the run has no other way
+                // to learn which install it was started for
+                targetPackageName = pendingRepatchPackageName
             )
         )
 
         // Clean only UI state
         pendingPackageName = null
+        pendingRepatchPackageName = null
         pendingAppName = null
         pendingRecommendedVersion = null
         pendingCompatibleVersions = emptyList()
@@ -2990,52 +3519,103 @@ class HomeViewModel(
 
     /** True when patches from more than one bundle are selected (triggers warning on proceed). */
     val expertModeHasMultipleBundles: Boolean
-        get() = expertModePatches.count { (_, patches) -> patches.isNotEmpty() } > 1
+        get() = expertModePatches.spansMultipleBundles()
 
     /**
      * Toggle patch in expert mode.
      * Supports adding patches from bundles not yet in the selection.
      */
     fun togglePatchInExpertMode(bundleUid: Int, patchName: String) {
+        // Locked patches are toggled only through availability rules; no-op here
+        val patch = expertModeBundles
+            .firstOrNull { it.uid == bundleUid }
+            ?.patches
+            ?.firstOrNull { it.name == patchName }
+        val selected = patchName in expertModePatches[bundleUid].orEmpty()
+        if (patch != null && expertModeLockState(patch).blocksToggle(selected)) return
+
         expertModePatches = expertModePatches.togglePatch(bundleUid, patchName)
+            .applyExpertModeAvailability()
     }
 
     /**
      * Select all given patches for a bundle.
-     * Only adds patches that are not already selected.
+     * Only adds patches that are not already selected. LOCKED_OFF patches are skipped.
+     *
+     * Universal patches are staged behind the regular ones and need a second call, see
+     * [PatchSelectionUtils.bulkEnablePatches]. [patches] is the list the dialog currently
+     * shows, so an active search narrows the scope of both stages.
      */
     fun expertModeSelectAll(bundleUid: Int, patches: List<Pair<PatchInfo, Boolean>>) {
-        val current = expertModePatches.toMutableMap()
-        val set = current[bundleUid]?.toMutableSet() ?: mutableSetOf()
-        patches.forEach { (patch, enabled) -> if (!enabled) set.add(patch.name) }
-        current[bundleUid] = set
-        expertModePatches = current
+        val selected = expertModePatches[bundleUid].orEmpty()
+        val updated = bulkEnablePatches(
+            patches,
+            selected,
+            expertModeUniversalArmed(bundleUid, selected),
+            ::expertModeLockState
+        )
+
+        expertModePatches = expertModePatches.toMutableMap()
+            .apply { put(bundleUid, updated) }
+            .applyExpertModeAvailability()
+        // Armed against what the availability rules left behind, so the next tap sees the
+        // selection it is compared to
+        expertModeUniversalArmedFor = bundleUid to expertModePatches[bundleUid].orEmpty()
+    }
+
+    /** True when the next [expertModeSelectAll] holds universal patches back for another tap. */
+    fun expertModeSelectAllHoldsUniversal(bundleUid: Int, patches: List<Pair<PatchInfo, Boolean>>): Boolean {
+        val selected = expertModePatches[bundleUid].orEmpty()
+        return bulkEnableHoldsUniversal(
+            patches,
+            expertModeUniversalArmed(bundleUid, selected),
+            ::expertModeLockState
+        )
     }
 
     /**
+     * Lock state of [patch] for the install target the dialog is configuring.
+     *
+     * A REQUIRED patch only locks while the selection stays within one bundle, see
+     * [PatchSelectionUtils.applyAvailability].
+     */
+    fun expertModeLockState(patch: PatchInfo) =
+        patch.lockState(currentInstallerType, currentApkArchitecture, !expertModeHasMultipleBundles)
+
+    private fun expertModeUniversalArmed(bundleUid: Int, selected: Set<String>) =
+        expertModeUniversalArmedFor == (bundleUid to selected)
+
+    /**
      * Deselect all given patches for a bundle.
-     * Removes the bundle entry entirely if nothing remains selected.
+     * Removes the bundle entry entirely if nothing remains selected. LOCKED_ON patches are kept.
      */
     fun expertModeDeselectAll(bundleUid: Int, patches: List<Pair<PatchInfo, Boolean>>) {
         val current = expertModePatches.toMutableMap()
         val set = current[bundleUid]?.toMutableSet() ?: mutableSetOf()
-        patches.forEach { (patch, enabled) -> if (enabled) set.remove(patch.name) }
+        patches.forEach { (patch, enabled) ->
+            if (expertModeLockState(patch) == PatchLockState.LOCKED_ON) return@forEach
+            if (enabled) set.remove(patch.name)
+        }
         if (set.isEmpty()) current.remove(bundleUid) else current[bundleUid] = set
-        expertModePatches = current
+        expertModePatches = current.applyExpertModeAvailability()
     }
 
     /**
-     * Reset a bundle's selection to the default (include=true) patches.
-     * [allPatches] is the full unfiltered list for that bundle so defaults
-     * are computed from the complete set, not just search results.
+     * Reset a bundle's selection to the default patches for the current install target.
+     *
+     * Defaults are read from the bundle itself rather than the dialog's list, so they cover the
+     * complete set instead of just search results and reach only the patches the run would have
+     * started with: the dialog lists patches declaring other app versions so they can be enabled
+     * by hand, but they are no more part of the defaults here than they were on first open.
      */
-    fun expertModeResetToDefault(bundleUid: Int, allPatches: List<Pair<PatchInfo, Boolean>>) {
-        val defaults = allPatches
-            .filter { (patch, _) -> patch.include }
-            .mapTo(mutableSetOf()) { (patch, _) -> patch.name }
+    fun expertModeResetToDefault(bundleUid: Int) {
+        val bundle = expertModeBundles.firstOrNull { it.uid == bundleUid } ?: return
+        val defaults = bundle.patchSequence(expertModeAllowIncompatible)
+            .filter { it.defaultSelected(currentInstallerType, currentApkArchitecture) }
+            .mapTo(mutableSetOf()) { it.name }
         val current = expertModePatches.toMutableMap()
         if (defaults.isEmpty()) current.remove(bundleUid) else current[bundleUid] = defaults
-        expertModePatches = current
+        expertModePatches = current.applyExpertModeAvailability()
     }
 
     /**
@@ -3046,7 +3626,7 @@ class HomeViewModel(
         val savedForBundle = expertModeInitialPatches[bundleUid] ?: return
         val current = expertModePatches.toMutableMap()
         if (savedForBundle.isEmpty()) current.remove(bundleUid) else current[bundleUid] = savedForBundle
-        expertModePatches = current
+        expertModePatches = current.applyExpertModeAvailability()
     }
 
     /**
@@ -3079,7 +3659,127 @@ class HomeViewModel(
         expertModeInitialPatches = emptyMap()
         expertModeOptions = emptyMap()
         expertModeNewPatches = emptyMap()
+        expertModeUniversalArmedFor = null
+        expertModeAllowIncompatible = false
+        closeExpertModeCopyDialog()
     }
+
+    /**
+     * Open the copy-from-another-bundle picker for [targetBundleUid] inside the current
+     * expert-mode session. Candidates are loaded off the main thread and published to
+     * [expertModeCopyCandidates] once ready.
+     */
+    fun openExpertModeCopyDialog(targetBundleUid: Int) {
+        val selectedApp = expertModeSelectedApp ?: return
+        expertModeCopyTargetBundleUid = targetBundleUid
+        expertModeCopyCandidates = null
+        viewModelScope.launch(Dispatchers.IO) {
+            val candidates = loadCopySelectionCandidates(
+                patchSelectionRepository = patchSelectionRepository,
+                patchBundleRepository = patchBundleRepository,
+                appDataResolver = appDataResolver,
+                targetPackageName = selectedApp.packageName,
+                targetBundleUid = targetBundleUid,
+                targetPatchNames = targetBundlePatchNames(targetBundleUid)
+            )
+            withContext(Dispatchers.Main) {
+                // Discard the result if the user closed or retargeted the dialog while loading.
+                if (expertModeCopyTargetBundleUid == targetBundleUid) {
+                    expertModeCopyCandidates = candidates
+                }
+            }
+        }
+    }
+
+    fun closeExpertModeCopyDialog() {
+        expertModeCopyTargetBundleUid = null
+        expertModeCopyCandidates = null
+    }
+
+    /**
+     * Apply a picked [candidate] to the in-memory expert-mode selection.
+     * Patches and options are filtered against the target bundle's schema so the
+     * copy silently drops entries that no longer exist under the new bundle uid.
+     * Changes are persisted to the database only when the user proceeds to patching.
+     */
+    fun applyExpertModeCopy(candidate: CopySelectionCandidate) {
+        expertModeSelectedApp ?: return
+        val targetBundleUid = expertModeCopyTargetBundleUid ?: return
+
+        viewModelScope.launch {
+            val (patches, options) = withContext(Dispatchers.IO) {
+                val targetPatches = targetBundlePatchInfos(targetBundleUid)
+                val sourcePatchNames = patchSelectionRepository.exportForPackageAndBundle(
+                    candidate.packageName,
+                    candidate.bundleUid
+                )
+                val filteredPatches = sourcePatchNames
+                    .filter { it in targetPatches }
+                    .toSet()
+
+                // Read as live values rather than through the raw export, which hands back
+                // JSON encoded strings
+                val filteredOptions = optionsRepository.getOptionsForBundle(
+                    packageName = candidate.packageName,
+                    bundleUid = candidate.bundleUid,
+                    bundlePatchInfo = targetPatches
+                ).filterValues { it.isNotEmpty() }
+
+                filteredPatches to filteredOptions
+            }
+
+            if (patches.isEmpty() && options.isEmpty()) {
+                app.toast(app.getString(R.string.expert_mode_copy_from_bundle_no_patches))
+                closeExpertModeCopyDialog()
+                return@launch
+            }
+
+            val updatedSelection = expertModePatches.toMutableMap()
+            if (patches.isEmpty()) updatedSelection.remove(targetBundleUid)
+            else updatedSelection[targetBundleUid] = patches
+            // The copy comes from a run that may have targeted another installer, so the patches
+            // it carries are put through the availability rules of this one
+            expertModePatches = updatedSelection.applyExpertModeAvailability()
+
+            val currentOptions = expertModeOptions.toMutableMap()
+            val bundleOptions = currentOptions[targetBundleUid]?.toMutableMap() ?: mutableMapOf()
+            options.forEach { (patchName, patchOptions) ->
+                bundleOptions[patchName] = patchOptions
+            }
+            if (bundleOptions.isEmpty()) currentOptions.remove(targetBundleUid)
+            else currentOptions[targetBundleUid] = bundleOptions
+            expertModeOptions = currentOptions
+
+            app.toast(
+                app.resources.getQuantityString(
+                    R.plurals.expert_mode_copy_from_bundle_done,
+                    patches.size,
+                    patches.size
+                )
+            )
+            closeExpertModeCopyDialog()
+        }
+    }
+
+    /** Availability rules of the current install target, scoped to the bundles the dialog shows. */
+    private fun PatchSelection.applyExpertModeAvailability(): PatchSelection =
+        applyAvailability(
+            currentInstallerType,
+            currentApkArchitecture,
+            expertModeBundles.associate { it.uid to it.patches.associateBy { patch -> patch.name } }
+        )
+
+    private fun targetBundlePatchNames(bundleUid: Int): Set<String> =
+        expertModeBundles.firstOrNull { it.uid == bundleUid }
+            ?.patches
+            ?.mapTo(mutableSetOf()) { it.name }
+            ?: emptySet()
+
+    private fun targetBundlePatchInfos(bundleUid: Int): Map<String, PatchInfo> =
+        expertModeBundles.firstOrNull { it.uid == bundleUid }
+            ?.patches
+            ?.associateBy { it.name }
+            ?: emptyMap()
 
     private suspend fun saveSeenPatchesForBundles(packageName: String) {
         expertModeBundles.forEach { bundle ->
@@ -3099,6 +3799,9 @@ class HomeViewModel(
         val selectedApp = expertModeSelectedApp ?: return
         val finalPatches = expertModePatches
         val finalOptions = expertModeOptions
+        // Only the bundles offered by the dialog are covered by this selection, so bundles that
+        // were disabled at patch time keep whatever the user saved for them earlier.
+        val bundleScope = expertModeBundles.mapTo(mutableSetOf()) { it.uid }
         // Strip UI-only empty strings (fields cleared via ✕) so the patcher engine
         // receives null / no key for those options and falls back to its own default,
         // rather than receiving a literal empty string.
@@ -3107,13 +3810,17 @@ class HomeViewModel(
         showExpertModeDialog = false
 
         viewModelScope.launch(Dispatchers.IO) {
+            // Saved before patching runs so a long selection survives a failed run. It lands on
+            // the install being rebuilt, and follows it from there if patching renames it
+            val configurationKey = configurationKeyFor(selectedApp.packageName)
             patchSelectionRepository.updateSelection(
-                packageName = selectedApp.packageName,
-                selection = finalPatches
+                packageName = configurationKey,
+                selection = finalPatches,
+                scope = bundleScope
             )
-            saveOptions(selectedApp.packageName, finalOptions)
+            saveOptions(configurationKey, finalOptions)
             // Snapshot all bundle patch names so next open can detect genuinely new patches.
-            saveSeenPatchesForBundles(selectedApp.packageName)
+            saveSeenPatchesForBundles(configurationKey)
             withContext(Dispatchers.Main) {
                 proceedWithPatching(selectedApp, finalPatches, patcherOptions)
                 cleanupExpertModeData()
@@ -3125,57 +3832,77 @@ class HomeViewModel(
      * Resolve download redirect.
      */
     fun resolveDownloadRedirect() {
-        suspend fun resolveUrlRedirect(url: String): String {
-            val location = morpheAPI.resolveRedirect(url)
-            return when {
-                location == null -> {
-                    Log.w(tag, "No redirect location for: $url")
-                    getApiOfflineWebSearchUrl()
-                }
-                else -> {
-                    Log.i(tag, "Result: $location")
-                    location
-                }
-            }
-        }
-
+        val packageName = pendingPackageName ?: return
         // Use the version selected by the user in Dialog 1; fall back to recommended
-        val versionForSearch = pendingSelectedDownloadVersion ?: pendingRecommendedVersion
-        val escapedVersion = versionForSearch?.version ?: "any"
-        val searchQuery = "$pendingPackageName~$escapedVersion~${Build.SUPPORTED_ABIS.first()}".encodeURLPath()
-        val searchUrl = "$MORPHE_API_URL/v2/web-search/$searchQuery"
-        Log.d(tag, "Using search url: $searchUrl")
+        val version = (pendingSelectedDownloadVersion ?: pendingRecommendedVersion)?.version
 
-        resolvedDownloadUrl = searchUrl
+        // Marks the destination as unknown, which is what the dialog waits on before it can
+        // say anything about the download or let the user leave for it
+        resolvedDownloadUrl = downloadUrlResolver.apiSearchUrl(packageName, version)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            var resolved = resolveUrlRedirect(searchUrl)
-
-            if (resolved.startsWith(MORPHE_API_URL)) {
-                Log.i(tag, "Redirect still on API host, resolving again")
-                resolved = resolveUrlRedirect(resolved)
+        viewModelScope.launch {
+            val resolved = withContext(Dispatchers.IO) {
+                downloadUrlResolver.resolve(packageName, version)
             }
-
-            withContext(Dispatchers.Main) {
-                resolvedDownloadUrl = resolved
-            }
+            resolvedDownloadUrl = resolved
         }
     }
 
-    fun getApiOfflineWebSearchUrl(): String {
-        val architecture = if (pendingPackageName == KnownApps.YOUTUBE_MUSIC) {
-            " (${Build.SUPPORTED_ABIS.first()})"
-        } else {
-            "nodpi"
+    override val helperSignatureCheckAvailable: Boolean
+        get() {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) return false
+            val packageName = pendingPackageName ?: return false
+            return !bundleAppMetadataFlow.value[packageName]?.signatures.isNullOrEmpty()
         }
 
+    /**
+     * Build the request for an APK download helper, describing the original APK of the pending app.
+     */
+    override fun createApkDownloadHelperIntent(component: ComponentName): Intent? {
+        val packageName = pendingPackageName ?: return null
+        val appName = pendingAppName ?: KnownApps.getAppName(packageName)
         // Use the version selected by the user in Dialog 1; fall back to recommended
-        val versionForSearch = pendingSelectedDownloadVersion ?: pendingRecommendedVersion
-        val versionPart = versionForSearch?.version?.let { "\"$it\"" } ?: ""
-        val searchQuery = "\"$pendingPackageName\" $versionPart $architecture site:APKMirror.com"
-        val searchUrl = "https://google.com/search?q=${encode(searchQuery, "UTF-8")}"
-        Log.d(tag, "Using search query: $searchQuery")
-        return searchUrl
+        val requestedVersion = pendingSelectedDownloadVersion ?: pendingRecommendedVersion
+        val apkFileType = bundleAppMetadataFlow.value[packageName]?.apkFileType
+
+        val requestedVersionCodes = pendingCompatibleVersions
+            .filter { it.target.version == requestedVersion?.version }
+            .flatMap { it.buildCodes.orEmpty() }
+            .distinct()
+            .map(Int::toLong)
+            .toLongArray()
+
+        return ApkDownloadHelperContract.createRequestIntent(
+            component = component,
+            callerPackage = app.packageName,
+            packageName = packageName,
+            appName = appName,
+            versionName = requestedVersion?.version,
+            versionCodes = requestedVersionCodes,
+            compatibleVersionNames = pendingCompatibleVersions.mapNotNull { it.target.version }.distinct(),
+            supportedAbis = Build.SUPPORTED_ABIS,
+            fileType = apkFileType?.toHelperFileType(),
+            // Mirrors processSelectedApp - only a required plain APK rules split archives out
+            allowSplitArchive = !(apkFileType?.isApk == true && apkFileType.isRequired),
+            stockInstallRequired = usingMountInstall && pendingTargetAppInstalled != true,
+            fallbackWebUrl = downloadUrlResolver.webSearchUrl(packageName, requestedVersion?.version)
+        )
+    }
+
+    /**
+     * The download dialogs are closed before the APK is taken on, because processing it puts up
+     * an overlay of its own and two of them on screen at once reads as a stuck flow.
+     */
+    override fun onHelperApkReceived(uri: Uri) {
+        showDownloadInstructionsDialog = false
+        showFilePickerPromptDialog = false
+        handleApkSelection(uri)
+    }
+
+    override fun onHelperInstalledAppChosen(packageName: String) {
+        showDownloadInstructionsDialog = false
+        showFilePickerPromptDialog = false
+        handleHelperInstalledAppSelection(packageName)
     }
 
     /**
@@ -3217,6 +3944,9 @@ class HomeViewModel(
                 }
             }
             pendingSelectedApp = null
+            // Kept while the app is, because the dialogs that pause the flow resume into the
+            // same run, and it must still know which install it was aimed at
+            pendingRepatchPackageName = null
         }
         showApkAvailabilityDialog = false
         showDownloadInstructionsDialog = false
@@ -3225,86 +3955,12 @@ class HomeViewModel(
     }
 
     /**
-     * Extract compatible versions for each package from bundle info.
-     * Returns a map of package name to a list of [BundledAppTarget] - versions are grouped by
-     * bundle (ordered by bundle display name) and sorted newest→oldest within each bundle.
-     * Versions are NOT deduplicated across bundles so the UI can show per-bundle sections.
-     *
-     * All declared versions are included regardless of [AppTarget.minSdk]. The minSdk value is
-     * preserved in [AppTarget.minSdk] so that:
-     * - [recommendedVersionsFlow] skips versions incompatible with the current device SDK.
-     * - The UI can render incompatible versions as greyed-out / non-selectable with a badge.
-     */
-    private fun extractCompatibleVersions(
-        bundleInfo: Map<Int, PatchBundleInfo>,
-        bundleNames: Map<Int, String>,
-        enabledBundleUids: Set<Int> = emptySet(),
-    ): Map<String, List<BundledAppTarget>> {
-        // packageName → bundleUid → version → AppTarget
-        val targetsByPackage = mutableMapOf<String, MutableMap<Int, MutableMap<String, AppTarget>>>()
-        // packageName → bundleUid → version → build codes (parallel to targetsByPackage)
-        val codesByPackage = mutableMapOf<String, MutableMap<Int, MutableMap<String, Set<Int>>>>()
-
-        bundleInfo.forEach { (bundleUid, info) ->
-            if (enabledBundleUids.isNotEmpty() && bundleUid !in enabledBundleUids) return@forEach
-
-            info.patches.forEach { patch ->
-                patch.compatiblePackages?.forEach { pkg ->
-                    val packageName = pkg.packageName ?: return@forEach
-                    val bundleMap = targetsByPackage
-                        .getOrPut(packageName) { mutableMapOf() }
-                        .getOrPut(bundleUid) { mutableMapOf() }
-                    val codesMap = codesByPackage
-                        .getOrPut(packageName) { mutableMapOf() }
-                        .getOrPut(bundleUid) { mutableMapOf() }
-
-                    pkg.versions?.forEach { version ->
-                        val isExperimental = pkg.experimentalVersions?.contains(version) == true
-                        // If a version appears in multiple patches of the same bundle, prefer stable
-                        if (version !in bundleMap || !isExperimental) {
-                            bundleMap[version] = AppTarget(
-                                version = version,
-                                isExperimental = isExperimental,
-                                description = pkg.versionDescriptions?.get(version),
-                                minSdk = pkg.versionMinSdks?.get(version),
-                            )
-                            pkg.versionCodes?.get(version)?.takeIf { it.isNotEmpty() }?.let {
-                                codesMap[version] = it.toSet()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Flatten: bundles ordered by display name, versions newest→oldest within each bundle
-        return targetsByPackage
-            .mapValues { (packageName, byBundle) ->
-                byBundle.entries
-                    .sortedWith(compareBy({ it.key != DEFAULT_SOURCE_UID }, { bundleNames[it.key] ?: "" }))
-                    .flatMap { (uid, versionMap) ->
-                        val codesForBundle = codesByPackage[packageName]?.get(uid)
-                        versionMap.values
-                            .sortedDescending()
-                            .map { target ->
-                                BundledAppTarget(
-                                    target = target,
-                                    bundleUid = uid,
-                                    bundleName = bundleNames[uid] ?: "Bundle $uid",
-                                    buildCodes = target.version?.let { codesForBundle?.get(it) }
-                                )
-                            }
-                    }
-            }
-            .filterValues { it.isNotEmpty() }
-    }
-
-    /**
      * Clean up any pending temporary APK when the ViewModel is destroyed.
      * This handles the edge case where the user navigates away or the system destroys
      * the ViewModel while a temporary APK file is still held in pendingSelectedApp.
      */
     override fun onCleared() {
+        runCatching { app.unregisterReceiver(packageChangeReceiver) }
         val pending = pendingSelectedApp
         if (pending is SelectedApp.Local && pending.temporary) {
             pending.file.delete()

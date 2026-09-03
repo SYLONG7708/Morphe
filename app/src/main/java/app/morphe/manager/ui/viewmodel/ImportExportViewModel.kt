@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.morphe.manager.R
+import app.morphe.manager.domain.manager.HomeAppButtonPreferences
 import app.morphe.manager.domain.manager.KeystoreManager
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.PatchBundleRepository
@@ -69,6 +70,8 @@ data class PatchBundleDataExportFile(
     // Map<PackageName, List<PatchName>>
     val selections: Map<String, List<String>>,
     // Map<PackageName, Map<PatchName, Map<OptionKey, OptionValue>>>
+    // Deliberately without a default: the field has always been written out, and giving it one
+    // would drop it from the file for versions that still require it
     val options: Map<String, Map<String, Map<String, String>>>?
 )
 
@@ -97,6 +100,10 @@ data class BundleSnapshot(
     val sortOrder: Int,
     val createdAt: Long? = null,
     val updatedAt: Long? = null,
+    // Prerelease toggle. Null in backups written before per-source toggles were exported
+    val prerelease: Boolean? = null,
+    // Experimental versions toggle. Null in backups written before per-source toggles were exported
+    val experimentalVersions: Boolean? = null
 )
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -104,6 +111,7 @@ class ImportExportViewModel(
     private val app: Application,
     private val keystoreManager: KeystoreManager,
     private val preferencesManager: PreferencesManager,
+    private val homeAppButtonPreferences: HomeAppButtonPreferences,
     private val patchSelectionRepository: PatchSelectionRepository,
     private val patchOptionsRepository: PatchOptionsRepository,
     private val patchBundleRepository: PatchBundleRepository
@@ -209,7 +217,7 @@ class ImportExportViewModel(
         uiSafe(app, R.string.settings_system_import_manager_settings_fail, "Failed to import manager settings") {
             val exportFile = withContext(Dispatchers.IO) {
                 contentResolver.openInputStream(source)!!.use {
-                    json.decodeFromStream<ManagerSettingsExportFile>(it)
+                    settingsJson.decodeFromStream<ManagerSettingsExportFile>(it)
                 }
             }
 
@@ -220,6 +228,10 @@ class ImportExportViewModel(
                 saveLanguageToPrefs(app, it)
                 applyAppLanguage(it)
             }
+
+            // Home app buttons (categories, hidden apps, sort mode, etc.) live outside
+            // PreferencesManager, so they're applied here rather than in importSettings
+            exportFile.settings.homeAppButtons?.let(homeAppButtonPreferences::importState)
 
             // Always call the repository so Replace can clear existing custom sources even when the backup has none
             patchBundleRepository.importCustomBundles(
@@ -235,12 +247,16 @@ class ImportExportViewModel(
         uiSafe(app, R.string.settings_system_export_manager_settings_fail, "Failed to export manager settings") {
             val snapshot = preferencesManager.exportSettings()
             val bundles = withContext(Dispatchers.IO) { patchBundleRepository.exportCustomBundles() }
+            val homeAppButtons = homeAppButtonPreferences.exportState()
 
             withContext(Dispatchers.IO) {
                 contentResolver.openOutputStream(target, "wt")!!.use { output ->
-                    json.encodeToStream(
+                    settingsJson.encodeToStream(
                         ManagerSettingsExportFile(
-                            settings = snapshot.copy(customBundles = bundles.ifEmpty { null })
+                            settings = snapshot.copy(
+                                customBundles = bundles.ifEmpty { null },
+                                homeAppButtons = homeAppButtons
+                            )
                         ),
                         output
                     )
@@ -589,13 +605,17 @@ class ImportExportViewModel(
         uiSafe(app, R.string.settings_system_export_manager_settings_fail, "Failed to export settings to Downloads") {
             val snapshot = preferencesManager.exportSettings()
             val bundles = withContext(Dispatchers.IO) { patchBundleRepository.exportCustomBundles() }
+            val homeAppButtons = homeAppButtonPreferences.exportState()
             withContext(Dispatchers.IO) {
                 val stream = openDownloadsOutputStream("morphe_manager_settings.json", JSON_MIMETYPE)
                     ?: throw IllegalStateException("Cannot open Downloads output stream")
                 stream.use {
-                    json.encodeToStream(
+                    settingsJson.encodeToStream(
                         ManagerSettingsExportFile(
-                            settings = snapshot.copy(customBundles = bundles.ifEmpty { null })
+                            settings = snapshot.copy(
+                                customBundles = bundles.ifEmpty { null },
+                                homeAppButtons = homeAppButtons
+                            )
                         ),
                         it
                     )
@@ -621,14 +641,21 @@ class ImportExportViewModel(
         cancelKeystoreImport()
     }
 
-    private companion object {
-        // Reusable JSON instances to avoid redundant creation
-        private val json = Json {
+    companion object {
+        // Reusable JSON instances to avoid redundant creation. Both are internal so the export
+        // format stays under test instead of the tests rebuilding their own configuration
+        internal val json = Json {
             ignoreUnknownKeys = true
             prettyPrint = true // Make exports human-readable
         }
 
-        val knownPasswords = arrayOf("Morphe", "s3cur3p@ssw0rd")
-        val aliases = arrayOf(KeystoreManager.DEFAULT, "alias", "Morphe Key")
+        /**
+         * Settings exports omit unset fields instead of writing a wall of nulls. Every field in
+         * that file has a default, so older manager versions still read the trimmed form.
+         */
+        internal val settingsJson = Json(json) { explicitNulls = false }
+
+        private val knownPasswords = arrayOf("Morphe", "s3cur3p@ssw0rd")
+        private val aliases = arrayOf(KeystoreManager.DEFAULT, "alias", "Morphe Key")
     }
 }

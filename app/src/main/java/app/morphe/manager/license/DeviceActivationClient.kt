@@ -15,14 +15,19 @@ object DeviceActivationClient {
         val sessionId: String,
         val userCode: String,
         val pollSecret: String,
-        val expiresAt: Long,
+        var expiresAt: Long,
         val pollAfterSeconds: Long,
     )
 
     sealed interface PollResult {
         data object Pending : PollResult
         data object Expired : PollResult
-        data class Approved(val licenseToken: String, val linkToken: String?) : PollResult
+        data class Approved(
+            val licenseToken: String,
+            val linkTokens: Map<String, String>,
+            val entitlementKind: String,
+            val licenseExpiresAt: Long,
+        ) : PollResult
     }
 
     suspend fun start(context: Context): Session = withContext(Dispatchers.IO) {
@@ -48,12 +53,39 @@ object DeviceActivationClient {
         )
         when (response.getString("status")) {
             "approved" -> PollResult.Approved(
-                response.getString("licenseToken"),
-                response.optString("linkToken").takeIf(String::isNotBlank),
+                licenseToken = response.getString("licenseToken"),
+                linkTokens = parseLinkTokens(response),
+                entitlementKind = response.optString("entitlementKind"),
+                licenseExpiresAt = response.optLong("licenseExpiresAt", 0L),
             )
             "expired" -> PollResult.Expired
-            else -> PollResult.Pending
+            else -> {
+                response.optLong("expiresAt", 0L).takeIf { it > 0L }?.let { session.expiresAt = it }
+                PollResult.Pending
+            }
         }
+    }
+
+    suspend fun startTrial(session: Session) = withContext(Dispatchers.IO) {
+        post(
+            "/api/v1/activation/trial",
+            JSONObject()
+                .put("sessionId", session.sessionId)
+                .put("pollSecret", session.pollSecret),
+        )
+    }
+
+    private fun parseLinkTokens(response: JSONObject): Map<String, String> {
+        val result = linkedMapOf<String, String>()
+        response.optJSONObject("linkTokens")?.let { links ->
+            links.keys().forEach { product ->
+                links.optString(product).takeIf(String::isNotBlank)?.let { result[product] = it }
+            }
+        }
+        response.optString("linkToken").takeIf(String::isNotBlank)?.let {
+            result.putIfAbsent("voice-assistant", it)
+        }
+        return result
     }
 
     internal fun installationJson(context: Context, product: String): JSONObject = JSONObject()

@@ -109,18 +109,6 @@ abstract class OptionDao {
     )
     abstract suspend fun getOptionsSummaryRaw(): List<OptionSummaryItem>
 
-    /**
-     * Get summary of options per package and bundle.
-     * Returns: Map<PackageName, Map<BundleUid, OptionCount>>.
-     */
-    suspend fun getOptionsSummary(): Map<String, Map<Int, Int>> {
-        val raw = getOptionsSummaryRaw()
-        return raw.groupBy { it.packageName }
-            .mapValues { (_, items) ->
-                items.associate { it.patchBundle to it.optionCount }
-            }
-    }
-
     @Query("SELECT uid FROM option_groups WHERE patch_bundle = :bundleUid AND package_name = :packageName")
     abstract suspend fun getGroupId(bundleUid: Int, packageName: String): Int?
 

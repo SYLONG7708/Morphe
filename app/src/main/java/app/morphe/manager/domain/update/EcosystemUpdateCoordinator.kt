@@ -79,29 +79,12 @@ class EcosystemUpdateCoordinator(
         forcePrepareMicrog: Boolean = false,
     ): EcosystemUpdateSnapshot = mutex.withLock {
         mutableState.value = EcosystemUpdateState.Checking
+        var bundledFallback: BundledEcosystem? = null
         try {
             if (BuildConfig.BUNDLED_ECOSYSTEM_ENABLED) {
-                val bundled = bundledEcosystemProvisioner.provision()
-                val snapshot = EcosystemUpdateSnapshot(
-                    checkedAt = System.currentTimeMillis(),
-                    sequence = BuildConfig.SAFE_PROFILE_REVISION.toLong(),
-                    manager = ComponentUpdateState(
-                        status = UpdateStatus.UP_TO_DATE,
-                        installedVersion = BuildConfig.VERSION_NAME,
-                        availableVersion = BuildConfig.VERSION_NAME,
-                        detail = "UIS7870 all-in-one build",
-                    ),
-                    patches = ComponentUpdateState(
-                        status = UpdateStatus.UP_TO_DATE,
-                        installedVersion = bundled.patchVersion,
-                        availableVersion = bundled.patchVersion,
-                        detail = "Verified bundle embedded in this APK",
-                    ),
-                    microg = bundled.microg,
-                    youtube = resolveYouTube(),
-                )
-                mutableState.value = EcosystemUpdateState.Ready(snapshot)
-                return@withLock snapshot
+                // Embedded assets are a verified offline baseline, not a permanent update lock.
+                // Continue to the signed online manifest so all-in-one builds can update too.
+                bundledFallback = bundledEcosystemProvisioner.provision()
             }
 
             patchBundleRepository.updateCheckAndAwait(allowUnsafeNetwork)
@@ -140,6 +123,28 @@ class EcosystemUpdateCoordinator(
             snapshot
         } catch (error: Throwable) {
             val message = error.message ?: error.javaClass.simpleName
+            bundledFallback?.let { bundled ->
+                val snapshot = EcosystemUpdateSnapshot(
+                    checkedAt = System.currentTimeMillis(),
+                    sequence = BuildConfig.SAFE_PROFILE_REVISION.toLong(),
+                    manager = ComponentUpdateState(
+                        status = UpdateStatus.UP_TO_DATE,
+                        installedVersion = BuildConfig.VERSION_NAME,
+                        availableVersion = BuildConfig.VERSION_NAME,
+                        detail = "Signed update check unavailable; using verified embedded baseline: $message",
+                    ),
+                    patches = ComponentUpdateState(
+                        status = UpdateStatus.UP_TO_DATE,
+                        installedVersion = bundled.patchVersion,
+                        availableVersion = bundled.patchVersion,
+                        detail = "Verified embedded bundle used as offline fallback",
+                    ),
+                    microg = bundled.microg,
+                    youtube = resolveYouTube(),
+                )
+                mutableState.value = EcosystemUpdateState.Ready(snapshot)
+                return@withLock snapshot
+            }
             mutableState.value = EcosystemUpdateState.Failure(message)
             throw error
         }
@@ -220,7 +225,7 @@ class EcosystemUpdateCoordinator(
         component: UpdateComponent,
         profile: DeviceProfile,
     ): ComponentUpdateState {
-        val artifact = profile.resolve(component.artifacts)
+        val artifact = resolveManagerArtifact(component.artifacts, profile, app.packageName)
             ?: return ComponentUpdateState(
                 status = UpdateStatus.UNSUPPORTED,
                 installedVersion = BuildConfig.VERSION_NAME,
@@ -537,3 +542,11 @@ class EcosystemUpdateCoordinator(
         )
     }
 }
+
+internal fun resolveManagerArtifact(
+    artifacts: List<UpdateArtifact>,
+    profile: DeviceProfile,
+    packageName: String,
+): UpdateArtifact? = profile.resolve(
+    artifacts.filter { it.packageName == null || it.packageName == packageName },
+)

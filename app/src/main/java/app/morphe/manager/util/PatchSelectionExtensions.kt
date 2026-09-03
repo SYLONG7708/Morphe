@@ -3,7 +3,14 @@ package app.morphe.manager.util
 import app.morphe.manager.data.room.apps.installed.SelectionPayload
 import app.morphe.manager.domain.bundles.PatchBundleSource
 import app.morphe.manager.patcher.patch.PatchInfo
+import app.morphe.manager.patcher.patch.PatchLockState
+import app.morphe.manager.util.PatchSelectionUtils.bulkEnablePatches
+import app.morphe.manager.util.PatchSelectionUtils.filterGmsCore
 import app.morphe.manager.util.PatchSelectionUtils.sanitizeForPatcher
+import app.morphe.manager.util.PatchSelectionUtils.spansMultipleBundles
+import app.morphe.patcher.patch.ApkArchitecture
+import app.morphe.patcher.patch.InstallerType
+import app.morphe.patcher.patch.PatchAvailability
 
 /**
  * Converts SelectionPayload back to PatchSelection for runtime use.
@@ -72,6 +79,47 @@ object PatchSelectionUtils {
 
         return current
     }
+
+    /**
+     * Patch names a bulk enable adds to the [selected] patches of one bundle.
+     *
+     * Universal patches are staged behind the regular ones: applying them blindly is a common
+     * cause of failed patching, so they join the selection only once every regular patch is on
+     * and [universalArmed] confirms that a previous bulk enable already left it that way.
+     * [patches] is the list the user currently sees, so an active search narrows both stages.
+     */
+    fun bulkEnablePatches(
+        patches: List<Pair<PatchInfo, Boolean>>,
+        selected: Set<String>,
+        universalArmed: Boolean,
+        lockStateOf: (PatchInfo) -> PatchLockState
+    ): Set<String> {
+        val selectable = patches.selectable(lockStateOf)
+        val staged = if (universalArmed && selectable.allRegularSelected()) {
+            selectable
+        } else {
+            selectable.filterNot { (patch, _) -> patch.isUniversal }
+        }
+        return selected + staged.map { (patch, _) -> patch.name }
+    }
+
+    /** True when [bulkEnablePatches] leaves universal patches of [patches] for another tap. */
+    fun bulkEnableHoldsUniversal(
+        patches: List<Pair<PatchInfo, Boolean>>,
+        universalArmed: Boolean,
+        lockStateOf: (PatchInfo) -> PatchLockState
+    ): Boolean {
+        val selectable = patches.selectable(lockStateOf)
+        val hasUnselectedUniversal = selectable.any { (patch, enabled) -> patch.isUniversal && !enabled }
+        return hasUnselectedUniversal && !(universalArmed && selectable.allRegularSelected())
+    }
+
+    /** Patches the user is allowed to turn on, i.e. everything except the locked off ones. */
+    private fun List<Pair<PatchInfo, Boolean>>.selectable(lockStateOf: (PatchInfo) -> PatchLockState) =
+        filterNot { (patch, _) -> lockStateOf(patch) == PatchLockState.LOCKED_OFF }
+
+    private fun List<Pair<PatchInfo, Boolean>>.allRegularSelected() =
+        none { (patch, enabled) -> !patch.isUniversal && !enabled }
 
     /**
      * Update a single option value in an options map.
@@ -210,12 +258,73 @@ object PatchSelectionUtils {
         }.toMap()
     }
 
+    /** True when the run draws patches from more than one bundle. */
+    fun PatchSelection.spansMultipleBundles() = count { (_, patches) -> patches.isNotEmpty() } > 1
+
+    /**
+     * Apply per-patch availability rules to a selection.
+     *
+     * For every patch that ships an availability resolver in its bundle, resolve it against the
+     * current [installerType] and [apkArchitecture] and adjust the selection:
+     *  - REQUIRED: force the patch into the selection even if the user did not pick it
+     *  - UNAVAILABLE: remove the patch from the selection even if the user did pick it
+     *  - ENABLED / DISABLED: leave the selection untouched (user choice wins)
+     *
+     * Only bundles the run draws patches from are touched. A bundle nothing is selected from takes
+     * no part in the run, so no rule of its own may pull it back in. REQUIRED additionally stops
+     * forcing once the selection [spansMultipleBundles]: the user has to stay free to drop one of
+     * them, and a patch that cannot be unselected would hold its bundle in the run for good. Such a
+     * patch still starts out selected through [PatchInfo.defaultSelected], it merely stays
+     * unlockable until the run is down to a single bundle again.
+     *
+     * Patches without an availability resolver are left untouched here. Legacy GmsCore hardcoding
+     * lives in [filterGmsCore] for the transition period.
+     */
+    fun PatchSelection.applyAvailability(
+        installerType: InstallerType,
+        apkArchitecture: ApkArchitecture,
+        allBundlePatches: Map<Int, Map<String, PatchInfo>>,
+    ): PatchSelection {
+        val enforceRequired = !spansMultipleBundles()
+
+        return mapNotNull { (bundleUid, selected) ->
+            if (selected.isEmpty()) return@mapNotNull null
+            val patchesInBundle = allBundlePatches[bundleUid] ?: return@mapNotNull bundleUid to selected
+
+            val current = selected.toMutableSet()
+            patchesInBundle.values.forEach { info ->
+                val resolver = info.availabilityResolver ?: return@forEach
+
+                when (resolver.resolve(installerType, apkArchitecture)) {
+                    PatchAvailability.REQUIRED    -> if (enforceRequired) current.add(info.name)
+                    PatchAvailability.UNAVAILABLE -> current.remove(info.name)
+                    PatchAvailability.ENABLED,
+                    PatchAvailability.DISABLED    -> Unit
+                }
+            }
+
+            if (current.isEmpty()) null else bundleUid to current.toSet()
+        }.toMap()
+    }
+
     /**
      * Filter out GmsCore support patch from selection (for mount installs).
+     *
+     * Safety net for bundles that predate the availability API or come from third-party sources
+     * that have not adopted it yet. Matches strictly by patch name so it becomes a no-op the
+     * moment the bundle's own resolver removes the patch first.
      */
+    // TODO: Delete once the patches release declaring `availability {}` for "GmsCore support"
+    //  has propagated to users, together with both call sites:
+    //  HomeViewModel.applyInstallerRules and BatchPlanResolver.applyLegacyMountRules
+    @Deprecated(
+        message = "Kept for legacy bundles. Prefer applyAvailability with the patch-declared resolver.",
+        replaceWith = ReplaceWith("applyAvailability(InstallerType.MOUNT, apkArchitecture, allBundlePatches)")
+    )
     fun PatchSelection.filterGmsCore(): PatchSelection {
         return mapValues { (_, patches) ->
             patches.filterNot { it.equals("GmsCore support", ignoreCase = true) }.toSet()
         }.filterValues { it.isNotEmpty() }
     }
+
 }

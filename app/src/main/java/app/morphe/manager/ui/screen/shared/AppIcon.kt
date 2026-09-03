@@ -3,12 +3,14 @@ package app.morphe.manager.ui.screen.shared
 import android.content.pm.PackageInfo
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -19,8 +21,15 @@ import androidx.compose.ui.unit.dp
 import app.morphe.manager.util.AppDataResolver
 import app.morphe.manager.util.AppDataSource
 import coil.compose.AsyncImage
-import coil.compose.SubcomposeAsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import org.koin.compose.koinInject
+
+/**
+ * Share of the icon slot an adaptive icon actually paints, matching the ~10% inset the launcher
+ * applies. Placeholders shown in its place use the same fraction so nothing resizes on load.
+ */
+private const val AdaptiveIconContentFraction = 0.8f
 
 /**
  * Universal app icon component.
@@ -98,12 +107,23 @@ private fun SimpleAppIcon(
             .build()
     }
 
-    SubcomposeAsyncImage(
-        model = request,
-        contentDescription = contentDescription,
-        modifier = modifier,
-        loading = { ShimmerBox(modifier = Modifier.fillMaxSize()) }
-    )
+    // Painter rather than the subcomposing variant: subcomposition runs during measurement, and a
+    // list of icons pays for it on every measure pass. The loading state is cheap to overlay here
+    val painter = rememberAsyncImagePainter(request)
+
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        if (painter.state is AsyncImagePainter.State.Loading) {
+            // Adaptive icons only paint their inner square, so a placeholder filling the whole
+            // slot reads as the larger of the two while a fast scroll waits for the real one
+            ShimmerBox(modifier = Modifier.fillMaxSize(AdaptiveIconContentFraction))
+        }
+
+        Image(
+            painter = painter,
+            contentDescription = contentDescription,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 }
 
 /**
@@ -143,10 +163,12 @@ private fun ResolvedAppIcon(
                     innerPadding = placeholderInnerPadding
                 )
             } else {
-                ShimmerBox(
-                    modifier = modifier,
-                    shape = RoundedCornerShape(15.dp)
-                )
+                Box(modifier = modifier, contentAlignment = Alignment.Center) {
+                    ShimmerBox(
+                        modifier = Modifier.fillMaxSize(AdaptiveIconContentFraction),
+                        shape = RoundedCornerShape(15.dp)
+                    )
+                }
             }
         }
         resolvedPackageInfo != null -> {

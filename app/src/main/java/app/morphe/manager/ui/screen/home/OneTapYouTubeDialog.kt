@@ -33,9 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.domain.update.UpdateStatus
+import app.morphe.manager.ui.screen.shared.AppDialog
+import app.morphe.manager.ui.screen.shared.DialogPadding
 import app.morphe.manager.ui.screen.shared.LocalDialogSecondaryTextColor
 import app.morphe.manager.ui.screen.shared.LocalDialogTextColor
-import app.morphe.manager.ui.screen.shared.MorpheDialog
 import app.morphe.manager.ui.viewmodel.OneTapHubUiState
 
 @Composable
@@ -46,11 +47,11 @@ fun OneTapYouTubeDialog(
     onRefresh: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.one_tap_title),
         dismissOnClickOutside = false,
-        compactPadding = true,
+        padding = DialogPadding.Compact,
         footer = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,7 +93,7 @@ fun OneTapYouTubeDialog(
                     color = LocalDialogTextColor.current,
                 )
             }
-            return@MorpheDialog
+            return@AppDialog
         }
 
         OneTapStatusRow(

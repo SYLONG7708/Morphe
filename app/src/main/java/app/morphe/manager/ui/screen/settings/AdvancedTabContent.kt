@@ -22,12 +22,12 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import app.morphe.manager.R
+import app.morphe.manager.ui.screen.settings.advanced.AutoPatchDialog
 import app.morphe.manager.ui.screen.settings.advanced.GitHubPatSettingsItem
 import app.morphe.manager.ui.screen.settings.advanced.PatchOptionsSection
+import app.morphe.manager.ui.screen.settings.advanced.PatcherTuningSection
 import app.morphe.manager.ui.screen.settings.advanced.UpdatesSettingsItem
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.HomeViewModel
@@ -45,7 +45,9 @@ fun AdvancedTabContent(
     settingsViewModel: SettingsViewModel,
     scrollState: ScrollState = rememberScrollState(),
     onExpertModeItemPositioned: ((Rect) -> Unit)? = null,
-    onExpertModeScrollTarget: ((Int) -> Unit)? = null
+    onExpertModeScrollTarget: ((Int) -> Unit)? = null,
+    onProcessRuntimePositioned: ((Rect) -> Unit)? = null,
+    onProcessRuntimeScrollTarget: ((Int) -> Unit)? = null
 ) {
     val prefs = settingsViewModel.prefs
     val useExpertMode by prefs.useExpertMode.getAsState()
@@ -58,12 +60,16 @@ fun AdvancedTabContent(
 
     val showExpertModeNotice = settingsViewModel.showExpertModeNotice
     val showExpertModeDialog = remember { mutableStateOf(false) }
+    val showAutoPatchDialog = remember { mutableStateOf(false) }
     val gitHubPat by prefs.gitHubPat.getAsState()
     val includeGitHubPatInExports by prefs.includeGitHubPatInExports.getAsState()
 
-    // Localized strings for accessibility
-    val enabledState = stringResource(R.string.enabled)
-    val disabledState = stringResource(R.string.disabled)
+    if (showAutoPatchDialog.value) {
+        AutoPatchDialog(
+            settingsViewModel = settingsViewModel,
+            onDismiss = { showAutoPatchDialog.value = false }
+        )
+    }
 
     // Expert mode confirmation dialog
     if (showExpertModeDialog.value) {
@@ -82,8 +88,8 @@ fun AdvancedTabContent(
             .fillMaxSize()
             .verticalScroll(scrollState)
             .animateContentSize()
-            .padding(horizontal = contentPadding, vertical = MorpheDefaults.ContentPadding),
-        verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)
+            .padding(horizontal = contentPadding, vertical = Defaults.ContentPadding),
+        verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
     ) {
         // Updates section
         SectionTitle(
@@ -99,6 +105,16 @@ fun AdvancedTabContent(
                     app.morphe.manager.domain.update.EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
                 )
             },
+            onAutoPatchClick = { showAutoPatchDialog.value = true }
+        )
+
+        // Patcher tuning
+        PatcherTuningSection(
+            settingsViewModel = settingsViewModel,
+            modifier = if (onProcessRuntimeScrollTarget != null) Modifier.onGloballyPositioned { coords ->
+                onProcessRuntimeScrollTarget(coords.boundsInParent().top.roundToInt())
+            } else Modifier,
+            onProcessRuntimePositioned = onProcessRuntimePositioned
         )
 
         // Expert settings section
@@ -107,84 +123,67 @@ fun AdvancedTabContent(
             icon = Icons.Outlined.Engineering
         )
 
-        RichSettingsItem(
-            onClick = {
-                if (!useExpertMode) showExpertModeDialog.value = true
-                else settingsViewModel.setExpertMode(false)
-            },
-            showBorder = true,
+        SettingsGroup(
             modifier = if (onExpertModeItemPositioned != null || onExpertModeScrollTarget != null)
                 Modifier.onGloballyPositioned { coords ->
                     onExpertModeItemPositioned?.invoke(coords.boundsInWindow())
                     onExpertModeScrollTarget?.invoke(coords.boundsInParent().top.roundToInt())
                 }
-            else Modifier,
-            leadingContent = {
-                MorpheIcon(icon = Icons.Outlined.Psychology)
-            },
-            title = stringResource(R.string.settings_advanced_expert_mode),
-            subtitle = stringResource(R.string.settings_advanced_expert_mode_description),
-            trailingContent = {
-                MorpheSwitch(
-                    checked = useExpertMode,
-                    onCheckedChange = null,
-                    modifier = Modifier.semantics {
-                        stateDescription = if (useExpertMode) enabledState else disabledState
-                    }
-                )
-            }
-        )
+            else Modifier
+        ) {
+            SettingsSwitchItem(
+                checked = useExpertMode,
+                onToggle = {
+                    if (!useExpertMode) showExpertModeDialog.value = true
+                    else settingsViewModel.setExpertMode(false)
+                },
+                icon = Icons.Outlined.Psychology,
+                title = stringResource(R.string.settings_advanced_expert_mode),
+                subtitle = stringResource(R.string.settings_advanced_expert_mode_description)
+            )
+        }
 
         Crossfade(
             targetState = useExpertMode,
             label = "expert_mode_crossfade"
         ) { expertMode ->
             if (expertMode) {
-                Column(verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)) {
-                    // GitHub PAT
-                    GitHubPatSettingsItem(
-                        currentPat = gitHubPat,
-                        currentIncludeInExport = includeGitHubPatInExports,
-                        onSave = { pat, include ->
-                            settingsViewModel.setGitHubPat(pat, include)
-                        }
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)) {
+                    SettingsGroup {
+                        // GitHub PAT
+                        GitHubPatSettingsItem(
+                            currentPat = gitHubPat,
+                            currentIncludeInExport = includeGitHubPatInExports,
+                            onSave = { pat, include ->
+                                settingsViewModel.setGitHubPat(pat, include)
+                            }
+                        )
 
-                    // Strip unused native libraries + filter split APKs for device
-                    RichSettingsItem(
-                        onClick = {
-                            settingsViewModel.setStripUnusedNativeLibs(!stripUnusedNativeLibs)
-                        },
-                        showBorder = true,
-                        leadingContent = {
-                            MorpheIcon(icon = Icons.Outlined.LayersClear)
-                        },
-                        title = stringResource(R.string.settings_advanced_strip_unused_libs),
-                        subtitle = stringResource(R.string.settings_advanced_strip_unused_libs_description),
-                        trailingContent = {
-                            MorpheSwitch(
-                                checked = stripUnusedNativeLibs,
-                                onCheckedChange = null,
-                                modifier = Modifier.semantics {
-                                    stateDescription =
-                                        if (stripUnusedNativeLibs) enabledState else disabledState
-                                }
-                            )
-                        }
-                    )
+                        SettingsDivider()
+
+                        // Strip unused native libraries + filter split APKs for device
+                        SettingsSwitchItem(
+                            checked = stripUnusedNativeLibs,
+                            onToggle = {
+                                settingsViewModel.setStripUnusedNativeLibs(!stripUnusedNativeLibs)
+                            },
+                            icon = Icons.Outlined.LayersClear,
+                            title = stringResource(R.string.settings_advanced_strip_unused_libs),
+                            subtitle = stringResource(R.string.settings_advanced_strip_unused_libs_description)
+                        )
+                    }
 
                     // Expert mode notice shown once after enabling
                     if (showExpertModeNotice) {
-                        InfoBadge(
+                        Notice(
                             icon = Icons.Outlined.Info,
                             text = stringResource(R.string.settings_advanced_patch_options_expert_mode_notice),
-                            style = InfoBadgeStyle.Warning,
-                            isExpanded = true
+                            tone = SemanticTone.Warning
                         )
                     }
                 }
             } else {
-                Column(verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)) {
+                Column(verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)) {
                     // Patch Options (Simple mode only)
                     SectionTitle(
                         text = stringResource(R.string.settings_advanced_patch_options),
@@ -210,11 +209,11 @@ private fun ExpertModeConfirmationDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.settings_advanced_expert_mode_dialog_title),
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.enable),
                 onPrimaryClick = onConfirm,
                 isPrimaryDestructive = true,

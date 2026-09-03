@@ -66,27 +66,30 @@ class UpdateCheckWorker(
     private val notificationManager: UpdateNotificationManager by inject()
 
     override suspend fun doWork(): Result {
-        // Skip if background update notifications are disabled by user
-        if (!prefs.backgroundUpdateNotifications.get()) {
-            Log.d(tag, "UpdateCheckWorker: background notifications disabled, skipping")
+        val notificationsEnabled = prefs.backgroundUpdateNotifications.get()
+        val automaticDownloadsEnabled = prefs.automaticEcosystemUpdates.get()
+        if (!notificationsEnabled && !automaticDownloadsEnabled) {
+            Log.d(tag, "UpdateCheckWorker: update checks and downloads disabled, skipping")
             return Result.success()
         }
 
         Log.d(tag, "UpdateCheckWorker: starting background update check")
 
         return try {
-            val snapshot = coordinator.refresh(downloadAssets = true)
-            if (snapshot.manager.status in NOTIFIABLE) {
-                notificationManager.showManagerUpdateNotification(snapshot.manager.availableVersion)
-            }
-            if (snapshot.patches.status == UpdateStatus.UPDATE_AVAILABLE) {
-                notificationManager.showBundleUpdateNotification(snapshot.patches.availableVersion)
-            }
-            if (snapshot.youtube.status == UpdateStatus.UPDATE_AVAILABLE) {
-                notificationManager.showYouTubeUpdateNotification(snapshot.youtube.availableVersion)
-            }
-            if (snapshot.microg.status in NOTIFIABLE) {
-                notificationManager.showMicroGUpdateNotification(snapshot.microg.availableVersion)
+            val snapshot = coordinator.refresh(downloadAssets = automaticDownloadsEnabled)
+            if (notificationsEnabled) {
+                if (snapshot.manager.status in NOTIFIABLE) {
+                    notificationManager.showManagerUpdateNotification(snapshot.manager.availableVersion)
+                }
+                if (snapshot.patches.status == UpdateStatus.UPDATE_AVAILABLE) {
+                    notificationManager.showBundleUpdateNotification(snapshot.patches.availableVersion)
+                }
+                if (snapshot.youtube.status == UpdateStatus.UPDATE_AVAILABLE) {
+                    notificationManager.showYouTubeUpdateNotification(snapshot.youtube.availableVersion)
+                }
+                if (snapshot.microg.status in NOTIFIABLE) {
+                    notificationManager.showMicroGUpdateNotification(snapshot.microg.availableVersion)
+                }
             }
             Log.d(tag, "UpdateCheckWorker: background update check completed")
             Result.success()
@@ -100,6 +103,23 @@ class UpdateCheckWorker(
     companion object {
         /** Unique name used to identify the periodic work in WorkManager */
         const val WORK_NAME = "morphe_update_check"
+        const val IMMEDIATE_WORK_NAME = "morphe_update_check_now"
+
+        /** Check the signed channel immediately after cold start or in-process authorization. */
+        fun runNow(context: Context) {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresStorageNotLow(true)
+                .build()
+            val request = OneTimeWorkRequestBuilder<UpdateCheckWorker>()
+                .setConstraints(constraints)
+                .build()
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                IMMEDIATE_WORK_NAME,
+                ExistingWorkPolicy.KEEP,
+                request,
+            )
+        }
 
         /**
          * Schedule (or reschedule) the periodic update check with the given [interval].
@@ -134,6 +154,7 @@ class UpdateCheckWorker(
          */
         fun cancel(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
+            WorkManager.getInstance(context).cancelUniqueWork(IMMEDIATE_WORK_NAME)
             Log.d("UpdateCheckWorker", "Periodic update check cancelled")
         }
 

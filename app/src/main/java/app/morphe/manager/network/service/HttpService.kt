@@ -24,12 +24,16 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.abs
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Central HTTP service built on Ktor Client. Handles:
@@ -38,7 +42,7 @@ import kotlin.math.abs
  *  - Simple file download with resume support via [download]
  *  - Multi-threaded parallel download via [downloadToFile]
  *  - Automatic retry on HTTP 429 with Retry-After support via [runWith429Retry]
- *  - Generic exponential-backoff retry via [runWithRetry]
+ *  - Exponential-backoff retry for dropped connections via [runWithRetry]
  */
 class HttpService(
     val json: Json,
@@ -47,53 +51,66 @@ class HttpService(
     /**
      * Executes an HTTP request and deserializes the response body to [T].
      *
-     * Automatically handles HTTP 429 with retry-after backoff.
+     * Automatically handles HTTP 429 with retry-after backoff and retries dropped connections.
      * Returns [APIResponse.Success] on 2xx, [APIResponse.Error] on non-2xx HTTP status,
      * or [APIResponse.Failure] on network/parse exceptions.
      *
      * Special case: if [T] is [String], returns the raw body text without deserialization.
      */
     suspend inline fun <reified T> request(
-        crossinline builder: HttpRequestBuilder.() -> Unit = {}
+        // noinline so the builder can also be handed to hostOf for the circuit breaker
+        noinline builder: HttpRequestBuilder.() -> Unit = {}
     ): APIResponse<T> {
         var body: String? = null
         return try {
-            runWith429Retry("request") {
-                try {
-                    val response = http.request {
-                        builder()
-                        Log.i(tag, "HttpService.request: Connecting to URL: ${url.buildString()}")
-                    }
-
-                    if (response.status == HttpStatusCode.TooManyRequests) {
-                        throw TooManyRequestsException(response.retryAfterMillis())
-                    }
-
-                    if (response.status.isSuccess()) {
-                        // Read body once into a local variable to avoid consuming the stream twice
-                        body = response.bodyAsText()
-
-                        if (T::class == String::class) {
-                            @Suppress("UNCHECKED_CAST")
-                            return@runWith429Retry APIResponse.Success(body as T)
+            runWithRetry("request", host = hostOf(builder)) {
+                runWith429Retry("request") {
+                    try {
+                        val response = http.request {
+                            builder()
+                            Log.i(tag, "HttpService.request: Connecting to URL: ${url.buildString()}")
                         }
 
-                        APIResponse.Success(json.decodeFromString(body!!))
-                    } else {
-                        body = runCatching { response.bodyAsText() }.getOrNull()
-                        Log.e(tag, "HTTP error ${response.status}, body: $body")
-                        APIResponse.Error(APIError(response.status, body))
+                        if (response.status == HttpStatusCode.TooManyRequests) {
+                            throw TooManyRequestsException(response.retryAfterMillis())
+                        }
+
+                        if (response.status.isSuccess()) {
+                            // Read body once into a local variable to avoid consuming the stream twice
+                            body = response.bodyAsText()
+
+                            if (T::class == String::class) {
+                                @Suppress("UNCHECKED_CAST")
+                                return@runWith429Retry APIResponse.Success(body as T)
+                            }
+
+                            APIResponse.Success(json.decodeFromString(body!!))
+                        } else {
+                            body = runCatching { response.bodyAsText() }.getOrNull()
+                            Log.e(tag, "HTTP error ${response.status}, body: $body")
+                            APIResponse.Error(APIError(response.status, body))
+                        }
+                    } catch (t: TooManyRequestsException) {
+                        throw t // rethrow so runWith429Retry can handle it
+                    } catch (t: CancellationException) {
+                        throw t // a canceled caller must not be answered with a failure
+                    } catch (t: Throwable) {
+                        // Hand dropped connections to runWithRetry rather than collapsing them into
+                        // a failure, which would strand the caller on a network blip
+                        if (isTransientNetworkError(t)) throw t
+                        Log.e(tag, "Request failed: ${t::class.simpleName}: ${t.message}, body: $body")
+                        APIResponse.Failure(APIFailure(t, body))
                     }
-                } catch (t: TooManyRequestsException) {
-                    throw t // rethrow so runWith429Retry can handle it
-                } catch (t: Throwable) {
-                    Log.e(tag, "Request failed: ${t::class.simpleName}: ${t.message}, body: $body")
-                    APIResponse.Failure(APIFailure(t, body))
                 }
             }
         } catch (_: TooManyRequestsException) {
             Log.w(tag, "request failed with HTTP 429 after all retries")
             APIResponse.Error(APIError(HttpStatusCode.TooManyRequests, body))
+        } catch (t: CancellationException) {
+            throw t
+        } catch (t: Throwable) {
+            Log.e(tag, "Request failed after retries: ${t::class.simpleName}: ${t.message}, body: $body")
+            APIResponse.Failure(APIFailure(t, body))
         }
     }
 
@@ -143,39 +160,49 @@ class HttpService(
      *
      * If the server acknowledges the Range request (HTTP 206), the file is opened in append
      * mode; otherwise any existing partial file is deleted and re-downloaded from scratch.
+     *
+     * A connection dropped mid-body is retried from the bytes already on disk, so an interrupted
+     * download costs only the remainder rather than the whole file.
      */
     suspend fun download(
         saveLocation: File,
         resumeFrom: Long = 0,
         builder: HttpRequestBuilder.() -> Unit
     ) {
+        var attempt = 0
         try {
-            runWith429Retry("download") {
-                http.prepareGet {
-                    if (resumeFrom > 0) header(HttpHeaders.Range, "bytes=$resumeFrom-")
-                    builder()
-                    Log.i(tag, "HttpService.download: ${url.buildString()}")
-                }.execute { response ->
-                    when {
-                        response.status == HttpStatusCode.TooManyRequests ->
-                            throw TooManyRequestsException(response.retryAfterMillis())
+            runWithRetry("download", host = hostOf(builder)) {
+                // Retries resume from what already landed on disk; the caller only owns the offset
+                // of the first attempt
+                val offset = if (attempt++ == 0) resumeFrom else saveLocation.length()
 
-                        response.status.isSuccess() -> {
-                            val channel: ByteReadChannel = response.body()
-                            // Append only when the server confirmed partial content (HTTP 206)
-                            val append =
-                                resumeFrom > 0 && response.status == HttpStatusCode.PartialContent
-                            if (resumeFrom > 0 && !append && saveLocation.exists()) {
-                                saveLocation.delete()
-                            }
-                            withContext(Dispatchers.IO) {
-                                FileOutputStream(saveLocation, append).use { out ->
-                                    channel.copyToStream(out)
+                runWith429Retry("download") {
+                    http.prepareGet {
+                        if (offset > 0) header(HttpHeaders.Range, "bytes=$offset-")
+                        builder()
+                        Log.i(tag, "HttpService.download: ${url.buildString()}")
+                    }.execute { response ->
+                        when {
+                            response.status == HttpStatusCode.TooManyRequests ->
+                                throw TooManyRequestsException(response.retryAfterMillis())
+
+                            response.status.isSuccess() -> {
+                                val channel: ByteReadChannel = response.body()
+                                // Append only when the server confirmed partial content (HTTP 206)
+                                val append =
+                                    offset > 0 && response.status == HttpStatusCode.PartialContent
+                                if (offset > 0 && !append && saveLocation.exists()) {
+                                    saveLocation.delete()
+                                }
+                                withContext(Dispatchers.IO) {
+                                    FileOutputStream(saveLocation, append).use { out ->
+                                        channel.copyToStream(out)
+                                    }
                                 }
                             }
-                        }
 
-                        else -> throw HttpException(response.status)
+                            else -> throw HttpException(response.status)
+                        }
                     }
                 }
             }
@@ -201,7 +228,8 @@ class HttpService(
         builder: HttpRequestBuilder.() -> Unit,
         onProgress: ((bytesRead: Long, contentLength: Long?) -> Unit)? = null
     ) {
-        val probe = probeRangeSupport(builder)
+        val host = hostOf(builder)
+        val probe = probeRangeSupport(builder, host)
         val totalSize = probe.contentLength
         val canParallelize = threads > 1
                 && probe.supportsRanges
@@ -209,9 +237,13 @@ class HttpService(
                 && totalSize >= MIN_MULTIPART_SIZE
 
         if (!canParallelize) {
-            withContext(Dispatchers.IO) {
-                FileOutputStream(saveLocation, false).use { out ->
-                    streamTo(out, builder, onProgress)
+            // The stream cannot be rewound, so each attempt reopens the file in truncating mode
+            // rather than appending a second copy of the body to the partial one
+            runWithRetry("downloadToFile", host) {
+                withContext(Dispatchers.IO) {
+                    FileOutputStream(saveLocation, false).use { out ->
+                        streamTo(out, builder, onProgress)
+                    }
                 }
             }
             return
@@ -223,6 +255,7 @@ class HttpService(
             totalSize = totalSize,
             threads = threads,
             builder = builder,
+            host = host,
             onProgress = onProgress
         )
     }
@@ -239,6 +272,7 @@ class HttpService(
         totalSize: Long,
         threads: Int,
         builder: HttpRequestBuilder.() -> Unit,
+        host: String?,
         onProgress: ((bytesRead: Long, contentLength: Long?) -> Unit)?
     ) = coroutineScope {
         saveLocation.parentFile?.mkdirs()
@@ -280,32 +314,40 @@ class HttpService(
 
             ranges.map { (start, end) ->
                 async(Dispatchers.IO) {
-                    runWith429Retry("downloadRange[$start-$end]") {
-                        http.prepareGet {
-                            header(HttpHeaders.Range, "bytes=$start-$end")
-                            builder()
-                        }.execute { response ->
-                            when (response.status) {
-                                HttpStatusCode.TooManyRequests ->
-                                    throw TooManyRequestsException(response.retryAfterMillis())
+                    // Held across attempts so a dropped connection resumes mid-chunk instead of
+                    // refetching bytes that are already on disk and counting them twice
+                    var position = start
 
-                                HttpStatusCode.PartialContent -> {
-                                    val channel: ByteReadChannel = response.body()
-                                    val buf = ByteArray(DEFAULT_BUFFER_SIZE)
-                                    var position = start
+                    runWithRetry("downloadRange[$start-$end]", host) {
+                        // A previous attempt may have finished the chunk before failing elsewhere
+                        if (position > end) return@runWithRetry
 
-                                    while (!channel.isClosedForRead) {
-                                        val read = channel.readAvailable(buf)
-                                        if (read <= 0) continue
-                                        // Write directly at chunk offset — no global seek needed
-                                        fileChannel.write(ByteBuffer.wrap(buf, 0, read), position)
-                                        position += read
-                                        totalRead.addAndGet(read.toLong())
-                                        reportProgress()
+                        runWith429Retry("downloadRange[$start-$end]") {
+                            http.prepareGet {
+                                header(HttpHeaders.Range, "bytes=$position-$end")
+                                builder()
+                            }.execute { response ->
+                                when (response.status) {
+                                    HttpStatusCode.TooManyRequests ->
+                                        throw TooManyRequestsException(response.retryAfterMillis())
+
+                                    HttpStatusCode.PartialContent -> {
+                                        val channel: ByteReadChannel = response.body()
+                                        val buf = ByteArray(DEFAULT_BUFFER_SIZE)
+
+                                        while (!channel.isClosedForRead) {
+                                            val read = channel.readAvailable(buf)
+                                            if (read <= 0) continue
+                                            // Write directly at chunk offset, no global seek needed
+                                            fileChannel.write(ByteBuffer.wrap(buf, 0, read), position)
+                                            position += read
+                                            totalRead.addAndGet(read.toLong())
+                                            reportProgress()
+                                        }
                                     }
-                                }
 
-                                else -> throw HttpException(response.status)
+                                    else -> throw HttpException(response.status)
+                                }
                             }
                         }
                     }
@@ -326,16 +368,21 @@ class HttpService(
      * 2. If HEAD doesn't confirm, send GET Range: bytes=0-0 and check for HTTP 206.
      */
     private suspend fun probeRangeSupport(
-        builder: HttpRequestBuilder.() -> Unit
+        builder: HttpRequestBuilder.() -> Unit,
+        host: String?
     ): RangeProbe {
+        // Retried rather than left to fail: losing the probe silently downgrades the whole
+        // download to a single connection with no resume support
         val headResult = runCatching {
-            runWith429Retry("rangeProbeHead") {
-                http.request {
-                    method = HttpMethod.Head
-                    builder()
-                }.also { r ->
-                    if (r.status == HttpStatusCode.TooManyRequests)
-                        throw TooManyRequestsException(r.retryAfterMillis())
+            runWithRetry("rangeProbeHead", host, PROBE_RETRY_ATTEMPTS, marksHost = false) {
+                runWith429Retry("rangeProbeHead") {
+                    http.request {
+                        method = HttpMethod.Head
+                        builder()
+                    }.also { r ->
+                        if (r.status == HttpStatusCode.TooManyRequests)
+                            throw TooManyRequestsException(r.retryAfterMillis())
+                    }
                 }
             }
         }.getOrNull()
@@ -351,18 +398,20 @@ class HttpService(
 
         // Fallback: confirm range support with a minimal GET
         val rangeResult = runCatching {
-            runWith429Retry("rangeProbeGet") {
-                http.prepareGet {
-                    header(HttpHeaders.Range, "bytes=0-0")
-                    builder()
-                }.execute { r ->
-                    if (r.status == HttpStatusCode.TooManyRequests)
-                        throw TooManyRequestsException(r.retryAfterMillis())
-                    if (r.status == HttpStatusCode.PartialContent) {
-                        val total = parseContentRangeTotal(r.headers[HttpHeaders.ContentRange])
-                        return@execute RangeProbe(supportsRanges = total != null, contentLength = total)
+            runWithRetry("rangeProbeGet", host, PROBE_RETRY_ATTEMPTS, marksHost = false) {
+                runWith429Retry("rangeProbeGet") {
+                    http.prepareGet {
+                        header(HttpHeaders.Range, "bytes=0-0")
+                        builder()
+                    }.execute { r ->
+                        if (r.status == HttpStatusCode.TooManyRequests)
+                            throw TooManyRequestsException(r.retryAfterMillis())
+                        if (r.status == HttpStatusCode.PartialContent) {
+                            val total = parseContentRangeTotal(r.headers[HttpHeaders.ContentRange])
+                            return@execute RangeProbe(supportsRanges = total != null, contentLength = total)
+                        }
+                        RangeProbe(supportsRanges = false, contentLength = headLength)
                     }
-                    RangeProbe(supportsRanges = false, contentLength = headLength)
                 }
             }
         }.getOrNull()
@@ -433,41 +482,72 @@ class HttpService(
                 if (attempt >= MAX_RETRY_ATTEMPTS) throw t
                 val wait = (t.retryAfterMillis ?: delayMs).coerceAtMost(MAX_RETRY_DELAY_MS)
                 Log.w(tag, "$operationName hit 429 (attempt $attempt/$MAX_RETRY_ATTEMPTS), waiting ${wait}ms")
-                delay(wait)
+                delay(wait.milliseconds)
                 delayMs = (delayMs * 2).coerceAtMost(MAX_RETRY_DELAY_MS)
             }
         }
     }
 
     /**
-     * Retries [block] on any exception with exponential backoff.
+     * Retries [block] with exponential backoff for as long as the failure looks transient.
      *
-     * Unlike [runWith429Retry], intended for transient network errors (connection reset, DNS
-     * failure, etc.). Cancellation is not caught.
+     * Only errors accepted by [isTransientNetworkError] are retried, so an answer the server
+     * deliberately gave (404, 403) fails immediately instead of being hammered. Unlike
+     * [runWith429Retry], this covers dropped connections and timeouts. Cancellation is not caught.
+     *
+     * Passing [host] enrolls the call in the circuit breaker: once a host has burned through a
+     * full cycle, the calls that follow it get a single attempt until [HOST_FAILURE_TTL_MS]
+     * passes. Without it a batch of sources on one dead host each pays the full backoff.
+     *
+     * [marksHost] is what a caller clears when its own failure should not speak for the host.
+     * A range probe is the case that matters: it fails on requests a download then completes
+     * happily, so letting it trip the breaker would rob the download of its own retries.
      */
     @PublishedApi
     internal suspend fun <T> runWithRetry(
         operationName: String,
+        host: String? = null,
+        attempts: Int = MAX_RETRY_ATTEMPTS,
+        marksHost: Boolean = true,
         block: suspend () -> T
     ): T {
+        val maxAttempts = if (failingHosts.isFailing(host)) 1 else attempts
         var attempt = 0
         var currentDelay = INITIAL_RETRY_DELAY_MS
         while (true) {
             try {
                 attempt++
-                return block()
+                return block().also { host?.let(failingHosts::clear) }
             } catch (t: Exception) {
                 if (t is CancellationException) throw t
-                if (attempt >= MAX_RETRY_ATTEMPTS) {
+                if (!isTransientNetworkError(t)) throw t
+                if (attempt >= maxAttempts) {
+                    if (marksHost) host?.let(failingHosts::markFailed)
                     Log.e(tag, "$operationName failed after $attempt attempts: ${t::class.simpleName}: ${t.message}")
                     throw t
                 }
-                Log.w(tag, "$operationName attempt $attempt failed: ${t::class.simpleName}: ${t.message}")
-                delay(currentDelay)
+                // Jitter keeps the parallel chunks of one download from retrying in lockstep and
+                // walking into the same failure together
+                val wait = currentDelay + Random.nextLong(currentDelay / 2 + 1)
+                Log.w(tag, "$operationName attempt $attempt failed (${t::class.simpleName}: ${t.message}), retrying in ${wait}ms")
+                delay(wait.milliseconds)
                 currentDelay = (currentDelay * 2).coerceAtMost(MAX_RETRY_DELAY_MS)
             }
         }
     }
+
+    private val failingHosts = HostFailureTracker(HOST_FAILURE_TTL_MS)
+
+    /**
+     * Host the [builder] targets, used to key the circuit breaker.
+     *
+     * The builder is applied to a throwaway request so the URL can be read without sending
+     * anything, which keeps callers from having to pass the host separately.
+     */
+    @PublishedApi
+    internal fun hostOf(builder: HttpRequestBuilder.() -> Unit): String? = runCatching {
+        HttpRequestBuilder().apply(builder).url.host.takeIf { it.isNotBlank() }
+    }.getOrNull()
 
     /**
      * Reads the Retry-After header and converts it to milliseconds.
@@ -479,6 +559,67 @@ class HttpService(
             ?.toLongOrNull()
             ?.coerceAtLeast(0)
             ?.times(1000)
+
+    /**
+     * Reports whether [url] can be downloaded right now, following redirects.
+     *
+     * Returns true when the server serves it, false only when the server states it is not
+     * there, and null when the answer is inconclusive (rate limit, server error, no route).
+     * Callers that gate a feature on availability must treat null as available, otherwise a
+     * throttled check would hide working content. Servers that reject HEAD get a ranged GET.
+     */
+    suspend fun isReachable(url: String): Boolean? = runCatching {
+        val head = statusOf(HttpMethod.Head, url)
+
+        val status = if (head == HttpStatusCode.MethodNotAllowed) {
+            statusOf(HttpMethod.Get, url) { header(HttpHeaders.Range, "bytes=0-0") }
+        } else {
+            head
+        }
+
+        when {
+            status.isSuccess() -> true
+            status == HttpStatusCode.NotFound || status == HttpStatusCode.Gone -> false
+            else -> null
+        }
+    }.getOrElse { error ->
+        if (error is CancellationException) throw error
+        Log.w(tag, "isReachable($url) could not be determined: ${error::class.simpleName}: ${error.message}")
+        null
+    }
+
+    /** Issues [httpMethod] against [url] and returns only the status, discarding the body. */
+    private suspend fun statusOf(
+        httpMethod: HttpMethod,
+        url: String,
+        builder: HttpRequestBuilder.() -> Unit = {}
+    ): HttpStatusCode = http.request {
+        method = httpMethod
+        url(url)
+        header(HttpHeaders.CacheControl, "no-cache")
+        builder()
+    }.status
+
+    /**
+     * Returns where [url] redirects, without following it, or null if it did not redirect.
+     *
+     * Uses a throwaway client rather than the shared one because the latter negotiates content:
+     * its JSON Accept header is appended to whatever the caller sets, and an endpoint that serves
+     * either metadata or raw bytes will then pick metadata. Resolving the redirect here yields a
+     * pre-signed URL that needs no headers of its own to download.
+     */
+    suspend fun resolveRedirect(
+        url: String,
+        builder: HttpRequestBuilder.() -> Unit = {}
+    ): String? = runCatching {
+        HttpClient { followRedirects = false }.use { client ->
+            client.request {
+                method = HttpMethod.Get
+                url(url)
+                builder()
+            }.headers[HttpHeaders.Location]
+        }
+    }.getOrNull()
 
     /**
      * Performs a HEAD request to [url] and returns the value of the Location header,
@@ -509,7 +650,7 @@ class HttpService(
         }.getOrNull()
     }
 
-    class HttpException(status: HttpStatusCode) :
+    class HttpException(val status: HttpStatusCode) :
         Exception("HTTP request failed with status: $status")
 
     class TooManyRequestsException(val retryAfterMillis: Long?) :
@@ -519,6 +660,13 @@ class HttpService(
         private const val MAX_RETRY_ATTEMPTS = 3
         private const val INITIAL_RETRY_DELAY_MS = 1_000L
         private const val MAX_RETRY_DELAY_MS = 30_000L
+        /** How long a host stays marked as failing before it is given a full retry cycle again. */
+        private const val HOST_FAILURE_TTL_MS = 60_000L
+        /**
+         * Range probing gets fewer attempts than a download: its failure only costs parallelism
+         * and resume, so it is not worth a full cycle before the real request is even tried.
+         */
+        private const val PROBE_RETRY_ATTEMPTS = 2
         private const val DEFAULT_DOWNLOAD_THREADS = 5
         /** Minimum file size to bother with parallel download (1 MB). */
         private const val MIN_MULTIPART_SIZE = 1024L * 1024L
@@ -528,3 +676,37 @@ class HttpService(
         private const val PROGRESS_INTERVAL_MS = 200L
     }
 }
+
+/** Guards against self-referencing cause chains while classifying an error. */
+private const val MAX_CAUSE_DEPTH = 10
+
+/**
+ * Whether [t] is a dropped connection, timeout or server-side hiccup that another attempt could
+ * get past, as opposed to a verdict the server already reached.
+ *
+ * Retrying what the server decided on purpose is worse than failing: a 404 stays a 404, and a
+ * rate limit answers its own retry layer, which is why both are excluded here.
+ *
+ * The cause chain is walked because engine level IO errors reach callers wrapped by Ktor, and
+ * [APIFailure] wraps them once more on the way out of [HttpService.request].
+ */
+@PublishedApi
+internal fun isTransientNetworkError(t: Throwable): Boolean {
+    var next: Throwable? = t
+    var depth = 0
+    while (next != null && depth++ < MAX_CAUSE_DEPTH) {
+        val cause = next
+        when (cause) {
+            is CancellationException -> return false
+            // 429 has its own retry layer with Retry-After support
+            is HttpService.TooManyRequestsException -> return false
+            is IOException -> return true
+            is HttpService.HttpException if cause.status.isTransient() -> return true
+        }
+        next = cause.cause
+    }
+    return false
+}
+
+/** Statuses that describe a momentary server-side condition rather than a settled answer. */
+private fun HttpStatusCode.isTransient() = value == 408 || value in 500..599

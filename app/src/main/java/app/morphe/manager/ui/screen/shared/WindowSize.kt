@@ -5,6 +5,8 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -56,10 +58,17 @@ data class WindowSize(
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun rememberWindowSize(): WindowSize {
+    // Measured off the window rather than Configuration, whose dp counts ignore the interface
+    // scale the activity context applies on top of the display density. The configuration still
+    // covers the first frame, before the window has been measured
+    val density = LocalDensity.current
     val configuration = LocalConfiguration.current
+    val containerSize = LocalWindowInfo.current.containerSize
 
-    val widthDp = configuration.screenWidthDp.dp
-    val heightDp = configuration.screenHeightDp.dp
+    val widthDp = with(density) { containerSize.width.toDp() }
+        .takeIf { it > 0.dp } ?: configuration.screenWidthDp.dp
+    val heightDp = with(density) { containerSize.height.toDp() }
+        .takeIf { it > 0.dp } ?: configuration.screenHeightDp.dp
 
     return remember(widthDp, heightDp) {
         WindowSize(
@@ -78,25 +87,13 @@ fun rememberWindowSize(): WindowSize {
 }
 
 /**
- * Helper to determine if we should use two-column layout
- */
-val WindowSize.useTwoColumnLayout: Boolean
-    get() = widthSizeClass != WindowWidthSizeClass.Compact
-
-/**
- * Helper to determine if we should use compact layout for dialogs
- */
-val WindowSize.useCompactDialog: Boolean
-    get() = widthSizeClass == WindowWidthSizeClass.Compact
-
-/**
  * Get recommended content padding based on window size
  */
 val WindowSize.contentPadding: Dp
     get() = when (widthSizeClass) {
-        WindowWidthSizeClass.Compact -> MorpheDefaults.ContentPadding
-        WindowWidthSizeClass.Medium -> MorpheDefaults.ContentPaddingMedium
-        WindowWidthSizeClass.Expanded -> MorpheDefaults.ContentPaddingExpanded
+        WindowWidthSizeClass.Compact -> Defaults.ContentPadding
+        WindowWidthSizeClass.Medium -> Defaults.ContentPaddingMedium
+        WindowWidthSizeClass.Expanded -> Defaults.ContentPaddingExpanded
     }
 
 /**

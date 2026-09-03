@@ -41,8 +41,7 @@ fun CirclesBackground(
     val parallaxState = rememberParallaxState(
         enableParallax = enableParallax,
         sensitivity = 0.3f,
-        context = context,
-        coroutineScope = coroutineScope
+        context = context
     )
 
     val time = rememberAnimatedTime(speedMultiplier)

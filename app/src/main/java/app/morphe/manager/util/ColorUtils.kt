@@ -4,6 +4,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.toColorInt
+import kotlin.math.max
+import kotlin.math.min
+
+/**
+ * Hue in degrees, saturation and value in 0..1, the axes a color picker actually offers.
+ *
+ * Gray has no hue to speak of and the conversion reports 0 for it, which would swing the picker
+ * back to red the moment a color loses its saturation, so callers keep the hue they were showing.
+ */
+fun Color.toHsv(): Triple<Float, Float, Float> {
+    val hsv = FloatArray(3)
+    android.graphics.Color.colorToHSV(toArgb(), hsv)
+    return Triple(hsv[0], hsv[1], hsv[2])
+}
+
+/** Even blend of these colors, for judging what a gradient reads as overall. */
+fun List<Color>.blend(): Color = when {
+    isEmpty() -> Color.Transparent
+    size == 1 -> first()
+    else -> Color(
+        red = sumOf { it.red.toDouble() }.toFloat() / size,
+        green = sumOf { it.green.toDouble() }.toFloat() / size,
+        blue = sumOf { it.blue.toDouble() }.toFloat() / size,
+        alpha = sumOf { it.alpha.toDouble() }.toFloat() / size
+    )
+}
 
 /** Determine if a color represents a dark background. */
 fun Color.isDarkBackground(): Boolean = luminance() < 0.5f
@@ -25,6 +51,32 @@ fun Color.compositeOver(background: Color, alpha: Float = this.alpha): Color = C
  * Uses WCAG relative luminance threshold.
  */
 fun Color.requiresLightContent(): Boolean = luminance() < 0.5f
+
+/** WCAG contrast ratio against [background], from 1 for identical colors to 21 for black on white. */
+fun Color.contrastAgainst(background: Color): Float {
+    val content = luminance()
+    val behind = background.luminance()
+    return (max(content, behind) + 0.05f) / (min(content, behind) + 0.05f)
+}
+
+/**
+ * This color when it suits a [fill] drawn over [surface], or plain black or white when it does not.
+ * Any transparency of its own is carried over, so a dimmed color stays dimmed.
+ *
+ * A palette pairs each container with an on-color meant for that container drawn opaque. Tinted,
+ * the fill becomes a blend the pairing never described, and a light container blends dark while
+ * its on-color stays dark. Contrast alone passes that, so polarity is weighed alongside [minRatio].
+ */
+fun Color.readableOn(fill: Color, surface: Color, minRatio: Float = 3f): Color {
+    val background = fill.compositeOver(surface)
+    val wantsLightContent = background.requiresLightContent()
+
+    val agreesWithFill = wantsLightContent != requiresLightContent()
+    if (agreesWithFill && contrastAgainst(background) >= minRatio) return this
+
+    val replacement = if (wantsLightContent) Color.White else Color.Black
+    return replacement.copy(alpha = alpha)
+}
 
 /**
  * Lighten a color by mixing with white
@@ -92,16 +144,6 @@ fun parseColorToRgb(color: String): Triple<Float, Float, Float> {
     return color.toColorOrNull()?.let {
         Triple(it.red, it.green, it.blue)
     } ?: Triple(0f, 0f, 0f)
-}
-
-/**
- * Parse hex color string to RGB float values
- * Supports both #RRGGBB and #AARRGGBB formats
- */
-fun parseHexToRgb(hex: String): Triple<Float, Float, Float>? {
-    return hex.toColorOrNull()?.let {
-        Triple(it.red, it.green, it.blue)
-    }
 }
 
 /**

@@ -5,8 +5,6 @@
 
 package app.morphe.manager.ui.screen.home
 
-import android.graphics.Color.argb
-import android.graphics.Color.colorToHSV
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -33,13 +31,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -91,11 +87,11 @@ fun AddSourceDialog(
     val localFileValidation = rememberLocalFileValidation(selectedLocalPath)
     val isLocalValid = localFileValidation == FieldValidation.Valid
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.sources_dialog_add_source),
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.add),
                 onPrimaryClick = {
                     when (selectedTab) {
@@ -111,66 +107,28 @@ fun AddSourceDialog(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
         ) {
             // Type selector cards
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                listOf(
-                    0 to (stringResource(R.string.sources_dialog_remote) to Icons.Outlined.Language),
-                    1 to (stringResource(R.string.sources_dialog_local) to Icons.AutoMirrored.Outlined.InsertDriveFile)
-                ).forEach { (index, pair) ->
-                    val (label, icon) = pair
-                    val isSelected = selectedTab == index
-                    Surface(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { selectedTab = index },
-                        shape = RoundedCornerShape(16.dp),
-                        color = if (isSelected)
-                            MaterialTheme.colorScheme.surfaceVariant
-                        else
-                            Color.Transparent,
-                        border = BorderStroke(
-                            width = if (isSelected) 1.5.dp else 0.5.dp,
-                            color = if (isSelected)
-                                LocalDialogTextColor.current.copy(alpha = 0.5f)
-                            else
-                                LocalDialogTextColor.current.copy(alpha = 0.2f)
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(14.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            MorpheIcon(
-                                icon = icon,
-                                tint = if (isSelected)
-                                    LocalDialogTextColor.current
-                                else
-                                    LocalDialogTextColor.current.copy(alpha = 0.4f)
-                            )
-                            Text(
-                                text = label,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                color = if (isSelected)
-                                    LocalDialogTextColor.current
-                                else
-                                    LocalDialogTextColor.current.copy(alpha = 0.5f)
-                            )
-                        }
-                    }
-                }
-            }
+            CardSelectorRow(
+                options = listOf(
+                    CardSelectorOption(
+                        label = stringResource(R.string.sources_dialog_remote),
+                        icon = Icons.Outlined.Language
+                    ),
+                    CardSelectorOption(
+                        label = stringResource(R.string.sources_dialog_local),
+                        icon = Icons.AutoMirrored.Outlined.InsertDriveFile
+                    )
+                ),
+                selectedIndex = selectedTab,
+                onSelect = { selectedTab = it }
+            )
 
             // Tab content
             AnimatedContent(
                 targetState = selectedTab,
-                transitionSpec = MorpheAnimations.fadeCrossfade()
+                transitionSpec = Animations.fadeCrossfade()
             ) { tab ->
                 when (tab) {
                     0 -> RemoteTabContent(
@@ -235,7 +193,7 @@ private fun RemoteTabContent(
     urlValidation: FieldValidation,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        MorpheDialogTextField(
+        AppDialogTextField(
             value = remoteUrl,
             onValueChange = onUrlChange,
             label = { Text(stringResource(R.string.sources_dialog_remote_url)) },
@@ -273,11 +231,10 @@ private fun RemoteTabContent(
         }
 
         // URL format hint
-        InfoBadge(
+        StatusBadge(
             icon = Icons.Outlined.Info,
             text = stringResource(R.string.sources_dialog_remote_url_formats_title),
-            style = InfoBadgeStyle.Default,
-            isCompact = true
+            tone = SemanticTone.Neutral
         )
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             UrlFormatRow(
@@ -352,7 +309,7 @@ private fun LocalTabContent(
             // Selected file
             val isValid = validation == FieldValidation.Valid
             Surface(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(Defaults.CompactCornerRadius),
                 color = if (isValid)
                     MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                 else
@@ -367,7 +324,7 @@ private fun LocalTabContent(
                     Icon(
                         imageVector = if (isValid) Icons.Outlined.CheckCircle else Icons.Outlined.ErrorOutline,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(Defaults.IconSizeSmall),
                         tint = if (isValid) ColorValid else MaterialTheme.colorScheme.error
                     )
                     Column(modifier = Modifier.weight(1f)) {
@@ -414,42 +371,6 @@ private fun LocalTabContent(
 }
 
 /**
- * Dialog for confirming bundle deletion.
- */
-@Composable
-fun BundleDeleteConfirmDialog(
-    bundle: PatchBundleSource,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    MorpheDialog(
-        onDismissRequest = onDismiss,
-        title = stringResource(R.string.delete),
-        footer = {
-            MorpheDialogButtonRow(
-                primaryText = stringResource(R.string.delete),
-                onPrimaryClick = onConfirm,
-                isPrimaryDestructive = true,
-                secondaryText = stringResource(android.R.string.cancel),
-                onSecondaryClick = onDismiss
-            )
-        }
-    ) {
-        val secondaryColor = LocalDialogSecondaryTextColor.current
-
-        Text(
-            text = stringResource(
-                R.string.sources_dialog_delete_confirm_message,
-                bundle.displayTitle
-            ),
-            style = MaterialTheme.typography.bodyLarge,
-            color = secondaryColor,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-/**
  * Dialog for renaming a bundle.
  */
 @Composable
@@ -461,12 +382,12 @@ fun RenameBundleDialog(
     var textValue by remember { mutableStateOf(initialValue) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.sources_dialog_display_name),
         dismissOnClickOutside = false,
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(android.R.string.ok),
                 onPrimaryClick = {
                     keyboardController?.hide()
@@ -485,7 +406,7 @@ fun RenameBundleDialog(
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
         ) {
             Text(
                 text = stringResource(R.string.sources_dialog_rename),
@@ -494,7 +415,7 @@ fun RenameBundleDialog(
                 textAlign = TextAlign.Center
             )
 
-            MorpheDialogTextField(
+            AppDialogTextField(
                 value = textValue,
                 onValueChange = { textValue = it },
                 placeholder = {
@@ -504,7 +425,7 @@ fun RenameBundleDialog(
                     )
                 },
                 leadingIcon = {
-                    MorpheIcon(
+                    ThemedIcon(
                         icon = Icons.Outlined.Edit,
                         tint = secondaryColor
                     )
@@ -556,18 +477,20 @@ fun BundlePatchesDialog(
 
     val hasMultiplePackages = appLabels.size > 1
 
-    val filteredPatches: List<PatchInfo> = remember(patches, searchQuery, selectedPackages) {
-        patches
-            .filter { patch ->
+    // Carries each patch's position in the unfiltered list: a bundle may declare several patches
+    // under one name and compatibility, so nothing derived from the patch itself is a unique key
+    val filteredPatches: List<IndexedValue<PatchInfo>> = remember(patches, searchQuery, selectedPackages) {
+        patches.withIndex()
+            .filter { (_, patch) ->
                 val packageMatch = selectedPackages.isEmpty() ||
                         patch.compatiblePackages
                             ?.any { it.packageName in selectedPackages } == true
                 val queryMatch = searchQuery.isBlank() ||
-                        patch.name.contains(searchQuery, ignoreCase = true) ||
+                        patch.displayName.contains(searchQuery, ignoreCase = true) ||
                         patch.description?.contains(searchQuery, ignoreCase = true) == true
                 packageMatch && queryMatch
             }
-            .sortedBy { it.name }
+            .sortedBy { (_, patch) -> patch.displayName }
     }
 
     // Per-patch accent color: first non-null appIconColor across all compatible packages,
@@ -582,265 +505,153 @@ fun BundlePatchesDialog(
 
     val isFiltering = searchQuery.isNotBlank() || selectedPackages.isNotEmpty()
 
-    MorpheDialog(
-        onDismissRequest = onDismissRequest,
+    AppDialog(
+        onDismissRequest = {
+            when {
+                searchQuery.isNotBlank() -> searchQuery = ""
+                selectedPackages.isNotEmpty() -> selectedPackages = emptySet()
+                else -> onDismissRequest()
+            }
+        },
         title = null,
         footer = {
-            MorpheDialogButtonRow(
-                primaryText = stringResource(android.R.string.ok),
-                onPrimaryClick = onDismissRequest
+            AppDialogOutlinedButton(
+                text = stringResource(R.string.close),
+                onClick = onDismissRequest,
+                modifier = Modifier.fillMaxWidth()
             )
         },
-        compactPadding = true,
-        scrollable = false
+        padding = DialogPadding.Compact,
+        scrollable = false,
+        contentArrangement = Arrangement.Top
     ) {
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                PulsingLogoIndicator()
-            }
-        } else {
-            val listState = rememberLazyListState()
-            Box(modifier = Modifier.fillMaxWidth()) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+        AnimatedContent(
+            targetState = isLoading,
+            transitionSpec = Animations.fadeCrossfade(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            label = "bundlePatches"
+        ) { loading ->
+            if (loading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Bundle header
-                    item {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
-                                    modifier = Modifier.size(56.dp)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Extension,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(28.dp)
-                                        )
-                                    }
-                                }
+                    PulsingLogoIndicator()
+                }
 
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Text(
-                                        text = src.displayTitle,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = LocalDialogTextColor.current,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                return@AnimatedContent
+            }
+
+            val listState = rememberLazyListState()
+            var displayedPackages by remember { mutableStateOf(emptySet<String>()) }
+            LaunchedEffect(selectedPackages) {
+                if (selectedPackages.isNotEmpty()) displayedPackages = selectedPackages
+            }
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing)
+            ) {
+                PatchesListSearchRow(
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { searchQuery = it },
+                    showFilterButton = hasMultiplePackages,
+                    isFilterActive = selectedPackages.isNotEmpty(),
+                    onFilterClick = { showFilterSheet.value = true }
+                )
+
+                AnimatedVisibility(
+                    visible = selectedPackages.isNotEmpty(),
+                    enter = Animations.expandFadeEnter,
+                    exit = Animations.shrinkFadeExit
+                ) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        displayedPackages.forEach { pkg ->
+                            val label = appLabels[pkg] ?: pkg
+                            InputChip(
+                                selected = true,
+                                onClick = { selectedPackages = selectedPackages - pkg },
+                                label = { Text(label) },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Close,
+                                        contentDescription = stringResource(R.string.remove),
+                                        modifier = Modifier.size(16.dp)
                                     )
-
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Widgets,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        val patchCountLabel = pluralStringResource(
-                                            R.plurals.patch_count,
-                                            patches.size,
-                                            patches.size
-                                        )
-                                        val countText = if (isFiltering)
-                                            "${filteredPatches.size}/${patchCountLabel}"
-                                        else
-                                            patchCountLabel
-                                        AnimatedContent(
-                                            targetState = countText,
-                                            transitionSpec = MorpheAnimations.counterTransitionSpec,
-                                            label = "patch_count"
-                                        ) { count ->
-                                            Text(
-                                                text = count,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                        }
-                                    }
                                 }
-                            }
-                        }
-                    }
-
-                    // Search + filter button row
-                    stickyHeader {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.surface
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.Bottom
-                            ) {
-                                MorpheDialogTextField(
-                                    value = searchQuery,
-                                    onValueChange = { searchQuery = it },
-                                    label = { Text(stringResource(R.string.expert_mode_search)) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Search,
-                                            contentDescription = null
-                                        )
-                                    },
-                                    showClearButton = true,
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                if (hasMultiplePackages) {
-                                    FilledTonalIconButton(
-                                        onClick = { showFilterSheet.value = true },
-                                        modifier = Modifier.padding(bottom = 4.dp),
-                                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                            containerColor = if (selectedPackages.isNotEmpty())
-                                                MaterialTheme.colorScheme.primaryContainer
-                                            else
-                                                MaterialTheme.colorScheme.surfaceVariant,
-                                            contentColor = if (selectedPackages.isNotEmpty())
-                                                MaterialTheme.colorScheme.onPrimaryContainer
-                                            else
-                                                MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.FilterList,
-                                            contentDescription = stringResource(R.string.filter),
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Active filter badges + empty state
-                    item(key = "filter_badges_and_empty_state") {
-                        Column {
-                            AnimatedVisibility(
-                                visible = selectedPackages.isNotEmpty(),
-                                enter = MorpheAnimations.expandFadeEnter,
-                                exit = MorpheAnimations.shrinkFadeExit
-                            ) {
-                                FlowRow(
-                                    modifier = Modifier.padding(bottom = 4.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    selectedPackages.forEach { pkg ->
-                                        val label = appLabels[pkg] ?: pkg
-                                        InputChip(
-                                            selected = true,
-                                            onClick = { selectedPackages = selectedPackages - pkg },
-                                            label = { Text(label) },
-                                            trailingIcon = {
-                                                Icon(
-                                                    imageVector = Icons.Outlined.Close,
-                                                    contentDescription = stringResource(R.string.remove),
-                                                    modifier = Modifier.size(16.dp)
-                                                )
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-
-                            AnimatedVisibility(
-                                visible = filteredPatches.isEmpty(),
-                                enter = MorpheAnimations.fadeScaleIn,
-                                exit = MorpheAnimations.fadeScaleOut
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .fillParentMaxHeight(0.5f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.SearchOff,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(48.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                        Text(
-                                            text = stringResource(R.string.expert_mode_no_results),
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Filtered patches list
-                    items(
-                        filteredPatches,
-                        key = { patch ->
-                            patch.name + (patch.compatiblePackages?.joinToString { it.packageName.orEmpty() }.orEmpty())
-                        }
-                    ) { patch ->
-                        val context = LocalContext.current
-                        val expertBadgeTooltip = stringResource(R.string.sources_patch_expert_badge_tooltip)
-                        val accentColor = patchAccentColors[patch.name]
-                            ?.takeIf { it != Color.Unspecified }
-                        PatchItemCard(
-                            patch = patch,
-                            saveStateKey = "bundle_${src.uid}",
-                            onExpertBadgeClick = if (!patch.include) {
-                                { context.toast(expertBadgeTooltip) }
-                            } else null,
-                            accentColor = accentColor,
-                            modifier = Modifier.animateItem(
-                                fadeInSpec = tween(MorpheDefaults.ANIMATION_DURATION),
-                                fadeOutSpec = tween(MorpheDefaults.ANIMATION_DURATION_SHORT),
-                                placementSpec = spring(stiffness = 400f, dampingRatio = 0.8f)
                             )
-                        )
+                        }
                     }
                 }
 
-                ScrollToTopButton(listState = listState)
+                Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing)
+                    ) {
+                        // Bundle header
+                        item {
+                            PatchesListHeaderCard(
+                                title = src.displayTitle,
+                                totalCount = patches.size,
+                                filteredCount = filteredPatches.size,
+                                isFiltering = isFiltering
+                            )
+                        }
+
+                        if (filteredPatches.isEmpty()) {
+                            item(key = "empty_state") {
+                                PatchesListEmptyState(
+                                    modifier = Modifier.animateItem()
+                                )
+                            }
+                        }
+
+                        // Filtered patches list
+                        items(
+                            filteredPatches,
+                            key = { (index, _) -> index }
+                        ) { (_, patch) ->
+                            val context = LocalContext.current
+                            val expertBadgeTooltip = stringResource(R.string.sources_patch_expert_badge_tooltip)
+                            val accentColor = patchAccentColors[patch.name]
+                                ?.takeIf { it != Color.Unspecified }
+                            PatchItemCard(
+                                patch = patch,
+                                saveStateKey = "bundle_${src.uid}",
+                                onExpertBadgeClick = if (!patch.include) {
+                                    { context.toast(expertBadgeTooltip) }
+                                } else null,
+                                accentColor = accentColor,
+                                modifier = Modifier.animateItem(
+                                    fadeInSpec = tween(Defaults.ANIMATION_DURATION),
+                                    fadeOutSpec = tween(Defaults.ANIMATION_DURATION_SHORT),
+                                    placementSpec = spring(stiffness = 400f, dampingRatio = 0.8f)
+                                )
+                            )
+                        }
+                    }
+
+                    ListScrollbar(
+                        listState = listState,
+                        modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+                    )
+
+                    ScrollToTopButton(
+                        listState = listState,
+                        modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+                    )
+                }
             }
         }
     }
 
     // App filter bottom sheet
     if (showFilterSheet.value) {
-        MorpheBottomSheet(
+        AppBottomSheet(
             onDismissRequest = { showFilterSheet.value = false }
         ) {
             Column(
@@ -862,20 +673,18 @@ fun BundlePatchesDialog(
                     item {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             // "All" chip
-                            FilterChip(
+                            AppFilterChip(
                                 selected = selectedPackages.isEmpty(),
                                 onClick = { selectedPackages = emptySet() },
-                                label = { Text(stringResource(R.string.all)) },
-                                leadingIcon = if (selectedPackages.isEmpty()) {
-                                    { Icon(Icons.Outlined.DoneAll, null, Modifier.size(16.dp)) }
-                                } else null
+                                label = stringResource(R.string.all),
+                                selectedIcon = Icons.Outlined.DoneAll
                             )
                             // Per-app chips
                             appLabels.entries
                                 .sortedBy { it.value }
                                 .forEach { (pkg, label) ->
                                     val isSelected = pkg in selectedPackages
-                                    FilterChip(
+                                    AppFilterChip(
                                         selected = isSelected,
                                         onClick = {
                                             selectedPackages = if (isSelected)
@@ -883,10 +692,7 @@ fun BundlePatchesDialog(
                                             else
                                                 selectedPackages + pkg
                                         },
-                                        label = { Text(label) },
-                                        leadingIcon = if (isSelected) {
-                                            { Icon(Icons.Outlined.Done, null, Modifier.size(16.dp)) }
-                                        } else null
+                                        label = label
                                     )
                                 }
                         }
@@ -920,208 +726,171 @@ fun PatchItemCard(
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (expandOptions) 180f else 0f,
-        animationSpec = tween(MorpheDefaults.ANIMATION_DURATION),
+        animationSpec = tween(Defaults.ANIMATION_DURATION),
         label = "expand_rotation"
     )
 
-    // Cache the card background color: colorToHSV is a native call that allocates a FloatArray
-    val cardColor = remember(accentColor) {
-        if (accentColor != null) {
-            val hsv = FloatArray(3)
-            colorToHSV(
-                argb(
-                    255,
-                    (accentColor.red * 255).toInt(),
-                    (accentColor.green * 255).toInt(),
-                    (accentColor.blue * 255).toInt()
-                ),
-                hsv
-            )
-            Color.hsl(hue = hsv[0], saturation = 0.35f, lightness = 0.55f, alpha = 0.2f)
-        } else null
-    }
+    val cardColor = rememberAccentCardColor(accentColor)
 
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .then(
-                if (!patch.options.isNullOrEmpty()) {
-                    Modifier.clickable { expandOptions = !expandOptions }
-                } else Modifier
-            ),
-        shape = RoundedCornerShape(14.dp),
-        color = cardColor ?: MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+    val effectiveCardColor = cardColor ?: MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+    // Card colors come from the app's own icon, so no fixed badge fill can be counted on to show
+    val cardBackground = effectiveCardColor.compositeOver(MaterialTheme.colorScheme.background)
+
+    SettingsItemCard(
+        onClick = if (!patch.options.isNullOrEmpty()) {
+            { expandOptions = !expandOptions }
+        } else null,
+        modifier = modifier,
+        borderWidth = 1.dp,
+        color = effectiveCardColor
     ) {
-        Column(
-            modifier = Modifier.padding(MorpheDefaults.ContentPadding),
-            verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ItemSpacing),
-        ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        CompositionLocalProvider(LocalCardBackground provides cardBackground) {
+            Column(
+                modifier = Modifier.padding(Defaults.ContentPadding),
+                verticalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing),
             ) {
-                Text(
-                    text = patch.name,
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-
-                if (!patch.options.isNullOrEmpty()) {
-                    MorpheIcon(
-                        icon = Icons.Outlined.ExpandMore,
-                        contentDescription = if (expandOptions)
-                            stringResource(R.string.collapse)
-                        else
-                            stringResource(R.string.expand),
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.rotate(rotationAngle)
-                    )
-                }
-            }
-
-            // Description
-            patch.description?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = textColor
-                )
-            }
-
-            // Compatibility info
-            if (patch.compatiblePackages.isNullOrEmpty()) {
+                // Header
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    InfoBadge(
-                        text = stringResource(R.string.sources_dialog_view_any_package),
-                        icon = Icons.Outlined.Apps,
-                        style = InfoBadgeStyle.Default,
-                        isCompact = true
+                    Text(
+                        text = patch.displayName,
+                        color = textColor,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.weight(1f)
                     )
-                    InfoBadge(
-                        text = stringResource(R.string.sources_dialog_view_any_version),
-                        icon = Icons.Outlined.Code,
-                        style = InfoBadgeStyle.Default,
-                        isCompact = true
+
+                    if (!patch.options.isNullOrEmpty()) {
+                        ThemedIcon(
+                            icon = Icons.Outlined.ExpandMore,
+                            contentDescription = if (expandOptions)
+                                stringResource(R.string.collapse)
+                            else
+                                stringResource(R.string.expand),
+                            tint = secondaryColor,
+                            modifier = Modifier.rotate(rotationAngle)
+                        )
+                    }
+                }
+
+                // Description
+                patch.description?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = secondaryColor
                     )
                 }
-            } else {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    patch.compatiblePackages.forEach { compatiblePackage ->
-                        val anyString = stringResource(R.string.any_version)
-                        val appName = compatiblePackage.displayName ?: compatiblePackage.packageName ?: anyString
-                        val versions = compatiblePackage.versions.orEmpty()
 
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            InfoBadge(
-                                text = appName,
-                                icon = Icons.Outlined.Apps,
-                                style = InfoBadgeStyle.Primary,
-                                isCompact = true,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
+                // Compatibility info
+                if (patch.isUniversal) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        StatusBadge(
+                            text = stringResource(R.string.sources_dialog_view_any_package),
+                            icon = Icons.Outlined.Apps
+                        )
+                        StatusBadge(
+                            text = stringResource(R.string.sources_dialog_view_any_version),
+                            icon = Icons.Outlined.Code
+                        )
+                    }
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        patch.compatiblePackages.orEmpty().forEach { compatiblePackage ->
+                            val anyString = stringResource(R.string.any_version)
+                            val appName = compatiblePackage.displayName ?: compatiblePackage.packageName ?: anyString
+                            val versions = compatiblePackage.versions.orEmpty()
 
-                            if (versions.isNotEmpty()) {
-                                if (expandVersions) {
-                                    versions.forEach { version ->
-                                        val isExperimental =
-                                            compatiblePackage.experimentalVersions?.contains(version) == true
-                                        InfoBadge(
-                                            text = version,
-                                            icon = if (isExperimental) Icons.Outlined.Science else Icons.Outlined.Code,
-                                            style = if (isExperimental) InfoBadgeStyle.Warning else InfoBadgeStyle.Default,
-                                            isCompact = true,
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                StatusBadge(
+                                    text = appName,
+                                    icon = Icons.Outlined.Apps,
+                                    tone = SemanticTone.Primary,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+
+                                if (versions.isNotEmpty()) {
+                                    val shownVersions =
+                                        if (expandVersions) versions else versions.take(1)
+                                    shownVersions.forEach { version ->
+                                        PatchVersionBadge(
+                                            version = version,
+                                            isExperimental = compatiblePackage.experimentalVersions
+                                                ?.contains(version) == true,
                                             modifier = Modifier.align(Alignment.CenterVertically)
                                         )
                                     }
-                                } else {
-                                    val firstVersion = versions.first()
-                                    val firstIsExperimental =
-                                        compatiblePackage.experimentalVersions?.contains(firstVersion) == true
-                                    InfoBadge(
-                                        text = firstVersion,
-                                        icon = if (firstIsExperimental) Icons.Outlined.Science else Icons.Outlined.Code,
-                                        style = if (firstIsExperimental) InfoBadgeStyle.Warning else InfoBadgeStyle.Default,
-                                        isCompact = true,
-                                        modifier = Modifier.align(Alignment.CenterVertically)
-                                    )
-                                }
 
-                                if (versions.size > 1) {
-                                    InfoBadge(
-                                        text = if (expandVersions)
-                                            stringResource(R.string.less)
-                                        else
-                                            "+${versions.size - 1}",
-                                        style = InfoBadgeStyle.Default,
-                                        isCompact = true,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .clip(RoundedCornerShape(6.dp))
-                                            .clickable { expandVersions = !expandVersions }
-                                    )
+                                    if (versions.size > 1) {
+                                        StatusBadge(
+                                            text = if (expandVersions)
+                                                stringResource(R.string.less)
+                                            else
+                                                "+${versions.size - 1}",
+                                            modifier = Modifier.align(Alignment.CenterVertically),
+                                            onClick = { expandVersions = !expandVersions }
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // Expert badge - shown only for patches that are disabled by default
-            if (!patch.include && onExpertBadgeClick != null) {
-                InfoBadge(
-                    text = stringResource(R.string.sources_patch_expert_badge),
-                    icon = Icons.Outlined.Lock,
-                    style = InfoBadgeStyle.Warning,
-                    isCompact = true,
-                    modifier = Modifier.clickable(onClick = onExpertBadgeClick)
-                )
-            }
+                // Expert badge - shown only for patches that are disabled by default
+                if (!patch.include && onExpertBadgeClick != null) {
+                    StatusBadge(
+                        text = stringResource(R.string.sources_patch_expert_badge),
+                        icon = Icons.Outlined.Lock,
+                        tone = SemanticTone.Warning,
+                        onClick = onExpertBadgeClick
+                    )
+                }
 
-            // Options
-            if (!patch.options.isNullOrEmpty()) {
-                AnimatedVisibility(
-                    visible = expandOptions,
-                    enter = MorpheAnimations.expandFadeEnter,
-                    exit = MorpheAnimations.shrinkFadeExit
-                ) {
-                    Column(
-                        modifier = Modifier.padding(top = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                // Options
+                if (!patch.options.isNullOrEmpty()) {
+                    AnimatedVisibility(
+                        visible = expandOptions,
+                        enter = Animations.expandFadeEnter,
+                        exit = Animations.shrinkFadeExit
                     ) {
-                        patch.options.forEach { option ->
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(12.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                        Column(
+                            modifier = Modifier.padding(top = 4.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            patch.options.forEach { option ->
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(Defaults.CompactCornerRadius),
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                                 ) {
-                                    Text(
-                                        text = option.title,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        text = option.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = secondaryColor
-                                    )
+                                    Column(
+                                        modifier = Modifier.padding(12.dp),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(
+                                            text = option.title,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = textColor
+                                        )
+                                        Text(
+                                            text = option.description,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = secondaryColor
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -1130,6 +899,23 @@ fun PatchItemCard(
             }
         }
     }
+}
+
+/**
+ * One version a patch declares support for, tagged the way every version list tags it.
+ */
+@Composable
+private fun PatchVersionBadge(
+    version: String,
+    isExperimental: Boolean,
+    modifier: Modifier = Modifier
+) {
+    StatusBadge(
+        modifier = modifier,
+        text = version,
+        icon = if (isExperimental) VersionTag.Experimental.icon else Icons.Outlined.Code,
+        tone = if (isExperimental) VersionTag.Experimental.tone else SemanticTone.Neutral
+    )
 }
 
 /**
@@ -1244,7 +1030,7 @@ fun BundleChangelogDialog(
         }
     }
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismissRequest,
         // Start fetch only after the dialog enter animation completes so the shimmer
         // is always visible first, even when data is cached and would resolve instantly
@@ -1258,37 +1044,37 @@ fun BundleChangelogDialog(
         footer = {
             when (val current = state) {
                 is BundleChangelogState.Entries -> {
-                    MorpheDialogButtonColumn {
-                        current.latestPageUrl?.let { url ->
-                            ChangelogButton(
-                                pageUrl = url,
-                                modifier = Modifier.fillMaxWidth()
+                    AppDialogActions(
+                        actions = listOfNotNull(
+                            changelogAction(current.latestPageUrl),
+                            DialogAction(
+                                text = stringResource(R.string.close),
+                                onClick = onDismissRequest,
+                                emphasis = DialogActionEmphasis.Outlined
                             )
-                        }
-                        MorpheDialogButton(
-                            text = stringResource(android.R.string.ok),
-                            onClick = onDismissRequest,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                        ),
+                        layout = DialogButtonLayout.Vertical
+                    )
                 }
                 is BundleChangelogState.Error -> {
-                    MorpheDialogButtonColumn {
-                        MorpheDialogButton(
-                            text = stringResource(R.string.retry),
-                            onClick = { fetchTrigger++ },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        MorpheDialogButton(
-                            text = stringResource(android.R.string.ok),
-                            onClick = onDismissRequest,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    AppDialogActions(
+                        actions = listOf(
+                            DialogAction(
+                                text = stringResource(R.string.retry),
+                                onClick = { fetchTrigger++ }
+                            ),
+                            DialogAction(
+                                text = stringResource(R.string.close),
+                                onClick = onDismissRequest,
+                                emphasis = DialogActionEmphasis.Outlined
+                            )
+                        ),
+                        layout = DialogButtonLayout.Vertical
+                    )
                 }
                 BundleChangelogState.Loading -> {
-                    MorpheDialogButton(
-                        text = stringResource(android.R.string.ok),
+                    AppDialogOutlinedButton(
+                        text = stringResource(R.string.close),
                         onClick = onDismissRequest,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -1303,7 +1089,7 @@ fun BundleChangelogDialog(
         )
     }
 
-    MorpheOverlay(visible = olderState is OlderBundleState.Loading) {
+    Overlay(visible = olderState is OlderBundleState.Loading) {
         PulsingLogoWithCaption(caption = stringResource(R.string.loading_older_releases))
     }
 }
@@ -1316,7 +1102,7 @@ private fun BundleChangelogContent(
 ) {
     Crossfade(
         targetState = state,
-        animationSpec = tween(MorpheDefaults.ANIMATION_DURATION),
+        animationSpec = tween(Defaults.ANIMATION_DURATION),
         modifier = Modifier.fillMaxWidth(),
         label = "changelog_state"
     ) { current ->
@@ -1332,7 +1118,6 @@ private fun BundleChangelogContent(
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    val textColor = LocalDialogTextColor.current
                     val listState = rememberLazyListState()
                     Box(modifier = Modifier.fillMaxWidth()) {
                         LazyColumn(
@@ -1343,8 +1128,8 @@ private fun BundleChangelogContent(
                                 if (index > 0) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(
-                                            top = MorpheDefaults.ContentPaddingSmall,
-                                            bottom = MorpheDefaults.ContentPadding
+                                            top = Defaults.ContentPaddingSmall,
+                                            bottom = Defaults.ContentPadding
                                         ),
                                         color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                                     )
@@ -1352,19 +1137,25 @@ private fun BundleChangelogContent(
                                 ChangelogEntrySection(
                                     entry = entry,
                                     headerIcon = Icons.Outlined.History,
-                                    textColor = textColor,
                                     precomputedMarkdown = current.parsedMarkdown.getOrNull(index)
                                 )
                             }
                             changelogOlderItems(
                                 entries = (olderState as? OlderBundleState.Loaded)?.entries,
                                 isLoading = olderState is OlderBundleState.Loading,
-                                onExpand = onExpandOlder,
-                                textColor = textColor
+                                onExpand = onExpandOlder
                             )
                         }
 
-                        ScrollToTopButton(listState = listState)
+                        ListScrollbar(
+                            listState = listState,
+                            modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+                        )
+
+                        ScrollToTopButton(
+                            listState = listState,
+                            modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+                        )
                     }
                 }
             }

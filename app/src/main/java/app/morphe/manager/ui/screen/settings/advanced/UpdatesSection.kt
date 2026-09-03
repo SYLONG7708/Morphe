@@ -19,15 +19,13 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.morphe.manager.R
 import app.morphe.manager.domain.update.ComponentUpdateState
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
@@ -39,6 +37,7 @@ import app.morphe.manager.ui.viewmodel.SettingsViewModel
 import app.morphe.manager.worker.UpdateCheckInterval
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import kotlin.math.roundToInt
 
 /**
  * Updates section settings items for the Advanced tab.
@@ -48,6 +47,7 @@ fun UpdatesSettingsItem(
     settingsViewModel: SettingsViewModel,
     onManagerPrereleasesToggle: () -> Unit,
     onYouTubeUpdate: () -> Unit,
+    onAutoPatchClick: () -> Unit
 ) {
     val prefs = settingsViewModel.prefs
     val coordinator: EcosystemUpdateCoordinator = koinInject()
@@ -57,34 +57,11 @@ fun UpdatesSettingsItem(
     val automaticEcosystemUpdates by prefs.automaticEcosystemUpdates.getAsState()
     val updateCheckInterval by prefs.updateCheckInterval.getAsState()
     val allowMeteredUpdates by prefs.allowMeteredUpdates.getAsState()
+    val autoPatchEnabled by prefs.autoPatchEnabled.getAsState()
+    val autoPatchInterval by prefs.autoPatchInterval.getAsState()
     val useManagerPrereleases by prefs.useManagerPrereleases.getAsState()
     val usePatchesPrereleases by prefs.bundlePrereleasesEnabled.getAsState()
-
-    val enabledState = stringResource(R.string.enabled)
-    val disabledState = stringResource(R.string.disabled)
-
-    // Dialog states
-    val showNotificationPermissionDialog = remember { mutableStateOf(false) }
     val showIntervalDialog = remember { mutableStateOf(false) }
-
-    // Dialogs
-    if (showNotificationPermissionDialog.value) {
-        NotificationPermissionDialog(
-            onDismissRequest = {
-                settingsViewModel.onNotificationPermissionDismissed()
-                showNotificationPermissionDialog.value = false
-            },
-            onPermissionResult = { granted ->
-                settingsViewModel.onNotificationPermissionResult(
-                    granted = granted,
-                    useManagerPrereleases = useManagerPrereleases,
-                    patchesPrereleaseIds = usePatchesPrereleases,
-                    updateCheckInterval = updateCheckInterval
-                )
-                showNotificationPermissionDialog.value = false
-            }
-        )
-    }
 
     if (showIntervalDialog.value) {
         UpdateCheckIntervalDialog(
@@ -112,160 +89,134 @@ fun UpdatesSettingsItem(
             stringResource(R.string.update_center_failed, state.message)
     }
 
-    RichSettingsItem(
-        onClick = { scope.launch { runCatching { coordinator.refresh(downloadAssets = true) } } },
-        showBorder = true,
-        leadingContent = { MorpheIcon(icon = Icons.Outlined.SecurityUpdateGood) },
-        title = stringResource(R.string.update_center_title),
-        subtitle = refreshSubtitle,
-    )
+    SettingsGroup {
+        SettingsItem(
+            onClick = { scope.launch { runCatching { coordinator.refresh(downloadAssets = true) } } },
+            leadingContent = { ThemedIcon(icon = Icons.Outlined.SecurityUpdateGood) },
+            title = stringResource(R.string.update_center_title),
+            subtitle = refreshSubtitle,
+        )
 
-    RichSettingsItem(
-        onClick = {
-            scope.launch {
-                prefs.automaticEcosystemUpdates.update(!automaticEcosystemUpdates)
-                if (!automaticEcosystemUpdates) {
-                    runCatching { coordinator.refresh(downloadAssets = true) }
+        SettingsDivider()
+
+        SettingsSwitchItem(
+            checked = automaticEcosystemUpdates,
+            onToggle = {
+                scope.launch {
+                    val enabled = !automaticEcosystemUpdates
+                    prefs.automaticEcosystemUpdates.update(enabled)
+                    if (enabled) {
+                        runCatching { coordinator.refresh(downloadAssets = true) }
+                    }
                 }
-            }
-        },
-        showBorder = true,
-        leadingContent = { MorpheIcon(icon = Icons.Outlined.AutoMode) },
-        title = stringResource(R.string.update_center_automatic),
-        subtitle = stringResource(R.string.update_center_automatic_description),
-        trailingContent = {
-            MorpheSwitch(
-                checked = automaticEcosystemUpdates,
-                onCheckedChange = null,
-                modifier = Modifier.semantics {
-                    stateDescription = if (automaticEcosystemUpdates) enabledState else disabledState
-                },
-            )
-        },
-    )
+            },
+            icon = Icons.Outlined.AutoMode,
+            title = stringResource(R.string.update_center_automatic),
+            subtitle = stringResource(R.string.update_center_automatic_description),
+        )
 
-    EcosystemComponentItem(
-        title = stringResource(R.string.update_component_manager),
-        icon = Icons.Outlined.SystemUpdate,
-        state = snapshot?.manager,
-        onClick = {
-            scope.launch {
-                runCatching { coordinator.installPrepared(InstallableUpdate.MANAGER) }
-            }
-        },
-    )
-    EcosystemComponentItem(
-        title = stringResource(R.string.update_component_youtube),
-        icon = Icons.Outlined.SmartDisplay,
-        state = snapshot?.youtube,
-        onClick = onYouTubeUpdate,
-    )
-    EcosystemComponentItem(
-        title = stringResource(R.string.update_component_patches),
-        icon = Icons.Outlined.Extension,
-        state = snapshot?.patches,
-        onClick = { scope.launch { runCatching { coordinator.refresh(downloadAssets = true) } } },
-    )
-    EcosystemComponentItem(
-        title = stringResource(R.string.update_component_microg),
-        icon = Icons.Outlined.Android,
-        state = snapshot?.microg,
-        onClick = {
-            scope.launch {
-                runCatching { coordinator.installPrepared(InstallableUpdate.MICROG) }
-            }
-        },
-    )
-
-    // Use manager prereleases toggle
-    RichSettingsItem(
-        onClick = {
-            settingsViewModel.toggleManagerPrereleases(
-                currentValue = useManagerPrereleases,
-                backgroundNotificationsEnabled = backgroundUpdateNotifications,
-                patchesPrereleaseIds = usePatchesPrereleases,
-                onCheckUpdate = onManagerPrereleasesToggle
-            )
-        },
-        showBorder = true,
-        leadingContent = { MorpheIcon(icon = Icons.Outlined.Science) },
-        title = stringResource(R.string.settings_advanced_updates_use_prereleases),
-        subtitle = stringResource(R.string.settings_advanced_updates_use_prereleases_description),
-        trailingContent = {
-            MorpheSwitch(
-                checked = useManagerPrereleases,
-                onCheckedChange = null,
-                modifier = Modifier.semantics {
-                    stateDescription = if (useManagerPrereleases) enabledState else disabledState
+        SettingsDivider()
+        EcosystemComponentItem(
+            title = stringResource(R.string.update_component_manager),
+            icon = Icons.Outlined.SystemUpdate,
+            state = snapshot?.manager,
+            onClick = {
+                scope.launch {
+                    runCatching { coordinator.installPrepared(InstallableUpdate.MANAGER) }
                 }
-            )
-        }
-    )
+            },
+        )
 
-    // Background update notifications toggle
-    RichSettingsItem(
-        onClick = {
-            settingsViewModel.toggleBackgroundNotifications(
-                currentValue = backgroundUpdateNotifications,
-                useManagerPrereleases = useManagerPrereleases,
-                patchesPrereleaseIds = usePatchesPrereleases,
-                updateCheckInterval = updateCheckInterval,
-                onShowPermissionDialog = { showNotificationPermissionDialog.value = true }
-            )
-        },
-        showBorder = true,
-        leadingContent = { MorpheIcon(icon = Icons.Outlined.NotificationsActive) },
-        title = stringResource(R.string.settings_advanced_updates_background_notifications),
-        subtitle = stringResource(
-            if (settingsViewModel.hasGms)
-                R.string.settings_advanced_updates_background_notifications_description_fcm
-            else
-                R.string.settings_advanced_updates_background_notifications_description
-        ),
-        trailingContent = {
-            MorpheSwitch(
-                checked = backgroundUpdateNotifications,
-                onCheckedChange = null,
-                modifier = Modifier.semantics {
-                    stateDescription =
-                        if (backgroundUpdateNotifications) enabledState else disabledState
+        SettingsDivider()
+        EcosystemComponentItem(
+            title = stringResource(R.string.update_component_youtube),
+            icon = Icons.Outlined.SmartDisplay,
+            state = snapshot?.youtube,
+            onClick = onYouTubeUpdate,
+        )
+
+        SettingsDivider()
+        EcosystemComponentItem(
+            title = stringResource(R.string.update_component_patches),
+            icon = Icons.Outlined.Extension,
+            state = snapshot?.patches,
+            onClick = { scope.launch { runCatching { coordinator.refresh(downloadAssets = true) } } },
+        )
+
+        SettingsDivider()
+        EcosystemComponentItem(
+            title = stringResource(R.string.update_component_microg),
+            icon = Icons.Outlined.Android,
+            state = snapshot?.microg,
+            onClick = {
+                scope.launch {
+                    runCatching { coordinator.installPrepared(InstallableUpdate.MICROG) }
                 }
-            )
-        }
-    )
-
-    // Check frequency interval selector (non-GMS only)
-    AnimatedVisibility(
-        visible = backgroundUpdateNotifications && !settingsViewModel.hasGms,
-        enter = MorpheAnimations.expandFadeEnter,
-        exit = MorpheAnimations.shrinkFadeExit
-    ) {
-        RichSettingsItem(
-            onClick = { showIntervalDialog.value = true },
-            showBorder = true,
-            leadingContent = { MorpheIcon(icon = Icons.Outlined.Schedule) },
-            title = stringResource(R.string.settings_advanced_update_interval),
-            subtitle = stringResource(updateCheckInterval.labelResId)
+            },
         )
     }
 
-    // Allow updates on metered connections
-    RichSettingsItem(
-        onClick = { settingsViewModel.toggleAllowMeteredUpdates(allowMeteredUpdates) },
-        showBorder = true,
-        leadingContent = { MorpheIcon(icon = Icons.Outlined.SignalCellularAlt) },
-        title = stringResource(R.string.settings_advanced_updates_allow_metered),
-        subtitle = stringResource(R.string.settings_advanced_updates_allow_metered_description),
-        trailingContent = {
-            MorpheSwitch(
-                checked = allowMeteredUpdates,
-                onCheckedChange = null,
-                modifier = Modifier.semantics {
-                    stateDescription = if (allowMeteredUpdates) enabledState else disabledState
-                }
-            )
+    SettingsGroup {
+        // Use manager prereleases toggle
+        SettingsSwitchItem(
+            checked = useManagerPrereleases,
+            onToggle = {
+                settingsViewModel.toggleManagerPrereleases(
+                    currentValue = useManagerPrereleases,
+                    backgroundNotificationsEnabled = backgroundUpdateNotifications,
+                    patchesPrereleaseIds = usePatchesPrereleases,
+                    onCheckUpdate = onManagerPrereleasesToggle
+                )
+            },
+            icon = Icons.Outlined.Science,
+            title = stringResource(R.string.settings_advanced_updates_use_prereleases),
+            subtitle = stringResource(R.string.settings_advanced_updates_use_prereleases_description)
+        )
+
+        // Check frequency interval selector (non-GMS only), shown when background notifications
+        // are enabled from the Notifications settings dialog
+        AnimatedVisibility(
+            visible = backgroundUpdateNotifications && !settingsViewModel.hasGms,
+            enter = Animations.expandFadeEnter,
+            exit = Animations.shrinkFadeExit
+        ) {
+            Column {
+                SettingsDivider()
+
+                SettingsItem(
+                    onClick = { showIntervalDialog.value = true },
+                    leadingContent = { ThemedIcon(icon = Icons.Outlined.Schedule) },
+                    title = stringResource(R.string.settings_advanced_update_interval),
+                    subtitle = stringResource(updateCheckInterval.labelResId)
+                )
+            }
         }
-    )
+
+        SettingsDivider()
+
+        // Allow updates on metered connections
+        SettingsSwitchItem(
+            checked = allowMeteredUpdates,
+            onToggle = { settingsViewModel.toggleAllowMeteredUpdates(allowMeteredUpdates) },
+            icon = Icons.Outlined.SignalCellularAlt,
+            title = stringResource(R.string.settings_advanced_updates_allow_metered),
+            subtitle = stringResource(R.string.settings_advanced_updates_allow_metered_description)
+        )
+
+        SettingsDivider()
+
+        // Automatic re-patching, configured in its own dialog
+        SettingsItem(
+            onClick = onAutoPatchClick,
+            title = stringResource(R.string.settings_advanced_auto_patch),
+            subtitle = if (autoPatchEnabled) {
+                stringResource(autoPatchInterval.labelResId)
+            } else {
+                stringResource(R.string.disabled)
+            },
+            leadingContent = { ThemedIcon(icon = Icons.Outlined.AutoMode) }
+        )
+    }
 }
 
 @Composable
@@ -292,10 +243,9 @@ private fun EcosystemComponentItem(
         state?.installedVersion ?: "—",
         state?.availableVersion ?: "—",
     )
-    RichSettingsItem(
+    SettingsItem(
         onClick = onClick,
-        showBorder = true,
-        leadingContent = { MorpheIcon(icon = icon) },
+        leadingContent = { ThemedIcon(icon = icon) },
         title = title,
         subtitle = "$status · $versions",
         trailingContent = if (state?.status in setOf(
@@ -304,7 +254,7 @@ private fun EcosystemComponentItem(
                 UpdateStatus.WAITING_FOR_COMPATIBLE_SOURCE,
             )
         ) {
-            { MorpheIcon(icon = Icons.Outlined.ChevronRight) }
+            { ThemedIcon(icon = Icons.Outlined.ChevronRight) }
         } else {
             null
         },
@@ -326,11 +276,11 @@ fun NotificationPermissionDialog(
         onResult = onPermissionResult
     )
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismissRequest,
         title = title,
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.allow),
                 onPrimaryClick = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -355,23 +305,26 @@ fun NotificationPermissionDialog(
 }
 
 /**
- * Discrete-slider dialog to pick the background update check interval.
+ * Discrete-slider dialog to pick a periodic background interval. Shared by the update check
+ * and the automatic re-patch schedule, which is why the wording is passed in.
  */
 @Composable
-private fun UpdateCheckIntervalDialog(
+internal fun UpdateCheckIntervalDialog(
     currentInterval: UpdateCheckInterval,
     onIntervalSelected: (UpdateCheckInterval) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    title: String = stringResource(R.string.settings_advanced_update_interval_dialog_title),
+    chipSubtitle: String = stringResource(R.string.settings_advanced_update_interval_chip_subtitle)
 ) {
     val entries = UpdateCheckInterval.entries
     var sliderIndex by remember { mutableFloatStateOf(entries.indexOf(currentInterval).toFloat()) }
-    val selectedInterval = entries[sliderIndex.toInt().coerceIn(entries.indices)]
+    val selectedInterval = entries[sliderIndex.roundToInt().coerceIn(entries.indices)]
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.settings_advanced_update_interval_dialog_title),
+        title = title,
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.save),
                 onPrimaryClick = { onIntervalSelected(selectedInterval) },
                 primaryIcon = Icons.Outlined.Check,
@@ -389,7 +342,7 @@ private fun UpdateCheckIntervalDialog(
             // Current value chip
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(Defaults.CompactCornerRadius),
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
             ) {
                 Column(
@@ -404,7 +357,7 @@ private fun UpdateCheckIntervalDialog(
                         color = LocalDialogTextColor.current
                     )
                     Text(
-                        text = stringResource(R.string.settings_advanced_update_interval_chip_subtitle),
+                        text = chipSubtitle,
                         style = MaterialTheme.typography.bodySmall,
                         color = LocalDialogSecondaryTextColor.current,
                         textAlign = TextAlign.Center
@@ -422,28 +375,18 @@ private fun UpdateCheckIntervalDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = stringResource(entries.first().labelResId),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = LocalDialogSecondaryTextColor.current
-                    )
-                    Text(
-                        text = stringResource(entries.last().labelResId),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = LocalDialogSecondaryTextColor.current
-                    )
-                }
+                SliderScaleLabels(
+                    start = stringResource(entries.first().labelResId),
+                    end = stringResource(entries.last().labelResId)
+                )
             }
 
             // Battery optimization warning
-            InfoBadge(
+            Notice(
                 text = stringResource(R.string.settings_advanced_update_interval_battery_warning),
-                style = InfoBadgeStyle.Warning,
-                icon = Icons.Outlined.BatteryAlert
+                tone = SemanticTone.Warning,
+                icon = Icons.Outlined.BatteryAlert,
+                density = NoticeDensity.Compact
             )
         }
     }

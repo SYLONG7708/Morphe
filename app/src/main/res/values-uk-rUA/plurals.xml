@@ -36,6 +36,48 @@
         <item quantity="many">%s APK файлів</item>
         <item quantity="other">%s APK файлів</item>
     </plurals>
+    <plurals name="batch_install_summary">
+        <item quantity="one">Встановлено %s застосунок</item>
+        <item quantity="few">Встановлено %s застосунки</item>
+        <item quantity="many">Встановлено %s застосунків</item>
+        <item quantity="other">Встановлено %s застосунків</item>
+    </plurals>
+    <plurals name="batch_reinstall_summary">
+        <item quantity="one">Перевстановлено %s застосунок</item>
+        <item quantity="few">Перевстановлено %s застосунки</item>
+        <item quantity="many">Перевстановлено %s застосунків</item>
+        <item quantity="other">Перевстановлено %s застосунків</item>
+    </plurals>
+    <plurals name="batch_uninstall_summary">
+        <item quantity="one">Видалено %s застосунок</item>
+        <item quantity="few">Видалено %s застосунки</item>
+        <item quantity="many">Видалено %s застосунків</item>
+        <item quantity="other">Видалено %s застосунків</item>
+    </plurals>
+    <plurals name="batch_uninstall_confirm_title">
+        <item quantity="one">Видалити %s застосунок?</item>
+        <item quantity="few">Видалити %s застосунки?</item>
+        <item quantity="many">Видалити %s застосунків?</item>
+        <item quantity="other">Видалити %s застосунків?</item>
+    </plurals>
+    <plurals name="batch_patch_ready_count">
+        <item quantity="one">%s застосунок готовий до патчингу</item>
+        <item quantity="few">%s застосунки готові до патчингу</item>
+        <item quantity="many">%s застосунків готові до патчингу</item>
+        <item quantity="other">%s застосунків готові до патчингу</item>
+    </plurals>
+    <plurals name="batch_patch_notification_ready">
+        <item quantity="one">%s застосунок готовий до встановлення</item>
+        <item quantity="few">%s застосунки готові до встановлення</item>
+        <item quantity="many">%s застосунків готові до встановлення</item>
+        <item quantity="other">%s застосунків готові до встановлення</item>
+    </plurals>
+    <plurals name="batch_skipped_summary">
+        <item quantity="one">Пропущено %s застосунок</item>
+        <item quantity="few">Пропущено %s застосунки</item>
+        <item quantity="many">Пропущено %s застосунків</item>
+        <item quantity="other">Пропущено %s застосунків</item>
+    </plurals>
     <plurals name="home_app_info_repatch_cleaned_invalid_data">
         <item quantity="one">Видалено %s застарілий патч зі збереженого вибору</item>
         <item quantity="few">Видалено %s застарілі патчі зі збереженого вибору</item>
@@ -48,16 +90,22 @@
         <item quantity="many">%s джерел встановлено</item>
         <item quantity="other">%s джерел встановлено</item>
     </plurals>
-    <plurals name="patch_selection_total_patches">
-        <item quantity="one">%s патч вибрано</item>
-        <item quantity="few">%s патчі вибрано</item>
-        <item quantity="many">%s патчів вибрано</item>
-        <item quantity="other">%s патчів вибрано</item>
-    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s прихований застосунок</item>
         <item quantity="few">%s приховані застосунки</item>
         <item quantity="many">%s прихованих застосунків</item>
         <item quantity="other">%s прихованих застосунків</item>
+    </plurals>
+    <plurals name="home_category_app_count">
+        <item quantity="one">%s застосунок</item>
+        <item quantity="few">%s застосунки</item>
+        <item quantity="many">%s застосунків</item>
+        <item quantity="other">%s застосунків</item>
+    </plurals>
+    <plurals name="expert_mode_copy_from_bundle_done">
+        <item quantity="one">Скопійовано %s патч із вибраного пакета</item>
+        <item quantity="few">Скопійовано %s патчі із вибраного пакета</item>
+        <item quantity="many">Скопійовано %s патчів із вибраного пакета</item>
+        <item quantity="other">Скопійовано %s патчів із вибраного пакета</item>
     </plurals>
 </resources>

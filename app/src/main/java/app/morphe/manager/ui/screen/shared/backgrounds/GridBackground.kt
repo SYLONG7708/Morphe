@@ -45,8 +45,7 @@ fun GridBackground(
     val parallaxState = rememberParallaxState(
         enableParallax = enableParallax,
         sensitivity = 0.15f,
-        context = context,
-        coroutineScope = coroutineScope
+        context = context
     )
 
     val time = rememberAnimatedTime(speedMultiplier)
