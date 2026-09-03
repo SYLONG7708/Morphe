@@ -104,7 +104,39 @@ class PrepareUis7870SourcesTest(unittest.TestCase):
         self.assertNotIn('"app.morphe.android.youtube"', youtube_constants)
         microg_text = (self.microg / "build.gradle").read_text()
         self.assertIn('ext.basePackageName = "com.sylong.autopatch.test"', microg_text)
+        self.assertIn("ext.appVersionName = '6.1.4-7870.1'", microg_text)
         self.assertIn("ext.appVersionCode = 260727001", microg_text)
+
+    def test_prepares_microg_7_version_declarations(self) -> None:
+        (self.microg / "build.gradle").write_text(
+            "\n".join(
+                (
+                    'ext.basePackageName = "app.revanced"',
+                    'def ourGmsVersionCode = 255070000',
+                    'def ourGmsVersionName = "7.0.0"',
+                    'def ourVendingVersionCode = ourGmsVersionCode',
+                    'def ourVendingVersionName = ourGmsVersionName',
+                    'ext.appVersionCode = ourGmsVersionCode',
+                )
+            ),
+            encoding="utf-8",
+        )
+        profile = load_profile(self.profile_path)
+
+        _, microg_version = prepare_sources(
+            self.patches,
+            self.microg,
+            profile,
+            "1.37.0",
+            "7.0.0",
+            260903001,
+        )
+
+        self.assertEqual("7.0.0-7870.1", microg_version)
+        microg_text = (self.microg / "build.gradle").read_text()
+        self.assertIn('def ourGmsVersionName = "7.0.0-7870.1"', microg_text)
+        self.assertIn("def ourGmsVersionCode = 260903001", microg_text)
+        self.assertIn("ext.appVersionCode = ourGmsVersionCode", microg_text)
 
     def test_rejects_mismatched_profile_packages(self) -> None:
         self.profile_path.write_text(
