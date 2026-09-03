@@ -55,6 +55,49 @@ def replace_once(path: Path, expected: str, replacement: str) -> None:
     path.write_text(text.replace(expected, replacement), encoding="utf-8", newline="\n")
 
 
+def replace_microg_version(
+    path: Path,
+    upstream_version: str,
+    derived_version: str,
+    version_code: int,
+) -> None:
+    """Update both the legacy and current MicroG-RE version declarations."""
+    source = path.read_text(encoding="utf-8")
+    name_pattern = re.compile(
+        rf"(?m)^(?P<indent>\s*)(?P<key>ext\.appVersionName|def ourGmsVersionName)"
+        rf"\s*=\s*(?P<quote>['\"]){re.escape(upstream_version)}(?P=quote)\s*$"
+    )
+    name_matches = list(name_pattern.finditer(source))
+    if len(name_matches) != 1:
+        raise ValueError(
+            f"Expected exactly one MicroG version name in {path}, found {len(name_matches)}"
+        )
+    source = name_pattern.sub(
+        lambda match: (
+            f"{match.group('indent')}{match.group('key')} = "
+            f"{match.group('quote')}{derived_version}{match.group('quote')}"
+        ),
+        source,
+    )
+
+    code_pattern = re.compile(
+        r"(?m)^(?P<indent>\s*)(?P<key>ext\.appVersionCode|def ourGmsVersionCode)"
+        r"\s*=\s*\d+\s*$"
+    )
+    code_matches = list(code_pattern.finditer(source))
+    if len(code_matches) != 1:
+        raise ValueError(
+            f"Expected exactly one MicroG version code in {path}, found {len(code_matches)}"
+        )
+    source = code_pattern.sub(
+        lambda match: (
+            f"{match.group('indent')}{match.group('key')} = {version_code}"
+        ),
+        source,
+    )
+    path.write_text(source, encoding="utf-8", newline="\n")
+
+
 def prepare_sources(
     patches_dir: Path,
     microg_dir: Path,
@@ -125,20 +168,12 @@ def prepare_sources(
         'ext.basePackageName = "app.revanced"',
         f'ext.basePackageName = "{vendor}"',
     )
-    replace_once(
+    replace_microg_version(
         microg_root_gradle,
-        f"ext.appVersionName = '{upstream_microg_version}'",
-        f"ext.appVersionName = '{derived_microg_version}'",
+        upstream_microg_version,
+        derived_microg_version,
+        microg_version_code,
     )
-    code_pattern = re.compile(r"(?m)^\s*ext\.appVersionCode = \d+\s*$")
-    source = microg_root_gradle.read_text(encoding="utf-8")
-    matches = code_pattern.findall(source)
-    if len(matches) != 1:
-        raise ValueError(
-            f"Expected exactly one appVersionCode in {microg_root_gradle}, found {len(matches)}"
-        )
-    source = code_pattern.sub(f"    ext.appVersionCode = {microg_version_code}", source)
-    microg_root_gradle.write_text(source, encoding="utf-8", newline="\n")
 
     return derived_patch_version, derived_microg_version
 

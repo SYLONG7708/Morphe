@@ -135,6 +135,7 @@ jobs:
           UPSTREAM_MICROG_VERSION: ${{ steps.upstream.outputs.microg_version }}
           PATCH_VERSION: ${{ steps.upstream.outputs.derived_patch_version }}
           MICROG_VERSION: ${{ steps.upstream.outputs.derived_microg_version }}
+          GRADLE_MICROG_VERSION_WITHOUT_GIT: "1"
         run: |
           set -euo pipefail
           microg_version_code="$(date -u +%y%m%d)$(printf '%03d' "$((GITHUB_RUN_NUMBER % 1000))")"
