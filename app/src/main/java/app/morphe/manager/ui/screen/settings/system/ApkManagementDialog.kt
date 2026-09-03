@@ -11,7 +11,10 @@ import android.net.Uri
 import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,10 +22,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -31,24 +37,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.morphe.manager.R
-import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.data.room.apps.installed.InstallType
 import app.morphe.manager.data.room.apps.installed.InstalledApp
+import app.morphe.manager.data.room.apps.installed.supportsMount
 import app.morphe.manager.data.room.apps.original.OriginalApk
+import app.morphe.manager.domain.apk.InstalledPatchState
+import app.morphe.manager.domain.apk.LocalApkSources
 import app.morphe.manager.domain.installer.InstallerFileProvider
+import app.morphe.manager.domain.installer.InstallerManager
+import app.morphe.manager.domain.installer.UninstallCancelledException
+import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.InstalledAppRepository
 import app.morphe.manager.domain.repository.OriginalApkRepository
+import app.morphe.manager.patcher.util.NativeLibStripper
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.InstallViewModel
 import app.morphe.manager.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.io.File
+import java.util.Locale
 
 /** Type of APKs to manage. */
 enum class ApkManagementType {
@@ -63,11 +79,26 @@ data class ApkItemData(
     val version: String,
     val fileSize: Long,
     val file: File? = null,
-    val installType: InstallType? = null
+    val installType: InstallType? = null,
+    val isInstalledOnDevice: Boolean = false,
+    val abis: List<String> = emptyList()
 )
 
 private val ApkItemData.selectionKey: String
     get() = file?.absolutePath ?: "$packageName:$version"
+
+private val ApkItemData.isInstallableFromStorage: Boolean
+    get() = file?.exists() == true && installType != InstallType.MOUNT
+
+private fun List<ApkItemData>.sortedByDisplayName(): List<ApkItemData> =
+    sortedBy { it.displayName.lowercase(Locale.ROOT) }
+
+private val ApkItemData.installLabelRes: Int
+    get() = when (installType) {
+        InstallType.MOUNT -> R.string.mount
+        null -> R.string.install
+        else -> R.string.reinstall
+    }
 
 /** Data class representing an APK item with reference to InstalledApp. */
 private data class ApkItemDataWithApp(
@@ -77,7 +108,9 @@ private data class ApkItemDataWithApp(
     val fileSize: Long,
     val installedApp: InstalledApp,
     val file: File? = null,
-    val installType: InstallType = InstallType.SAVED
+    val installType: InstallType = InstallType.SAVED,
+    val isInstalledOnDevice: Boolean = false,
+    val abis: List<String> = emptyList()
 ) {
     fun toApkItemData() = ApkItemData(
         packageName = packageName,
@@ -85,7 +118,9 @@ private data class ApkItemDataWithApp(
         version = version,
         fileSize = fileSize,
         file = file,
-        installType = installType
+        installType = installType,
+        isInstalledOnDevice = isInstalledOnDevice,
+        abis = abis
     )
 }
 
@@ -95,11 +130,17 @@ private data class OriginalApkEntry(
     val apk: OriginalApk
 )
 
+private sealed interface ApkLoadState<out T> {
+    data object Loading : ApkLoadState<Nothing>
+    data class Loaded<out T>(val items: List<T>) : ApkLoadState<T>
+}
+
 /** Static metadata for the APK list header and empty state. */
 @Immutable
 data class ApkListMeta(
     val title: String,
     val icon: ImageVector,
+    val accentColor: Color,
     val count: Int,
     val totalSize: Long,
     val isLoading: Boolean,
@@ -109,12 +150,24 @@ data class ApkListMeta(
     val zipExportFileName: String
 )
 
+/** Retention preference toggle rendered inside the APK management dialog. */
+@Immutable
+data class RetentionToggle(
+    val title: String,
+    val description: String,
+    val checked: Boolean,
+    val onCheckedChange: (Boolean) -> Unit
+)
+
 /** Callbacks for per-item and bulk APK operations. */
 @Stable
 class ApkListActions(
     val onShare: ((ApkItemData) -> Unit)?,
     val onExport: ((ApkItemData) -> Unit)?,
     val onInstall: ((ApkItemData) -> Unit)?,
+    val onInstallSelected: ((List<ApkItemData>) -> Unit)?,
+    val onUninstall: ((ApkItemData) -> Unit)?,
+    val onUninstallSelected: ((List<ApkItemData>) -> Unit)?,
     val onDelete: (ApkItemData) -> Unit,
     val onDeleteSelectedConfirm: (List<ApkItemData>) -> Unit,
     val onDeleteAllConfirm: (() -> Unit)?
@@ -128,72 +181,183 @@ fun ApkManagementDialog(
     type: ApkManagementType,
     onDismissRequest: () -> Unit
 ) {
+    val installViewModel: InstallViewModel = koinViewModel()
     when (type) {
-        ApkManagementType.PATCHED -> PatchedApksContent(onDismissRequest = onDismissRequest)
-        ApkManagementType.ORIGINAL -> OriginalApksContent(onDismissRequest = onDismissRequest)
+        ApkManagementType.PATCHED -> PatchedApksContent(onDismissRequest, installViewModel)
+        ApkManagementType.ORIGINAL -> OriginalApksContent(onDismissRequest, installViewModel)
     }
+    InstallerFlowDialogs(installViewModel = installViewModel)
 }
 
 @Composable
 private fun PatchedApksContent(
     onDismissRequest: () -> Unit,
-    installViewModel: InstallViewModel = koinViewModel()
+    installViewModel: InstallViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val saveApkSuccessText = stringResource(R.string.save_apk_success)
     val patchedApksDeletedText = stringResource(R.string.settings_system_patched_apks_deleted)
     val apksDeletedAllText = stringResource(R.string.settings_system_apks_deleted_all)
+    val apksDeleteFailedText = stringResource(R.string.settings_system_apks_delete_failed)
     val repository: InstalledAppRepository = koinInject()
-    val filesystem: Filesystem = koinInject()
     val appDataResolver: AppDataResolver = koinInject()
+    val prefs: PreferencesManager = koinInject()
+    val pm: PM = koinInject()
+    val localApkSources: LocalApkSources = koinInject()
+    val installerManager: InstallerManager = koinInject()
+    val savePatchedApks by prefs.savePatchedApks.getAsState()
 
-    val allInstalledApps by repository.getAll().collectAsStateWithLifecycle(emptyList())
+    var state by remember { mutableStateOf<ApkLoadState<ApkItemDataWithApp>>(ApkLoadState.Loading) }
 
-    // Track loading state
-    var isLoading by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        combine(
+            repository.getAll(),
+            repository.savedPatchedApkChanges.onStart { emit(emptySet()) }
+        ) { apps, _ -> apps }.collectLatest { apps ->
+            state = ApkLoadState.Loaded(
+                withContext(Dispatchers.IO) {
+                    apps.mapNotNull { app ->
+                        // Only the copies this record owns, so a renamed app never lists the
+                        // archive an unrenamed record keeps under the same original name
+                        val storedFile = repository.savedPatchedApkFiles(app)
+                            .firstOrNull { it.exists() } ?: return@mapNotNull null
+                        val snapshot = localApkSources.trackedAppSnapshot(app)
+                        val savedFile = snapshot.savedPatchedApk
 
-    // Pre-resolve all app data in a single effect
-    val apkItems by produceState(
-        initialValue = emptyList(),
-        key1 = allInstalledApps
-    ) {
-        isLoading = true
-        value = withContext(Dispatchers.IO) {
-            allInstalledApps.mapNotNull { app ->
-                // Check if saved APK file exists
-                val savedFile = listOf(
-                    filesystem.getPatchedAppFile(app.currentPackageName, app.version),
-                    filesystem.getPatchedAppFile(app.originalPackageName, app.version)
-                ).distinct().firstOrNull { it.exists() } ?: return@mapNotNull null
+                        // Use AppDataResolver to get data
+                        val resolvedData = appDataResolver.resolveAppData(
+                            app.currentPackageName,
+                            preferredSource = AppDataSource.PATCHED_APK
+                        )
+                        // Taken from the archive the row actually points at, which can differ from
+                        // the resolver's answer once the installed app is no longer the patched one
+                        val savedDisplayName = snapshot.savedPatchedApkInfo
+                            ?.let { packageInfo -> runCatching { with(pm) { packageInfo.label() } }.getOrNull() }
+                            ?.takeUnless(String::isBlank)
 
-                // Use AppDataResolver to get data
-                val resolvedData = appDataResolver.resolveAppData(
-                    app.currentPackageName,
-                    preferredSource = AppDataSource.PATCHED_APK
-                )
-
-                ApkItemDataWithApp(
-                    packageName = app.currentPackageName,
-                    displayName = resolvedData.displayName,
-                    version = app.version,
-                    fileSize = savedFile.length(),
-                    installedApp = app,
-                    file = savedFile,
-                    installType = app.installType
-                )
-            }
+                        ApkItemDataWithApp(
+                            packageName = app.currentPackageName,
+                            displayName = savedDisplayName ?: resolvedData.displayName,
+                            version = app.version,
+                            fileSize = (savedFile ?: storedFile).length(),
+                            installedApp = app,
+                            file = savedFile,
+                            installType = app.installType,
+                            isInstalledOnDevice = snapshot.patchState == InstalledPatchState.Patched,
+                            abis = savedFile?.let(NativeLibStripper::extractAbisFromApk).orEmpty()
+                        )
+                    }
+                }
+            )
         }
-        isLoading = false
     }
 
-    val totalSize = remember(apkItems) { apkItems.sumOf { it.fileSize } }
+    val isLoading = state is ApkLoadState.Loading
+    val apkItems = (state as? ApkLoadState.Loaded)?.items ?: emptyList()
+    val totalSize = remember(state) { apkItems.sumOf { it.fileSize } }
     val itemToDelete = remember { mutableStateOf<InstalledApp?>(null) }
+    var deleteDisplayName by remember { mutableStateOf("") }
 
     // Look up by selectionKey to avoid index shifts on concurrent list updates
-    val displayItems = remember(apkItems) { apkItems.map { it.toApkItemData() } }
-    val appByKey = remember(apkItems) {
+    val displayItems = remember(state) { apkItems.map { it.toApkItemData() }.sortedByDisplayName() }
+    val appByKey = remember(state) {
         apkItems.associate { it.toApkItemData().selectionKey to it.installedApp }
+    }
+
+    fun updateInstalledState(packageName: String, installed: Boolean) {
+        val loaded = state as? ApkLoadState.Loaded ?: return
+        state = ApkLoadState.Loaded(
+            loaded.items.map { item ->
+                if (item.packageName == packageName || item.installedApp.originalPackageName == packageName) {
+                    item.copy(isInstalledOnDevice = installed)
+                } else {
+                    item
+                }
+            }
+        )
+    }
+
+    fun installRequests(items: List<ApkItemData>) = items.mapNotNull { item ->
+        val installedApp = appByKey[item.selectionKey] ?: return@mapNotNull null
+        val file = item.file?.takeIf { it.exists() } ?: return@mapNotNull null
+        InstallQueueRequest(
+            file = file,
+            originalPackageName = installedApp.originalPackageName,
+            mountPackageName = installedApp.currentPackageName.takeIf { installedApp.supportsMount },
+            onPersistApp = { packageName, installType ->
+                val appliedPatches = repository.getAppliedPatches(installedApp.currentPackageName)
+                repository.addOrUpdate(
+                    currentPackageName = packageName,
+                    originalPackageName = installedApp.originalPackageName,
+                    isClone = installedApp.isClone,
+                    version = installedApp.version,
+                    installType = installType,
+                    patchSelection = appliedPatches,
+                    selectionPayload = installedApp.selectionPayload,
+                    patchedAt = installedApp.patchedAt
+                )
+                true
+            },
+            onInstalled = { packageName ->
+                updateInstalledState(item.packageName, true)
+                updateInstalledState(packageName, true)
+            }
+        )
+    }
+
+    val startInstallQueue = rememberInstallQueue(
+        installViewModel = installViewModel,
+        completedPluralRes = R.plurals.batch_reinstall_summary
+    )
+
+    val uninstallTimeoutText = stringResource(R.string.uninstall_timeout)
+    val uninstallFailTemplate = stringResource(R.string.uninstall_app_fail)
+    val uninstallUnverifiedText = stringResource(R.string.uninstall_app_unverified)
+
+    fun uninstallItems(items: List<ApkItemData>) {
+        if (items.isEmpty()) return
+        scope.launch {
+            var completed = 0
+            var skipped = 0
+            var unverified = 0
+            for (item in items) {
+                val installedApp = appByKey[item.selectionKey]
+                val result = runCatching {
+                    // Unmounting is safe without verification, every other mode removes a package
+                    if (item.installType != InstallType.MOUNT &&
+                        (installedApp == null ||
+                                localApkSources.trackedPatchState(installedApp) != InstalledPatchState.Patched)
+                    ) {
+                        unverified++
+                        return@runCatching false
+                    }
+                    val removed = withTimeoutOrNull(BATCH_UNINSTALL_TIMEOUT) {
+                        uninstallStorageItem(
+                            item = item,
+                            installedApp = installedApp,
+                            installerManager = installerManager,
+                            installedAppRepository = repository
+                        )
+                        true
+                    } == true
+                    if (!removed) error(uninstallTimeoutText)
+                    true
+                }
+                result.onSuccess { removed ->
+                    if (removed) completed++ else skipped++
+                    updateInstalledState(item.packageName, false)
+                }.onFailure { error ->
+                    skipped++
+                    if (error !is UninstallCancelledException) {
+                        context.toast(uninstallFailTemplate.format(error.simpleMessage()))
+                    }
+                }
+            }
+            if (unverified > 0) context.toast(uninstallUnverifiedText)
+            context.batchActionSummary(R.plurals.batch_uninstall_summary, completed, skipped)
+                ?.let { context.toast(it) }
+        }
     }
 
     var itemToExport by remember { mutableStateOf<ApkItemData?>(null) }
@@ -220,6 +384,7 @@ private fun PatchedApksContent(
         meta = ApkListMeta(
             title = stringResource(R.string.settings_system_patched_apks_title),
             icon = Icons.Outlined.Apps,
+            accentColor = StorageColors.PatchedApks,
             count = displayItems.size,
             totalSize = totalSize,
             isLoading = isLoading,
@@ -227,6 +392,12 @@ private fun PatchedApksContent(
             emptyMessage = stringResource(R.string.settings_system_patched_apks_empty),
             deleteAllTitle = stringResource(R.string.settings_system_patched_apks_delete_all_title),
             zipExportFileName = stringResource(R.string.settings_system_patched_apks_export_zip_name)
+        ),
+        retentionToggle = RetentionToggle(
+            title = stringResource(R.string.settings_system_save_patched_apks_title),
+            description = stringResource(R.string.settings_system_save_patched_apks_description),
+            checked = savePatchedApks,
+            onCheckedChange = { checked -> scope.launch { prefs.savePatchedApks.update(checked) } }
         ),
         actions = ApkListActions(
             onShare = { item ->
@@ -257,38 +428,28 @@ private fun PatchedApksContent(
                         version = item.version
                     )
                 } else {
-                    item.file?.let { file ->
-                        scope.launch {
-                            val uri = withContext(Dispatchers.IO) {
-                                InstallerFileProvider.getUriForFile(context, file)
-                            }
-                            val intent = Intent(Intent.ACTION_VIEW).apply {
-                                setDataAndType(uri, APK_MIMETYPE)
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                            try {
-                                context.startActivity(intent)
-                            } catch (_: android.content.ActivityNotFoundException) { }
-                        }
-                    }
+                    startInstallQueue(installRequests(listOf(item)))
                 }
             },
+            onInstallSelected = { selectedItems -> startInstallQueue(installRequests(selectedItems)) },
+            onUninstall = { item -> uninstallItems(listOf(item)) },
+            onUninstallSelected = { selectedItems -> uninstallItems(selectedItems) },
             onDelete = { item ->
+                deleteDisplayName = item.displayName
                 appByKey[item.selectionKey]?.let { itemToDelete.value = it }
             },
             onDeleteSelectedConfirm = { selectedItems ->
                 val appsToDelete = selectedItems.mapNotNull { appByKey[it.selectionKey] }
                 scope.launch {
-                    appsToDelete.forEach { repository.delete(it) }
-                    context.toast(apksDeletedAllText)
+                    val deleted = repository.deleteSavedPatchedApks(appsToDelete)
+                    context.toast(if (deleted) apksDeletedAllText else apksDeleteFailedText)
                 }
             },
             onDeleteAllConfirm = {
                 val appsToDelete = apkItems.map { it.installedApp }
                 scope.launch {
-                    appsToDelete.forEach { repository.delete(it) }
-                    context.toast(apksDeletedAllText)
+                    val deleted = repository.deleteSavedPatchedApks(appsToDelete)
+                    context.toast(if (deleted) apksDeletedAllText else apksDeleteFailedText)
                 }
             }
         ),
@@ -297,17 +458,15 @@ private fun PatchedApksContent(
     )
 
     if (itemToDelete.value != null) {
-        DeleteConfirmationDialog(
+        ConfirmDialog(
             title = stringResource(R.string.settings_system_patched_apks_delete_title),
-            message = stringResource(
-                R.string.settings_system_patched_apks_delete_confirm,
-                itemToDelete.value!!.currentPackageName
-            ),
+            message = htmlAnnotatedString(stringResource(R.string.settings_system_patched_apks_delete_confirm, deleteDisplayName)),
+            primaryText = stringResource(R.string.delete),
             onDismiss = { itemToDelete.value = null },
             onConfirm = {
                 scope.launch {
-                    repository.delete(itemToDelete.value!!)
-                    context.toast(patchedApksDeletedText)
+                    val deleted = repository.deleteSavedPatchedApk(itemToDelete.value!!)
+                    context.toast(if (deleted) patchedApksDeletedText else apksDeleteFailedText)
                     itemToDelete.value = null
                 }
             }
@@ -317,7 +476,8 @@ private fun PatchedApksContent(
 
 @Composable
 private fun OriginalApksContent(
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    installViewModel: InstallViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -326,44 +486,118 @@ private fun OriginalApksContent(
     val apksDeletedAllText = stringResource(R.string.settings_system_apks_deleted_all)
     val repository: OriginalApkRepository = koinInject()
     val appDataResolver: AppDataResolver = koinInject()
+    val prefs: PreferencesManager = koinInject()
+    val pm: PM = koinInject()
+    val installerManager: InstallerManager = koinInject()
+    val saveOriginalApks by prefs.saveOriginalApks.getAsState()
 
-    val originalApks by repository.getAll().collectAsStateWithLifecycle(emptyList())
+    var state by remember { mutableStateOf<ApkLoadState<OriginalApkEntry>>(ApkLoadState.Loading) }
 
-    // Track loading state
-    var isLoading by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        // Records left behind by a file that is already gone would show a stale size and count
+        repository.pruneMissingApks()
+        repository.getAll().collect { apks ->
+            state = ApkLoadState.Loaded(
+                withContext(Dispatchers.IO) {
+                    apks.map { apk ->
+                        val resolvedData = appDataResolver.resolveAppData(
+                            apk.packageName,
+                            preferredSource = AppDataSource.ORIGINAL_APK
+                        )
+                        val apkFile = File(apk.filePath).takeIf { it.exists() }
 
-    // Pair raw OriginalApk with each rendered ApkItemData so callbacks resolve by key
-    val entries by produceState(
-        initialValue = emptyList(),
-        key1 = originalApks
-    ) {
-        isLoading = true
-        value = withContext(Dispatchers.IO) {
-            originalApks.map { apk ->
-                val resolvedData = appDataResolver.resolveAppData(
-                    apk.packageName,
-                    preferredSource = AppDataSource.ORIGINAL_APK
-                )
-
-                OriginalApkEntry(
-                    data = ApkItemData(
-                        packageName = apk.packageName,
-                        displayName = resolvedData.displayName,
-                        version = apk.version,
-                        fileSize = apk.fileSize,
-                        file = File(apk.filePath).takeIf { it.exists() }
-                    ),
-                    apk = apk
-                )
-            }
+                        OriginalApkEntry(
+                            data = ApkItemData(
+                                packageName = apk.packageName,
+                                displayName = resolvedData.displayName,
+                                version = apk.version,
+                                fileSize = apk.fileSize,
+                                file = apkFile,
+                                isInstalledOnDevice = pm.getPackageInfo(apk.packageName) != null,
+                                abis = apkFile?.let { NativeLibStripper.extractAbisFromApk(it) } ?: emptyList()
+                            ),
+                            apk = apk
+                        )
+                    }
+                }
+            )
         }
-        isLoading = false
     }
 
-    val apkItems = remember(entries) { entries.map { it.data } }
-    val apkByKey = remember(entries) { entries.associate { it.data.selectionKey to it.apk } }
-    val totalSize = remember(apkItems) { apkItems.sumOf { it.fileSize } }
+    val isLoading = state is ApkLoadState.Loading
+    val entries = (state as? ApkLoadState.Loaded)?.items ?: emptyList()
+    val apkItems = remember(state) { entries.map { it.data }.sortedByDisplayName() }
+    val apkByKey = remember(state) { entries.associate { it.data.selectionKey to it.apk } }
+    val totalSize = remember(state) { apkItems.sumOf { it.fileSize } }
     val itemToDelete = remember { mutableStateOf<OriginalApk?>(null) }
+    var deleteDisplayName by remember { mutableStateOf("") }
+
+    fun updateInstalledState(packageName: String, installed: Boolean) {
+        val loaded = state as? ApkLoadState.Loaded ?: return
+        state = ApkLoadState.Loaded(
+            loaded.items.map { entry ->
+                if (entry.data.packageName == packageName) {
+                    entry.copy(data = entry.data.copy(isInstalledOnDevice = installed))
+                } else {
+                    entry
+                }
+            }
+        )
+    }
+
+    fun installRequests(items: List<ApkItemData>) = items.mapNotNull { item ->
+        val file = item.file?.takeIf { it.exists() } ?: return@mapNotNull null
+        InstallQueueRequest(
+            file = file,
+            originalPackageName = item.packageName,
+            onPersistApp = { _, _ -> true },
+            onInstalled = { packageName ->
+                updateInstalledState(item.packageName, true)
+                updateInstalledState(packageName, true)
+            }
+        )
+    }
+
+    val startInstallQueue = rememberInstallQueue(
+        installViewModel = installViewModel,
+        completedPluralRes = R.plurals.batch_install_summary
+    )
+
+    val uninstallTimeoutText = stringResource(R.string.uninstall_timeout)
+    val uninstallFailTemplate = stringResource(R.string.uninstall_app_fail)
+
+    fun uninstallItems(items: List<ApkItemData>) {
+        if (items.isEmpty()) return
+        scope.launch {
+            var completed = 0
+            var skipped = 0
+            for (item in items) {
+                val result = runCatching {
+                    val removed = withTimeoutOrNull(BATCH_UNINSTALL_TIMEOUT) {
+                        uninstallStorageItem(
+                            item = item,
+                            installedApp = null,
+                            installerManager = installerManager,
+                            installedAppRepository = null
+                        )
+                        true
+                    } == true
+                    if (!removed) error(uninstallTimeoutText)
+                }
+                result.onSuccess {
+                    completed++
+                    updateInstalledState(item.packageName, false)
+                }.onFailure { error ->
+                    skipped++
+                    if (error !is UninstallCancelledException) {
+                        context.toast(uninstallFailTemplate.format(error.simpleMessage()))
+                    }
+                }
+            }
+            context.batchActionSummary(R.plurals.batch_uninstall_summary, completed, skipped)
+                ?.let { context.toast(it) }
+        }
+    }
 
     var itemToExport by remember { mutableStateOf<ApkItemData?>(null) }
     val exportLauncher = rememberLauncherForActivityResult(
@@ -389,6 +623,7 @@ private fun OriginalApksContent(
         meta = ApkListMeta(
             title = stringResource(R.string.settings_system_original_apks_title),
             icon = Icons.Outlined.Storage,
+            accentColor = StorageColors.OriginalApks,
             count = apkItems.size,
             totalSize = totalSize,
             isLoading = isLoading,
@@ -396,6 +631,12 @@ private fun OriginalApksContent(
             emptyMessage = stringResource(R.string.settings_system_original_apks_empty),
             deleteAllTitle = stringResource(R.string.settings_system_original_apks_delete_all_title),
             zipExportFileName = stringResource(R.string.settings_system_original_apks_export_zip_name)
+        ),
+        retentionToggle = RetentionToggle(
+            title = stringResource(R.string.settings_system_save_original_apks_title),
+            description = stringResource(R.string.settings_system_save_original_apks_description),
+            checked = saveOriginalApks,
+            onCheckedChange = { checked -> scope.launch { prefs.saveOriginalApks.update(checked) } }
         ),
         actions = ApkListActions(
             onShare = { item ->
@@ -419,8 +660,12 @@ private fun OriginalApksContent(
                 itemToExport = item
                 exportLauncher.launch("${item.displayName.replace(" ", "_")}.apk")
             },
-            onInstall = null,
+            onInstall = { item -> startInstallQueue(installRequests(listOf(item))) },
+            onInstallSelected = { selectedItems -> startInstallQueue(installRequests(selectedItems)) },
+            onUninstall = { item -> uninstallItems(listOf(item)) },
+            onUninstallSelected = { selectedItems -> uninstallItems(selectedItems) },
             onDelete = { item ->
+                deleteDisplayName = item.displayName
                 apkByKey[item.selectionKey]?.let { itemToDelete.value = it }
             },
             onDeleteSelectedConfirm = { selectedItems ->
@@ -443,12 +688,10 @@ private fun OriginalApksContent(
     )
 
     if (itemToDelete.value != null) {
-        DeleteConfirmationDialog(
+        ConfirmDialog(
             title = stringResource(R.string.settings_system_original_apks_delete_title),
-            message = stringResource(
-                R.string.settings_system_original_apks_delete_confirm,
-                itemToDelete.value!!.packageName
-            ),
+            message = htmlAnnotatedString(stringResource(R.string.settings_system_original_apks_delete_confirm, deleteDisplayName)),
+            primaryText = stringResource(R.string.delete),
             onDismiss = { itemToDelete.value = null },
             onConfirm = {
                 scope.launch {
@@ -466,16 +709,42 @@ private fun ApkManagementDialogContent(
     meta: ApkListMeta,
     actions: ApkListActions,
     items: List<ApkItemData>,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    retentionToggle: RetentionToggle? = null
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showDeleteAllConfirmation by remember { mutableStateOf(false) }
     var showDeleteSelectedConfirmation by remember { mutableStateOf(false) }
+    var showUninstallSelectedConfirmation by remember { mutableStateOf(false) }
+    var itemToUninstallConfirm by remember { mutableStateOf<ApkItemData?>(null) }
+    var isMultiSelectMode by remember { mutableStateOf(false) }
     var isExporting by remember { mutableStateOf(false) }
     val selection = rememberSelectionState<String>()
+    // Nothing to narrow down while loading or with a single entry
+    val isSearchable = !meta.isLoading && items.size >= 2
+    val search = rememberSearchFieldState(searchable = isSearchable)
+    val filteredItems = remember(items, search.query) {
+        if (search.query.isBlank()) items
+        else items.filter {
+            it.displayName.contains(search.query, ignoreCase = true) ||
+                    it.packageName.contains(search.query, ignoreCase = true)
+        }
+    }
     val selectedItems = items.filter { selection.contains(it.selectionKey) }
     val selectedFiles = selectedItems.mapNotNull { item -> item.file?.takeIf { it.exists() } }
+    val selectedInstalledItems = selectedItems.filter { it.isInstalledOnDevice }
+    val selectedInstallableItems = selectedItems.filter {
+        !it.isInstalledOnDevice && it.isInstallableFromStorage
+    }
+    val canUninstallSelected = selectedItems.isNotEmpty() &&
+            selectedInstalledItems.size == selectedItems.size &&
+            actions.onUninstallSelected != null
+    val canInstallSelected = selectedItems.isNotEmpty() &&
+            selectedInstallableItems.size == selectedItems.size &&
+            actions.onInstallSelected != null
+    val canDeleteAll = selectedItems.isEmpty() && items.isNotEmpty() &&
+            actions.onDeleteAllConfirm != null
     val selectedTotalSize = selectedItems.sumOf { it.fileSize }
     val zipExportSuccessText = stringResource(R.string.settings_system_apks_export_zip_success)
     val zipExportFailedText = stringResource(R.string.settings_system_apks_export_zip_failed)
@@ -506,37 +775,44 @@ private fun ApkManagementDialogContent(
         }
     }
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = {
-            if (isExporting) return@MorpheDialog
-            if (selection.isNotEmpty) selection.clear() else onDismissRequest()
+            if (isExporting) return@AppDialog
+            if (isMultiSelectMode) { selection.clear(); isMultiSelectMode = false } else onDismissRequest()
         },
         title = meta.title,
-        titleTrailingContent = if (selectedItems.isEmpty() && items.isNotEmpty() && actions.onDeleteAllConfirm != null) {
-            {
-                DialogTitleAction(
-                    icon = Icons.Outlined.DeleteForever,
-                    contentDescription = stringResource(R.string.delete_all),
-                    onClick = { showDeleteAllConfirmation = true },
-                    style = DialogTitleActionStyle.Destructive
-                )
-            }
-        } else {
-            null
+        titleTrailingContent = {
+            TitleAction(
+                icon = if (search.visible) Icons.Outlined.SearchOff else Icons.Outlined.Search,
+                contentDescription = stringResource(R.string.search),
+                onClick = { search.toggle() },
+                style = TitleActionStyle.Toggle,
+                active = search.visible,
+                enabled = isSearchable
+            )
+            TitleAction(
+                icon = Icons.Outlined.DeleteForever,
+                contentDescription = stringResource(R.string.delete_all),
+                onClick = { showDeleteAllConfirmation = true },
+                style = TitleActionStyle.Destructive,
+                enabled = canDeleteAll
+            )
         },
         footer = {
-            if (selectedItems.isNotEmpty()) {
+            if (isMultiSelectMode) {
                 MultiSelectShell(visible = true) {
                     SelectionActionBar(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        modifier = Modifier.padding(horizontal = Defaults.ContentPadding, vertical = Defaults.ItemSpacing),
                         selectedCount = selectedItems.size,
-                        totalCount = items.size,
+                        // Scoped to the filtered list so "select all" never reaches hidden entries
+                        totalCount = filteredItems.size,
                         subtitle = stringResource(
                             R.string.settings_system_apks_size,
                             formatBytes(selectedTotalSize)
                         ),
-                        onSelectAll = { selection.setAll(items.map { it.selectionKey }) },
-                        onCancel = { selection.clear() }
+                        onSelectAll = { selection.setAll(filteredItems.map { it.selectionKey }) },
+                        onDeselectAll = { selection.clear() },
+                        onCancel = { selection.clear(); isMultiSelectMode = false }
                     ) {
                         if (selectedFiles.isNotEmpty()) {
                             val shareLabel = stringResource(R.string.share)
@@ -563,6 +839,37 @@ private fun ApkManagementDialogContent(
                             )
                         }
 
+                        if (canInstallSelected) {
+                            val installLabelRes = selectedInstallableItems
+                                .map { it.installLabelRes }
+                                .distinct()
+                                .singleOrNull() ?: R.string.install
+                            val installLabel = stringResource(installLabelRes)
+                            ActionPillButton(
+                                onClick = {
+                                    actions.onInstallSelected.invoke(selectedInstallableItems)
+                                    selection.clear()
+                                },
+                                icon = Icons.Outlined.InstallMobile,
+                                contentDescription = installLabel,
+                                tooltip = installLabel
+                            )
+                        }
+
+                        if (canUninstallSelected) {
+                            val uninstallLabel = stringResource(R.string.uninstall)
+                            ActionPillButton(
+                                onClick = { showUninstallSelectedConfirmation = true },
+                                icon = Icons.Outlined.DeleteForever,
+                                contentDescription = uninstallLabel,
+                                tooltip = uninstallLabel,
+                                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            )
+                        }
+
                         val deleteLabel = stringResource(R.string.delete)
                         ActionPillButton(
                             onClick = { showDeleteSelectedConfirmation = true },
@@ -578,7 +885,7 @@ private fun ApkManagementDialogContent(
                     }
                 }
             } else {
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = stringResource(R.string.close),
                     onClick = onDismissRequest,
                     modifier = Modifier.fillMaxWidth()
@@ -586,32 +893,82 @@ private fun ApkManagementDialogContent(
             }
         },
         scrollable = false,
-        compactPadding = true
+        padding = DialogPadding.Compact,
+        contentArrangement = Arrangement.Top,
+        fillContentHeight = true
     ) {
+        SearchFieldBackHandler(search)
+
         val listState = rememberLazyListState()
         Box(modifier = Modifier.fillMaxWidth()) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ItemSpacing)
+                verticalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing)
             ) {
+                if (isSearchable) {
+                    stickyHeader(key = "search") {
+                        AppDialogSearchHeader(
+                            visible = search.visible,
+                            value = search.query,
+                            onValueChange = { search.query = it },
+                            label = stringResource(R.string.home_search_apps)
+                        )
+                    }
+                }
+
+                if (retentionToggle != null) {
+                    item(key = "retention") {
+                        Column(verticalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing)) {
+                            SettingsSwitchItem(
+                                checked = retentionToggle.checked,
+                                onToggle = { retentionToggle.onCheckedChange(!retentionToggle.checked) },
+                                leadingContent = { ThemedIcon(icon = meta.icon, tint = meta.accentColor) },
+                                title = retentionToggle.title,
+                                subtitle = retentionToggle.description,
+                                showBorder = true
+                            )
+                            SettingsDivider(fullWidth = true)
+                        }
+                    }
+                }
+
                 // Summary box
                 item(key = "summary") {
-                    InfoBox(
-                        title = pluralStringResource(
-                            R.plurals.settings_system_apks_count,
-                            meta.count,
-                            meta.count
-                        ),
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                        titleColor = MaterialTheme.colorScheme.primary,
-                        icon = meta.icon
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_system_apks_size, formatBytes(meta.totalSize)),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = LocalDialogSecondaryTextColor.current
-                        )
+                    Crossfade(
+                        targetState = meta.isLoading,
+                        animationSpec = tween(Defaults.ANIMATION_DURATION),
+                        label = "heroCard"
+                    ) { loading ->
+                        if (loading) {
+                            ShimmerHeroInfoCard(accentColor = meta.accentColor)
+                        } else {
+                            HeroInfoCard(
+                                icon = meta.icon,
+                                title = pluralStringResource(
+                                    R.plurals.settings_system_apks_count,
+                                    meta.count,
+                                    meta.count
+                                ),
+                                containerColor = meta.accentColor.copy(alpha = 0.15f),
+                                iconContainerColor = meta.accentColor.copy(alpha = 0.25f),
+                                iconTint = meta.accentColor,
+                                titleColor = meta.accentColor,
+                                subtitle = {
+                                    AnimatedContent(
+                                        targetState = stringResource(R.string.settings_system_apks_size, formatBytes(meta.totalSize)),
+                                        transitionSpec = Animations.counterTransitionSpec,
+                                        label = "heroSize"
+                                    ) { sizeText ->
+                                        Text(
+                                            text = sizeText,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = LocalDialogSecondaryTextColor.current
+                                        )
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -620,27 +977,46 @@ private fun ApkManagementDialogContent(
                     // Show shimmer while loading
                     meta.isLoading -> items(3) { ShimmerApkItem() }
                     meta.isEmpty -> item { EmptyState(message = meta.emptyMessage) }
-                    else -> items(items = items, key = { it.selectionKey }) { item ->
+                    filteredItems.isEmpty() -> item(key = "search_empty") {
+                        EmptyState(
+                            message = stringResource(R.string.search_no_results),
+                            icon = Icons.Outlined.SearchOff
+                        )
+                    }
+                    else -> items(items = filteredItems, key = { it.selectionKey }) { item ->
                         val selected = selection.contains(item.selectionKey)
                         ApkItemCard(
                             data = item,
                             selected = selected,
-                            selectionMode = selectedItems.isNotEmpty(),
-                            onToggleSelection = { selection.toggle(item.selectionKey) },
+                            selectionMode = isMultiSelectMode,
+                            onToggleSelection = { isMultiSelectMode = true; selection.toggle(item.selectionKey) },
                             onShare = if (item.file != null) { { actions.onShare?.invoke(item) } } else null,
                             onExport = if (item.file != null) { { actions.onExport?.invoke(item) } } else null,
-                            onInstall = if (item.file != null && actions.onInstall != null) { { actions.onInstall.invoke(item) } } else null,
+                            onInstall = if (!item.isInstalledOnDevice && item.file != null && actions.onInstall != null) {
+                                { actions.onInstall.invoke(item) }
+                            } else null,
+                            onUninstall = if (item.isInstalledOnDevice && actions.onUninstall != null) {
+                                { itemToUninstallConfirm = item }
+                            } else null,
                             onDelete = { actions.onDelete(item) }
                         )
                     }
                 }
             }
 
-            ScrollToTopButton(listState = listState)
+            ListScrollbar(
+                listState = listState,
+                modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+            )
+
+            ScrollToTopButton(
+                listState = listState,
+                modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+            )
         }
     }
 
-    MorpheOverlay(visible = isExporting) {
+    Overlay(visible = isExporting) {
         PulsingLogoWithCaption(caption = stringResource(R.string.exporting_apks))
     }
 
@@ -670,8 +1046,37 @@ private fun ApkManagementDialogContent(
             onConfirm = {
                 actions.onDeleteSelectedConfirm(selectedItems)
                 selection.clear()
+                isMultiSelectMode = false
                 showDeleteSelectedConfirmation = false
             }
+        )
+    }
+
+    if (showUninstallSelectedConfirmation) {
+        ConfirmDialog(
+            title = pluralStringResource(R.plurals.batch_uninstall_confirm_title, selectedInstalledItems.size, selectedInstalledItems.size),
+            message = stringResource(R.string.batch_uninstall_confirm_body),
+            primaryText = stringResource(R.string.uninstall),
+            onConfirm = {
+                actions.onUninstallSelected?.invoke(selectedInstalledItems)
+                selection.clear()
+                isMultiSelectMode = false
+                showUninstallSelectedConfirmation = false
+            },
+            onDismiss = { showUninstallSelectedConfirmation = false }
+        )
+    }
+
+    itemToUninstallConfirm?.let { item ->
+        ConfirmDialog(
+            title = pluralStringResource(R.plurals.batch_uninstall_confirm_title, 1, 1),
+            message = stringResource(R.string.batch_uninstall_confirm_body),
+            primaryText = stringResource(R.string.uninstall),
+            onConfirm = {
+                actions.onUninstall?.invoke(item)
+                itemToUninstallConfirm = null
+            },
+            onDismiss = { itemToUninstallConfirm = null }
         )
     }
 }
@@ -685,6 +1090,7 @@ private fun ApkItemCard(
     onShare: (() -> Unit)?,
     onExport: (() -> Unit)?,
     onInstall: (() -> Unit)?,
+    onUninstall: (() -> Unit)?,
     onDelete: () -> Unit
 ) {
     val view = LocalView.current
@@ -697,6 +1103,7 @@ private fun ApkItemCard(
     ) {
         SectionCard {
             Column {
+                // Header with app icon
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -709,8 +1116,8 @@ private fun ApkItemCard(
                                 onToggleSelection()
                             }
                         )
-                        .padding(horizontal = MorpheDefaults.ItemSpacing, vertical = MorpheDefaults.ItemSpacing),
-                    horizontalArrangement = Arrangement.spacedBy(MorpheDefaults.ItemSpacing),
+                        .padding(Defaults.ContentPadding),
+                    horizontalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // App icon
@@ -723,7 +1130,7 @@ private fun ApkItemCard(
                     // App info
                     Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
                             text = data.displayName,
@@ -731,34 +1138,46 @@ private fun ApkItemCard(
                             fontWeight = FontWeight.Medium,
                             color = LocalDialogTextColor.current
                         )
-                        Text(
-                            text = data.packageName,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = LocalDialogSecondaryTextColor.current
-                        )
-                        Text(
-                            text = stringResource(
-                                R.string.settings_system_apk_item_info,
-                                data.version,
-                                formatBytes(data.fileSize)
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = LocalDialogSecondaryTextColor.current
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(
+                                text = data.packageName,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = LocalDialogSecondaryTextColor.current
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.settings_system_apk_item_info,
+                                    data.version,
+                                    formatBytes(data.fileSize)
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = LocalDialogSecondaryTextColor.current
+                            )
+                            if (data.abis.isNotEmpty()) {
+                                Text(
+                                    text = data.abis.joinToString(" • "),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = LocalDialogSecondaryTextColor.current
+                                )
+                            }
+                        }
                     }
                 }
 
                 AnimatedVisibility(
                     visible = !selectionMode,
-                    enter = MorpheAnimations.expandFadeEnter,
-                    exit = MorpheAnimations.shrinkFadeExit
+                    enter = Animations.expandFadeEnter,
+                    exit = Animations.shrinkFadeExit
                 ) {
                     Column {
-                        MorpheSettingsDivider()
+                        SettingsDivider()
 
                         // Action buttons
                         ActionPillRow(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(
+                                horizontal = Defaults.ContentPadding,
+                                vertical = Defaults.ItemSpacing
+                            )
                         ) {
                             if (onShare != null) {
                                 val shareLabel = stringResource(R.string.share)
@@ -780,9 +1199,21 @@ private fun ApkItemCard(
                                 )
                             }
 
-                            if (onInstall != null) {
+                            if (onUninstall != null) {
+                                val uninstallLabel = stringResource(R.string.uninstall)
+                                ActionPillButton(
+                                    onClick = onUninstall,
+                                    icon = Icons.Outlined.DeleteForever,
+                                    contentDescription = uninstallLabel,
+                                    tooltip = uninstallLabel,
+                                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                )
+                            } else if (onInstall != null) {
                                 val isMountType = data.installType == InstallType.MOUNT
-                                val installLabel = stringResource(if (isMountType) R.string.mount else R.string.install)
+                                val installLabel = stringResource(data.installLabelRes)
                                 ActionPillButton(
                                     onClick = onInstall,
                                     icon = if (isMountType) Icons.Outlined.Link else Icons.Outlined.InstallMobile,
@@ -810,6 +1241,18 @@ private fun ApkItemCard(
     }
 }
 
+private suspend fun uninstallStorageItem(
+    item: ApkItemData,
+    installedApp: InstalledApp?,
+    installerManager: InstallerManager,
+    installedAppRepository: InstalledAppRepository?
+) {
+    installerManager.uninstallPackage(item.packageName, item.installType)
+    if (item.installType == InstallType.MOUNT && installedApp != null) {
+        installedAppRepository?.delete(installedApp)
+    }
+}
+
 @Composable
 private fun DeleteAllConfirmationDialog(
     title: String,
@@ -820,11 +1263,11 @@ private fun DeleteAllConfirmationDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = title,
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = primaryText,
                 onPrimaryClick = onConfirm,
                 isPrimaryDestructive = true,
@@ -833,23 +1276,19 @@ private fun DeleteAllConfirmationDialog(
             )
         }
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)) {
             Text(
                 text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = LocalDialogTextColor.current
+                style = MaterialTheme.typography.bodyLarge,
+                color = LocalDialogSecondaryTextColor.current,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            DeletionWarningBox(
-                warningText = stringResource(R.string.settings_system_patch_selection_will_delete)
-            ) {
+            LabeledSection {
                 DeleteListItem(
                     icon = Icons.Outlined.Delete,
-                    text = pluralStringResource(
-                        R.plurals.settings_system_apks_count,
-                        count,
-                        count
-                    )
+                    text = pluralStringResource(R.plurals.settings_system_apks_count, count, count)
                 )
                 DeleteListItem(
                     icon = Icons.Outlined.Storage,
@@ -885,34 +1324,4 @@ private suspend fun shareApkFiles(context: Context, files: List<File>) {
     try {
         context.startActivity(Intent.createChooser(intent, null))
     } catch (_: android.content.ActivityNotFoundException) { }
-}
-
-@Composable
-private fun DeleteConfirmationDialog(
-    title: String,
-    message: String,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    MorpheDialog(
-        onDismissRequest = onDismiss,
-        title = title,
-        footer = {
-            MorpheDialogButtonRow(
-                primaryText = stringResource(R.string.delete),
-                onPrimaryClick = onConfirm,
-                isPrimaryDestructive = true,
-                secondaryText = stringResource(android.R.string.cancel),
-                onSecondaryClick = onDismiss
-            )
-        }
-    ) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = LocalDialogTextColor.current,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
 }

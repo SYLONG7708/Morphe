@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.*
 import android.content.pm.PackageInfo
 import android.net.Uri
+import android.os.SystemClock
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,20 +15,15 @@ import androidx.lifecycle.viewModelScope
 import app.morphe.manager.R
 import app.morphe.manager.data.room.apps.installed.InstallType
 import app.morphe.manager.domain.installer.*
+import app.morphe.manager.domain.repository.OriginalApkRepository
 import app.morphe.manager.domain.manager.PreferencesManager
-import app.morphe.manager.util.AppCoroutineScope
-import app.morphe.manager.util.AppDataResolver
-import app.morphe.manager.util.PM
-import app.morphe.manager.util.sha256OrNull
-import app.morphe.manager.util.simpleMessage
-import app.morphe.manager.util.toast
-import kotlin.time.Duration.Companion.seconds
+import app.morphe.manager.util.*
 import kotlinx.coroutines.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
-import java.io.IOException
-import java.nio.file.Files
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Centralized view model for all installation operations, mounting/unmounting and exporting.
@@ -41,6 +37,7 @@ class InstallViewModel : ViewModel(), KoinComponent {
     private val installerManager: InstallerManager by inject()
     private val prefs: PreferencesManager by inject()
     private val appDataResolver: AppDataResolver by inject()
+    private val originalApkRepository: OriginalApkRepository by inject()
     private val applicationScope: AppCoroutineScope by inject()
 
     /**
@@ -56,8 +53,15 @@ class InstallViewModel : ViewModel(), KoinComponent {
         /** Successfully installed - shows Open button. */
         data class Installed(val packageName: String) : InstallState()
 
-        /** Signature conflict detected - shows Uninstall button. */
-        data class Conflict(val packageName: String) : InstallState()
+        /**
+         * Signature conflict detected - shows Uninstall button.
+         * [canIgnoreSignatureMismatch] is set on rooted devices, where a module patching the
+         * platform signature verification can still install the update over the existing app.
+         */
+        data class Conflict(
+            val packageName: String,
+            val canIgnoreSignatureMismatch: Boolean = false
+        ) : InstallState()
 
         /** Installation error - shows error message and retry. */
         data class Error(val message: String) : InstallState()
@@ -76,6 +80,18 @@ class InstallViewModel : ViewModel(), KoinComponent {
      * Mount operation state.
      */
     enum class MountOperation { UNMOUNTING, MOUNTING }
+
+    private data class MountStockCandidate(
+        val file: File,
+        val info: PackageInfo
+    )
+
+    private data class MountInstallInputs(
+        val patchedInfo: PackageInfo,
+        val installedInfo: PackageInfo?,
+        val inputCandidate: MountStockCandidate?,
+        val savedOriginalCandidate: MountStockCandidate?
+    )
 
     var installState by mutableStateOf<InstallState>(InstallState.Ready)
         private set
@@ -101,6 +117,9 @@ class InstallViewModel : ViewModel(), KoinComponent {
 
     private var oneTimeInstallerToken: InstallerManager.Token? = null
     private var selectedInstallerToken: InstallerManager.Token? = null
+    private var pendingInstallToken: InstallerManager.Token? = null
+    private var pendingAutoUninstallOnConflict: Boolean = false
+    private var pendingAllowSignatureMismatch: Boolean = false
 
     var mountOperation: MountOperation? by mutableStateOf(null)
         private set
@@ -171,11 +190,16 @@ class InstallViewModel : ViewModel(), KoinComponent {
 
     /**
      * Start installation process using user's preferred installer or prompt for selection.
+     *
+     * @param allowSignatureMismatch Skips the signature pre-check and lets the platform decide,
+     * for rooted devices where a module removes the signature verification.
      */
     fun install(
         outputFile: File,
         originalPackageName: String,
-        onPersistApp: suspend (String, InstallType) -> Boolean
+        onPersistApp: suspend (String, InstallType) -> Boolean,
+        autoUninstallOnConflict: Boolean = false,
+        allowSignatureMismatch: Boolean = false
     ) {
         if (installState is InstallState.Installing) return
 
@@ -183,6 +207,9 @@ class InstallViewModel : ViewModel(), KoinComponent {
         pendingInstallFile = outputFile
         pendingOriginalPackageName = originalPackageName
         pendingPersistCallback = onPersistApp
+        pendingInstallToken = oneTimeInstallerToken ?: installerManager.getPrimaryToken()
+        pendingAutoUninstallOnConflict = autoUninstallOnConflict
+        pendingAllowSignatureMismatch = allowSignatureMismatch
 
         viewModelScope.launch {
             // Check if we should prompt for installer selection
@@ -215,59 +242,46 @@ class InstallViewModel : ViewModel(), KoinComponent {
                     }
                     // Check signature mismatch before launching the installer - avoids
                     // INSTALL_FAILED_UPDATE_INCOMPATIBLE from the system PackageInstaller
-                    val mismatch = withContext(Dispatchers.IO) {
-                        pm.hasSignatureMismatch(targetPackageName, outputFile)
-                    }
-                    if (mismatch) {
-                        Log.i(TAG, "Signature mismatch detected for $targetPackageName - showing conflict")
-                        installState = InstallState.Conflict(targetPackageName)
-                        return@launch
+                    if (!allowSignatureMismatch) {
+                        val mismatch = withContext(Dispatchers.IO) {
+                            pm.hasSignatureMismatch(targetPackageName, outputFile)
+                        }
+                        if (mismatch) {
+                            if (!tryAutoUninstallSignatureConflict(targetPackageName)) {
+                                Log.i(TAG, "Signature mismatch detected for $targetPackageName - showing conflict")
+                                installState = signatureConflictState(targetPackageName)
+                                return@launch
+                            }
+                        }
                     }
                 }
 
                 // Plan resolution probes installer availability on disk; keep off main
                 val resolved = withContext(Dispatchers.IO) {
-                    if (oneTimeInstallerToken != null) {
-                        val token = oneTimeInstallerToken!!
-                        selectedInstallerToken = token
-                        oneTimeInstallerToken = null
-
-                        val entry = installerManager.describeEntry(token, InstallerManager.InstallTarget.PATCHER)
-
-                        if (entry != null && entry.availability.available) {
-                            val originalPrimary = installerManager.getPrimaryToken()
-                            installerManager.updatePrimaryToken(token)
-                            val result = installerManager.resolvePlanWithStatus(
-                                InstallerManager.InstallTarget.PATCHER,
-                                outputFile,
-                                targetPackageName,
-                                null
-                            )
-                            installerManager.updatePrimaryToken(originalPrimary)
-                            result
+                    fun regularInstallToken(token: InstallerManager.Token) =
+                        if (token == InstallerManager.Token.AutoSaved) {
+                            InstallerManager.Token.Internal
                         } else {
-                            // Even if the installer is unavailable, try resolve with it
-                            // to get the correct primaryToken and unavailabilityReason
-                            val originalPrimary = installerManager.getPrimaryToken()
-                            installerManager.updatePrimaryToken(token)
-                            val result = installerManager.resolvePlanWithStatus(
-                                InstallerManager.InstallTarget.PATCHER,
-                                outputFile,
-                                targetPackageName,
-                                null
-                            )
-                            installerManager.updatePrimaryToken(originalPrimary)
-                            result
+                            token
                         }
+
+                    val token = oneTimeInstallerToken
+                    val primaryToken = if (token != null) {
+                        selectedInstallerToken = token.takeUnless { it == InstallerManager.Token.AutoSaved }
+                        oneTimeInstallerToken = null
+                        token
                     } else {
                         selectedInstallerToken = null
-                        installerManager.resolvePlanWithStatus(
-                            InstallerManager.InstallTarget.PATCHER,
-                            outputFile,
-                            targetPackageName,
-                            null
-                        )
+                        installerManager.getPrimaryToken()
                     }
+
+                    installerManager.resolvePlanWithStatus(
+                        InstallerManager.InstallTarget.PATCHER,
+                        outputFile,
+                        targetPackageName,
+                        null,
+                        primaryTokenOverride = regularInstallToken(primaryToken)
+                    )
                 }
 
                 Log.d(TAG, "Resolved plan: ${resolved.plan::class.java.simpleName}")
@@ -331,54 +345,67 @@ class InstallViewModel : ViewModel(), KoinComponent {
         originalPackageName: String,
         onPersistApp: suspend (String, InstallType) -> Boolean
     ) {
+        currentInstallType = plan.installType()
+        pendingInstallToken = plan.installerToken()
+
         when (plan) {
             is InstallerManager.InstallPlan.Internal -> {
                 Log.d(TAG, "Using internal (standard) installer")
-                currentInstallType = InstallType.DEFAULT
                 performStandardInstall(outputFile, originalPackageName, onPersistApp)
             }
 
             is InstallerManager.InstallPlan.PlayStore -> {
                 Log.d(TAG, "Using Play Store installer")
-                currentInstallType = InstallType.PLAY_STORE
                 performPlayStoreInstall(outputFile, onPersistApp)
             }
 
             is InstallerManager.InstallPlan.RootPlayStore -> {
                 Log.d(TAG, "Using root Play Store installer")
-                currentInstallType = InstallType.ROOT_PLAY_STORE
                 performRootPlayStoreInstall(outputFile, onPersistApp)
             }
 
             is InstallerManager.InstallPlan.Shizuku -> {
                 Log.d(TAG, "Using Shizuku installer")
-                currentInstallType = InstallType.SHIZUKU
                 performShizukuInstall(outputFile, onPersistApp)
             }
 
             is InstallerManager.InstallPlan.ShizukuPlayStore -> {
                 Log.d(TAG, "Using Shizuku Play Store installer")
-                currentInstallType = InstallType.SHIZUKU_PLAY_STORE
                 performShizukuPlayStoreInstall(outputFile, onPersistApp)
             }
 
             is InstallerManager.InstallPlan.Mount -> {
-                Log.d(TAG, "Using root/mount installer")
-                currentInstallType = InstallType.MOUNT
-                // Mount install requires additional parameters, handled separately
-                handleInstallError(app.getString(R.string.installer_status_not_supported))
+                Log.w(TAG, "Root mount plan resolved for regular install; using internal installer")
+                currentInstallType = InstallType.DEFAULT
+                performStandardInstall(outputFile, originalPackageName, onPersistApp)
             }
 
             is InstallerManager.InstallPlan.External -> {
                 Log.d(TAG, "Using external installer: ${plan.installerLabel}")
-                currentInstallType = if (plan.token is InstallerManager.Token.Component) {
-                    InstallType.CUSTOM
-                } else {
-                    InstallType.DEFAULT
-                }
                 launchExternalInstaller(plan)
             }
         }
+    }
+
+    private fun InstallerManager.InstallPlan.installerToken(): InstallerManager.Token = when (this) {
+        is InstallerManager.InstallPlan.Internal -> InstallerManager.Token.Internal
+        is InstallerManager.InstallPlan.PlayStore -> InstallerManager.Token.PlayStore
+        is InstallerManager.InstallPlan.RootPlayStore -> InstallerManager.Token.RootPlayStore
+        is InstallerManager.InstallPlan.Shizuku -> InstallerManager.Token.Shizuku
+        is InstallerManager.InstallPlan.ShizukuPlayStore -> InstallerManager.Token.ShizukuPlayStore
+        is InstallerManager.InstallPlan.Mount -> InstallerManager.Token.AutoSaved
+        is InstallerManager.InstallPlan.External -> token
+    }
+
+    private fun InstallerManager.InstallPlan.installType(): InstallType = when (this) {
+        is InstallerManager.InstallPlan.Internal -> InstallType.DEFAULT
+        is InstallerManager.InstallPlan.PlayStore -> InstallType.PLAY_STORE
+        is InstallerManager.InstallPlan.RootPlayStore -> InstallType.ROOT_PLAY_STORE
+        is InstallerManager.InstallPlan.Shizuku -> InstallType.SHIZUKU
+        is InstallerManager.InstallPlan.ShizukuPlayStore -> InstallType.SHIZUKU_PLAY_STORE
+        is InstallerManager.InstallPlan.Mount -> InstallType.MOUNT
+        is InstallerManager.InstallPlan.External ->
+            if (token is InstallerManager.Token.Component) InstallType.CUSTOM else InstallType.DEFAULT
     }
 
     /**
@@ -515,11 +542,17 @@ class InstallViewModel : ViewModel(), KoinComponent {
         }
         val targetPackageName = packageInfo.packageName
 
-        withContext(Dispatchers.IO) {
-            if (rootInstaller.hasRootAccess() && rootInstaller.isAppMounted(targetPackageName)) {
-                rootInstaller.unmount(targetPackageName)
+        try {
+            withContext(Dispatchers.IO) {
+                if (rootInstaller.hasRootAccess() && rootInstaller.isAppMounted(targetPackageName)) {
+                    rootInstaller.unmount(targetPackageName)
+                }
+                rootInstaller.installAsPlayStore(outputFile)
             }
-            rootInstaller.installAsPlayStore(outputFile)
+        } catch (e: Exception) {
+            if (!e.isSignatureRejection()) throw e
+            handleConflict(targetPackageName, e.simpleMessage())
+            return
         }
 
         onPersistApp(targetPackageName, InstallType.ROOT_PLAY_STORE)
@@ -582,10 +615,10 @@ class InstallViewModel : ViewModel(), KoinComponent {
                     onPersistApp(targetPackageName, InstallType.SHIZUKU_PLAY_STORE)
                     handleInstallSuccess(targetPackageName)
                     app.toast(app.getString(R.string.install_app_success))
+                } else if (result.message.isSignatureRejection()) {
+                    handleConflict(targetPackageName, result.message)
                 } else {
-                    handleInstallError(
-                        app.getString(R.string.install_app_fail, result.message ?: "Unknown error")
-                    )
+                    handleInstallError(formatShizukuInstallError(result.message))
                 }
             }
         }
@@ -631,10 +664,10 @@ class InstallViewModel : ViewModel(), KoinComponent {
                     onPersistApp(targetPackageName, InstallType.SHIZUKU)
                     handleInstallSuccess(targetPackageName)
                     app.toast(app.getString(R.string.install_app_success))
+                } else if (result.message.isSignatureRejection()) {
+                    handleConflict(targetPackageName, result.message)
                 } else {
-                    handleInstallError(
-                        app.getString(R.string.install_app_fail, result.message ?: "Unknown error")
-                    )
+                    handleInstallError(formatShizukuInstallError(result.message))
                 }
             }
         }
@@ -842,32 +875,75 @@ class InstallViewModel : ViewModel(), KoinComponent {
         inputFile: File?,
         inputIsTemporary: Boolean,
         packageName: String,
-        inputVersion: String,
-        onPersistApp: suspend (String, InstallType) -> Boolean
+        onPersistApp: suspend (String, InstallType) -> Boolean,
+        waitForStockInstall: Boolean = false
     ) {
         if (installState is InstallState.Installing) return
 
         viewModelScope.launch {
+            currentInstallType = InstallType.MOUNT
             installState = InstallState.Installing
 
             try {
-                val (packageInfo, stockInfo) = withContext(Dispatchers.IO) {
-                    val pi = pm.getPackageInfo(outputFile)
+                val inputs = withContext(Dispatchers.IO) {
+                    val patchedInfo = pm.getPackageInfo(outputFile)
                         ?: throw Exception("Failed to load application info")
-                    pi to pm.getPackageInfo(packageName)
+                    val inputCandidate = inputFile
+                        ?.takeIf { it.exists() }
+                        ?.let { file ->
+                            pm.getPackageInfo(file)?.let { MountStockCandidate(file, it) }
+                        }
+                    val savedOriginalCandidate = originalApkRepository.get(packageName)
+                        ?.filePath
+                        ?.let(::File)
+                        ?.takeIf { it.exists() }
+                        ?.let { file ->
+                            pm.getPackageInfo(file)?.let { MountStockCandidate(file, it) }
+                        }
+
+                    MountInstallInputs(
+                        patchedInfo = patchedInfo,
+                        installedInfo = pm.getPackageInfo(packageName),
+                        inputCandidate = inputCandidate,
+                        savedOriginalCandidate = savedOriginalCandidate
+                    )
                 }
 
+                val packageInfo = inputs.patchedInfo
+                var stockInfo = inputs.installedInfo
                 val label = with(pm) { packageInfo.label() }
-                val patchedVersion = packageInfo.versionName ?: ""
+                val patchedVersion = packageInfo.versionName?.takeUnless { it.isBlank() } ?: "unknown"
+                // Bind mount only replaces the APK file, so matching versionName is enough;
+                // versionCodes routinely differ across split-APK variants of the same release.
+                fun PackageInfo.matchesPatched() =
+                    packageName == this.packageName &&
+                            versionName == patchedVersion
+                fun MountStockCandidate.matchesPatched() =
+                    info.matchesPatched()
+
+                if (waitForStockInstall && stockInfo != null && !stockInfo.matchesPatched()) {
+                    stockInfo = waitForMatchingInstalledStock(
+                        packageName = packageName,
+                        versionName = patchedVersion
+                    ) ?: stockInfo
+                }
+
+                val stockMatchesPatched = stockInfo?.matchesPatched() == true
+
+                val stockCandidate = listOfNotNull(
+                    inputs.inputCandidate,
+                    inputs.savedOriginalCandidate
+                ).takeUnless { stockMatchesPatched }
+                    ?.firstOrNull { it.matchesPatched() }
 
                 // Check version mismatch for mount
                 val stockVersion = stockInfo?.versionName
-                if (stockVersion != null && stockVersion != patchedVersion) {
+                if (stockInfo != null && !stockMatchesPatched && stockCandidate == null) {
                     handleInstallError(
                         app.getString(
                             R.string.mount_version_mismatch_message,
                             patchedVersion,
-                            stockVersion
+                            stockVersion ?: "unknown"
                         )
                     )
                     return@launch
@@ -875,7 +951,7 @@ class InstallViewModel : ViewModel(), KoinComponent {
 
                 // Check for base APK - app must be installed for mount
                 if (stockInfo == null) {
-                    if (packageInfo.splitNames.isNotEmpty()) {
+                    if (stockCandidate == null || packageInfo.splitNames.isNotEmpty()) {
                         handleInstallError(app.getString(R.string.installer_hint_generic))
                         return@launch
                     }
@@ -884,9 +960,9 @@ class InstallViewModel : ViewModel(), KoinComponent {
                 // Install as root
                 rootInstaller.install(
                     outputFile,
-                    inputFile,
+                    stockCandidate?.file,
                     packageName,
-                    inputVersion,
+                    patchedVersion,
                     label
                 )
 
@@ -896,8 +972,8 @@ class InstallViewModel : ViewModel(), KoinComponent {
                 // Mount
                 rootInstaller.mount(packageName)
 
-                // Drop the input only when the caller marked it disposable; persistent copies
-                // (saved originals) must survive for future repatching
+                // Drop only caller-owned temporary inputs; persistent saved originals must survive
+                // for future root mount updates.
                 if (inputIsTemporary) inputFile?.delete()
 
                 // Success
@@ -905,12 +981,15 @@ class InstallViewModel : ViewModel(), KoinComponent {
 
             } catch (e: Exception) {
                 Log.e(TAG, "Mount install failed", e)
-                handleInstallError(
+                val message = if (e is StockAppInstallException) {
+                    app.getString(R.string.mount_stock_restore_failed_message)
+                } else {
                     app.getString(
                         R.string.install_app_fail,
                         e.simpleMessage() ?: e.javaClass.simpleName
                     )
-                )
+                }
+                handleInstallError(message)
 
                 // Cleanup on failure
                 try {
@@ -921,10 +1000,26 @@ class InstallViewModel : ViewModel(), KoinComponent {
     }
 
     /**
+     * Mount a saved patched APK, restoring the matching original APK first when Morphe has it.
+     */
+    fun installSavedMount(
+        outputFile: File,
+        packageName: String,
+        onPersistApp: suspend (String, InstallType) -> Boolean
+    ) = installMount(
+        outputFile = outputFile,
+        inputFile = null,
+        inputIsTemporary = false,
+        packageName = packageName,
+        onPersistApp = onPersistApp,
+        waitForStockInstall = true
+    )
+
+    /**
      * Mount app (for root installer).
      */
     fun mount(packageName: String, version: String) = viewModelScope.launch {
-        val stockVersion = pm.getPackageInfo(packageName)?.versionName
+        val stockVersion = getInstalledStockVersion(packageName, version)
         if (stockVersion != null && stockVersion != version) {
             handleInstallError(
                 app.getString(
@@ -970,7 +1065,7 @@ class InstallViewModel : ViewModel(), KoinComponent {
      * Remount app (unmount then mount).
      */
     fun remount(packageName: String, version: String) = viewModelScope.launch {
-        val stockVersion = pm.getPackageInfo(packageName)?.versionName
+        val stockVersion = getInstalledStockVersion(packageName, version)
         if (stockVersion != null && stockVersion != version) {
             handleInstallError(
                 app.getString(
@@ -1009,15 +1104,7 @@ class InstallViewModel : ViewModel(), KoinComponent {
             return@launch
         }
 
-        val exportSucceeded = runCatching {
-            withContext(Dispatchers.IO) {
-                app.contentResolver.openOutputStream(uri)
-                    ?.use { stream -> Files.copy(outputFile.toPath(), stream) }
-                    ?: throw IOException("Could not open output stream for export")
-            }
-        }.isSuccess
-
-        onComplete(exportSucceeded)
+        onComplete(app.exportApkTo(outputFile, uri))
     }
 
     /**
@@ -1053,8 +1140,10 @@ class InstallViewModel : ViewModel(), KoinComponent {
         val file = pendingInstallFile ?: return
         val originalPkg = pendingOriginalPackageName ?: return
         val callback = pendingPersistCallback ?: return
+        val autoUninstallOnConflict = pendingAutoUninstallOnConflict
+        val allowSignatureMismatch = pendingAllowSignatureMismatch
 
-        install(file, originalPkg, callback)
+        install(file, originalPkg, callback, autoUninstallOnConflict, allowSignatureMismatch)
     }
 
     /**
@@ -1103,8 +1192,10 @@ class InstallViewModel : ViewModel(), KoinComponent {
         val file = pendingInstallFile ?: return
         val originalPkg = pendingOriginalPackageName ?: return
         val callback = pendingPersistCallback ?: return
+        val autoUninstallOnConflict = pendingAutoUninstallOnConflict
+        val allowSignatureMismatch = pendingAllowSignatureMismatch
 
-        install(file, originalPkg, callback)
+        install(file, originalPkg, callback, autoUninstallOnConflict, allowSignatureMismatch)
     }
 
     /**
@@ -1115,14 +1206,16 @@ class InstallViewModel : ViewModel(), KoinComponent {
     fun requestUninstall(packageName: String, installAfterUninstall: Boolean = false) {
         viewModelScope.launch {
             try {
-                sessionInstaller.uninstall(packageName)
+                uninstallForPendingInstall(packageName, installAfterUninstall)
                 if (installAfterUninstall) {
                     val file = pendingInstallFile
                     val originalPkg = pendingOriginalPackageName
                     val callback = pendingPersistCallback
                     if (file != null && originalPkg != null && callback != null) {
+                        val autoUninstallOnConflict = pendingAutoUninstallOnConflict
+                        pendingInstallToken?.let { oneTimeInstallerToken = it }
                         installState = InstallState.Ready
-                        install(file, originalPkg, callback)
+                        install(file, originalPkg, callback, autoUninstallOnConflict)
                     } else {
                         Log.w(TAG, "Cannot restart install after uninstall: pending install data missing")
                         installState = InstallState.Ready
@@ -1132,7 +1225,106 @@ class InstallViewModel : ViewModel(), KoinComponent {
                 }
             } catch (_: UninstallCancelledException) {
                 // User dismissed the dialog - keep current state
+                if (installAfterUninstall) {
+                    installState = signatureConflictState(packageName)
+                }
             }
+        }
+    }
+
+    /**
+     * Retry the pending install with the signature check skipped, keeping the app data in place.
+     * This only completes on devices where a root module patches the platform signature
+     * verification; anywhere else the platform rejects the install and the conflict comes back.
+     */
+    fun installIgnoringSignatureMismatch() {
+        val file = pendingInstallFile ?: return
+        val originalPkg = pendingOriginalPackageName ?: return
+        val callback = pendingPersistCallback ?: return
+
+        Log.i(TAG, "Retrying install of $originalPkg with the signature check skipped")
+        pendingInstallToken?.let { oneTimeInstallerToken = it }
+        installState = InstallState.Ready
+        install(
+            outputFile = file,
+            originalPackageName = originalPkg,
+            onPersistApp = callback,
+            autoUninstallOnConflict = pendingAutoUninstallOnConflict,
+            allowSignatureMismatch = true
+        )
+    }
+
+    private suspend fun uninstallForPendingInstall(
+        packageName: String,
+        installAfterUninstall: Boolean
+    ) {
+        if (installAfterUninstall && shouldUseShizukuUninstallForPendingInstall()) {
+            installState = InstallState.Installing
+            when (val result = sessionInstaller.uninstallShizuku(packageName)) {
+                UninstallResult.Success -> {
+                    if (waitUntilPackageRemoved(packageName)) {
+                        return
+                    }
+                    Log.w(TAG, "Shizuku uninstall reported success but $packageName is still installed")
+                    installState = InstallState.Conflict(packageName)
+                }
+                is UninstallResult.Failure -> {
+                    if (withContext(Dispatchers.IO) { pm.getPackageInfo(packageName) == null }) {
+                        return
+                    }
+                    Log.w(TAG, "Shizuku uninstall failed for $packageName: ${result.message}")
+                    installState = InstallState.Conflict(packageName)
+                }
+            }
+        }
+
+        sessionInstaller.uninstall(packageName)
+    }
+
+    private suspend fun tryAutoUninstallSignatureConflict(packageName: String): Boolean {
+        if (!pendingAutoUninstallOnConflict) return false
+        if (!prefs.autoUninstallWithShizuku.get()) return false
+        if (!shouldUseShizukuUninstallForPendingInstall()) return false
+
+        Log.i(TAG, "Auto-uninstalling $packageName before Shizuku auto-install")
+        return when (val result = sessionInstaller.uninstallShizuku(packageName)) {
+            UninstallResult.Success -> {
+                val removed = waitUntilPackageRemoved(packageName)
+                if (!removed) {
+                    Log.w(TAG, "Shizuku auto-uninstall reported success but $packageName is still installed")
+                }
+                removed
+            }
+            is UninstallResult.Failure -> {
+                Log.w(TAG, "Shizuku auto-uninstall failed for $packageName: ${result.message}")
+                false
+            }
+        }
+    }
+
+    private suspend fun waitUntilPackageRemoved(packageName: String): Boolean {
+        val timeoutAt = SystemClock.uptimeMillis() + UNINSTALL_VERIFY_TIMEOUT_MS
+        while (SystemClock.uptimeMillis() < timeoutAt) {
+            if (withContext(Dispatchers.IO) { pm.getPackageInfo(packageName) == null }) {
+                return true
+            }
+            delay(UNINSTALL_VERIFY_POLL_MS.milliseconds)
+        }
+        return withContext(Dispatchers.IO) { pm.getPackageInfo(packageName) == null }
+    }
+
+    private suspend fun shouldUseShizukuUninstallForPendingInstall(): Boolean {
+        val token = pendingInstallToken
+            ?: oneTimeInstallerToken
+            ?: selectedInstallerToken
+            ?: installerManager.getPrimaryToken()
+
+        val isShizukuInstall = token == InstallerManager.Token.Shizuku ||
+                token == InstallerManager.Token.ShizukuPlayStore
+        if (!isShizukuInstall) return false
+
+        return withContext(Dispatchers.IO) {
+            sessionInstaller.shizukuAvailability(InstallerManager.InstallTarget.PATCHER).available
         }
     }
 
@@ -1163,6 +1355,59 @@ class InstallViewModel : ViewModel(), KoinComponent {
 
     fun openShizukuApp(): Boolean = installerManager.openShizukuApp()
 
+    fun getShizukuStatus(): SessionInstaller.ShizukuStatus =
+        installerManager.shizukuStatus(InstallerManager.InstallTarget.PATCHER)
+
+    fun requestShizukuPermission(): Boolean = installerManager.requestShizukuPermission()
+
+    private suspend fun getInstalledStockVersion(packageName: String, expectedVersion: String): String? {
+        val currentVersion = withContext(Dispatchers.IO) {
+            pm.getPackageInfo(packageName)?.versionName
+        }
+        if (currentVersion == null || currentVersion == expectedVersion) return currentVersion
+
+        return waitForInstalledStockVersion(packageName, expectedVersion)?.versionName ?: currentVersion
+    }
+
+    private suspend fun waitForInstalledStockVersion(
+        packageName: String,
+        versionName: String
+    ): PackageInfo? {
+        var matchingInfo: PackageInfo? = null
+        withTimeoutOrNull(STOCK_INSTALL_SETTLE_TIMEOUT) {
+            while (matchingInfo == null) {
+                val info = withContext(Dispatchers.IO) { pm.getPackageInfo(packageName) }
+                if (info?.versionName == versionName) {
+                    matchingInfo = info
+                } else {
+                    delay(STOCK_INSTALL_SETTLE_POLL)
+                }
+            }
+        }
+        return matchingInfo
+    }
+
+    private suspend fun waitForMatchingInstalledStock(
+        packageName: String,
+        versionName: String
+    ): PackageInfo? {
+        var matchingInfo: PackageInfo? = null
+        withTimeoutOrNull(STOCK_INSTALL_SETTLE_TIMEOUT) {
+            while (matchingInfo == null) {
+                val info = withContext(Dispatchers.IO) { pm.getPackageInfo(packageName) }
+                if (info != null &&
+                    info.packageName == packageName &&
+                    info.versionName == versionName
+                ) {
+                    matchingInfo = info
+                } else {
+                    delay(STOCK_INSTALL_SETTLE_POLL)
+                }
+            }
+        }
+        return matchingInfo
+    }
+
     private fun handleInstallSuccess(packageName: String) {
         externalInstallTimeoutJob?.cancel()
         selectedInstallerToken = null
@@ -1177,19 +1422,79 @@ class InstallViewModel : ViewModel(), KoinComponent {
         installState = InstallState.Error(message)
     }
 
-    private fun handleConflict(targetPackageName: String, conflictMessage: String?) {
+    private fun formatShizukuInstallError(message: String?): String {
+        val raw = message?.takeIf { it.isNotBlank() }
+        val lower = raw.orEmpty().lowercase()
+        val summary = when {
+            "permission" in lower || "denied" in lower ->
+                app.getString(R.string.installer_shizuku_error_permission)
+            "timed out" in lower || "timeout" in lower ->
+                app.getString(R.string.installer_shizuku_error_timeout)
+            "downgrade" in lower ->
+                app.getString(R.string.installer_shizuku_error_downgrade)
+            "update_incompatible" in lower ||
+                    "signatures do not match" in lower ||
+                    "signature" in lower ->
+                app.getString(R.string.installer_shizuku_error_signature)
+            "invalid_apk" in lower ||
+                    "parse_error" in lower ||
+                    "failed to parse" in lower ->
+                app.getString(R.string.installer_shizuku_error_invalid_apk)
+            "user_restricted" in lower ||
+                    "failed_user" in lower ||
+                    "profile" in lower ->
+                app.getString(R.string.installer_shizuku_error_user_profile)
+            else -> raw ?: "Unknown error"
+        }
+
+        return if (raw != null && raw != summary) {
+            app.getString(R.string.installer_shizuku_install_fail_with_details, summary, raw)
+        } else {
+            app.getString(R.string.installer_shizuku_install_fail, summary)
+        }
+    }
+
+    private suspend fun handleConflict(targetPackageName: String, conflictMessage: String?) {
         Log.i(TAG, "Signature conflict for $targetPackageName")
         if (pm.getPackageInfo(targetPackageName) != null) {
-            installState = InstallState.Conflict(targetPackageName)
+            installState = signatureConflictState(targetPackageName)
         } else {
             // Target not installed - not a real signature conflict (e.g. renamed package)
             handleInstallError(app.getString(R.string.install_app_fail, conflictMessage ?: "Unknown error"))
         }
     }
 
+    /**
+     * Conflict state for [packageName], offering the signature bypass only when the certificates
+     * are the actual blocker, the device has root, and the current attempt did not already skip
+     * the check. Reading the signatures beats parsing installer output, because the platform
+     * reports downgrades and certificate mismatches through the same conflict status.
+     */
+    private suspend fun signatureConflictState(packageName: String): InstallState.Conflict {
+        val outputFile = pendingInstallFile
+        val canIgnore = !pendingAllowSignatureMismatch && outputFile != null &&
+                withContext(Dispatchers.IO) {
+                    rootInstaller.hasRootAccess() && pm.hasSignatureMismatch(packageName, outputFile)
+                }
+
+        return InstallState.Conflict(packageName, canIgnore)
+    }
+
+    /** True for package manager output meaning the install was rejected over differing certificates. */
+    private fun String?.isSignatureRejection(): Boolean {
+        val text = this?.lowercase() ?: return false
+        return "update_incompatible" in text || "signatures do not match" in text
+    }
+
+    private fun Throwable.isSignatureRejection() = simpleMessage().isSignatureRejection()
+
     companion object {
         private const val TAG = "Morphe Install"
         private const val EXTERNAL_INSTALL_TIMEOUT_MS = 60_000L
+        private const val UNINSTALL_VERIFY_TIMEOUT_MS = 10_000L
+        private const val UNINSTALL_VERIFY_POLL_MS = 250L
         private val INSTALL_MONITOR_POLL_MS = 1.seconds
+        private val STOCK_INSTALL_SETTLE_TIMEOUT = 30.seconds
+        private val STOCK_INSTALL_SETTLE_POLL = 1.seconds
     }
 }

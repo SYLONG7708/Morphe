@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.morphe.manager.R
+import app.morphe.manager.ui.screen.shared.Defaults
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -34,23 +35,22 @@ private const val BOARD_SIZE = 4
 @Stable
 class Game2048State(
     initialHighScore: Int = 0,
-    private val onHighScoreUpdated: (Int) -> Unit = {}
+    onHighScoreUpdated: (Int) -> Unit = {}
 ) : MiniGameStateBase {
     private var _board by mutableStateOf(emptyBoard())
-    private var _score by mutableIntStateOf(0)
     private var _isGameOver by mutableStateOf(false)
     private var _hasWon by mutableStateOf(false)
     private var _isPaused by mutableStateOf(false)
-    private var _highScore by mutableIntStateOf(initialHighScore)
+    private val points = GameScore(initialHighScore, onHighScoreUpdated)
 
     // board is read-only from outside; only accessed within this file via BoardGrid
     val board: Array<IntArray> get() = _board
-    override val score: Int get() = _score
-    override val highScore: Int get() = _highScore
-    val isGameOver: Boolean get() = _isGameOver
+    override val score: Int get() = points.value
+    override val highScore: Int get() = points.high
+    override val isGameOver: Boolean get() = _isGameOver
     // hasWon stays true even after game over so the win message persists until restart
     val hasWon: Boolean get() = _hasWon
-    val isPaused: Boolean get() = _isPaused
+    override val isPaused: Boolean get() = _isPaused
 
     init {
         spawnTile()
@@ -87,7 +87,7 @@ class Game2048State(
 
         if (!snapshot.contentDeepEquals(next)) {
             _board = next
-            _score += gained
+            points.value += gained
             if (!_hasWon && next.any { row -> row.any { it >= 2048 } }) _hasWon = true
             spawnTile()
             checkGameOver()
@@ -96,7 +96,7 @@ class Game2048State(
 
     override fun restart() {
         _board = emptyBoard()
-        _score = 0
+        points.reset()
         _isGameOver = false
         _hasWon = false
         _isPaused = false
@@ -104,8 +104,10 @@ class Game2048State(
         spawnTile()
     }
 
-    fun pause() { if (!_isGameOver) _isPaused = true }
-    fun resume() { _isPaused = false }
+    override val isPlaying get() = !_isGameOver && !_isPaused
+
+    override fun pause() { if (!_isGameOver) _isPaused = true }
+    override fun resume() { _isPaused = false }
 
     // Slides a single row/column left: collapses zeros, merges adjacent equal pairs
     // once per pair (left-to-right), then pads with zeros on the right.
@@ -147,10 +149,7 @@ class Game2048State(
             if (c + 1 < BOARD_SIZE && _board[r][c + 1] == v) return
             if (r + 1 < BOARD_SIZE && _board[r + 1][c] == v) return
         }
-        if (_score > _highScore) {
-            _highScore = _score
-            onHighScoreUpdated(_highScore)
-        }
+        points.commit()
         _isGameOver = true
     }
 
@@ -165,7 +164,6 @@ private val TileGap = 8.dp
 
 @Composable
 fun Game2048Board(state: Game2048State) {
-    GameOverHaptic { state.isGameOver }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         BoardGrid(state = state, size = maxWidth)
         if (state.hasWon && !state.isGameOver) {
@@ -189,7 +187,7 @@ private fun BoardGrid(state: Game2048State, size: Dp) {
     Box(
         modifier = Modifier
             .size(size)
-            .background(BoardBg, RoundedCornerShape(12.dp))
+            .background(BoardBg, RoundedCornerShape(Defaults.CompactCornerRadius))
             .pointerInput(Unit) {
                 var drag = Offset.Zero
                 detectDragGestures(
@@ -222,17 +220,6 @@ private fun BoardGrid(state: Game2048State, size: Dp) {
             }
         }
 
-        if (state.isGameOver) {
-            GameOverOverlay(
-                score = state.score,
-                highScore = state.highScore,
-                onRestart = state::restart,
-                modifier = Modifier.matchParentSize()
-            )
-        }
-        if (state.isPaused) {
-            GamePauseOverlay(onResume = state::resume, modifier = Modifier.matchParentSize())
-        }
     }
 }
 

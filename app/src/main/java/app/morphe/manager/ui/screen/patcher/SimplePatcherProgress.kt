@@ -26,10 +26,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.morphe.manager.R
+import app.morphe.manager.ui.model.PatchProgressSource
 import app.morphe.manager.ui.model.State
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.HomeAndPatcherMessages
-import app.morphe.manager.ui.viewmodel.PatcherViewModel
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -43,8 +43,9 @@ import kotlin.time.Duration.Companion.seconds
 fun SimplePatchingInProgress(
     progress: Float,
     patchesProgress: Pair<Int, Int>,
-    patcherViewModel: PatcherViewModel,
+    patchProgress: PatchProgressSource,
     showLongStepWarning: Boolean = false,
+    queueHeader: (@Composable () -> Unit)? = null,
     onCancelClick: () -> Unit,
     onHomeClick: () -> Unit
 ) {
@@ -86,7 +87,8 @@ fun SimplePatchingInProgress(
                 completed = completed,
                 total = total,
                 showLongStepWarning = showLongStepWarning,
-                patcherViewModel = patcherViewModel,
+                patchProgress = patchProgress,
+                queueHeader = queueHeader,
                 onCancelClick = onCancelClick,
                 onHomeClick = onHomeClick
             )
@@ -119,7 +121,8 @@ private fun AdaptiveProgressContent(
     completed: Int,
     total: Int,
     showLongStepWarning: Boolean,
-    patcherViewModel: PatcherViewModel,
+    patchProgress: PatchProgressSource,
+    queueHeader: (@Composable () -> Unit)? = null,
     onCancelClick: () -> Unit = {},
     onHomeClick: () -> Unit = {}
 ) {
@@ -143,6 +146,8 @@ private fun AdaptiveProgressContent(
                     .fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
+                queueHeader?.invoke()
+
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.Center,
@@ -152,7 +157,7 @@ private fun AdaptiveProgressContent(
 
                     ProgressDetailsSection(
                         showLongStepWarning = showLongStepWarning,
-                        patcherViewModel = patcherViewModel,
+                        patchProgress = patchProgress,
                         windowSize = windowSize
                     )
                 }
@@ -194,6 +199,8 @@ private fun AdaptiveProgressContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(itemSpacing * 3)
         ) {
+            queueHeader?.invoke()
+
             ProgressMessageSection(currentMessage)
 
             CircularProgressWithStats(
@@ -205,7 +212,7 @@ private fun AdaptiveProgressContent(
 
             ProgressDetailsSection(
                 showLongStepWarning = showLongStepWarning,
-                patcherViewModel = patcherViewModel,
+                patchProgress = patchProgress,
                 windowSize = windowSize
             )
         }
@@ -233,7 +240,7 @@ private fun ProgressMessageSection(currentMessage: Int) {
 @Composable
 private fun ProgressDetailsSection(
     showLongStepWarning: Boolean,
-    patcherViewModel: PatcherViewModel,
+    patchProgress: PatchProgressSource,
     windowSize: WindowSize
 ) {
     Column(
@@ -246,20 +253,21 @@ private fun ProgressDetailsSection(
         // Long step warning
         AnimatedVisibility(
             visible = showLongStepWarning,
-            enter = MorpheAnimations.expandFadeEnter,
-            exit = MorpheAnimations.shrinkFadeExit
+            enter = Animations.expandFadeEnter,
+            exit = Animations.shrinkFadeExit
         ) {
-            InfoBadge(
+            Notice(
                 text = stringResource(R.string.patcher_long_step_warning),
-                style = InfoBadgeStyle.Primary,
+                tone = SemanticTone.Primary,
                 icon = Icons.Outlined.Info,
-                isCentered = true
+                isCentered = true,
+                density = NoticeDensity.Compact
             )
         }
 
         // Current step indicator
         CurrentStepIndicator(
-            patcherViewModel = patcherViewModel,
+            patchProgress = patchProgress,
             windowSize = windowSize
         )
     }
@@ -285,7 +293,7 @@ private fun AnimatedMessage(messageResId: Int) {
     } else {
         AnimatedContent(
             targetState = message,
-            transitionSpec = MorpheAnimations.fadeCrossfade(1000),
+            transitionSpec = Animations.fadeCrossfade(1000),
             label = "message_animation"
         ) { rotatingMessage ->
             Text(
@@ -373,12 +381,13 @@ private fun CircularProgressWithStats(
  */
 @Composable
 fun CurrentStepIndicator(
-    patcherViewModel: PatcherViewModel,
+    patchProgress: PatchProgressSource,
     windowSize: WindowSize
 ) {
-    val currentStep by remember {
+    // Keyed on the run: a queue swaps in a new source without leaving composition
+    val currentStep by remember(patchProgress) {
         derivedStateOf {
-            patcherViewModel.steps.firstOrNull { it.state == State.RUNNING }
+            patchProgress.steps.firstOrNull { it.state == State.RUNNING }
         }
     }
     val reduceMotion = rememberAccessibilityEnabled()
@@ -403,7 +412,7 @@ fun CurrentStepIndicator(
     } else {
         AnimatedContent(
             targetState = stepName,
-            transitionSpec = MorpheAnimations.fadeCrossfade(400),
+            transitionSpec = Animations.fadeCrossfade(400),
             label = "step_animation"
         ) { name ->
             if (name != null) {

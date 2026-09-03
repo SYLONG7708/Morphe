@@ -5,18 +5,20 @@
 
 package app.morphe.manager.ui.screen.shared
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -32,21 +34,20 @@ import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.State as MarkdownRenderState
 
 /**
- * Opens the GitHub release page for the given [pageUrl].
+ * Footer action opening the GitHub release page for [pageUrl].
+ * Null when there is no page to open, so callers can drop it from the group.
  */
 @Composable
-fun ChangelogButton(
-    pageUrl: String?,
-    modifier: Modifier = Modifier
-) {
+fun changelogAction(pageUrl: String?): DialogAction? {
     val uriHandler = LocalUriHandler.current
+    val text = stringResource(R.string.changelog)
 
-    pageUrl?.let { url ->
-        MorpheDialogOutlinedButton(
-            text = stringResource(R.string.changelog),
+    return pageUrl?.let { url ->
+        DialogAction(
+            text = text,
             onClick = { uriHandler.openUri(url) },
             icon = Icons.AutoMirrored.Outlined.Article,
-            modifier = modifier.fillMaxWidth()
+            emphasis = DialogActionEmphasis.Outlined
         )
     }
 }
@@ -60,7 +61,7 @@ fun ChangelogSectionLoading(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)
+        verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
     ) {
         // Header shimmer
         ShimmerChangelogHeader()
@@ -77,18 +78,16 @@ fun ChangelogSectionLoading(
 fun ChangelogEntrySection(
     entry: ChangelogEntry,
     headerIcon: ImageVector = Icons.Outlined.NewReleases,
-    textColor: Color = LocalDialogTextColor.current,
     precomputedMarkdown: MarkdownRenderState? = null
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)
+        verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
     ) {
         ChangelogEntryHeader(
             version = entry.version,
             date = entry.date,
-            icon = headerIcon,
-            textColor = textColor
+            icon = headerIcon
         )
         if (entry.content.isNotBlank()) {
             Changelog(markdown = entry.content, precomputedState = precomputedMarkdown)
@@ -103,67 +102,29 @@ fun ChangelogEntrySection(
 private fun ChangelogEntryHeader(
     version: String,
     date: String?,
-    icon: ImageVector,
-    textColor: Color
+    icon: ImageVector
 ) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Icon with circular background
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
-                modifier = Modifier.size(56.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
-
-            // Version and date info
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = if (version.startsWith("v")) version else "v$version",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = textColor
+    HeroInfoCard(
+        icon = icon,
+        title = if (version.startsWith("v")) version else "v$version",
+        titleColor = LocalDialogTextColor.current,
+        subtitle = if (date != null) {
+            {
+                Icon(
+                    imageVector = Icons.Outlined.Schedule,
+                    contentDescription = null,
+                    tint = LocalContentColor.current,
+                    modifier = Modifier.size(16.dp)
                 )
-                if (date != null) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Schedule,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = date,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
+                Text(
+                    text = date,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = LocalContentColor.current,
+                    fontWeight = FontWeight.Medium
+                )
             }
-        }
-    }
+        } else null
+    )
 }
 
 /**

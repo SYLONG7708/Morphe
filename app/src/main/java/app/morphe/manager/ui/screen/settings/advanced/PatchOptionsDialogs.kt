@@ -5,249 +5,35 @@
 
 package app.morphe.manager.ui.screen.settings.advanced
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.Restore
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.CUSTOM_HEADER_INSTRUCTION
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.CUSTOM_ICON_INSTRUCTION
-import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.DARK_THEME_COLOR_DESC
-import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.DARK_THEME_COLOR_TITLE
-import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.LIGHT_THEME_COLOR_DESC
-import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.LIGHT_THEME_COLOR_TITLE
 import app.morphe.manager.domain.manager.getLocalizedOrCustomText
-import app.morphe.manager.ui.screen.home.ColorPresetItem
-import app.morphe.manager.ui.screen.home.ExpandableSurface
-import app.morphe.manager.ui.screen.home.ScrollableInstruction
+import app.morphe.manager.patcher.patch.ExplicitOptionKind
 import app.morphe.manager.ui.screen.shared.*
+import app.morphe.manager.ui.viewmodel.OptionInfo
 import app.morphe.manager.ui.viewmodel.PatchOptionKeys
 import app.morphe.manager.ui.viewmodel.PatchOptionsViewModel
-import app.morphe.manager.util.KnownApps
 import app.morphe.manager.util.rememberFolderPickerWithPermission
 import app.morphe.manager.util.toFilePath
-import kotlinx.coroutines.launch
-
-/**
- * Theme color selection dialog with dynamic options from bundle.
- */
-@Composable
-fun ThemeColorDialog(
-    patchOptionsPrefs: PatchOptionsPreferencesManager,
-    patchOptionsViewModel: PatchOptionsViewModel,
-    packageName: String,
-    onDismiss: () -> Unit
-) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
-    // Get current values from preferences
-    val darkColor by patchOptionsPrefs.darkThemeColor(packageName).getAsState()
-    val lightColor by patchOptionsPrefs.lightThemeColor(packageName).getAsState()
-
-    // Local state for custom color input
-    val showDarkColorPicker = remember { mutableStateOf(false) }
-    val showLightColorPicker = remember { mutableStateOf(false) }
-
-    // Get theme options from bundle
-    val themeOptions = patchOptionsViewModel.getThemeOptions(packageName)
-
-    // Get dark theme option
-    val darkThemeOption = patchOptionsViewModel.getOption(themeOptions, PatchOptionKeys.DARK_THEME_COLOR)
-    val darkPresets = darkThemeOption?.let { patchOptionsViewModel.getOptionPresetsMap(it) } ?: emptyMap()
-    // Get light theme option (YouTube only)
-    val lightThemeOption = patchOptionsViewModel.getOption(themeOptions, PatchOptionKeys.LIGHT_THEME_COLOR)
-    val lightPresets = lightThemeOption?.let { patchOptionsViewModel.getOptionPresetsMap(it) } ?: emptyMap()
-
-    MorpheDialog(
-        onDismissRequest = onDismiss,
-        title = stringResource(R.string.settings_advanced_patch_options_theme_colors),
-        titleTrailingContent = {
-            DialogTitleAction(
-                icon = Icons.Outlined.Restore,
-                contentDescription = stringResource(R.string.reset),
-                onClick = {
-                    patchOptionsViewModel.resetThemeColors(
-                        prefs = patchOptionsPrefs,
-                        packageName = packageName,
-                        isYouTube = packageName == KnownApps.YOUTUBE
-                    )
-                }
-            )
-        },
-        footer = {
-            MorpheDialogButton(
-                text = stringResource(R.string.save),
-                onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Dark theme section
-            if (darkThemeOption != null) {
-                val localizedTitle = getLocalizedOrCustomText(
-                    context,
-                    darkThemeOption.title,
-                    DARK_THEME_COLOR_TITLE,
-                    R.string.settings_advanced_patch_options_dark_theme_color
-                )
-                Text(
-                    text = localizedTitle,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = LocalDialogTextColor.current
-                )
-
-                darkThemeOption.description.takeIf { it.isNotEmpty() }?.let { desc ->
-                    Text(
-                        text = getLocalizedOrCustomText(
-                            context,
-                            desc,
-                            DARK_THEME_COLOR_DESC,
-                            R.string.settings_advanced_patch_options_theme_color_description
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = LocalDialogSecondaryTextColor.current
-                    )
-                }
-
-                // Presets
-                darkPresets.forEach { (label, value) ->
-                    val colorValue = value?.toString() ?: return@forEach
-                    ColorPresetItem(
-                        label = label,
-                        colorValue = colorValue,
-                        isSelected = darkColor == colorValue,
-                        onClick = {
-                            scope.launch {
-                                patchOptionsPrefs.darkThemeColor(packageName).update(colorValue)
-                            }
-                        }
-                    )
-                }
-
-                // Custom color option
-                ColorPresetItem(
-                    label = stringResource(R.string.custom_color),
-                    colorValue = darkColor,
-                    isSelected = darkPresets.values.none { it?.toString() == darkColor },
-                    isCustom = true,
-                    onClick = { showDarkColorPicker.value = true }
-                )
-            }
-
-            // Light theme section (YouTube only)
-            if (packageName == KnownApps.YOUTUBE && lightThemeOption != null) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = getLocalizedOrCustomText(
-                        context,
-                        lightThemeOption.title,
-                        LIGHT_THEME_COLOR_TITLE,
-                        R.string.settings_advanced_patch_options_light_theme_color
-                    ),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = LocalDialogTextColor.current
-                )
-
-                lightThemeOption.description.takeIf { it.isNotEmpty() }?.let { desc ->
-                    Text(
-                        text = getLocalizedOrCustomText(
-                            context,
-                            desc,
-                            LIGHT_THEME_COLOR_DESC,
-                            R.string.settings_advanced_patch_options_theme_color_description
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = LocalDialogSecondaryTextColor.current
-                    )
-                }
-
-                // Presets
-                lightPresets.forEach { (label, value) ->
-                    val colorValue = value?.toString() ?: return@forEach
-                    ColorPresetItem(
-                        label = label,
-                        colorValue = colorValue,
-                        isSelected = lightColor == colorValue,
-                        onClick = {
-                            scope.launch {
-                                patchOptionsPrefs.lightThemeColor(packageName).update(colorValue)
-                            }
-                        }
-                    )
-                }
-
-                // Custom color option
-                ColorPresetItem(
-                    label = stringResource(R.string.custom_color),
-                    colorValue = lightColor,
-                    isSelected = lightPresets.values.none { it?.toString() == lightColor },
-                    isCustom = true,
-                    onClick = { showLightColorPicker.value = true }
-                )
-            }
-
-            // Show message if no options available
-            if (darkThemeOption == null && lightThemeOption == null) {
-                Text(
-                    text = stringResource(R.string.settings_advanced_patch_options_no_available),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = LocalDialogSecondaryTextColor.current.copy(alpha = 0.7f),
-                    fontStyle = FontStyle.Italic
-                )
-            }
-        }
-    }
-
-    // Dark color picker dialog
-    if (showDarkColorPicker.value) {
-        ColorPickerDialog(
-            title = stringResource(R.string.settings_advanced_patch_options_dark_theme_color),
-            currentColor = darkColor,
-            onColorSelected = { color ->
-                scope.launch {
-                    patchOptionsPrefs.darkThemeColor(packageName).update(color)
-                }
-                showDarkColorPicker.value = false
-            },
-            onDismiss = { showDarkColorPicker.value = false }
-        )
-    }
-
-    // Light Color Picker Dialog
-    if (showLightColorPicker.value) {
-        ColorPickerDialog(
-            title = stringResource(R.string.settings_advanced_patch_options_light_theme_color),
-            currentColor = lightColor,
-            onColorSelected = { color ->
-                scope.launch {
-                    patchOptionsPrefs.lightThemeColor(packageName).update(color)
-                }
-                showLightColorPicker.value = false
-            },
-            onDismiss = { showLightColorPicker.value = false }
-        )
-    }
-}
 
 /**
  * Custom branding dialog with folder picker and adaptive icon creator.
@@ -281,11 +67,11 @@ fun CustomBrandingDialog(
         }
     )
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.settings_advanced_patch_options_custom_branding),
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.save),
                 onPrimaryClick = {
                     patchOptionsViewModel.saveCustomBranding(
@@ -307,7 +93,7 @@ fun CustomBrandingDialog(
         ) {
             // App name field
             if (appNameOption != null) {
-                MorpheDialogTextField(
+                AppDialogTextField(
                     value = appName.value,
                     onValueChange = { appName.value = it },
                     label = { Text(stringResource(R.string.settings_advanced_patch_options_custom_branding_app_name)) },
@@ -318,17 +104,17 @@ fun CustomBrandingDialog(
 
             // Icon path field with folder picker
             if (iconOption != null) {
-                MorpheDialogTextField(
+                FolderOptionInput(
+                    option = iconOption,
                     value = iconPath.value,
+                    label = stringResource(R.string.settings_advanced_patch_options_custom_branding_custom_icon),
+                    placeholder = "/storage/emulated/0/icons",
                     onValueChange = { iconPath.value = it },
-                    label = { Text(stringResource(R.string.settings_advanced_patch_options_custom_branding_custom_icon)) },
-                    placeholder = { Text("/storage/emulated/0/icons") },
-                    showClearButton = true,
-                    onFolderPickerClick = { openFolderPicker() }
+                    onPickFolder = { openFolderPicker() }
                 )
 
                 // Create icon button
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = stringResource(R.string.adaptive_icon_create),
                     onClick = { showIconCreator.value = true },
                     icon = Icons.Outlined.AutoAwesome,
@@ -379,6 +165,46 @@ fun CustomBrandingDialog(
 }
 
 /**
+ * Folder input for a patch option. Typed folder options render as a picker button,
+ * matching the patch options shown during patching. Plain untyped string options
+ * declared by older patch bundles keep the editable path field.
+ */
+@Composable
+private fun FolderOptionInput(
+    option: OptionInfo,
+    value: String,
+    label: String,
+    placeholder: String,
+    onValueChange: (String) -> Unit,
+    onPickFolder: () -> Unit
+) {
+    if (option.explicitKind == ExplicitOptionKind.Folder) {
+        PickerFieldHeader(
+            title = label,
+            required = option.required,
+            isInvalid = option.required && value.isBlank()
+        )
+
+        PickerButtonRow(
+            label = stringResource(R.string.select_folder),
+            selectedPath = value,
+            icon = Icons.Outlined.Folder,
+            onPick = onPickFolder,
+            onClear = { onValueChange("") }
+        )
+    } else {
+        AppDialogTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            placeholder = { Text(placeholder) },
+            showClearButton = true,
+            onFolderPickerClick = onPickFolder
+        )
+    }
+}
+
+/**
  * Custom header dialog with folder picker and dynamic instructions from bundle.
  */
 @Composable
@@ -409,11 +235,11 @@ fun CustomHeaderDialog(
         }
     )
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.settings_advanced_patch_options_custom_header),
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.save),
                 onPrimaryClick = {
                     patchOptionsViewModel.saveCustomHeader(
@@ -433,17 +259,17 @@ fun CustomHeaderDialog(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (customOption != null) {
-                MorpheDialogTextField(
+                FolderOptionInput(
+                    option = customOption,
                     value = headerPath.value,
+                    label = stringResource(R.string.settings_advanced_patch_options_custom_header),
+                    placeholder = "/storage/emulated/0/header",
                     onValueChange = { headerPath.value = it },
-                    label = { Text(stringResource(R.string.settings_advanced_patch_options_custom_header)) },
-                    placeholder = { Text("/storage/emulated/0/header") },
-                    showClearButton = true,
-                    onFolderPickerClick = { openFolderPicker() }
+                    onPickFolder = { openFolderPicker() }
                 )
 
                 // Create header button
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = stringResource(R.string.header_creator_create),
                     onClick = { showHeaderCreator.value = true },
                     icon = Icons.Outlined.Image,

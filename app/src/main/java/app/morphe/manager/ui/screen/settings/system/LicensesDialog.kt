@@ -8,6 +8,7 @@ package app.morphe.manager.ui.screen.settings.system
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,9 +23,12 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import app.morphe.manager.R
+import app.morphe.manager.ui.screen.shared.DialogPadding
+import app.morphe.manager.ui.screen.shared.ListScrollbar
+import app.morphe.manager.ui.screen.shared.LocalDialogHorizontalInset
 import app.morphe.manager.ui.screen.shared.LocalDialogTextColor
-import app.morphe.manager.ui.screen.shared.MorpheDialog
-import app.morphe.manager.ui.screen.shared.MorpheDialogOutlinedButton
+import app.morphe.manager.ui.screen.shared.AppDialog
+import app.morphe.manager.ui.screen.shared.AppDialogOutlinedButton
 import app.morphe.manager.ui.screen.shared.ScrollToTopButton
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.ui.compose.LibraryColors
@@ -73,18 +77,18 @@ service marks, or logos.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LicensesDialog(onDismiss: () -> Unit) {
-    MorpheDialog(
+    AppDialog(
         title = stringResource(R.string.opensource_licenses),
         onDismissRequest = onDismiss,
         scrollable = false, // LibrariesContainer has its own LazyColumn
         footer = {
-            MorpheDialogOutlinedButton(
+            AppDialogOutlinedButton(
                 text = stringResource(R.string.close),
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth()
             )
         },
-        compactPadding = true
+        padding = DialogPadding.Compact
     ) {
         val textColor = LocalDialogTextColor.current
 
@@ -140,7 +144,15 @@ fun LicensesDialog(onDismiss: () -> Unit) {
                 }
             )
 
-            ScrollToTopButton(listState = lazyListState)
+            ListScrollbar(
+                listState = lazyListState,
+                modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+            )
+
+            ScrollToTopButton(
+                listState = lazyListState,
+                modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+            )
         }
     }
 }

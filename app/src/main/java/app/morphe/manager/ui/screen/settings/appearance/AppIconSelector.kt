@@ -6,12 +6,11 @@
 package app.morphe.manager.ui.screen.settings.appearance
 
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,7 +48,7 @@ fun AppIconSelector() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MorpheDefaults.ContentPadding),
+                .padding(Defaults.ContentPadding),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Icon grid - 3 columns
@@ -112,8 +107,6 @@ private fun AppIconCard(
         AppCompatResources.getDrawable(context, icon.previewIconResId)
     }
     val iconPainter = rememberDrawablePainter(drawable = iconDrawable)
-    val selectedText = stringResource(R.string.selected)
-    val notSelectedText = stringResource(R.string.not_selected)
 
     val windowSize = rememberWindowSize()
     val iconSize = when (windowSize.widthSizeClass) {
@@ -125,32 +118,18 @@ private fun AppIconCard(
     // Increase height in landscape for better text display
     val cardHeight = if (isLandscape()) 108.dp else 96.dp
 
-    Surface(
-        modifier = modifier.height(cardHeight),
-        shape = RoundedCornerShape(MorpheDefaults.SettingsCornerRadius),
-        color = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer
-        } else {
-            MaterialTheme.colorScheme.surface
-        },
-        border = BorderStroke(
-            width = if (isSelected) 2.dp else 1.dp,
-            color = if (isSelected) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.outline
-            }
+    SelectionTile(
+        selected = isSelected,
+        onClick = onClick,
+        stateDescription = stringResource(
+            if (isSelected) R.string.selected else R.string.not_selected
         ),
-        onClick = onClick
+        modifier = modifier.height(cardHeight)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(MorpheDefaults.ItemSpacing)
-                .semantics(mergeDescendants = true) {
-                    role = Role.RadioButton
-                    stateDescription = if (isSelected) selectedText else notSelectedText
-                },
+                .padding(Defaults.ItemSpacing),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -171,7 +150,7 @@ private fun AppIconCard(
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                 color = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
+                    LocalContentColor.current
                 } else {
                     MaterialTheme.colorScheme.onSurface
                 },
@@ -193,11 +172,11 @@ private fun AppIconChangeDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.settings_appearance_app_icon_change_dialog_title),
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.settings_appearance_app_icon_change_dialog_confirm),
                 onPrimaryClick = onConfirm,
                 secondaryText = stringResource(android.R.string.cancel),

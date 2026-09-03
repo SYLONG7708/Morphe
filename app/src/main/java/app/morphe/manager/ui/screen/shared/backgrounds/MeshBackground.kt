@@ -45,8 +45,7 @@ fun MeshBackground(
     val parallaxState = rememberParallaxState(
         enableParallax = enableParallax,
         sensitivity = 0.4f,
-        context = context,
-        coroutineScope = coroutineScope
+        context = context
     )
 
     // Generate mesh grid - random offsets and Z amplitudes per node

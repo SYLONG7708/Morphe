@@ -1,0 +1,88 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
+package app.morphe.manager.ui.screen.settings.system
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.PowerManager
+import android.provider.Settings
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import app.morphe.manager.R
+import app.morphe.manager.ui.screen.shared.*
+
+/**
+ * Background-execution settings: battery optimization exemption and the notifications hub.
+ * Patcher-runtime tuning lives in the Advanced tab because it is only useful when troubleshooting
+ * patching.
+ */
+@SuppressLint("BatteryLife")
+@Composable
+fun BackgroundSection(
+    onNotificationsClick: () -> Unit
+) {
+    val context = LocalContext.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val pm = remember { context.getSystemService(PowerManager::class.java) }
+    var isIgnoringBatteryOptimizations by remember { mutableStateOf(pm.isIgnoringBatteryOptimizations(context.packageName)) }
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            isIgnoringBatteryOptimizations = pm.isIgnoringBatteryOptimizations(context.packageName)
+        }
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)) {
+        SectionTitle(
+            text = stringResource(R.string.settings_system_background),
+            icon = Icons.Outlined.PhoneAndroid
+        )
+
+        SettingsGroup {
+            SettingsItem(
+                onClick = {
+                    context.startActivity(
+                        Intent(
+                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                            "package:${context.packageName}".toUri()
+                        )
+                    )
+                },
+                title = stringResource(R.string.settings_system_battery_optimization),
+                subtitle = stringResource(R.string.settings_system_battery_optimization_description),
+                leadingContent = { ThemedIcon(icon = Icons.Outlined.BatterySaver) },
+                statusContent = {
+                    StatusCircleIcon(
+                        icon = if (isIgnoringBatteryOptimizations) Icons.Outlined.Check else Icons.Outlined.Warning,
+                        containerColor = if (isIgnoringBatteryOptimizations) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = if (isIgnoringBatteryOptimizations) MaterialTheme.colorScheme.onPrimaryContainer
+                        else MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            )
+
+            SettingsDivider()
+
+            SettingsItem(
+                onClick = onNotificationsClick,
+                title = stringResource(R.string.settings_system_notifications),
+                subtitle = stringResource(R.string.settings_system_notifications_description),
+                leadingContent = { ThemedIcon(icon = Icons.Outlined.NotificationsActive) }
+            )
+        }
+    }
+}

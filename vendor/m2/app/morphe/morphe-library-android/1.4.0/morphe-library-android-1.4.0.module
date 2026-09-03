@@ -1,0 +1,240 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../morphe-library/1.4.0/morphe-library-1.4.0.module",
+    "group": "app.morphe",
+    "module": "morphe-library",
+    "version": "1.4.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "morphe-library-release.aar",
+          "url": "morphe-library-android-1.4.0.aar",
+          "size": 57139,
+          "sha512": "81cb29053bae2dfebc23f7631e0e5a12e5ddecb205dd83da818c9dd18b6cbb30d3bd5dc340c22da88bde30bee0bdc70c72ff7e68cbf2cbfaa1214d618643a41e",
+          "sha256": "fc72260881c9e29995ca1c33f0f27255bfc90f0e5cccca8dfde91ecd1b9a953e",
+          "sha1": "bd2bade86d2bf2f8009cf1a1818e278ce5f2f337",
+          "md5": "a2ee68291c1c57bdd9814bbfb7b85093"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.18.0"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "com.github.topjohnwu.libsu",
+          "module": "nio",
+          "version": {
+            "requires": "5.2.2"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "com.github.topjohnwu.libsu",
+          "module": "service",
+          "version": {
+            "requires": "5.2.2"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "com.google.guava",
+          "module": "guava",
+          "version": {
+            "requires": "33.5.0-jre"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "app.morphe",
+          "module": "jadb",
+          "version": {
+            "requires": "1.2.3"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "2.2.21"
+          },
+          "excludes": [
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-stdlib-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-common"
+            },
+            {
+              "group": "org.jetbrains.kotlin",
+              "module": "kotlin-test-annotations-common"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "morphe-library-release.aar",
+          "url": "morphe-library-android-1.4.0.aar",
+          "size": 57139,
+          "sha512": "81cb29053bae2dfebc23f7631e0e5a12e5ddecb205dd83da818c9dd18b6cbb30d3bd5dc340c22da88bde30bee0bdc70c72ff7e68cbf2cbfaa1214d618643a41e",
+          "sha256": "fc72260881c9e29995ca1c33f0f27255bfc90f0e5cccca8dfde91ecd1b9a953e",
+          "sha1": "bd2bade86d2bf2f8009cf1a1818e278ce5f2f337",
+          "md5": "a2ee68291c1c57bdd9814bbfb7b85093"
+        }
+      ]
+    },
+    {
+      "name": "releaseSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "files": [
+        {
+          "name": "morphe-library-android-1.4.0-sources.jar",
+          "url": "morphe-library-android-1.4.0-sources.jar",
+          "size": 18755,
+          "sha512": "baa08ce1157e312347016f7b646bd1686e9fe29091a4f3b9155f711079718b0f8ed6d2977e7ce628a3334df8b48b7b79dcd2a86321caddc0fd1d786b4d49f11f",
+          "sha256": "8e1dd3ae806ca5ade0b9974cb8c0851de0d6470b132a1548b4c50ade08fe1f5a",
+          "sha1": "e1fa327dfc804575d848dcd7584ea8b0f76a97eb",
+          "md5": "97ecf8e5df825a6919df2febadef3786"
+        }
+      ]
+    }
+  ]
+}

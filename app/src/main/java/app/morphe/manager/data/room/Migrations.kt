@@ -81,3 +81,53 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
         )
     }
 }
+
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS apk_signatures (
+                file_path TEXT NOT NULL,
+                file_size INTEGER NOT NULL,
+                last_modified INTEGER NOT NULL,
+                hashes TEXT NOT NULL,
+                PRIMARY KEY(file_path)
+            )
+            """.trimIndent()
+        )
+    }
+}
+
+val MIGRATION_13_14 = object : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Existing records fill their name in the next time they are written
+        db.execSQL("ALTER TABLE installed_app ADD COLUMN app_label TEXT")
+    }
+}
+
+val MIGRATION_14_15 = object : Migration(14, 15) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Records predating the flag describe the install their app has, renamed by patches or
+        // not. Runs that produce a copy from here on say so themselves
+        db.execSQL("ALTER TABLE installed_app ADD COLUMN is_clone INTEGER NOT NULL DEFAULT 0")
+
+        // The patches a record was built with are the only trace left of why it was renamed, and
+        // the patch that copies an app is named here because no record kept anything else of it.
+        // Both stores are read: applied_patch drops patches whose source is gone, while the
+        // payload keeps every name but only exists on records written since it was introduced
+        db.execSQL(
+            """
+            UPDATE installed_app SET is_clone = 1
+            WHERE current_package_name != original_package_name
+                AND (
+                    selection_payload LIKE '%"Clone app"%'
+                    OR EXISTS (
+                        SELECT 1 FROM applied_patch
+                        WHERE applied_patch.package_name = installed_app.current_package_name
+                            AND applied_patch.patch_name = 'Clone app'
+                    )
+                )
+            """.trimIndent()
+        )
+    }
+}

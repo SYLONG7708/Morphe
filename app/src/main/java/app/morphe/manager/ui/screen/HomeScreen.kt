@@ -18,17 +18,19 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.morphe.manager.R
-import app.morphe.manager.domain.manager.HomeAppSortMode
-import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.data.room.apps.installed.supportsMount
+import app.morphe.manager.data.room.apps.installed.trackingKey
+import app.morphe.manager.domain.batch.BatchTarget
+import app.morphe.manager.domain.manager.*
 import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.update.SafeIntegrationProfile
 import app.morphe.manager.ui.model.HomeAppItem
 import app.morphe.manager.ui.screen.home.*
+import app.morphe.manager.ui.screen.settings.system.InstallerFlowDialogs
 import app.morphe.manager.ui.screen.settings.system.PrePatchInstallerDialog
-import app.morphe.manager.ui.viewmodel.HomeAndPatcherMessages
-import app.morphe.manager.ui.viewmodel.HomeViewModel
-import app.morphe.manager.ui.viewmodel.QuickPatchParams
-import app.morphe.manager.ui.viewmodel.UpdateViewModel
+import app.morphe.manager.ui.screen.shared.InstallQueueRequest
+import app.morphe.manager.ui.screen.shared.rememberInstallQueue
+import app.morphe.manager.ui.viewmodel.*
 import app.morphe.manager.util.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,14 +46,17 @@ import kotlin.time.Duration.Companion.milliseconds
 fun HomeScreen(
     onSettingsClick: () -> Unit,
     onStartQuickPatch: (QuickPatchParams) -> Unit,
+    onStartBatchPatch: (List<BatchTarget>, Boolean) -> Unit,
     homeViewModel: HomeViewModel = koinViewModel(),
     prefs: PreferencesManager = koinInject(),
+    homeAppButtonPrefs: HomeAppButtonPreferences = koinInject(),
     usingMountInstallState: MutableState<Boolean>,
     bundleUpdateProgress: PatchBundleRepository.BundleUpdateProgress?,
     onboardingState: OnboardingState? = null,
     globalOnboardingState: GlobalOnboardingState? = null,
     patchTriggerPackage: String? = null,
-    onPatchTriggerHandled: () -> Unit = {}
+    onPatchTriggerHandled: () -> Unit = {},
+    installViewModel: InstallViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val view = LocalView.current
@@ -94,9 +99,14 @@ fun HomeScreen(
     val homeAppItems = homeAppState?.visible ?: emptyList()
     val hiddenAppItems = homeAppState?.hidden ?: emptyList()
     val homeAppSortMode = homeAppState?.sortMode ?: HomeAppSortMode.MANUAL
+    val homeAppCategoryState = homeAppState?.categoryState ?: HomeAppCategoryState(emptyList(), emptyMap())
+    val homeAppCategoryViewMode = homeAppState?.categoryViewMode ?: HomeAppCategoryViewMode.ALL_APPS
+    val showCategoryViewSwitcher = homeAppState?.showCategoryViewSwitcher == true
+    val homeAppSourceGroups = homeAppState?.sourceGroups ?: emptyList()
     val bundlePipelineLoading = homeAppState == null
     val showOtherAppsButton by homeViewModel.showOtherAppsButton.collectAsStateWithLifecycle()
     val showSearchButton by homeViewModel.showSearchButton.collectAsStateWithLifecycle()
+    val showSortButtonPref by homeAppButtonPrefs.showSortButton.collectAsStateWithLifecycle()
     val useExpertMode by prefs.useExpertMode.getAsState()
 
     // Gesture hint: shown once per bundle addition, in-memory
@@ -163,6 +173,55 @@ fun HomeScreen(
         contract = RequestInstallAppsContract
     ) { granted -> homeViewModel.onInstallAppsPermissionResult(granted) }
 
+    val startInstallQueue = rememberInstallQueue(
+        installViewModel = installViewModel,
+        completedPluralRes = R.plurals.batch_reinstall_summary
+    )
+
+    val startBatchReinstall: (List<HomeAppItem>) -> Unit = { items ->
+        val requests = items.mapNotNull { item ->
+            val installed = item.installedApp ?: return@mapNotNull null
+            val savedFile = item.savedApkFile ?: return@mapNotNull null
+            InstallQueueRequest(
+                file = savedFile,
+                originalPackageName = installed.originalPackageName,
+                mountPackageName = installed.currentPackageName.takeIf { installed.supportsMount },
+                onPersistApp = { packageName, installType ->
+                    homeViewModel.persistReinstalledApp(installed, packageName, installType)
+                },
+                onInstalled = { packageName ->
+                    homeViewModel.notifyAppStateChanged(packageName)
+                }
+            )
+        }
+        startInstallQueue(requests)
+    }
+
+    val batchInProgressText = stringResource(R.string.batch_patch_in_progress)
+    val startBatchPatch: (List<HomeAppItem>) -> Unit = { items ->
+        // A card that stands for an install queues that install, so cloned copies are each
+        // rebuilt as themselves rather than collapsing into the app they came from
+        val targets = items.map { item ->
+            BatchTarget(
+                packageName = item.packageName,
+                repatchedPackageName = item.installedApp?.trackingKey
+            )
+        }
+        when {
+            availablePatches <= 0 -> context.toast(sourcesLoadingText)
+            homeViewModel.android11BugActive -> homeViewModel.showAndroid11Dialog = true
+            targets.isEmpty() -> Unit
+            // A live queue keeps its own selection, so open it instead of swapping the apps
+            homeViewModel.batchPatchRunning -> {
+                context.toast(batchInProgressText)
+                onStartBatchPatch(targets, false)
+            }
+            // The queue installs through the standard installer, never by mounting, so the
+            // single-app mount choice must not carry over into the patches it resolves
+            else -> onStartBatchPatch(targets, false)
+        }
+    }
+
     // Handle patch trigger from dialog
     LaunchedEffect(patchTriggerPackage) {
         patchTriggerPackage?.let { packageName ->
@@ -173,6 +232,17 @@ fun HomeScreen(
 
     // Check for manager update
     val hasManagerUpdate = !homeViewModel.updatedManagerVersion.isNullOrEmpty()
+
+    val blockedSources by homeViewModel.patchBundleRepository.blockedSources.collectAsStateWithLifecycle(emptyMap())
+    val hasBlockedSources = blockedSources.isNotEmpty()
+
+    val metadataFetchErrors by homeViewModel.patchBundleRepository.metadataFetchErrors.collectAsStateWithLifecycle(emptyMap())
+    val hasMetadataErrors = metadataFetchErrors.isNotEmpty()
+
+    // Sources built for a newer patcher than this manager ships. They cannot be loaded or patched
+    // with until the app is updated, so surface it instead of leaving the source silently broken
+    val bundleSources by homeViewModel.patchBundleRepository.sources.collectAsStateWithLifecycle(emptyList())
+    val hasOutdatedManagerSources = bundleSources.any { it.requiresManagerUpdate }
 
     // Manager update details dialog
     if (showUpdateDetailsDialog.value) {
@@ -200,9 +270,11 @@ fun HomeScreen(
         globalOnboardingState = globalOnboardingState
     )
 
-    // Pre-patching installer selection dialog for root-capable devices.
-    // This dialog must appear before patching starts because the installation method
-    // determines which patches are applied
+    InstallerFlowDialogs(installViewModel = installViewModel)
+
+    // Pre-patching mode selection dialog for root-capable devices.
+    // This dialog must appear before patching starts because the patch mode determines
+    // which patches are applied.
     if (homeViewModel.showPrePatchInstallerDialog) {
         PrePatchInstallerDialog(
             onSelectMount = { homeViewModel.resolvePrePatchInstallerChoice(useMount = true) },
@@ -224,18 +296,27 @@ fun HomeScreen(
         ) {
             SectionsLayout(
                 notifications = HomeNotificationsUi(
-                    hasManagerUpdate = hasManagerUpdate,
-                    showBundleUpdateSnackbar = homeViewModel.showBundleUpdateSnackbar,
-                    snackbarStatus = homeViewModel.snackbarStatus,
-                    bundleUpdateProgress = bundleUpdateProgress,
-                    onShowUpdateDetails = { showUpdateDetailsDialog.value = true }
+                    managerUpdate = AlertState(hasManagerUpdate) { showUpdateDetailsDialog.value = true },
+                    outdatedManager = AlertState(hasOutdatedManagerSources) { homeViewModel.showBundleManagementSheet = true },
+                    blockedSources = AlertState(hasBlockedSources) { homeViewModel.showBundleManagementSheet = true },
+                    metadataErrors = AlertState(hasMetadataErrors) { homeViewModel.showBundleManagementSheet = true },
+                    meteredSkipped = AlertState(homeViewModel.updatesSkippedDueToMetered) { onSettingsClick() },
+                    bundleUpdate = BundleUpdateState(
+                        visible = homeViewModel.showBundleUpdateSnackbar,
+                        status = homeViewModel.snackbarStatus,
+                        progress = bundleUpdateProgress
+                    )
                 ),
                 apps = HomeAppListUi(
                     visible = homeAppItems,
                     hidden = hiddenAppItems,
                     installedAppsLoading = bundlePipelineLoading || homeViewModel.installedAppsLoading,
                     showGestureHint = showGestureHint,
-                    sortMode = homeAppSortMode
+                    sortMode = homeAppSortMode,
+                    categoryState = homeAppCategoryState,
+                    categoryViewMode = homeAppCategoryViewMode,
+                    showCategoryViewSwitcher = showCategoryViewSwitcher,
+                    sourceGroups = homeAppSourceGroups
                 ),
                 appActions = HomeAppActions(
                     onAppClick = { item ->
@@ -259,6 +340,9 @@ fun HomeScreen(
                     },
                     onHideApp = { packageName -> homeViewModel.hideApp(packageName) },
                     onHideMultiple = { packageNames -> packageNames.forEach { homeViewModel.hideApp(it) } },
+                    onUninstallMultiple = { items -> homeViewModel.uninstallApps(items) },
+                    onReinstallMultiple = { items -> startBatchReinstall(items) },
+                    onPatchMultiple = { items -> startBatchPatch(items) },
                     onUnhideApp = { packageName -> homeViewModel.unhideApp(packageName) },
                     onShowPatches = { item -> patchesSheetItem.value = item },
                     onGestureHintShown = {
@@ -271,8 +355,33 @@ fun HomeScreen(
                         }
                     },
                     onSaveOrder = { packageNames -> homeViewModel.saveAppOrder(packageNames) },
+                    onSaveSourceOrder = { sourceUid, packageNames ->
+                        homeViewModel.saveAppSourceOrder(sourceUid, packageNames)
+                    },
                     onResetOrder = { homeViewModel.resetAppOrder() },
-                    onSortModeChange = { mode -> homeViewModel.setAppSortMode(mode) }
+                    onResetSourceOrder = { sourceUid -> homeViewModel.resetAppSourceOrder(sourceUid) },
+                    onSaveSourceGroupOrder = { sourceUids ->
+                        homeViewModel.saveAppSourceGroupOrder(sourceUids)
+                    },
+                    onSortModeChange = { mode -> homeViewModel.setAppSortMode(mode) },
+                    onCategoryViewModeChange = { mode -> homeViewModel.setAppCategoryViewMode(mode) },
+                    onCreateCategory = { name -> homeViewModel.createAppCategory(name) },
+                    onRenameCategory = { categoryId, name ->
+                        homeViewModel.renameAppCategory(categoryId, name)
+                    },
+                    onDeleteCategory = { categoryId -> homeViewModel.deleteAppCategory(categoryId) },
+                    onSaveCategoryOrder = { categoryIds ->
+                        homeViewModel.saveAppCategoryOrder(categoryIds)
+                    },
+                    onToggleCategoryCollapsed = { categoryId ->
+                        homeViewModel.toggleAppCategoryCollapsed(categoryId)
+                    },
+                    onToggleSourceGroupCollapsed = { sourceUid ->
+                        homeViewModel.toggleAppSourceGroupCollapsed(sourceUid)
+                    },
+                    onAssignAppsToCategory = { packageNames, categoryId ->
+                        homeViewModel.assignAppsToCategory(packageNames, categoryId)
+                    }
                 ),
                 chromeActions = HomeChromeActions(
                     onOtherAppsClick = {
@@ -291,7 +400,7 @@ fun HomeScreen(
                 ),
                 chromeFlags = HomeChromeFlags(
                     showSearchButton = showSearchButton,
-                    showSortButton = showSearchButton,
+                    showSortButton = showSearchButton && showSortButtonPref,
                     showOtherAppsButton = showOtherAppsButton,
                     isExpertModeEnabled = useExpertMode
                 ),

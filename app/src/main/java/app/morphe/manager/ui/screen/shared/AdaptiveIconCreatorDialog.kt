@@ -224,19 +224,19 @@ fun AdaptiveIconCreatorDialog(
         }
     }
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = { if (!isCreating) onDismiss() },
         title = stringResource(R.string.adaptive_icon_create),
         titleTrailingContent = {
-            DialogTitleAction(
+            TitleAction(
                 icon = Icons.Outlined.Info,
                 contentDescription = stringResource(R.string.adaptive_icon_guide),
                 onClick = { showInfoDialog.value = true }
             )
         },
-        compactPadding = true,
+        padding = DialogPadding.Compact,
         footer = {
-            MorpheDialogButton(
+            AppDialogButton(
                 text = stringResource(R.string.adaptive_icon_create),
                 onClick = { openFolderPicker() },
                 enabled = foregroundBitmap != null && !isCreating,
@@ -251,7 +251,7 @@ fun AdaptiveIconCreatorDialog(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 // Foreground image picker
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = if (foregroundUri == null)
                         stringResource(R.string.adaptive_icon_select_image)
                     else
@@ -264,8 +264,8 @@ fun AdaptiveIconCreatorDialog(
                 // Transparency warning shown when the selected image has no transparent pixels
                 AnimatedVisibility(
                     visible = showTransparencyWarning,
-                    enter = MorpheAnimations.expandFadeEnter,
-                    exit = MorpheAnimations.shrinkFadeExit
+                    enter = Animations.expandFadeEnter,
+                    exit = Animations.shrinkFadeExit
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -290,7 +290,7 @@ fun AdaptiveIconCreatorDialog(
                 //    Each column takes equal weight so the previews fill available width side by side
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding),
+                    horizontalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Adaptive icon preview, interactive
@@ -373,56 +373,16 @@ fun AdaptiveIconCreatorDialog(
 
                 // Adaptive scale slider
                 if (foregroundBitmap != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    ScaleSliderRow(
+                        value = scale,
+                        onValueChange = { scale = it },
+                        valueRange = AdaptiveIconConfig.MIN_SCALE..AdaptiveIconConfig.MAX_SCALE
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Image,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = LocalDialogSecondaryTextColor.current
+                        SliderResetAction(
+                            visible = scale != 1f || offsetX != 0f || offsetY != 0f,
+                            contentDescription = stringResource(R.string.adaptive_icon_reset_transform),
+                            onReset = { scale = 1f; offsetX = 0f; offsetY = 0f }
                         )
-                        Spacer(Modifier.width(8.dp))
-                        Slider(
-                            value = scale,
-                            onValueChange = {
-                                scale = it.coerceIn(
-                                    AdaptiveIconConfig.MIN_SCALE,
-                                    AdaptiveIconConfig.MAX_SCALE
-                                )
-                            },
-                            valueRange = AdaptiveIconConfig.MIN_SCALE..AdaptiveIconConfig.MAX_SCALE,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.Outlined.Image,
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                            tint = LocalDialogSecondaryTextColor.current
-                        )
-                        // Spacer inside AnimatedVisibility so the gap also animates away
-                        AnimatedVisibility(
-                            visible = scale != 1f || offsetX != 0f || offsetY != 0f
-                        ) {
-                            Row {
-                                Spacer(Modifier.width(8.dp))
-                                IconButton(
-                                    onClick = { scale = 1f; offsetX = 0f; offsetY = 0f },
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.RestartAlt,
-                                        contentDescription = stringResource(R.string.adaptive_icon_reset_transform),
-                                        modifier = Modifier.size(24.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -445,56 +405,16 @@ fun AdaptiveIconCreatorDialog(
 
                 // Notification scale slider
                 if (foregroundBitmap != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    ScaleSliderRow(
+                        value = notificationScale,
+                        onValueChange = { notificationScale = it },
+                        valueRange = AdaptiveIconConfig.MIN_SCALE..AdaptiveIconConfig.MAX_NOTIFICATION_SCALE
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Image,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = LocalDialogSecondaryTextColor.current
+                        SliderResetAction(
+                            visible = notificationScale != 1f,
+                            contentDescription = stringResource(R.string.adaptive_icon_reset_transform),
+                            onReset = { notificationScale = 1f }
                         )
-                        Spacer(Modifier.width(8.dp))
-                        Slider(
-                            value = notificationScale,
-                            onValueChange = {
-                                notificationScale = it.coerceIn(
-                                    AdaptiveIconConfig.MIN_SCALE,
-                                    AdaptiveIconConfig.MAX_NOTIFICATION_SCALE
-                                )
-                            },
-                            valueRange = AdaptiveIconConfig.MIN_SCALE..AdaptiveIconConfig.MAX_NOTIFICATION_SCALE,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.Outlined.Image,
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                            tint = LocalDialogSecondaryTextColor.current
-                        )
-                        // Spacer inside AnimatedVisibility so the gap also animates away
-                        AnimatedVisibility(
-                            visible = notificationScale != 1f
-                        ) {
-                            Row {
-                                Spacer(Modifier.width(8.dp))
-                                IconButton(
-                                    onClick = { notificationScale = 1f },
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.RestartAlt,
-                                        contentDescription = stringResource(R.string.adaptive_icon_reset_transform),
-                                        modifier = Modifier.size(24.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -514,7 +434,7 @@ fun AdaptiveIconCreatorDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(Defaults.CompactCornerRadius),
                     color = swatchColor,
                     border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline)
                 ) {
@@ -528,7 +448,7 @@ fun AdaptiveIconCreatorDialog(
                     }
                 }
             }
-            MorpheContentOverlay(visible = isCreating) {
+            ContentOverlay(visible = isCreating) {
                 PulsingLogoWithCaption(caption = stringResource(R.string.creating))
             }
         }
@@ -549,12 +469,12 @@ fun AdaptiveIconCreatorDialog(
 
     // Icon creation guide dialog
     if (showInfoDialog.value) {
-        MorpheDialog(
+        AppDialog(
             onDismissRequest = { showInfoDialog.value = false },
             title = stringResource(R.string.adaptive_icon_guide),
             footer = {
-                MorpheDialogButton(
-                    text = stringResource(android.R.string.ok),
+                AppDialogOutlinedButton(
+                    text = stringResource(R.string.close),
                     onClick = { showInfoDialog.value = false },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -764,7 +684,7 @@ private fun StatusBarPreview(
     val contentColor = MaterialTheme.colorScheme.onSurface
     val guideColor = contentColor.copy(alpha = 0.5f)
     val dashEffect = remember { PathEffect.dashPathEffect(floatArrayOf(3f, 3f), 0f) }
-    val shape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(Defaults.CompactCornerRadius)
     // Capture RGB components for use inside Canvas DrawScope
     val iconR = contentColor.red * 255f
     val iconG = contentColor.green * 255f
@@ -844,19 +764,19 @@ private fun StatusBarPreview(
             Icon(
                 imageVector = Icons.Outlined.SignalCellular4Bar,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(Defaults.IconSizeSmall),
                 tint = contentColor
             )
             Icon(
                 imageVector = Icons.Outlined.Wifi,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(Defaults.IconSizeSmall),
                 tint = contentColor
             )
             Icon(
                 imageVector = Icons.Outlined.BatteryFull,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(Defaults.IconSizeSmall),
                 tint = contentColor
             )
         }

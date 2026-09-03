@@ -23,6 +23,11 @@ data class GitHubAsset(
     val name: String,
     @SerialName("browser_download_url")
     val downloadUrl: String,
+    /**
+     * API URL of the asset. Serves the same bytes as [downloadUrl] without touching github.com,
+     * which matters where that host is unreachable but the API is not.
+     */
+    val url: String? = null,
     @SerialName("content_type")
     val contentType: String? = null,
 )

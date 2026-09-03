@@ -5,7 +5,6 @@
 
 package app.morphe.manager.ui.screen.patcher
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.filled.Close
@@ -14,17 +13,16 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.InstallMobile
 import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
-import app.morphe.manager.ui.screen.home.BottomActionButton
+import app.morphe.manager.ui.screen.shared.BottomActionBar
+import app.morphe.manager.ui.screen.shared.BottomActionButton
+import app.morphe.manager.ui.screen.shared.BottomActionTone
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -61,53 +59,62 @@ fun PatcherBottomActionBar(
     // Tracks the brief "Copied!" feedback state on the copy button
     val copied = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(32.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+
+    // Only the buttons the current state calls for are emitted, and each one takes an equal
+    // share of the row, so two actions split it in half and the third slots in between them
+    val leadingLabel = when {
+        showInstallButton -> stringResource(R.string.install)
+        showCancelButton -> stringResource(android.R.string.cancel)
+        showLogsButton -> stringResource(R.string.logs)
+        else -> ""
+    }
+    val homeLabel = if (showHomeButton && !showInstallButton) stringResource(R.string.home) else ""
+    val trailingLabel = when {
+        showCopyLogsButton -> stringResource(android.R.string.copy)
+        showErrorButton -> stringResource(R.string.error_)
+        showSaveButton -> stringResource(R.string.save)
+        else -> ""
+    }
+    val labels = remember(leadingLabel, homeLabel, trailingLabel) {
+        listOf(leadingLabel, homeLabel, trailingLabel).filter { it.isNotEmpty() }
+    }
+
+    BottomActionBar(modifier = modifier, labels = labels) {
         // Left: Install / Cancel / Logs button
         if (showInstallButton) {
             BottomActionButton(
                 onClick = onInstallClick,
                 icon = Icons.Outlined.InstallMobile,
-                text = stringResource(R.string.install),
-                modifier = Modifier.weight(1f),
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                text = leadingLabel,
+                showLabel = showLabels,
+                tone = BottomActionTone.Accent
             )
         } else if (showCancelButton) {
             BottomActionButton(
                 onClick = onCancelClick,
                 icon = Icons.Default.Close,
-                text = stringResource(android.R.string.cancel),
-                modifier = Modifier.weight(1f),
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer
+                text = leadingLabel,
+                showLabel = showLabels,
+                tone = BottomActionTone.Destructive
             )
         } else if (showLogsButton) {
             BottomActionButton(
                 onClick = onLogsClick,
                 icon = Icons.AutoMirrored.Outlined.Article,
-                text = stringResource(R.string.logs),
-                modifier = Modifier.weight(1f),
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                text = leadingLabel,
+                showLabel = showLabels
             )
-        } else Spacer(Modifier.weight(1f))
+        }
 
         // Center: Home button
         if (showHomeButton && !showInstallButton) {
             BottomActionButton(
                 onClick = onHomeClick,
                 icon = Icons.Default.Home,
-                text = stringResource(R.string.home),
-                modifier = Modifier.weight(1f)
+                text = homeLabel,
+                showLabel = showLabels
             )
-        } else Spacer(Modifier.weight(1f))
+        }
 
         // Right: Save / Error / Copy logs button
         if (showCopyLogsButton) {
@@ -121,34 +128,21 @@ fun PatcherBottomActionBar(
                     }
                 },
                 icon = Icons.Default.ContentCopy,
-                text = if (copied.value) stringResource(android.R.string.copy) + "  ✓"
-                else stringResource(android.R.string.copy),
-                modifier = Modifier.weight(1f),
-                containerColor = if (copied.value)
-                    MaterialTheme.colorScheme.tertiaryContainer
-                else
-                    MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = if (copied.value)
-                    MaterialTheme.colorScheme.onTertiaryContainer
-                else
-                    MaterialTheme.colorScheme.onSecondaryContainer
+                text = trailingLabel,
+                showLabel = showLabels,
+                // The tone alone reports the copy, so the label keeps a stable width
+                tone = if (copied.value) BottomActionTone.Highlight else BottomActionTone.Neutral
             )
         } else if (showSaveButton || showErrorButton) {
             BottomActionButton(
                 onClick = if (showErrorButton) onErrorClick else onSaveClick,
                 icon = if (showErrorButton) Icons.Default.Error else Icons.Outlined.Save,
-                text = if (showErrorButton) stringResource(R.string.error_)
-                else stringResource(R.string.save),
-                modifier = Modifier.weight(1f),
-                containerColor = if (showErrorButton)
-                    MaterialTheme.colorScheme.errorContainer
-                else MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = if (showErrorButton)
-                    MaterialTheme.colorScheme.onErrorContainer
-                else MaterialTheme.colorScheme.onSecondaryContainer,
+                text = trailingLabel,
+                showLabel = showLabels,
+                tone = if (showErrorButton) BottomActionTone.Destructive else BottomActionTone.Neutral,
                 enabled = !isSaving,
                 showProgress = isSaving && !showErrorButton
             )
-        } else Spacer(Modifier.weight(1f))
+        }
     }
 }

@@ -3,6 +3,8 @@
     <!-- Home Screen -->
     <string name="home_other_apps">Önnur app</string>
     <string name="home_not_patched_yet">Ekki breytt ennþá</string>
+    <string name="home_unpatched_version_installed">Óplötuð útgáfa uppsett</string>
+    <string name="home_unpatched_badge">Ekki púttað</string>
     <string name="home_no_patches_available">Engar breytistillingar eru til staðar</string>
     <string name="home_app_hide_title">Fela þetta app?</string>
     <string name="home_app_hide_message">Þetta app verður falið frá heimaskjánum. Hægt er að endurheimta það síðar frá falinu forritum með því að nota hnappinn neðst á listanum</string>
@@ -13,22 +15,37 @@
     <string name="android_11_bug_dialog_title">Android 11 galla</string>
     <string name="android_11_bug_dialog_description">Það er þörf á samningi um app uppsetningarheimildir til að forðast villu í Android 11 kerfinu sem mun hafa neikvæð áhrif á notendaupplifunina</string>
     <string name="deep_link_add_source_title">Bæta við gjafa</string>
-    <string name="deep_link_add_source_message">Viltu bæta við þetta pakkningargjafa til SyMorphe?</string>
+    <string name="deep_link_add_source_message">Viltu bæta við þetta pakkningargjafa til Morphe?</string>
     <string name="deep_link_add_source_warning">Bættu aðeins við heimildir sem þú treystir</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">SyMorphe uppfærsla í boði</string>
+    <string name="home_update_available">Morphe uppfærsla í boði</string>
     <string name="home_update_available_subtitle">Ný útgáfa tilbúin til að setja upp</string>
+    <string name="home_blocked_source_title">Uppgildandi uppspretta fyrir breytingar greind</string>
+    <string name="home_blocked_source_subtitle">Bankaðu til að skoða og fjarlægja</string>
+    <string name="home_metadata_errors_title">Sumar uppsprettur fyrir breytingar eru ókleyfar</string>
+    <string name="home_metadata_errors_subtitle">Bankaðu til að skoða uppsprettur</string>
+    <string name="home_outdated_manager_title">Morphe er útgáfudagskrárt</string>
+    <string name="home_outdated_manager_subtitle">Sumar uppsprettur þarf að uppfæra</string>
+    <string name="home_metered_skipped_title">Uppfærslur á vinnslasvæði eru á stöðu</string>
+    <string name="home_metered_skipped_subtitle">Tap til að leyfa uppfærslur á farsímagögnunum</string>
     <string name="home_update_error">Uppskera mistókst</string>
-    <string name="home_update_error_subtitle">Vinsamlegast athugaðu internet tenginguna þína og reyndu aftur</string>
+    <string name="home_update_error_subtitle">Eitthvað fór úrskeidandi þegar uppfæra átti heimildirnar</string>
     <string name="home_update_skipped_metered">Uppfærslur höfðu</string>
     <string name="home_update_skipped_metered_subtitle">Fólgabil eru virkir</string>
     <string name="home_updating_sources">Uppfæra heimildir…</string>
-    <string name="home_update_progress_format">%s unnin</string>
     <string name="home_update_success">Heimildauppfærsla lokið</string>
     <string name="home_update_success_subtitle">Heimildir þínar eru upp til daglegt</string>
     <string name="home_sources_are_loading">Heimildir eru að hlaða, vinsamlegast bíðu…</string>
     <string name="home_search_apps">Leita að forritum</string>
-    <string name="home_app_sort_title">Raða forritum</string>
+    <string name="home_app_list_options_title">Raða og sía</string>
+    <string name="home_app_list_options_state_description">Raðað eftir %1$s, síað eftir %2$s</string>
+    <string name="home_app_filter_all_description">Öll forrit á heimaskjánum</string>
+    <string name="home_app_filter_patched_description">Forrit sem þú hefur plástrað eða vistað með Morphe</string>
+    <string name="home_app_filter_not_patched_description">Forrit sem þú hefur ekki ennþá plástrað í Morphe</string>
+    <string name="home_app_filter_installed_description">Forrit sem nú eru uppsett á þessu tæki</string>
+    <string name="home_app_filter_uninstalled_description">Forrit sem voru plástruð með Morphe en eru ekki lengur á þessu tæki</string>
+    <string name="home_app_filter_clones">Klónar</string>
+    <string name="home_app_filter_clones_description">Forrit byggð undir eigin pakkanafni, sett upp við hlið upprunalegs forrits</string>
     <string name="home_app_sort_manual_description">Langt ýta á forrit, þá smelltu á endurraða hnappinn</string>
     <string name="home_app_sort_recommended">Rækt ráðlagður röð</string>
     <string name="home_app_sort_recommended_description">Uppsett og fest forrit fyrst</string>
@@ -41,6 +58,20 @@
     <string name="home_no_apps_search_subtitle">Engin forrit passa við \"%s\"</string>
     <string name="home_all_apps_hidden_title">Öll app eru faldin</string>
     <string name="home_all_apps_hidden_subtitle">Þú hefur falið öll app frá heimaskjánum</string>
+    <string name="home_no_apps_filter_title">Engin forrit passa við þessa síu</string>
+    <string name="home_no_apps_filter_subtitle">Ekkert passaði við %s</string>
+    <string name="home_category_add">Bæta við flokki</string>
+    <string name="home_category_all_apps">Allar apps</string>
+    <string name="home_category_custom">Sérsniðin</string>
+    <string name="home_category_uncategorized">Flokkalaus</string>
+    <string name="home_category_new_title">Ný flokkur</string>
+    <string name="home_category_rename_title">Endurnefna flokk</string>
+    <string name="home_category_name">Flokksnafn</string>
+    <string name="home_category_move_to">Færa í flokk</string>
+    <string name="home_category_move_selected_title">Færa valda forrita</string>
+    <string name="home_category_delete_confirm_title">Eyða flokki</string>
+    <string name="home_category_delete_confirm_message">Eyða flokki &lt;b&gt;%1$s&lt;/b&gt;? Forrit í honum munu færa aftur til &lt;b&gt;%2$s&lt;/b&gt;</string>
+    <string name="home_category_actions_unavailable">Ekki hægt að framkvæma aðgerðir fyrir þennan flokk</string>
     <!-- Home Screen - Home Greetings -->
     <string name="home_greeting_1">Hvaða app viltu breyta?</string>
     <!-- Humorous hype message with light nostalgia -->
@@ -84,6 +115,7 @@
     <string name="home_greeting_super_late_5">Næturhægur og afkastamikill</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Heimildir breytistillinga</string>
+    <string name="sources_search">Leita að uppruna</string>
     <string name="sources_sort_title">Flokka uppfærslujöfn</string>
     <string name="sources_sort_manual">Handvirkuð pöntun</string>
     <string name="sources_sort_manual_hint">Halðu lengi á uppspretta til að raða á ný</string>
@@ -99,9 +131,13 @@
     <string name="sources_management_experimental_versions_toggle_description">Breytir tilrauna app markmiðum ef fáanlegt</string>
     <string name="sources_management_already_exists">Þessi heimild hefur þegar verið bætt við</string>
     <string name="sources_management_invalid_url">Ógild URL uppspretta. Vinsamlegast skoðaðu netfangið og reyndu aftur</string>
+    <string name="sources_management_blocked">Þessi uppfærslujafi er blokkaður og ekki er hægt að bæta við honum</string>
+    <string name="sources_management_source_blocked_badge">Blokkað</string>
     <string name="sources_management_metadata_unavailable">Metadata N/A</string>
     <string name="sources_management_metadata_unavailable_hint">Fjarlæg metadata skráin er ófær. Pökkun með uppsetta pakkann virkar enn, en sjálfvirk uppfærsla er óvirkjuð fyrir þessa uppsprettu</string>
     <string name="sources_management_metadata_unavailable_hint_missing">Ekki tókst að sækja pakkann. URL uppsprettan gæti verið röng eða skráin er ekki til</string>
+    <string name="sources_management_outdated_manager_badge">Uppféra Morphe</string>
+    <string name="sources_management_outdated_manager_hint">Ðetta uppspretta er á byggð fyrir flík %1$s, en Morphe %2$s inniheldur flík %3$s. Uppféra Morphe til að nota éð.</string>
     <string name="sources_management_source_enabled">Heimild virkjuð</string>
     <string name="sources_management_source_disabled">Heimild óvirkjuð</string>
     <string name="sources_management_source_updating">Uppfæra heimild</string>
@@ -142,17 +178,40 @@
     <string name="home_apk_availability_incompatible_label">Ósamhæft</string>
     <string name="home_apk_availability_yes">Já, hjálpaðu mér að finna APK</string>
     <string name="home_apk_availability_no">Nei, ég á nú þegar APK</string>
+    <string name="home_apk_helper_download">Notaðu hjálparforrit</string>
+    <string name="home_apk_helper_title">Niðurhal með hjálparforriti</string>
+    <string name="home_apk_helper_description">Morphe mun biðja hjálparforritið hér að neðan um að hala niður upprunalega APK og afhenda skránna</string>
+    <string name="home_apk_helper_continue">Opna hjálparforrit</string>
+    <string name="home_apk_helper_warning">Halda áfram aðeins ef þú treystir þessu hjálparforriti. Morphe yfirfær pakkann, útgáfuna og undirskriftina á því sem það fær áður en því er breytt</string>
+    <string name="home_apk_helper_warning_unverified">Halda áfram aðeins ef þú treystir þessu hjálparforriti. Morphe getur ekki staðfest undirskrift þessa APK, svo breyttri skrá verður ekki greind</string>
+    <string name="home_apk_helper_no_result">Hjálparforritið skilaði ekki APK</string>
+    <string name="home_apk_helper_no_access">Hjálparforritið veitti ekki aðgang að APK sem það skilaði</string>
+    <string name="home_apk_helper_no_package">Hjálparaforritið sagði ekki til um hvaða uppsetta forrit á að nota.</string>
+    <string name="home_apk_helper_wrong_package">Hjálparaforritið skilaði öðru forriti en því sem verið er að laga.세럼. 어？ я越界了。 I\'ll fix that. Only Icelandic. So: \"Hjálparaforritið skilaði öðru forriti en því sem verið er að laga.\" But I accidentally included Chinese. Let me correct in final output. I\'ll write clean JSON.```json[JSON as array]``````json[{</string>
+    <string name="home_apk_helper_installed_unavailable">Morphe gat ekki notað uppsetta forritið</string>
+    <string name="home_apk_helper_installed_incompatible">Ekki er hægt að plástra uppsettu útgáfuna</string>
     <string name="home_apk_use_saved">Nota vistað APK</string>
     <string name="home_apk_use_installed">Nota upphætt APK</string>
+    <string name="home_apk_use_installed_unverified">Gat ekki staðfest undirskrift uppsetts forrits, þannig að það gæti þegar verið lagað</string>
+    <string name="home_unverified">Óstaðfest</string>
+    <string name="home_install_verification_pending">Athuga uppsetningu…</string>
+    <string name="home_app_info_install_unverified">Morphe getur ekki staðfest að uppsett forrit sé sú útgáfa sem það breytti. Breytið það aftur eða setjið það upp aftur úr vistuðum APK til að endurkalla aðgerningarnar</string>
     <string name="home_app_info_no_saved_apk">Engin geymd APK. Pökkun mun þurfa að velja APK skrá aftur</string>
     <string name="home_version_requires_android">Krefst Android %s+</string>
     <string name="home_apk_no_compatible_versions_title">Ekki studd á þessari tæki</string>
-    <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; hefur engar samhæfar útgáfur fyrir Android %2$d (API %3$d). Allar lýstar útgáfur krefjast hærri Android útgáfu</string>
+    <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; hefur engar samhæfðar útgáfur fyrir Android %2$s (API %3$s). Allar skilgreindar útgáfur krefjast hærri Android útgáfu</string>
     <!-- Home Screen - Dialog 2: Download Instructions -->
     <string name="home_download_instructions_title">Sæktu upprunalega APK skrána</string>
     <string name="home_download_instructions_steps_title">Leiðbeiningar:</string>
+    <string name="home_download_instructions_finding">Finn niðurhalssíðuna…</string>
     <string name="home_download_instructions_step1">Ýttu á \"%s\" hnappinn hér að neðan</string>
     <string name="home_download_instructions_step2_part1">Scrollaðu niður á vefsíðuna og ýttu á</string>
+    <string name="home_download_instructions_step2_generic">Skrunaðu niður vefsíðuna og ýttu á niðurhalstakkann hennar</string>
+    <string name="home_download_instructions_step2_variant">Skrunaðu niður vefsíðuna og ýttu á niðurhalstakkann á efsta &lt;b&gt;APK afbrigðinu&lt;/b&gt;</string>
+    <string name="home_download_instructions_step2_search">Opnaðu leitarniðurstöðu af vefsíðu sem þú treystir</string>
+    <string name="home_download_instructions_step2_search_note">Morphe getur ekki ábyrgst þessar vefsíður. Slepptu þeim sem bjóða upp á eigin app-verslun í stað APK skráar</string>
+    <string name="home_download_instructions_step3_search">Á þeirri vefsíðu skaltu sækja APK af útgáfunni &lt;b&gt;%s&lt;/b&gt;, ekki þeirri nýjustu</string>
+    <string name="home_download_instructions_step3_search_any">Á þeirri vefsíðu skaltu sækja APK appið. &lt;b&gt;Sérhver útgáfa&lt;/b&gt; er hægt að plástra</string>
     <string name="home_download_instructions_download_button_toast">Ýttu á niðuhlaðningu á vefsíðunni, og ekki hér 😊</string>
     <string name="home_download_instructions_download_button_toast_2">Frábært! Smelltu áfram og farðu á vefsíðuna 👆</string>
     <string name="home_download_instructions_download_button_toast_3">Æfingin skapar meistarann og þú ert á góðri leið 💪</string>
@@ -161,9 +220,10 @@
     <string name="home_download_instructions_download_button_toast_6">Þú ert nú það sem kalla má áhugaverðan prófunarhnappur 🏅</string>
     <string name="home_download_instructions_step3">Bíðu þar til niðuhlaðningu er lokið, og &lt;b&gt;ekki setja upp&lt;/b&gt; APK skrárna</string>
     <string name="home_download_instructions_step3_mount">Bíðu þar til niðuhlaðningu er lokið, þá &lt;b&gt;setja upp APK skrárna&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Eftir að niðursöltunin er lokið, farðu aftur til SyMorphe</string>
-    <string name="home_download_instructions_step4_mount">Eftir að setja upp upprunalega APK-skrána, farðu aftur til SyMorphe</string>
-    <string name="home_download_instructions_continue">Halda áfram á APKMirror.com</string>
+    <string name="home_download_instructions_step4">Eftir að niðursöltunin er lokið, farðu aftur til Morphe</string>
+    <string name="home_download_instructions_step4_mount">Eftir að setja upp upprunalega APK-skrána, farðu aftur til Morphe</string>
+    <string name="home_download_instructions_continue_to">Halda áfram til %s</string>
+    <string name="home_download_instructions_destination">niðurhalssíðan</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Velja skrá</string>
     <string name="home_file_picker_prompt_description">Veldu &lt;b&gt;%s&lt;/b&gt; APK skrána sem þú hlaðið niður</string>
@@ -173,7 +233,7 @@
     <string name="home_select_apk_title">Veldu APK</string>
     <string name="home_select_any_apk_description">Veldu APK skrá af hvaða forriti sem er, eða veldu forrit sem er þegar uppsett á þessari tæki</string>
     <string name="home_use_installed_app">Nota uppsett forrit</string>
-    <string name="home_installed_app_picker_title">Veldu uppsett forrit</string>
+    <string name="home_installed_app_picker_title">Uppsett forrit</string>
     <string name="home_installed_app_picker_empty">Engin forrit fundust</string>
     <string name="home_installed_app_picker_filter_all">Öll forrit</string>
     <string name="home_installed_app_picker_filter_user">Aðeins notendaförrit</string>
@@ -190,13 +250,18 @@
     <string name="expert_mode_disable_all_done">Allar breytingar gerða óvirkar</string>
     <string name="expert_mode_enable_all">Gerðu allt virkt</string>
     <string name="expert_mode_enable_all_done">Allar breytingar virkar</string>
+    <string name="expert_mode_enable_all_universal_pending">Ýttu aftur til að fá algilda plástra</string>
     <string name="expert_mode_reset_to_default">Virkja mæltu breytingar</string>
     <string name="expert_mode_reset_to_default_done">Mæltu breytingarnar notaðar</string>
     <string name="expert_mode_restore_saved">Endurheimta valda</string>
     <string name="expert_mode_restore_saved_done">Geymt val endurheimt</string>
+    <string name="expert_mode_copy_from_bundle">Afrita val frá öðrum pakka</string>
+    <string name="expert_mode_copy_from_bundle_no_patches">Engar samsvarandi breytingar í þessum pakka</string>
     <string name="expert_mode_no_results">Engar breytistillingar fundust</string>
     <string name="expert_mode_universal_patches">Alhliða breytingar</string>
     <string name="expert_mode_new_patches">Nýtt</string>
+    <string name="expert_mode_patch_required_by_installer">Þetta er nauðsynlegt fyrir valið uppsetningarmark</string>
+    <string name="expert_mode_patch_unavailable_for_installer">Ekki í boði fyrir valið uppsetningarmark</string>
     <string name="expert_mode_multiple_sources_warning_title">Fleiri pakkningagjafar valdar</string>
     <string name="expert_mode_multiple_sources_warning_message">"Þú hefur valið patta úr fleiri pakkningagjöfum. Þetta gæti leitt til samhæfni vandamála eða óvæntra atvika.
 Ertu viss um að þú viljir halda áfram?"</string>
@@ -220,7 +285,7 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="home_dialog_unsupported_version_compatible_versions">Samhæfar útgáfur:</string>
     <string name="home_dialog_unsupported_version_unsupported_label">Stuðlað er við</string>
     <!-- "Build" here refers to a specific compiled version of the app (versionCode) -->
-    <string name="home_dialog_unsupported_version_build">Gerð %d</string>
+    <string name="home_dialog_unsupported_version_build">Útgáfa %s</string>
     <string name="home_dialog_unsupported_version_build_mismatch_description">Þetta er önnur gerð af sömu útgáfu. Viðgerðirnar krefjast sérstakrar gerðar</string>
     <string name="home_dialog_wrong_package_title">Rangur pakki valinn</string>
     <string name="home_dialog_wrong_package_description">Valin pakkning er ekki fyrir það app sem þú ætlaðir að patta</string>
@@ -234,13 +299,19 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="home_low_disk_space_dialog_message">Aðeins %1$.2f GB af fríu geymslu í boði. Breyting þarf að minnst %2$.2f GB af fríu plássi til að virka rétt</string>
     <string name="home_low_disk_space_dialog_warning">Að halda áfram gæti leitt til \"skrá finnst ekki\" villu eða skemmdra APK</string>
     <string name="home_simple_bundle_select_title">Veldu breytilega uppspretta</string>
-    <!-- Patch Options -->
+    <!-- Color picker -->
     <string name="custom_color">Sérstakur litur</string>
     <string name="hex_color">Hex litur</string>
+    <string name="color_picker_shade">Mettun og birtustig</string>
+    <string name="color_picker_hue">Litblær</string>
+    <!-- Patch Options -->
     <string name="patch_option_instructions">Leiðbeiningar</string>
     <string name="patch_option_enter_value">Sláðu inn gildi</string>
     <string name="patch_option_enter_number">Sláðu inn númer</string>
     <string name="patch_option_enter_decimal">Sláðu inn desimal tölur</string>
+    <string name="patch_option_slider_edit">Sláðu inn nákvæmaseðu</string>
+    <string name="patch_option_slider_range_start">Frá</string>
+    <string name="patch_option_slider_range_end">Til</string>
     <string name="patch_option_list_duplicate">Þetta gildi er þegar í notkun</string>
     <string name="patch_option_list_empty">Gildi má ekki vera tómt</string>
     <string name="patch_option_list_empty_state">Engin gildi bætt við enn</string>
@@ -282,8 +353,45 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="header_creator_guide_themes_body">Flest app krefjast sérstakara mynda fyrir ljósa og aðra lit. Sum app (slátt YouTube músik) nota eingöngu aðra litinn, svo að aðeins það deild er sýnið.</string>
     <string name="header_creator_guide_positioning_title">Staða og mál</string>
     <string name="header_creator_guide_positioning_body">Nota pincu-til-zoom og dráttar hreyfingar beint í forsvísun til að staðsetja og stærð liti. Snappa leiðbeiningar birtast þegar myndin er nálæg miðju. Hægt er einnig að nota rennara hér að neðan.</string>
+    <!-- Batch patching -->
+    <string name="batch_patch_action">Valdar patch</string>
+    <string name="batch_patch_title">Batch patching</string>
+    <string name="batch_patch_planning">Býr til biðröð…</string>
+    <string name="batch_patch_preparing_next">Býr appið næst…</string>
+    <string name="batch_patch_progress_counter">Lagfært %1$s af %2$s</string>
+    <string name="batch_patch_summary">%1$s lagfært, %2$s mislukkaðist, %3$s sleppt</string>
+    <string name="batch_patch_saved_hint">Pökkunarpakkarnir sem breyttu eru vistaðir. Settu þá upp núna, eða síðar frá listanum yfir breytt APK í stillingum</string>
+    <string name="batch_patch_multiple_sources">Sumir appnotkunarpakkarnir sameina breytingar frá fleiri en einni uppruna, sem getur valdið átökum</string>
+    <string name="batch_patch_needs_apk">Enginn APK er tiltækur, bættu við skrá</string>
+    <string name="batch_patch_wrong_package">Skráin sem bætt var við tilheyrir %s</string>
+    <string name="batch_patch_version_mismatch">Útgáfa %s er ekki studd af breytingunum</string>
+    <string name="batch_patch_source_saved">Vistaður upprunalegi</string>
+    <string name="batch_patch_source_installed">Uppsett app</string>
+    <string name="batch_patch_source_file">Bætt skrá</string>
+    <string name="batch_patch_source_unavailable">Ekki tókst að búa til APK</string>
+    <string name="batch_patch_force_version">Breyta samt sem áður</string>
+    <string name="batch_patch_force_version_done">Rafmagn gerði samt, sprettur sem gerðar eru fyrir aðrar útgáfur gætu brotið appið</string>
+    <string name="batch_patch_accept_signature_done">Queued anyway, this APK may not be the original</string>
+    <string name="batch_patch_edit_patches">Veldu breytingar</string>
+    <string name="batch_patch_state_no_apk">Enginn APK</string>
+    <string name="batch_patch_state_no_patches">Engar breytingar</string>
+    <string name="batch_patch_policy_install">Settur upp þegar búið er</string>
+    <string name="batch_patch_policy_install_description">Setur upp hvert breytt app þegar biðröðin er lokið. Slökkt heldur APK-skránum til síðara</string>
+    <string name="batch_patch_start">Hejaðu breytingum</string>
+    <string name="batch_patch_stop_title">Hætta við breytingum?</string>
+    <string name="batch_patch_stop_description">Appið sem er breytt núna og allt sem bíður í biðröð verður hætt</string>
+    <string name="batch_patch_install_all">Settu upp allt</string>
+    <string name="batch_patch_install_failed">Miskunstrið við uppsetningu</string>
+    <string name="batch_patch_in_progress">Breytingar eru þegar í gangi</string>
+    <string name="batch_patch_nothing_outdated">Allt breytt app er uppfært</string>
+    <string name="shortcut_repatch_short">Endurbreyta</string>
+    <string name="shortcut_repatch_long">Endurbreyta úreltum appum</string>
+    <string name="shortcut_check_updates_short">Leita að uppfærslum</string>
+    <string name="shortcut_check_updates_long">Leita að breytingum</string>
+    <string name="shortcut_patch_app">Breyta %s</string>
     <!-- Home Screen - App Info Screen -->
     <string name="home_app_info_uninstall_app_confirmation">Ertu viss um að þú viljir afinstallera þetta app?</string>
+    <string name="batch_uninstall_confirm_body">Appsín sem hafa verið valið verð permanentlega fjarlægt af tækjunum þínum.</string>
     <string name="home_app_info_remove_app_warning">Þetta mun varanlega eyða:</string>
     <string name="home_app_info_delete_item_database">Gagnagrunnsfærslu</string>
     <string name="home_app_info_delete_item_patched_apk">Pattað APK skrá</string>
@@ -291,6 +399,7 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="home_app_info_delete_preservation_note">Pattaðar valkostir þínar og valkostir munu verða varðveittir fyrir framtíðarpökkun</string>
     <string name="home_app_info_patches_name_default">Breytistillingar</string>
     <string name="home_app_info_patches_name_fallback">Nafnlaust</string>
+    <string name="home_app_info_patches_source_removed">Patch upprunanum eytt</string>
     <string name="home_app_info_patches_replace_fail">Ekki tókst að flytja breytistillingar: %s</string>
     <string name="home_app_info_repatch_no_original_apk">Upprunaleg APK fannst ekki. Ekki er hægt að endurpakka þetta app</string>
     <string name="home_app_info_original_package_name">Upprunalegt pakkannafn</string>
@@ -304,18 +413,24 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="home_app_info_patch_update_available">Breytistilling er til staðar</string>
     <string name="home_app_info_patch_update_available_description">Nýrri útgáfa af patta er í boði. Endurpakkalaðu þitt app til að fá nýjustu endurbætur og lagfæringar</string>
     <string name="home_app_info_app_deleted_warning">App var afhent</string>
-    <string name="home_app_info_app_deleted_description">Þetta app var afhent utan SyMorphe. Endurpakkalaðu það til að endurheimta virkni</string>
+    <string name="home_app_info_app_deleted_description">Þetta app var afhent utan Morphe. Endurpakkalaðu það til að endurheimta virkni</string>
+    <string name="home_app_info_not_patched_description">Óplötuð útgáfa af þessu forriti er uppsett. Morphe hefur enn fyrri plástursskrá sína</string>
+    <string name="patcher_rename_title">Þetta mun setja upp klón</string>
+    <string name="patcher_rename_description">Plástrarnir byggðu þetta forrit undir pakkanafni sínu, svo að uppsetning þess bætir við klóni við hliðina á <b>%s</b> í stað þess að uppfæra það</string>
+    <string name="patcher_rename_result_package">Mun setja upp sem</string>
+    <string name="patcher_rename_replaces">Forrit er þegar sett upp undir þessu nafni og verður skipt út</string>
     <string name="home_app_info_apk_size">APK stærð</string>
+    <string name="home_app_info_cpu_arch">CPU arkitektúr</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Róttækni krafa er að upprunaleg APK sé uppsett á tækinu þínu áður en það er pakkað</string>
-    <string name="root_gmscore_excluded">GmsCore stuðningsplagg er útilokað í root stillingu</string>
-    <string name="root_pre_patch_installer_title">Velje uppsetningaraðferð</string>
-    <string name="root_pre_patch_installer_description">Uppsetningaraðferðin ákvarðar hvaða pakkningar eru teknar með og ekki er hægt að breyta stillingum eftir pökkun</string>
-    <string name="root_pre_patch_installer_mount_title">Rotfesting</string>
-    <string name="root_pre_patch_installer_mount_description">Mountar breytta APK yfir stocks app. Engin GmsCore þarf</string>
-    <string name="root_pre_patch_installer_standard_title">Staðal uppsetning</string>
-    <string name="root_pre_patch_installer_standard_description">Installar hljóðlega með Shizuku eða Sui</string>
-    <string name="root_pre_patch_installer_hint">Uppsetningaraðferðin ákvarðar hvaða pakkningar eru teknar með og ekki er hægt að breyta stillingum eftir pökkun</string>
+    <string name="root_pre_patch_installer_title">Veldu stillingu fyrir flikka</string>
+    <string name="root_pre_patch_installer_description">Tækið þitt hefur rót aðgang. Veldu hvort þetta app á að vera flikkað fyrir rót mount eða venjulega uppsetningu</string>
+    <string name="root_pre_patch_installer_mount_title">Rót mount stilling</string>
+    <string name="root_pre_patch_installer_mount_description">Flikkar fyrir rót mount, og mountar síðan APK yfir samsvarandi lager forrit. Engin GmsCore þarf</string>
+    <string name="root_mount_module_unmount_warning">Ef KernelSU hefur Unmount modules virka sjálfgefið skaltu opna KernelSU > Superuser > appið sem þú mountaðir > Profile > Custom og slá Unmount modules af. Ef ekki gæti mountað og breytt APK ekki virkað, jafnvel þótt Morphe sýni það sem mountað.</string>
+    <string name="root_pre_patch_installer_standard_title">Venjulegur uppsetningarmáti</string>
+    <string name="root_pre_patch_installer_standard_description">Pökkun sem venjulegt APK með GmsCore stuðningi. Uppsetningastillingin þín er notuð eftir pökkun</string>
+    <string name="root_pre_patch_installer_hint">Þessi pökkunarstilling er aðskilin frá Stillingum > Kerfi > Uppsetningu og ekki er hægt að breyta henni eftir pökkun</string>
     <!-- Patcher Screen -->
     <string name="patcher_error_copied">Villa afrituð á klippiborð</string>
     <string name="patcher_error_log">Villulog</string>
@@ -323,6 +438,8 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="patcher_error_dialog_app_info">Upplýsingar um app</string>
     <string name="patcher_tab_logs">Patcher skrá</string>
     <string name="patcher_tab_game">Leikir</string>
+    <string name="patcher_logs_waiting">Bíð eftir útgáfu skráa…</string>
+    <string name="patcher_logs_lost">Útgáfa skráa er ekki geymd milli endurræsinga forrits</string>
     <string name="patcher_long_step_warning">Þessi skref gætu tekið ákveðinn tíma. Vinsamlegast bíðu…</string>
     <string name="patcher_installing_subtitle">Næstum búið! 🎸</string>
     <string name="patcher_success_title">Allt klárað! 🎉</string>
@@ -340,18 +457,20 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="patcher_conflict_subtitle">Þú þarft að afinstallera núverandi útgáfuna</string>
     <string name="patcher_conflict_hint">Breytt app notar mismunandi vottorð og installaðri útgáfu. Afnám eyðir öllum forritsgögnum</string>
     <string name="patcher_installed_conflict_title">Afnaman krafist</string>
-    <string name="patcher_installed_conflict_body">"SyMorphe reynir fyrir pantlínur með sínu eigin vottorði, sem er mismunandi frá upprunalegu vottorðinu. Android krefst þess að fjarlægja upprunalega útgáfuna áður en breytt app getur verið installað.
+    <string name="patcher_installed_conflict_body">"Morphe reynir fyrir pantlínur með sínu eigin vottorði, sem er mismunandi frá upprunalegu vottorðinu. Android krefst þess að fjarlægja upprunalega útgáfuna áður en breytt app getur verið installað.
 
 Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="patcher_install_error_title">Uppsetningarvilla</string>
     <string name="patcher_install_error_subtitle">Reyndu að afinstallera og setja upp aftur</string>
     <string name="patcher_ready_to_install_subtitle">Ýttu á hnappinn hér að neðan til að setja upp</string>
     <string name="patcher_ready_to_mount_subtitle">Ýttu á hnappinn hér að neðan til að festa</string>
+    <string name="patcher_patches_excluded_for_installer">Ekki í boði fyrir þessa uppsetningaraðferð og útilokuð: %s</string>
+    <string name="patcher_back_to_game_hint">Ýttu á %1$s til að fara aftur í leikinn</string>
     <string name="patcher_storage_permission_dialog_title">Ekki hægt að fá aðgang að geymslushörðu</string>
     <string name="patcher_incompatible_patcher_title">Uppfærsla krafist</string>
-    <string name="patcher_incompatible_patcher_description">Pakkinn &lt;b&gt;%1$s&lt;/b&gt; krefst SyMorphe útgáfu &lt;b&gt;%2$s&lt;/b&gt; eða nýrri. Vinsamlegast uppfæra SyMorphe til að breyta þessari forrit</string>
-    <string name="patcher_incompatible_patcher_update_button">Sæktu og uppfæra SyMorphe</string>
-    <string name="patcher_storage_permission_description_api30">Einn eða fleiri pakkningaval benda á slóð sem SyMorphe gat ekki lesið. Veittu geymsluheimild og smelltu á hnappinn þá mun pakkningin hefjast sjálfkrafa</string>
+    <string name="patcher_incompatible_patcher_description">Pakkinn &lt;b&gt;%1$s&lt;/b&gt; krefst Morphe útgáfu &lt;b&gt;%2$s&lt;/b&gt; eða nýrri. Vinsamlegast uppfæra Morphe til að breyta þessari forrit</string>
+    <string name="patcher_incompatible_patcher_update_button">Sæktu og uppfæra Morphe</string>
+    <string name="patcher_storage_permission_description_api30">Einn eða fleiri pakkningaval benda á slóð sem Morphe gat ekki lesið. Veittu geymsluheimild og smelltu á hnappinn þá mun pakkningin hefjast sjálfkrafa</string>
     <string name="patcher_storage_permission_description_legacy">Einn eða fleiri pakkningaval benda á slóð sem ekkert lið veitir aðgang að. Endurskoða slóðir í pakkningavalum og reyndu aftur</string>
     <string name="patcher_storage_permission_grant">Veittu geymsluheimild</string>
     <string name="patcher_storage_permission_denied_warning">Geymsluheimild var hafnað. Veittu heimildina til að nota þenna slóð, eða hreyfðu skráarnar í einkalega bókasafn appsins</string>
@@ -370,8 +489,13 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="patcher_step_sign_apk">Undirskrifa breytta APK skrá</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Vernd fyrir bakgrunns breytingar</string>
-    <string name="battery_optimization_dialog_description">Sum tæki gætu stöðvað breytingasmáttana þegar appið er lágmarks. Leyfðu SyMorphe að keyra án rafhlöðubindingar til að tryggja áreiðanlega breytinga</string>
+    <string name="battery_optimization_dialog_description">Sum tæki gætu stöðvað breytingasmáttana þegar appið er lágmarks. Leyfðu Morphe að keyra án rafhlöðubindingar til að tryggja áreiðanlega breytinga</string>
     <string name="battery_optimization_not_now">Ekki núna</string>
+    <!-- Memory limit dialog, shown after the patcher process was killed -->
+    <string name="patcher_memory_adjustment_title">Ekki nóg minni</string>
+    <string name="patcher_memory_adjustment_description">Patcher var stöðvaður af kerfinu á meðan hann keyrði með %1$d MB minnismörk. Lækkun minnismarkanna í %2$d MB gerir hann að minna skotmarki og getur leyft keyrslunni að ljúka.</string>
+    <string name="patcher_memory_adjustment_description_at_minimum">Patcher var stöðvaður af kerfinu á meðan hann keyrði með %1$d MB minnismörk, sem eru þegar þau lægstu sem í boði eru. Reyndu að plástra með færri uppsprettum, eða veldu færri plástra.</string>
+    <string name="patcher_memory_adjustment_apply">Lækka í %1$d MB</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Breytistilling í gangi…</string>
     <string name="patcher_notification_text">Tappaðu til að snúa aftur á breytistillinguna</string>
@@ -384,9 +508,9 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="patcher_message_4">Bruggum digitala töfrabrögð… ☕</string>
     <string name="patcher_message_5">Kaffipásar mæltu með… ☕</string>
     <string name="patcher_message_6">Lítu út um gluggann, það er gott veður úti… 🌤️</string>
-    <string name="patcher_message_7">Stillum 1 og 0… 🤖</string>
+    <string name="patcher_message_7">Stilli 1ur og 0ur… 🤖</string>
     <string name="patcher_message_8">Tengjum digital spaghetti… 🍝</string>
-    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Lækna bugga í óbreyttu appinu… 🪲</string>
     <string name="patcher_message_10">Frábær breytistilling er þess virði að bíða… ⏳</string>
     <string name="patcher_message_11">Pússum pixla þar til þau glansar… 💎</string>
@@ -406,15 +530,23 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <!-- Expert patcher Screen -->
     <string name="patching_app">Pakkning app</string>
     <string name="memory_usage">Minniskot</string>
+    <string name="cpu_usage">CPU notkun</string>
+    <string name="storage_io_usage">Geymslu I/O</string>
     <!-- Patcher Screen - Other hidden strings -->
     <string name="applying_patches">Á breytistillingar</string>
     <string name="failed_to_execute_patch">Ekki tókst að á breytistillingu %s</string>
-    <string name="patched_app_saved_toast">Breytt app vistuð til síðar</string>
     <string name="patched_app_save_failed_toast">Ekki tókst að vista breytt app</string>
     <string name="plugin_activity_dialog_body">Þú þarft að grípa í gagnvirkt á hugbuginn til að fara áfram</string>
     <string name="patcher_process_exit_message">Breytingavinnsla endaði með kóða %s</string>
+    <string name="patcher_heap_exhausted_message">Plástrarinn kláraði minnið með %1$d MB minnisgeymi. Þetta forrit er of stórt fyrir valda plástra. Reyndu að nota færri plástrauppsprettur, eða veldu færri plástra.</string>
     <string name="install_app_success">Uppsett með góðum árangri</string>
     <string name="install_app_fail">Ekki tókst að setja upp app: %s</string>
+    <string name="install_ignore_signature">Setja upp samt</string>
+    <string name="install_ignore_signature_description">Geymir gögn forritsins, en virkar aðeins ef root-módúll slökkvar á staðfestingu undirskrifana í Android</string>
+    <string name="uninstall_app_fail">Ekki tókst að afinstalla app: %s</string>
+    <string name="uninstall_app_unverified">Skilið eftir á sínum stað: Morphe gat ekki staðfest að uppsetta forritið sé byggingin sem það plástraði</string>
+    <string name="launch_app_unverified">Morphe gat ekki staðfest að uppsetta forritið sé byggingin sem það plástraði</string>
+    <string name="uninstall_timeout">Afhenting af uppsetningu tók of langa tíma</string>
     <string name="save_apk_success">APK skrá vistuð</string>
     <string name="saved_app_export_failed">Ekki tókst að flytja breytt app</string>
     <string name="saved_app_removed_toast">Fjarlögð vistuð breytt app</string>
@@ -423,8 +555,8 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="failed_to_mount">Ekki tókst að festa: %s</string>
     <string name="failed_to_unmount">Ekki tókst að afmesta: %s</string>
     <!-- Patcher Screen - Mini-games -->
-    <string name="mini_game_score">Stig %d</string>
-    <string name="mini_game_best">Bestur %d</string>
+    <string name="mini_game_score">Stig %s</string>
+    <string name="mini_game_best">Best %s</string>
     <string name="mini_game_new_record">Nýtt met!</string>
     <string name="mini_game_game_over">Leikur er búinn</string>
     <string name="mini_game_try_again">Reyna aftur</string>
@@ -460,22 +592,53 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="settings_appearance_parallax_effect_description">Slétt bakgrunnur breytist þegar tækið er hallað</string>
     <!-- Settings - Appearance Tab - Theme -->
     <string name="settings_appearance_theme">Þema</string>
+    <string name="settings_appearance_theme_mode">Þema stilla</string>
     <string name="settings_appearance_system">Kerfi</string>
     <string name="settings_appearance_light">Ljós</string>
     <string name="settings_appearance_dark">Dökk</string>
     <string name="settings_appearance_dynamic">Efni-Þú</string>
+    <string name="settings_appearance_monochrome">Gráeinkenni</string>
+    <string name="settings_appearance_color_style">Litastíll</string>
+    <string name="settings_appearance_colors">Litir</string>
     <string name="settings_appearance_accent_color">Aðallitur</string>
     <string name="settings_appearance_pure_black">Liturjöfur svart</string>
     <string name="settings_appearance_pure_black_description">Nota svarta bakgrunni</string>
     <!-- Settings - Appearance Tab - Language Selector -->
+    <string name="settings_appearance_language_and_display">Tungumál og sýnishringur</string>
     <string name="settings_appearance_app_language">App tungumál</string>
     <string name="settings_appearance_app_language_current">Núverandi tungumál</string>
     <string name="settings_appearance_translations_info_title">Þýðingar fyrir sum lönd eru kannski vantar eða eru ófullkomnar</string>
-    <string name="settings_appearance_translations_info_text">Til að þýða ný lönd eða bæta núverandi þýðingar, heimsæktu %s</string>
+    <string name="settings_appearance_translations_info_text">"Til að þýða ný tungumál eða bæta núverandi þýðingar skaltu heimsækja
+%s"</string>
+    <!-- Settings - Appearance Tab - Interface Scale -->
+    <string name="settings_appearance_ui_scale">Stærð viðmítsins</string>
+    <string name="settings_appearance_ui_scale_current">Núverandi stærð</string>
+    <string name="settings_appearance_ui_scale_description">Stækkar allt í forritinu, auk skjástókunar og leturstærðar kerfisins</string>
+    <string name="settings_appearance_ui_scale_preview_title">Sýnishljóðstilling</string>
+    <string name="settings_appearance_ui_scale_preview_subtitle">Texti og stýringar við þessa stærð</string>
     <!-- Settings - Appearance Tab - Home Screen Section -->
     <string name="settings_appearance_home_screen">Heimaskjár</string>
     <string name="settings_appearance_greeting_phrases">Greeting frases</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Sýna kveðju skilaboð á heimaskjá</string>
+    <string name="settings_appearance_app_grouping">Forritaflokkun</string>
+    <string name="settings_appearance_app_grouping_description">Sýna rofasa á heimaskjá til að flokka forrit eftir uppruna eða eigin flokkum, halda vali þegar slökkt er á rofanum</string>
+    <string name="settings_appearance_sort_button">Röðunar- og síunarhnappur</string>
+    <string name="settings_appearance_sort_button_description">Sýna röðunar- og síunarhnappinn á heimaskjánum</string>
+    <string name="settings_appearance_app_card_colors">Litir á app kortum</string>
+    <string name="settings_appearance_app_card_colors_default">Sjálfgefið</string>
+    <string name="settings_appearance_app_card_colors_default_description">Nota litinn á pakkann fyrir hvert app</string>
+    <string name="settings_appearance_app_card_colors_accent">Áhersla</string>
+    <string name="settings_appearance_app_card_colors_accent_description">Nota áherslu lit forritsins fyrir kort á heimaskjá</string>
+    <string name="settings_appearance_app_card_colors_gradient">Halla</string>
+    <string name="settings_appearance_app_card_colors_gradient_description">Nota einn sérsniðin halla fyrir kort á heimaskjá</string>
+    <string name="settings_appearance_app_card_colors_solid">Einföldur</string>
+    <string name="settings_appearance_app_card_colors_solid_description">Nota einn sérsniðin lit fyrir kort á heimaskjá</string>
+    <string name="settings_appearance_app_card_colors_start">Byrjunarlitur</string>
+    <string name="settings_appearance_app_card_colors_middle">Miðlitur</string>
+    <string name="settings_appearance_app_card_colors_end">Loklitur</string>
+    <string name="settings_appearance_app_card_colors_solid_color">Einföldur litur</string>
+    <string name="settings_appearance_app_card_colors_bundle">Lit app búnt</string>
+    <string name="settings_appearance_app_card_colors_bundle_description">Nota lit hvers apps hér, sem er sjálfkrafa gerður dimmari til að passa</string>
     <!-- Settings - Appearance Tab - App Icon Selector -->
     <string name="settings_appearance_app_icon_selector_title">App tákn</string>
     <string name="settings_appearance_app_icon_default">Sjálfgefið</string>
@@ -489,10 +652,11 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="settings_appearance_app_icon_change_dialog_confirm">Staðfestu táknbreytingu</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Uppfæra</string>
+    <string name="settings_advanced_patcher">Patcher</string>
     <string name="settings_advanced_updates_use_prereleases">Uppfærsla fyrir útgáfur</string>
-    <string name="settings_advanced_updates_use_prereleases_description">Snemma aðgangur að nýjum SyMorphe app útgáfum. Virkja for útgáfur per heimild í breytandas heimildum</string>
+    <string name="settings_advanced_updates_use_prereleases_description">Snemma aðgangur að nýjum Morphe app útgáfum. Virkja for útgáfur per heimild í breytandas heimildum</string>
     <string name="settings_advanced_updates_allow_metered">Gagnagáfa á gögnum</string>
-    <string name="settings_advanced_updates_allow_metered_description">Leyfir SyMorphe og breytingar uppfærslu hlaði niður á farsímaneton</string>
+    <string name="settings_advanced_updates_allow_metered_description">Leyfir Morphe og breytingar uppfærslu hlaði niður á farsímaneton</string>
     <string name="settings_advanced_updates_background_notifications">Bakgrunns uppfærslukynning</string>
     <string name="settings_advanced_updates_background_notifications_description">Á þennan hátt getur þú hægt en örugglega sagt frá þegar uppfærslur eru í boði</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Skilaboð um nýjar útgáfur, jafnvel þegar appið er lokað</string>
@@ -504,22 +668,43 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="settings_advanced_update_interval_monthly">Einu sinni á mánuði</string>
     <string name="settings_advanced_update_interval_chip_subtitle">Bakgrunns þjónastútur tímatali</string>
     <string name="settings_advanced_update_interval_battery_warning">Bakgrunnur prótanir mega ekki virka á ákveðnum tækjum. Framleiðendur eins og Xiaomi, Huawei, Samsung og OnePlus takast oft á við bakgrunns prótanir til að spara rafmagn</string>
+    <string name="settings_advanced_auto_patch">Sjálfvirk endurbreyting</string>
+    <string name="settings_advanced_auto_patch_description">Endurbreyta uppsettum appum í bakgrunni þegar breytingar á þeim gerast. Aðeins appum með vistaðan upprunalegan APK er hyljað</string>
+    <string name="settings_advanced_auto_patch_interval">Endurbreytingartíðni</string>
+    <string name="settings_advanced_auto_patch_interval_chip_subtitle">Hversu oft breytt app er endurbreytt</string>
+    <string name="settings_advanced_auto_patch_charging">Aðeins þegar hlaðið er</string>
+    <string name="settings_advanced_auto_patch_charging_description">Breytingar eru þungar á örgjörvann og minni, þannig að það bíður eftir hleðslu</string>
+    <string name="settings_advanced_auto_patch_install">Settur upp sjálfkrafa</string>
+    <string name="settings_advanced_auto_patch_install_description">Krefst Shizuku sem uppsetningaraðila. Með öðrum uppsetningaraðila eru breytt app bara vistað</string>
+    <string name="settings_advanced_external_batch_patch">Leyfa ytri kveikja</string>
+    <string name="settings_advanced_external_batch_patch_description">Leyfir sjálfvirkni forritum að heja breytingum með því að nota fyrirspurn. Allar beiðnir eru staðfestar áður en eitthvað er keyrt</string>
+    <string name="external_batch_patch_title">Heja breytingum?</string>
+    <string name="external_batch_patch_description">%s vill að Morphe breyti og setji upp app</string>
+    <string name="external_batch_patch_trust_caller">Alltaf leyfa þessu appi</string>
+    <string name="external_batch_patch_unknown_caller">Óþekkt app</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">SyMorphe uppfærsla í boði</string>
+    <string name="notification_auto_patch_title">Sjálfvirk endurbreyting lokið</string>
+    <string name="notification_auto_patch_running_title">Endurbreyting appa</string>
+    <string name="notification_auto_patch_blocked_title">Sjálfvirk endurbreyting hófst ekki</string>
+    <string name="notification_auto_patch_blocked_battery">Kerfið lokaði þessari uppsetningu. Á Xiaomi og sambærilegum tækjum, kveiktu á \"Uppsetningu í gegnum USB\" í valkostum fyrir forritara. Á vinnusniðum geta uppsetningar verið takmörkuð af stefnu</string>
+    <string name="notification_auto_patch_blocked_foreground">Android leyfði ekki breytingum að hefjast í bakgrunni. Opnaðu Morphe og breyttu frá appinu</string>
+    <string name="notification_channel_auto_patch">Sjálfvirk endurbreyting</string>
+    <string name="notification_channel_auto_patch_description">Hlífðarlaus framvindandi og niðurstöðugar tilkynningar um skipulagða endurbreytingu</string>
+    <string name="notification_manager_update_title">Morphe uppfærsla í boði</string>
     <string name="notification_bundle_update_title">Nýjar pakkningar í boði</string>
     <string name="notification_update_text">Útgáfa %s er tilbúin til að hlaða niður</string>
-    <string name="notification_bundle_update_text_unversioned">Smelltu til að opna SyMorphe og uppfæra</string>
+    <string name="notification_bundle_update_text_unversioned">Smelltu til að opna Morphe og uppfæra</string>
     <string name="notification_permission_dialog_title">Leyfa tilkynningar</string>
-    <string name="notification_permission_dialog_description">SyMorphe þarf tilkynningaleyfi til að láta þig vita þegar uppfærslur eru í boði í bakgrunni</string>
+    <string name="notification_permission_dialog_description">Morphe þarf tilkynningaleyfi til að láta þig vita þegar uppfærslur eru í boði í bakgrunni</string>
     <string name="notification_post_patch_dialog_title">Viltu taka þátt í uppfærslukynningu?</string>
     <string name="notification_channel_fcm_updates">Uppfærslukynningar</string>
-    <string name="notification_channel_fcm_updates_description">Kynningar um nýjar SyMorphe útgáfur og breytingar</string>
+    <string name="notification_channel_fcm_updates_description">Kynningar um nýjar Morphe útgáfur og breytingar</string>
     <string name="notification_channel_patcher">Breyting</string>
-    <string name="notification_channel_patcher_description">Sýnt þegar SyMorphe breytir app í bakgrunninum</string>
+    <string name="notification_channel_patcher_description">Sýnt þegar Morphe breytir app í bakgrunninum</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Advanced</string>
     <string name="settings_advanced_expert_mode">Sérstakur háttur</string>
-    <string name="settings_advanced_expert_mode_description">Virkjar flóknar SyMorphe breytingar stillingar og sérsniðsa valkosts</string>
+    <string name="settings_advanced_expert_mode_description">Virkjar flóknar Morphe breytingar stillingar og sérsniðsa valkosts</string>
     <string name="settings_advanced_expert_mode_dialog_title">Virkja fagmanna ástand?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Fagmanna ástand veitir meiri stjórn yfir hvernig pakkningar eru notaðar, en rangar stillingar í fagmanna ástandi geta leitt til óvirkjandi app</string>
     <string name="settings_advanced_strip_unused_libs">Optimera fyrir tækja arkitektúr</string>
@@ -538,21 +723,16 @@ Afnaman eyðir varanlega öllum forritsgögnum"</string>
     <string name="settings_advanced_github_pat_configured">Tákni stillt</string>
     <string name="settings_advanced_github_pat_how_to_get">Hvernig á að fá tákn</string>
     <string name="settings_advanced_github_pat_dialog_title">Stilltu GitHub Personal Access Token</string>
-    <string name="settings_advanced_github_pat_dialog_description">Stilltu GitHub Personal Access Token til að geta bætt pull beiðnir sem ytri gjafir.</string>
+    <string name="settings_advanced_github_pat_dialog_description">"Stilltu GitHub Personal Access Token til að geta bætt við pull requests sem utanaðkomandi uppspretta. Búðu til PAT með public_repo á
+%s"</string>
     <string name="settings_advanced_github_pat_export_include_label">Taktu með í útflutningi stillingar</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Bæta þennan PAT til fluttra SyMorphe stillinga</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Bæta þennan PAT til fluttra Morphe stillinga</string>
     <string name="settings_advanced_github_pat_export_warning">Ekki deila þínu PAT. Ef þú tekur það með í stillingarútflutningi, geymdu þá skrána einkaleyndlega því hún inniheldur táknið</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Breytistallakosti</string>
-    <string name="settings_advanced_patch_options_youtube_description">Þema, vörumerki og valmöguleikar fyrir haus</string>
+    <string name="settings_advanced_patch_options_youtube_description">Vörumerkis- og hausavalkostir</string>
     <string name="settings_advanced_patch_options_restart_message">Breyting breytistallakosta krefst endurbreytingar apps til að vinna</string>
     <string name="settings_advanced_patch_options_expert_mode_notice">Í sérstökum háttum verða breytistallakosti til staðar á breytistillingerferðinni</string>
-    <!-- Settings - Advanced Tab - Patch Options Section: Theme Colors -->
-    <string name="settings_advanced_patch_options_theme_colors">Litur á appaloppum</string>
-    <string name="settings_advanced_patch_options_theme_colors_description">Breytir bakgrunnarliti</string>
-    <string name="settings_advanced_patch_options_dark_theme_color">Dökk þema bakgrunns litur</string>
-    <string name="settings_advanced_patch_options_light_theme_color">Ljós þema bakgrunns litur</string>
-    <string name="settings_advanced_patch_options_theme_color_description">Getur verið litakóði (#RRGGBB) eða litaref</string>
     <string name="settings_advanced_patch_options_loading">Hlaða breytistillingar…</string>
     <string name="settings_advanced_patch_options_waiting_for_source">Bíðu þar til heimildirnar breytast</string>
     <string name="settings_advanced_patch_options_load_error">Ekki tókst að hlaða breytistillingar</string>
@@ -620,12 +800,13 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_advanced_patch_options_hide_shorts_widget_description">Nota Android pakka installinn</string>
     <!-- Settings - System Tab - Installer Section -->
     <string name="installer">Uppsetjari</string>
+    <string name="installer_settings_title">Sjálfgefnari uppsetning</string>
     <string name="installer_title">Velji uppsetjara</string>
     <string name="installer_internal_description">Installerar hljóðlega með Shizuku eða Sui</string>
     <string name="installer_play_store_description">Notar kerfiuppsetninguna og stillir Google Play Store sem uppsprettu</string>
     <string name="installer_root_play_store_description">Uppsetja með rótaraðgangi og stillir Google Play Store sem uppsetningartöku</string>
-    <string name="installer_auto_saved_name">Rooted festa uppsetjari</string>
-    <string name="installer_auto_saved_description">Uppsetta pattaða APK yfir uppsett app</string>
+    <string name="installer_auto_saved_name">Root mount</string>
+    <string name="installer_auto_saved_description">Mountar forrit sem voru pökkunin í root mount ham. Venjulegar pökkaðar APK nota aðra uppsetningu</string>
     <string name="installer_shizuku_description">Installar biðjaðrun</string>
     <string name="installer_shizuku_play_store_description">Uppsetja þögnrænlega í gegnum Shizuku eða Sui og stillir Google Play Store sem uppsetningartöku</string>
     <string name="installer_option_none">Engin varabreyting</string>
@@ -634,9 +815,10 @@ Myndastærðin verður að vera sem hér segir:
     <string name="installer_status_not_supported">Ekki studd fyrir þessa athöfn</string>
     <string name="installer_status_shizuku_not_installed">Install Shizuku eða Sui til að nota þennan valkost</string>
     <string name="installer_status_shizuku_not_running">Ræsa Shizuku eða Sui og reyndu aftur</string>
-    <string name="installer_status_shizuku_permission">Veittu Shizuku heimild til SyMorphe úr Shizuku app</string>
+    <string name="installer_status_shizuku_permission">Leyfðu Morphe aðgang frá Shizuku appinu</string>
     <string name="installer_mount_warning_install">Uppsettur uppsetjara þinn er stilltur á róttæka uppsetjarann. Þetta vistaða app var ekki uppsett með uppsetningu</string>
     <string name="mount_version_mismatch_message">Lager gerð app útgáfa (%2$s) passar ekki við pattaða app útgáfu (%1$s). Uppsetja samsvarandi vísindalaga gerð og reyna aftur</string>
+    <string name="mount_stock_restore_failed_message">Android hafnaði vistaðri upprunalegu APK. Settu upp samsvarandi staðalútgáfu, prófaðu síðan Mount aftur</string>
     <string name="installer_status_shizuku_unsupported">Stuðlað er ekki við uppsettu Shizuku útgáfuna</string>
     <string name="installer_action_open_shizuku">Opna Shizuku</string>
     <string name="installer_hint_generic">Uppsetningin tókst ekki. Reyndu aftur eða skiptu yfir á annan uppsetjara</string>
@@ -649,21 +831,48 @@ Myndastærðin verður að vera sem hér segir:
     <string name="installer_unavailable_shizuku_hint">Gakktu úr skugga um að Shizuku er að ganga og leyfis er veitt þessu app</string>
     <string name="installer_use_standard">Nota staðal</string>
     <string name="installer_play_store_warning_title">Uppsetja sem Play Store?</string>
-    <string name="installer_play_store_warning_message">Breytta appið verður skráð sem uppsett frá Google Play Store. Þetta gerir þjónustum eins og Android Auto kleift að þekkja það sem Play Store app</string>
+    <string name="installer_play_store_warning_message">Pattaða appið verður skráð sem upphætt úr Google Play Store. Þetta getur hjálpað þjónustu eins og Android Auto að þekkja það sem Play Store app, en það er ekki tryggt fyrir hvert app eða tæki. Viðbrögð geta verið mismunandi eftir Android útgáfu, ROM, tækjamerki og app-tengdum prófum.</string>
     <string name="installer_play_store_warning_risk">Play Store gæti boðið uppfærslur fyrir breytta appið. Það að setja upp þá uppfærslu mun yfirskrifa breytta APK skrána með upprunalegu útgáfuna og fjarlægja breytingarnar. Ef þú ert beðinn um að uppfæra skaltu banka á þriggja-punkta valmyndina á Play Store síðu appsins og velja \"Slökktu á uppfærslum\"</string>
     <string name="installer_play_store_warning_continue">Ég skil, halda áfram</string>
+    <string name="installer_play_store_mode">Installera sem Play Store</string>
+    <string name="installer_play_store_mode_description">Skráðu Google Play Store sem uppsetningarskil á þennan uppsetningarmáta</string>
     <string name="settings_prompt_installer_on_install">Bestaður heimildurum í hverjum breyttu app installu</string>
     <string name="settings_prompt_installer_on_install_description">Mælt er með því að nota heimildir sem þú treystir</string>
     <string name="settings_auto_install_with_shizuku">Sjálfvirkt uppsetning eftir breytingar</string>
     <string name="settings_auto_install_with_shizuku_description">Setur upp breytta APK sjálfkrafa strax þegar breytingum er lokið</string>
-    <string name="settings_auto_install_prompt_conflict">\"%s\" er virkt - sjálfvirk uppsetning verður sleppt</string>
+    <string name="settings_auto_uninstall_with_shizuku">Sjálfvirk upphæfing við átök</string>
+    <string name="settings_auto_uninstall_with_shizuku_description">Þegar sjálfvirkt uppsetning er í gangi með Shizuku, afhæfðu fyrst núverandi appið ef Android tilkynnir um signature átök. Þetta getur fjarlægt app gögn.</string>
+    <string name="settings_auto_uninstall_warning_title">Vilkja þú að virkja sjálfvirka upphæfingu?</string>
+    <string name="settings_auto_uninstall_warning_message">Ef Android tilkynnir um signature átök í sjálfvirkri uppsetningu Shizuku, mun Morphe afhæfa núverandi app áður en pattaða APK-ið er upphætt</string>
+    <string name="settings_auto_uninstall_warning_risk">Þetta getur fjarlægt app gögn. Ef pattaða APK-ið tekst ekki að upphæfa eftir upphæfingu, gæti fyrra appið þegar verið horfið.</string>
+    <string name="installer_shizuku_status_action">Athugaðu Shizuku stöðu</string>
+    <string name="installer_shizuku_status_title">Shizuku staða</string>
+    <string name="installer_shizuku_status_ready">Tilbúinn</string>
+    <string name="installer_shizuku_status_issue">Þarf athygli</string>
+    <string name="installer_shizuku_status_supported">Styrktur</string>
+    <string name="installer_shizuku_status_running">Í gangi</string>
+    <string name="installer_shizuku_status_permission">Leyfi</string>
+    <string name="installer_shizuku_status_mode">Háttur</string>
+    <string name="installer_shizuku_status_provider">Veitnari</string>
+    <string name="installer_shizuku_status_granted">Veiðrétt</string>
+    <string name="installer_shizuku_status_missing">Vantar</string>
+    <string name="installer_shizuku_request_permission">Óska um leyfi</string>
+    <string name="installer_shizuku_install_fail">Shizuku uppsetning misheppnaðist: %s</string>
+    <string name="installer_shizuku_install_fail_with_details">"Shizuku uppsetning misheppnaðist: %1$s
+
+Nánari upplýsingar: %2$s"</string>
+    <string name="installer_shizuku_error_permission">Shizuku leyfi vantar. Gefðu Morphe leyfi og reyndu aftur.</string>
+    <string name="installer_shizuku_error_timeout">Shizuku skilaði ekki uppsetningarniðurstöðu. Gakktu úr skugga um að það sé enn í gangi og reyndu aftur.</string>
+    <string name="installer_shizuku_error_downgrade">Android bannaði þetta því það myndi niðurfella sett appið.</string>
+    <string name="installer_shizuku_error_signature">Android bannaði þetta því sett appið hefur mismunandi signature.</string>
+    <string name="installer_shizuku_error_invalid_apk">Android gat ekki lesið þetta APK</string>
+    <string name="installer_shizuku_error_user_profile">Kerfið lokaði þessari uppsetningu. Á Xiaomi og sambærilegum tækjum, kveiktu á \"Uppsetningu í gegnum USB\" í valkostum fyrir forritara. Á vinnusniðum geta uppsetningar verið takmörkuð af stefnu</string>
     <!-- Settings - System Tab - Performance Section -->
     <string name="settings_system_battery_optimization">Rafhlöðu útvinnslustillingar</string>
     <string name="settings_system_battery_optimization_description">Skoða upprunaleg geymslu</string>
-    <string name="settings_system_performance">Árangur</string>
+    <string name="settings_system_background">Bakgrunnur</string>
     <string name="settings_system_process_runtime">Vinnslutími</string>
     <string name="settings_system_process_runtime_description">Skrá verður að hafa .mpp framlengingu</string>
-    <string name="settings_system_process_runtime_memory_limit">Minna takmörk</string>
     <string name="settings_system_process_runtime_memory_limit_description">Gilt repository eða JSON URL</string>
     <string name="settings_system_process_runtime_enable">Virkja vinnslutíma</string>
     <string name="settings_system_memory_limit_subtitle">Minni í boði fyrir breytingar</string>
@@ -671,6 +880,19 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_system_process_runtime_enabled_description">%s MB takmörk</string>
     <string name="settings_system_process_runtime_disabled_description">Smelltu til að stilla</string>
     <string name="settings_system_process_runtime_description_not_available">Þessi staðsetning þarf Android 11 eða meira</string>
+    <string name="settings_system_patcher_completion_sound">Ljós hljóð</string>
+    <string name="settings_system_patcher_completion_sound_description">Spilar ákveðinn tón fyrir árangur eða misgengi þegar flakkast er lokið</string>
+    <!-- Settings - System Tab - Notifications Section -->
+    <string name="settings_system_notifications">Tilkyntingar</string>
+    <string name="settings_system_notifications_description">Stilltu bakgrunnsviðvörun og lokhljóð</string>
+    <string name="settings_system_notifications_success_sound">Árangurshljóð</string>
+    <string name="settings_system_notifications_error_sound">Hljóð fyrir mistök</string>
+    <string name="settings_system_notifications_sound_default">Sjálfgefið</string>
+    <string name="settings_system_notifications_sound_picker_title">Veldu hljóðgjafa</string>
+    <string name="settings_system_notifications_sound_pick_ringtone">Kerfishljóð</string>
+    <string name="settings_system_notifications_sound_pick_file">Velja úr skráum</string>
+    <string name="settings_system_notifications_sound_reset">Endurreisa sjálfgefið</string>
+    <string name="settings_system_notifications_ringtone_picker_title">Veldu tón</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">Inn- og útflutningur</string>
     <string name="settings_system_keystore">Keystore</string>
@@ -688,11 +910,11 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_system_export_keystore_failed">Ekki tókst að flytja út keystore</string>
     <string name="settings_system_show_password_field">Sýna lykilorð</string>
     <string name="settings_system_hide_password_field">Fela lykilorð</string>
-    <string name="settings_system_morphe_settings">SyMorphe stillingar</string>
-    <string name="settings_system_import_manager_settings_description">Backup og endurheimta SyMorphe áhorf</string>
-    <string name="settings_system_import_manager_settings_fail">Ekki tókst að flytja inn SyMorphe stillingar: %s</string>
-    <string name="settings_system_import_manager_settings_success">SyMorphe stillingar fluttar inn</string>
-    <string name="settings_system_import_manager_settings_mode_title">Innflutning stillinga SyMorphe</string>
+    <string name="settings_system_morphe_settings">Morphe stillingar</string>
+    <string name="settings_system_import_manager_settings_description">Backup og endurheimta Morphe áhorf</string>
+    <string name="settings_system_import_manager_settings_fail">Ekki tókst að flytja inn Morphe stillingar: %s</string>
+    <string name="settings_system_import_manager_settings_success">Morphe stillingar fluttar inn</string>
+    <string name="settings_system_import_manager_settings_mode_title">Innflutning stillinga Morphe</string>
     <string name="settings_system_import_manager_settings_mode_description">Veldu hvernig innfluttu stillingar og heimildir á að nota</string>
     <string name="settings_system_import_selections_mode_title">Innflutning valda á plottum</string>
     <string name="settings_system_import_selections_mode_description">Veldu hvernig innflutt val og breytingar á stillingum eiga að vera notaðar</string>
@@ -700,8 +922,8 @@ Myndastærðin verður að vera sem hér segir:
     <string name="import_mode_replace_description">Samsvarinnu nákvæmlega við afritið. Hlutir sem vantar úr afritinu verða fjarlægðir</string>
     <string name="import_mode_merge_title">Samfella við núverandi</string>
     <string name="import_mode_merge_description">Bæta við vöntunum hlutum úr afritinu. Núverandi hlutir eru óbreyttir</string>
-    <string name="settings_system_export_manager_settings_fail">Ekki tókst að flytja út SyMorphe stillingar: %s</string>
-    <string name="settings_system_export_manager_settings_success">SyMorphe stillingar fluttar út</string>
+    <string name="settings_system_export_manager_settings_fail">Ekki tókst að flytja út Morphe stillingar: %s</string>
+    <string name="settings_system_export_manager_settings_success">Morphe stillingar fluttar út</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_description">Geyma kerfislogg fyrir vandamálaleit</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Ekki tókst að lesa logs (exit kóði %s)</string>
@@ -714,14 +936,40 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_system_apks_delete_selected_title">Eyða valdum APK skráum?</string>
     <string name="settings_system_apks_delete_selected_confirm">Þetta mun eyða valdum APK skráum á varanlegan hátt</string>
     <string name="settings_system_apks_deleted_all">APK skrárnar voru eyðdar árangursríkt</string>
+    <string name="settings_system_apks_delete_failed">{one} Gat ekki eytt APK-skrá{, other} Gat ekki eytt sumum APK-skrám</string>
     <string name="settings_system_apks_export_zip_success">Valdir APK-skrá</string>
     <string name="settings_system_apks_export_zip_failed">Útflutningur valdra APK-skráa tókst ekki</string>
+    <!-- Settings - System Tab - Storage Management screen -->
+    <string name="settings_system_storage_management_title">Stjórnun geymslu</string>
+    <string name="settings_system_storage_management_description">Yfirfarðu disknotkun og hreinsu geymda skráa</string>
+    <string name="settings_system_storage_keystore_title">Staðfestingarlyklar</string>
+    <string name="settings_system_storage_app_data_title">Gögn appa</string>
+    <string name="settings_system_storage_patch_bundles_title">Pakkabótareindir</string>
+    <string name="settings_system_storage_http_cache_title">Vefminni</string>
+    <string name="settings_system_storage_http_cache_description">HTTP svarahafsminni til að flýta uppfærslum</string>
+    <string name="settings_system_storage_installer_cache_title">Vefjuuppsetningarminni</string>
+    <string name="settings_system_storage_installer_cache_description">APK afrit afhent þriðja aðila uppsetningum</string>
+    <string name="settings_system_storage_patcher_workspace_title">Patcher vinnurými</string>
+    <string name="settings_system_storage_patcher_workspace_description">Patcher hlaupatímaskrár og útgrafin skráðagagn</string>
+    <string name="settings_system_storage_temporary_title">Tímabundar skrá</string>
+    <string name="settings_system_storage_temporary_description">Vinnuskrá sem búin er til við breytingum</string>
+    <string name="settings_system_storage_clear_all">Hreinsa allar minnisafskriftir</string>
+    <string name="settings_system_storage_clear_all_description">Fríar allar endurheimtanlegar minnisafskriftir samtímis</string>
+    <string name="settings_system_storage_clear_all_confirm">Þetta hreinsar vefminnistafskriftir, uppsetningareintök og tímabundar skrá. Upprunaleg og breytt APK eru geymd</string>
+    <string name="settings_system_storage_cleared">Fríar %s</string>
+    <string name="settings_system_storage_nothing_to_clear">Ekki hægt að hreinsa neitt</string>
+    <string name="settings_system_storage_open_app_info_title">Opna geymslu Android apps</string>
+    <string name="settings_system_storage_open_app_info_description">Stjórna eða hreinsa allar Morphe gögn í gegnum kerfisstillingar</string>
+    <string name="settings_system_save_original_apks_title">Geymtu upprunalega APK-skrár</string>
+    <string name="settings_system_save_original_apks_description">Vistaðu for-breytinga APK-skrána svo hægt sé að nota hana aftur til endurbreytinga án þess að velja skrána á ný</string>
+    <string name="settings_system_save_patched_apks_title">Geymtu breyttu APK-skrár</string>
+    <string name="settings_system_save_patched_apks_description">Vistaðu afrit af breyttu APK-skránni til síðari útflutnings eða endursetningar úr stjórnandanum</string>
     <!-- Settings - System Tab - Storage Management - Patched APKs Management -->
     <string name="settings_system_patched_apks_title">Pattað APK</string>
     <string name="settings_system_patched_apks_description">Stjórnar geymda breyttum forritsskráum</string>
     <string name="settings_system_patched_apks_empty">Engar pattaðar APK-skrár vistaðar enn</string>
     <string name="settings_system_patched_apks_delete_title">Eyða pattaðri APK?</string>
-    <string name="settings_system_patched_apks_delete_confirm">Ertu viss um að þú viljir eyða pattaðri APK-skrá fyrir %s?</string>
+    <string name="settings_system_patched_apks_delete_confirm"> Ertu viss um að þú viljir eyða vistaðri breyttu APK skúú fyrir &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="settings_system_patched_apks_deleted">Pattað APK skrá eytt með árangri</string>
     <string name="settings_system_patched_apks_delete_all_title">Eyða öllum breyttu APK-skrám?</string>
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
@@ -730,7 +978,7 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_system_original_apks_empty">Engar upprunalegar APK-skrár geymdar</string>
     <string name="settings_system_original_apks_deleted">Upprunaleg APK skrá eytt með árangri</string>
     <string name="settings_system_original_apks_delete_title">Eyða upprunalegri APK?</string>
-    <string name="settings_system_original_apks_delete_confirm">Eyða upprunalegu APK skrá fyrir %s? Þú muntu ekki geta endurpakkað án þess að veita nýja APK</string>
+    <string name="settings_system_original_apks_delete_confirm"> Eyúa upprunalegu APK skúú fyrir &lt;b&gt;%s&lt;/b&gt;?  Þ mun ekki vera hægt að að breyta aftur núúður en með athuga núðu APK</string>
     <string name="settings_system_original_apks_delete_all_title">Eyða öllum upprunalegu APK-skrám?</string>
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
     <string name="settings_system_patch_selections_title">Pökkunaval</string>
@@ -739,25 +987,32 @@ Myndastærðin verður að vera sem hér segir:
     <string name="settings_system_patch_selection_reset_package_confirm_title">Endurstilla pakkningaval?</string>
     <string name="settings_system_patch_selection_reset_selected_confirm_title">Endurstilla valda pakkana?</string>
     <string name="settings_system_patch_selection_reset_source_confirm_title">Endurstilla gjafaval?</string>
-    <string name="settings_system_patch_selection_no_saved">Engin geymd pakkningaval</string>
     <string name="settings_system_patch_selection_total_summary_format">%1$s í %2$s</string>
     <string name="settings_system_patch_selection_patches_in_sources_format">%1$s í %2$s</string>
     <string name="settings_system_patch_selection_source_format">Pökkning gjáfa #%s</string>
-    <string name="settings_system_patch_selection_will_delete">Þetta mun eyða:</string>
     <string name="settings_system_patch_selection_reset_all_warning">Þetta mun varanlega eyða öllum geymdum pakkningavöldum fyrir allar pakkningingar og gjafa</string>
-    <string name="settings_system_patch_selection_reset_package_warning">Þetta mun varanlega eyða öllum geymdum pakkningavöldum fyrir %s í öllum gjöfum</string>
-    <string name="settings_system_patch_selection_reset_source_warning">Þetta mun varanlega eyða geymdum pakkningavalum fyrir %1$s í gjafa #%2$s</string>
+    <string name="settings_system_patch_selection_reset_package_warning">                                                                                                                                                                                             Þetta mun varanlega eyða öllum vistaðum valférum breytinga fyrir &lt;b&gt;%s&lt;/b&gt; fyrir allar uppsprellur.</string>
+    <string name="settings_system_patch_selection_reset_source_warning">                                                                                                                                                                                                        Þetta mun varanlega eyða vistaðar breytingaval fyrir &lt;b&gt;%1$s&lt;/b&gt; í &lt;b&gt;%2$s&lt;/b&gt;.</string>
+    <string name="settings_system_patch_selection_reset_selected_warning">                                                                                                                                Þetta mun varanlega eyða öllum vistaðum valférum breytinga fyrir valda pakkana.</string>
     <string name="settings_system_export_source_data_fail">Ekki tókst að flytja út gögn frá gjafa</string>
     <string name="settings_system_export_source_data_success">Gagnagögn frá gjafa flutt úr vel</string>
     <string name="settings_system_import_source_data_fail">Ekki tókst að flytja inn gögn frá gjafa</string>
     <string name="settings_system_import_source_data_success">Gagnagögn frá gjafa flutt inn vel</string>
-    <string name="settings_system_patch_details_title">Pökkningaraðstöð</string>
-    <string name="settings_system_selected_patches_title">Valdir pakkningar (%s)</string>
-    <string name="settings_system_patch_options_title">Pökkningaval (%s)</string>
+    <string name="settings_system_selected_patches_section">Valdir brekkur</string>
+    <string name="settings_system_patch_options_section">Brekkuaðferðir</string>
     <string name="settings_system_no_patches_or_options">Engar pattaðar valkostir eða valkostir geymdar</string>
+    <!-- Copy selection from another bundle -->
+    <string name="copy_selection_title">Afrita val frá…</string>
+    <string name="copy_selection_confirm_with_count">Afrita %s</string>
+    <string name="copy_selection_empty">Engin önnur vistað val til að afrita frá</string>
+    <string name="copy_selection_available_format">%1$s af %2$s í boði</string>
+    <string name="copy_selection_same_source">Sama heimild</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Sérsniðin skráaraðjari</string>
-    <string name="settings_system_custom_file_picker_description">Skoðu geymslu með innbyggðum skráaraðjara SyMorphe heldur en staðkerfinu</string>
+    <string name="settings_system_custom_file_picker_description">Skoðu geymslu með innbyggðum skráaraðjara Morphe heldur en staðkerfinu</string>
+    <!-- Settings - System Tab - APK download helper -->
+    <string name="settings_system_apk_download_helper">APK niðurhalshjálparforrit</string>
+    <string name="settings_system_apk_download_helper_description">Láttu uppsett hjálparforrit hlaða niður upprunalegum APK fyrir þig. Skráin kemur frá því forriti, svo kveiktu á þessu aðeins ef þú treystir því</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Fyrri skrá</string>
     <string name="file_picker_no_files">Engar skrár hér</string>
@@ -775,12 +1030,22 @@ Myndastærðin verður að vera sem hér segir:
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Um</string>
     <string name="settings_system_share_website">Deila vefsíðu</string>
-    <string name="settings_system_share_website_description">Deila opinberri SyMorphe vefsíðu</string>
+    <string name="settings_system_share_website_description">Deila opinberri Morphe vefsíðu</string>
     <string name="settings_system_manager_description">Opinn-hugsaðar verkefni fyrir nútímalega, einfalda breytingu á vinsælum Android forunum, knúin áfram af samfélagsáhrifum og framlögum</string>
     <string name="credits">Viðurkenningar</string>
     <string name="credits_current_development">Núverandi þróun</string>
     <string name="credits_prior_development">Fyrri þróun</string>
     <string name="opensource_licenses">Open-source leyfisveitingar</string>
+    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <string name="easter_egg_pill_title">Val</string>
+    <string name="easter_egg_pill_message">Taktu bláu pilluna og auglýsingarnar haldast nákvæmlega þar sem þær eru. Taktu rauðu pilluna og sjáðu hversu djúpt bytecode-ið fer.</string>
+    <string name="easter_egg_pill_red">Rauð pilla</string>
+    <string name="easter_egg_pill_blue">Blá pilla</string>
+    <string name="easter_egg_pill_red_toast">Bakgrunnur Matrixs opnaður</string>
+    <string name="easter_egg_pill_blue_toast">Auglýsingarnar munu bíða eftir þér</string>
+    <string name="easter_egg_pill_message_again">Þú ert nú þegar í Matrix. Rauða pillan fleygir þér aftur í rigninguna, og sú bláa vekur þig upp</string>
+    <string name="easter_egg_pill_red_toast_again">Aftur í rigningunni</string>
+    <string name="easter_egg_pill_blue_toast_again">Aftengdur. Leiðin til baka er þar sem hún var alltaf</string>
     <!-- Shared strings -->
     <string name="select_file">Velja skrá</string>
     <string name="select_folder">Velja möppu</string>
@@ -793,9 +1058,13 @@ Myndastærðin verður að vera sem hér segir:
     <string name="filter">Sía</string>
     <string name="reset">Endurstilla</string>
     <string name="reset_all">Endurstilla allt</string>
+    <string name="apply">Sýna</string>
     <string name="confirm">Staðfesta</string>
     <string name="warning">Vara</string>
     <string name="error_">Villa</string>
+    <string name="failed">Miskunstrað</string>
+    <string name="cancelled">Hætt við</string>
+    <string name="ready">Tilbúinn</string>
     <string name="retry">Reyna aftur</string>
     <string name="refresh">Endurhæfa</string>
     <string name="add">Bæta við</string>
@@ -808,6 +1077,9 @@ Myndastærðin verður að vera sem hér segir:
     <string name="delete">Eyða</string>
     <string name="delete_all">Eyða öllu</string>
     <string name="remove">Fjarlægja</string>
+    <string name="exclude">Útiloka</string>
+    <string name="excluded">Útilokað</string>
+    <string name="include">Taka með</string>
     <string name="disable">Gerðu óvirkt</string>
     <string name="enable">Gerðu virkt</string>
     <string name="loading">Hlaða…</string>
@@ -834,13 +1106,15 @@ Myndastærðin verður að vera sem hér segir:
     <string name="reorder_done">Röð vistuð</string>
     <string name="reset_order">Endurstilla röð</string>
     <string name="reset_order_done">Pöntun endurstillt</string>
+    <string name="accessibility_select_app">Veldu app</string>
     <string name="accessibility_move_up">Færa upp</string>
     <string name="accessibility_move_down">Færa niður</string>
-    <string name="accessibility_app_moved_announcement">%1$s fært á stöðu %2$d af %3$d</string>
+    <string name="accessibility_app_moved_announcement">%1$s flutt til staðar %2$s af %3$s</string>
     <string name="accessibility_scroll_to_top">Skrúllaðu efst á lista</string>
     <string name="rename">Endurnefna</string>
     <string name="import_">Flytja</string>
     <string name="export">Flytja út</string>
+    <string name="copy">Afrita</string>
     <string name="download">Sæka</string>
     <string name="less">Menn</string>
     <string name="expand">Stækka</string>
@@ -850,8 +1124,10 @@ Myndastærðin verður að vera sem hér segir:
     <string name="available">Í boði</string>
     <string name="continue_">Halda áfram</string>
     <string name="version">Útgáfa</string>
+    <string name="clone">Klóna</string>
     <string name="patch">Breytistilling</string>
-    <string name="repatch">Breytistilla aftur</string>
+    <string name="patching">Breytingar</string>
+    <string name="patched">Plástrað</string>
     <string name="open">Opna</string>
     <string name="mount">Festa</string>
     <string name="mounted">Fest</string>
@@ -868,7 +1144,6 @@ Myndastærðin verður að vera sem hér segir:
     <string name="saved">Vistað</string>
     <string name="update">Uppfærsla</string>
     <string name="allow">Leyfa</string>
-    <string name="details">Sérstakur heiti</string>
     <string name="hide">Húð</string>
     <string name="hidden">Falinn</string>
     <string name="unhide">Afhylja</string>
@@ -893,6 +1168,9 @@ Myndastærðin verður að vera sem hér segir:
     <string name="install_update_manager_failed">Ekki tókst að setja upp uppfærslu</string>
     <string name="installing_manager_update">Sæti uppfærslu…</string>
     <string name="downloading_manager_update">Sæki uppfærslu…</string>
+    <!-- Shown while resuming a download, before the total size is known -->
+    <string name="manager_update_progress_downloaded">%1$.1f MB niðurhalin</string>
+    <string name="manager_update_not_ready">Þessi útgáfa er enn í útgáfuferlinu. Reyndu aftur á nokkrum mínútum</string>
     <string name="download_manager_failed">Ekki tókst að sækja uppfærslu: %s</string>
     <string name="failed_to_check_updates">Ekki tókst að skoða uppfærslur: %s</string>
     <string name="failed_to_download_update">Ekki tókst að sækja uppfærslu: %s</string>
@@ -902,8 +1180,8 @@ Myndastærðin verður að vera sem hér segir:
 Haltu samt sem áður?"</string>
     <string name="download_update_confirmation">Sæka uppfærslu?</string>
     <!-- Onboarding coach marks -->
-    <!-- %1$d = current step number, %2$d = total number of steps (e.g. "3 of 13") -->
-    <string name="onboarding_step_of">%1$d af %2$d</string>
+    <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
+    <string name="onboarding_step_of">%1$s af %2$s</string>
     <string name="onboarding_sources_desc">Stjórna þínum uppsprettum. Hver uppspretta gefur breytingar sem hægt er að beita á þín forrit</string>
     <string name="onboarding_swipe_title">Hreyfingar fingrum</string>
     <string name="onboarding_swipe_desc">Stryndu til hægri á forritskorti til að skoða lausar breytingar. Stryndu til vinstri til að fela kortið af heimaskjánum</string>

@@ -7,8 +7,8 @@ changes from these exact public revisions:
 | Component | Version | Commit / source |
 |---|---:|---|
 | Morphe Patcher | 1.11.0 | [`97edf384861cc706d95c1847791f9ab4faec4e94`](https://github.com/MorpheApp/morphe-patcher/tree/97edf384861cc706d95c1847791f9ab4faec4e94) |
-| Morphe Library | 1.3.0 | [`d8b9e1498924ee87a7c6c2f5dfe59f1244e47644`](https://github.com/MorpheApp/morphe-library/tree/d8b9e1498924ee87a7c6c2f5dfe59f1244e47644) |
-| Morphe JADB fork | 1.2.1 | [`4955fb15a94afb2644f52446fd03173c0f74c3c3`](https://github.com/MorpheApp/jadb/tree/4955fb15a94afb2644f52446fd03173c0f74c3c3) |
+| Morphe Library | 1.4.0 | [`a5b1fb512306d497cad8a13c0399a5fb28553522`](https://github.com/MorpheApp/morphe-library/tree/a5b1fb512306d497cad8a13c0399a5fb28553522) |
+| Morphe JADB fork | 1.2.3 | [`d6db20b20b754cd3ac4c22e435b9802405d40051`](https://github.com/MorpheApp/jadb/tree/d6db20b20b754cd3ac4c22e435b9802405d40051) |
 
 The original source archives and build instructions at those links are the
 corresponding source for the vendored artifacts. Their license files are

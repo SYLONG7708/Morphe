@@ -11,12 +11,55 @@ import app.morphe.manager.network.utils.getOrNull
 import app.morphe.manager.util.*
 import io.ktor.client.request.header
 import io.ktor.client.request.url
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
+
+private const val GITHUB_DOWNLOAD_PREFIX = "https://github.com/"
+
+/** Coordinates of a single asset inside a GitHub release download link. */
+internal data class ReleaseAssetRef(
+    val owner: String,
+    val repo: String,
+    val tag: String,
+    val fileName: String
+) {
+    /** Asset names are compared against both forms because the link may percent-encode them. */
+    val decodedFileName: String
+        get() = runCatching {
+            java.net.URLDecoder.decode(fileName, Charsets.UTF_8.name())
+        }.getOrDefault(fileName)
+}
+
+/**
+ * Splits a github.com release download link into its coordinates.
+ *
+ * Returns null for anything that is not `/{owner}/{repo}/releases/download/{tag}/{file}`, which
+ * keeps callers from turning unrelated URLs into API lookups.
+ */
+internal fun parseReleaseAssetUrl(downloadUrl: String): ReleaseAssetRef? {
+    if (!downloadUrl.startsWith(GITHUB_DOWNLOAD_PREFIX)) return null
+
+    val parts = downloadUrl.removePrefix(GITHUB_DOWNLOAD_PREFIX)
+        .substringBefore('?')
+        .split("/")
+    if (parts.size < 6 || parts[2] != "releases" || parts[3] != "download") return null
+    if (parts.take(2).any { it.isBlank() } || parts[4].isBlank()) return null
+
+    val fileName = parts.drop(5).joinToString("/")
+    if (fileName.isBlank()) return null
+
+    return ReleaseAssetRef(
+        owner = parts[0],
+        repo = parts[1],
+        tag = parts[4],
+        fileName = fileName
+    )
+}
 
 /**
  * High-level network layer for Morphe.
@@ -47,6 +90,17 @@ class MorpheAPI(
         fun rawFileUrl(branch: String, path: String): String =
             "https://raw.githubusercontent.com/$owner/$name/$branch/$path"
     }
+
+    /**
+     * Token GitHub has already turned down, kept so it is not sent again.
+     *
+     * Repeated failed authentications count against the caller and can get the address throttled,
+     * which would be a worse outcome than simply falling back to the anonymous rate limit. Holding
+     * the token itself rather than a flag means a newly entered one is tried again.
+     */
+    @Volatile
+    @PublishedApi
+    internal var rejectedPat: String? = null
 
     // Lazy so URL parsing doesn't happen on construction — only when first needed
     private val managerConfig: RepoConfig by lazy { parseRepoUrl(MANAGER_REPO_URL) }
@@ -102,29 +156,42 @@ class MorpheAPI(
     /**
      * Makes a GitHub REST API request to [path] relative to the repository API base.
      * Attaches the user's PAT (if configured) as a Bearer token.
+     *
+     * A rejected token falls back to an anonymous request: most endpoints answer without
+     * credentials, and a PAT that has expired or been revoked should cost the lower rate limit
+     * rather than the endpoint itself.
      */
     private suspend inline fun <reified T> githubRequest(
         config: RepoConfig,
         path: String
     ): APIResponse<T> {
-        val pat = prefs.gitHubPat.get()
-        return client.request {
-            pat.takeIf { it.isNotBlank() }?.let { header("Authorization", "Bearer $it") }
-            url("${config.apiBase}/${path.trimStart('/')}")
+        val url = "${config.apiBase}/${path.trimStart('/')}"
+        val pat = prefs.gitHubPat.get().takeIf { it.isNotBlank() && it != rejectedPat }
+            ?: return client.request { url(url) }
+
+        val response: APIResponse<T> = client.request {
+            header("Authorization", "Bearer $pat")
+            url(url)
         }
+
+        val rejected = response is APIResponse.Error &&
+                response.error.statusCode == HttpStatusCode.Unauthorized
+        if (!rejected) return response
+
+        rejectedPat = pat
+        Log.w(tag, "GitHub rejected the configured PAT, retrying $path anonymously")
+        return client.request { url(url) }
     }
 
     /**
-     * Makes a request to the Morphe backend API at [route], with generic retry on failure.
+     * Makes a request to the Morphe backend API at [route].
      *
-     * Note: [HttpService.request] already handles 429 retry internally. This adds an extra
-     * [HttpService.runWithRetry] layer for transient network errors specific to Morphe API calls.
+     * Note: [HttpService.request] already retries 429 and dropped connections internally, so
+     * wrapping it in another retry layer here would only multiply the attempts.
      */
     private suspend inline fun <reified T> apiRequest(route: String): APIResponse<T> {
         val url = "$MORPHE_API_URL/v2/${route.trimStart('/')}"
-        return client.runWithRetry(route) {
-            client.request { url(url) }
-        }
+        return client.request { url(url) }
     }
 
     /**
@@ -135,9 +202,47 @@ class MorpheAPI(
         config: RepoConfig,
         branch: String
     ): APIResponse<T> {
-        val url = config.rawFileUrl(branch, "patches-bundle.json")
+        val url = cacheBusted(config.rawFileUrl(branch, "patches-bundle.json"))
         Log.d(tag, "rawPatchesBundleRequest: $url")
         return client.request { url(url) }
+    }
+
+    /**
+     * Resolves the API URL serving the same bytes as a github.com release download link.
+     *
+     * Source manifests point their `download_url` at github.com because that is what release
+     * tooling emits, but some networks drop that host while leaving api.github.com reachable.
+     * The API route redirects to release-assets.githubusercontent.com and supports ranges, so a
+     * download behaves identically once switched over.
+     *
+     * Returns null when [downloadUrl] is not a release link or the asset cannot be located,
+     * which leaves the caller with its original error.
+     */
+    suspend fun releaseAssetApiUrl(downloadUrl: String): String? {
+        val ref = parseReleaseAssetUrl(downloadUrl) ?: return null
+        val config = runCatching {
+            parseRepoUrl("$GITHUB_DOWNLOAD_PREFIX${ref.owner}/${ref.repo}")
+        }.getOrNull() ?: return null
+
+        val release = githubRequest<GitHubRelease>(config, "releases/tags/${ref.tag}").getOrNull()
+            ?: return null
+
+        return release.assets
+            .firstOrNull { it.name == ref.fileName || it.name == ref.decodedFileName }
+            ?.url
+            .also { Log.d(tag, "releaseAssetApiUrl: $downloadUrl -> $it") }
+    }
+
+    /**
+     * Appends a per-minute cache buster to a raw file URL.
+     *
+     * The GitHub raw CDN ignores request cache headers and serves an edge copy for several
+     * minutes, which is long enough for the release JSON and CHANGELOG.md to disagree about
+     * the newest version. A per-minute key bypasses that without defeating caching entirely.
+     */
+    private fun cacheBusted(url: String): String {
+        val minute = System.currentTimeMillis() / 60_000L
+        return if ('?' in url) "$url&t=$minute" else "$url?t=$minute"
     }
 
     /**
@@ -256,10 +361,10 @@ class MorpheAPI(
      * Fetches manager metadata from the static JSON endpoint (bypasses GitHub API rate limits).
      *
      * [branch] determines which JSON URL is used (`dev` → prerelease, anything else → stable).
-     * Cache-Control: no-cache ensures we never get a stale CDN response.
+     * The request is cache busted because the raw CDN serves stale copies of freshly pushed files.
      */
     private suspend fun getManagerFromJson(branch: String): APIResponse<MorpheAsset> {
-        val url = if (branch == "dev") MANAGER_PRERELEASE_JSON_URL else MANAGER_RELEASE_JSON_URL
+        val url = cacheBusted(if (branch == "dev") MANAGER_PRERELEASE_JSON_URL else MANAGER_RELEASE_JSON_URL)
         return when (val response = client.request<ManagerReleaseInfo> {
             url(url)
             header("Cache-Control", "no-cache")
@@ -291,9 +396,13 @@ class MorpheAPI(
      * Update sources:
      *  - Primary: static JSON file ([USE_MANAGER_DIRECT_JSON] == true)
      *  - Fallback: GitHub Releases API
+     *
+     * A newer version is reported only once its APK is downloadable, so a release that is
+     * already announced but still uploading is treated as if it did not exist yet.
      */
     suspend fun getAppUpdate(): MorpheAsset? {
         val usePrereleases = prefs.useManagerPrereleases.get()
+        val currentWeight = versionWeight(BuildConfig.VERSION_NAME.removePrefix("v"))
         val branch = if (usePrereleases) "dev" else "main"
 
         val candidate = if (USE_MANAGER_DIRECT_JSON) {
@@ -305,8 +414,41 @@ class MorpheAPI(
             getManagerFromGitHub()
         }.getOrNull()
 
-        // Return only if the remote version is strictly newer than what's installed
-        return candidate?.takeIf { isNewerVersion(BuildConfig.VERSION_NAME, it.version) }
+        // Return only if the remote version is strictly newer than what's installed.
+        val update = candidate?.takeIf {
+            versionWeight(it.version.removePrefix("v")) > currentWeight
+        } ?: return null
+
+        // Only a definitive "not there" hides the update: a check that could not run at all
+        // must not keep a real release from being offered
+        if (client.isReachable(update.downloadUrl) == false) {
+            Log.d(tag, "Manager update ${update.version} is announced but its APK is not downloadable yet")
+            return null
+        }
+
+        return update
+    }
+
+    /**
+     * Converts a semver-like version string to a comparable [Long] weight.
+     *
+     * Format: `MAJOR.MINOR.PATCH[-prerelease.N]`
+     *
+     * Stable releases rank strictly above pre-releases with the same core version:
+     * e.g. `1.2.3` > `1.2.3-beta.5`.
+     */
+    private fun versionWeight(version: String): Long {
+        val dashIdx = version.indexOf('-')
+        val core = if (dashIdx >= 0) version.substring(0, dashIdx) else version
+        val pre = if (dashIdx >= 0) version.substring(dashIdx + 1) else null
+        val parts = core.split('.').map { it.toIntOrNull() ?: 0 }
+        val major = parts.getOrElse(0) { 0 }.toLong()
+        val minor = parts.getOrElse(1) { 0 }.toLong()
+        val patch = parts.getOrElse(2) { 0 }.toLong()
+        // Stable gets a 100_000 bonus so it always beats any pre-release of the same version
+        val preWeight = if (pre == null) 100_000L
+        else pre.split('.').lastOrNull()?.toLongOrNull() ?: 0L
+        return major * 1_000_000_000L + minor * 1_000_000L + patch * 100_000L + preWeight
     }
 
     /**
@@ -424,7 +566,7 @@ class MorpheAPI(
         path: String = "CHANGELOG.md",
         stopAfterFirstStable: Boolean = false
     ): List<ChangelogEntry> {
-        val url = config.rawFileUrl(branch, path)
+        val url = cacheBusted(config.rawFileUrl(branch, path))
         Log.d(tag, "fetchChangelog: $url")
         return when (val r = client.request<String> {
             url(url)

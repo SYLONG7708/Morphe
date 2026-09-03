@@ -13,17 +13,15 @@
     <string name="android_11_bug_dialog_title">کەلێنی ئەندرۆید ١١ </string>
     <string name="android_11_bug_dialog_description">پێویستە پێشوەختە مۆڵەتی دامەزراندنی ئەپەکە بدرێت بۆ ئەوەی هەڵەیەک لە سیستەمی ئەندرۆید ١١ ڕوونەدات کە کاریگەری نەرێنی لەسەر ئەزموونی بەکارهێنەر دەبێت</string>
     <string name="deep_link_add_source_title">زیادکردنی سەرچاوە</string>
-    <string name="deep_link_add_source_message">دەتەوێت ئەم سەرچاوەی پاچە زیاد بکەیت بۆ SyMorphe؟</string>
+    <string name="deep_link_add_source_message">دەتەوێت ئەم سەرچاوەی پاچە زیاد بکەیت بۆ Morphe؟</string>
     <string name="deep_link_add_source_warning">تەنها ئەو سەرچاوانە زیاد بکە کە متمانەت پێیانە</string>
     <!-- Home Screen - Update Notifications -->
-    <string name="home_update_available">SyMorphe نوێکردنەوە بەردەستە</string>
+    <string name="home_update_available">Morphe نوێکردنەوە بەردەستە</string>
     <string name="home_update_available_subtitle">وەشانی نوێ ئامادەیە بۆ دابەزاندن</string>
     <string name="home_update_error">نوێکردنەوە شکستس هێنا</string>
-    <string name="home_update_error_subtitle">هێڵەکەت بپشکنە وە دووبارە هەوڵ بدەرەوە</string>
     <string name="home_update_skipped_metered">نوێکردنەوەکان پەڕێندرا</string>
     <string name="home_update_skipped_metered_subtitle">داتای مۆبایل چاڵاکە</string>
     <string name="home_updating_sources">نوێکردنەوەی سەرچاوەکان...</string>
-    <string name="home_update_progress_format">%s هاتووەبار</string>
     <string name="home_update_success">نوێکردنەوەی سەرچاوە تەواوبوو</string>
     <string name="home_update_success_subtitle">سەرچاوەکانت نوێن</string>
     <string name="home_sources_are_loading">سەرچاوەکان باردەکرێن، تکایە چاوەڕوان بە...</string>
@@ -33,6 +31,7 @@
     <string name="home_no_apps_search_subtitle">هیچ ئەپێک ناگونجێ لەگەڵ \"%s\"</string>
     <string name="home_all_apps_hidden_title">هەموو ئەپەکان شاراوەن</string>
     <string name="home_all_apps_hidden_subtitle">هەموو ئەپەکانت لە شاشەی سەرەکی شاردووەتەوە</string>
+    <string name="home_category_custom">باو</string>
     <!-- Home Screen - Home Greetings -->
     <string name="home_greeting_1">دەتەوێت چی ئەپێک پینە بکەیت؟</string>
     <!-- Humorous hype message with light nostalgia -->
@@ -107,7 +106,7 @@
     <string name="home_app_info_no_saved_apk">APK پاشەکەوت نەکراوە. پینەکردن پێویستی بە دیاریکردنی فایلی APK دووبارە هەیە</string>
     <string name="home_version_requires_android">پێویستی بە ئەندرۆید %s+ هەیە</string>
     <string name="home_apk_no_compatible_versions_title">پشتگیری نەکراوە لەسەر ئەم ئامێرە</string>
-    <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; هیچ وەشانێکی پشتیوانیکراوی نیە بۆ ئەندرۆید.   %2$d (API %3$d). هەموو وەشانە ڕاگەیەندراوەکان پێویستیان بە وەشانێکی بەرزتری ئەندرۆید هەیە</string>
+    <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; هیچ وەشانێکی پشتیوانیکراوی نیە بۆ ئەندرۆید.   %2$s (API %3$s). هەموو وەشانە ڕاگەیەندراوەکان پێویستیان بە وەشانێکی بەرزتری ئەندرۆید هەیە</string>
     <!-- Home Screen - Dialog 2: Download Instructions -->
     <string name="home_download_instructions_title">APKی ڕەسەن دابەزێنە</string>
     <string name="home_download_instructions_steps_title">ڕێنماییەکان:</string>
@@ -117,9 +116,8 @@
     <string name="home_download_instructions_step3">چاوەڕێی تەواوبوونی داگرتنەکە بکە، وە &lt;b&gt;  تکایە &lt;/b&gt; APK&lt;b&gt; دامەبەزێنە</string>
     <string name="home_download_instructions_step3_mount">چاوەڕێی تەواوبوونی داگرتنەکە بکە، پاشان
 &lt;b&gt;  APK دابەزێنە &lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">دوای تەواوبوونی داگرتنەکە بگەڕێوە بۆ SyMorphe</string>
-    <string name="home_download_instructions_step4_mount">دوای دامەزراندنی APK ی بنەڕەتی، بگەڕێوە بۆ SyMorphe</string>
-    <string name="home_download_instructions_continue">بەردەوام بە لە APKMirror.com</string>
+    <string name="home_download_instructions_step4">دوای تەواوبوونی داگرتنەکە بگەڕێوە بۆ Morphe</string>
+    <string name="home_download_instructions_step4_mount">دوای دامەزراندنی APK ی بنەڕەتی، بگەڕێوە بۆ Morphe</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">APKی دابەزێندراو دیاری بکە</string>
     <string name="home_file_picker_prompt_description">&lt;b&gt;%s&lt;/b&gt; APK دیاری بکە کە داتبەزاندووە</string>
@@ -180,9 +178,10 @@
     <string name="home_low_disk_space_dialog_message">تەنها %1$.2f گێگەبایت لە کۆگای خۆرایی بەردەستە. پینەکردن لانی کەم %2$.2f گێگابایت بۆشایی ئازادی پێویستە بۆ کارکردن بەڕاستی</string>
     <string name="home_low_disk_space_dialog_warning">لەوانەیە بەردەوامبوون ببێتە هۆی هەڵەی \'فایل نەدۆزرایەوە\' یان APK ی دەرچووی تێکچوو</string>
     <string name="home_simple_bundle_select_title">سەرچاوەی پینە دیاریبکە</string>
-    <!-- Patch Options -->
+    <!-- Color picker -->
     <string name="custom_color">ڕەنگی باو</string>
     <string name="hex_color">ڕەنگی هێکس</string>
+    <!-- Patch Options -->
     <string name="patch_option_instructions">ڕێنماییەکان</string>
     <string name="patch_option_enter_value">بەها بنووسە</string>
     <string name="patch_option_enter_number">ژمارە بنووسە</string>
@@ -210,6 +209,9 @@
     <string name="header_creator_no_image">هیچ وێنەیەک دیاری نەکراوە</string>
     <string name="header_creator_success">سەرپەڕە بە سەرکەوتوویی دروستکرا</string>
     <string name="header_creator_failed">شکستی هێنا لە دروستکردنی سەرپەڕە</string>
+    <!-- Batch patching -->
+    <string name="batch_patch_action">پینە دیاریکراوە</string>
+    <string name="shortcut_check_updates_short">پشکنینی نوێکردنەوەکان</string>
     <!-- Home Screen - App Info Screen -->
     <string name="home_app_info_remove_app_warning">ئایا تۆ پشتڕاستیت کە دەتەوێت ئەم کاربەرنامەیە لابدەیت؟</string>
     <string name="home_app_info_delete_item_database">داخڵکردنی بنکەدراوە</string>
@@ -228,15 +230,10 @@
     <string name="home_app_info_patch_update_available">نوێکردنەوەی پینە بەردەستە</string>
     <string name="home_app_info_patch_update_available_description">وەشانێکی نوێتری پینەکردن بەردەستە. دووبارە پینەکردنی ئەپەکەت بۆ بەدەستهێنانی نوێترین چاکسازی و چاککردنەوەکان</string>
     <string name="home_app_info_app_deleted_warning">App was uninstalled</string>
-    <string name="home_app_info_app_deleted_description">ئەم کاربەرنامەیە لە دەرەوەی SyMorphe سڕاوەتەوە. دووبارە بیچەوە بۆ گەڕاندنەوەی ئەرکەکان</string>
+    <string name="home_app_info_app_deleted_description">ئەم کاربەرنامەیە لە دەرەوەی Morphe سڕاوەتەوە. دووبارە بیچەوە بۆ گەڕاندنەوەی ئەرکەکان</string>
     <string name="home_app_info_apk_size">قەبارەی APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">دۆخی ڕۆت پێویستی بە دامەزراندنی APK ی ڕەسەن هەیە لەسەر ئامێرەکەت پێش پینەکردن</string>
-    <string name="root_gmscore_excluded">پاچی پشتیوانی GmsCore لە دۆخی ڕۆت\'دا بەدەرکراوە</string>
-    <string name="root_pre_patch_installer_title">شێوازی دامەزراندن هەڵبژێرە</string>
-    <string name="root_pre_patch_installer_description">ئامێرەکەت دەستگەیشتنی ڕەگی هەیە. هەڵبژێرە چۆن دەتەوێت کاربەرنامە پینەکراوەکە دابمەزرێنیت</string>
-    <string name="root_pre_patch_installer_standard_title">دامەزراندنی پێوانەیی</string>
-    <string name="root_pre_patch_installer_hint">شێوازی دامەزراندن دیاری دەکات کام پینەی لەخۆگرتووە و ناتوانرێت بگۆڕدرێت پاش پینەکردن</string>
     <!-- Patcher Screen -->
     <string name="patcher_error_copied">هەڵە کۆپی کرا بۆ ڕوونووسگە</string>
     <string name="patcher_error_log">تۆماری هەڵە</string>
@@ -252,7 +249,7 @@
     <string name="patcher_conflict_subtitle">پێویستە وەشانی بەردەست لاببەیت</string>
     <string name="patcher_conflict_hint">ئەپە پینەکراوەکە بڕوانامەیەکی جیاواز لە وەشانی دامەزراو بەکاردێنێت. لابردنی داتای ئەپ هەموو داتای ئەپ دەسڕێتەوە</string>
     <string name="patcher_installed_conflict_title">سڕینەوەی دامەزراندن پێویستە</string>
-    <string name="patcher_installed_conflict_body">"SyMorphe ئەپە پینەکراوەکان بە بڕوانامەی تایبەت بە خۆی واژۆ دەکات، کە جیاوازە لە بنەڕەتی. ئەندرۆید پێویستی بە دامەزراندنی وەشانی ئێستا هەیە پێش ئەوەی کاربەرنامە پینەکراوەکە دابمەزرێنێت.
+    <string name="patcher_installed_conflict_body">"Morphe ئەپە پینەکراوەکان بە بڕوانامەی تایبەت بە خۆی واژۆ دەکات، کە جیاوازە لە بنەڕەتی. ئەندرۆید پێویستی بە دامەزراندنی وەشانی ئێستا هەیە پێش ئەوەی کاربەرنامە پینەکراوەکە دابمەزرێنێت.
 
 هەڵوەشاندنەوەی داتای ئەپ بە هەمیشەیی دەسڕێتەوە"</string>
     <string name="patcher_install_error_title">هەڵەی دامەزراندن</string>
@@ -261,9 +258,9 @@
     <string name="patcher_ready_to_mount_subtitle">دوگمەی خوارەوە دابگرە بۆ جێگیرکردن</string>
     <string name="patcher_storage_permission_dialog_title">ناتوانیت بچیتە ناو ڕێڕەوی هەمارگە</string>
     <string name="patcher_incompatible_patcher_title">نوێکردنەوە پێویستە</string>
-    <string name="patcher_incompatible_patcher_description">باندڵی &lt;b&gt;%1$s&lt;/b&gt; پێویستی بە وەشانی پینەکەری &lt;b&gt;%2$s&lt;/b&gt; هەیە یان نوێتر. تکایە SyMorphe نوێبکەرەوە بۆ پینەکردنی ئەم ئەپە</string>
-    <string name="patcher_incompatible_patcher_update_button">داگرتن و نوێکردنەوەی SyMorphe</string>
-    <string name="patcher_storage_permission_description_api30">یەکێک یان زیاتر لە هەڵبژاردنەکانی پینەکردن ئاماژە بۆ ئەو ڕێچکانە دەکات کە SyMorphe ناتوانێت بیخوێنێتەوە. پێدانی دەستگەیشتنی هەمارگە و کرتە لە دوگمەکە، پاشان پینەکردن بە شێوەیەکی خۆکەرانە دەست پێدەکات</string>
+    <string name="patcher_incompatible_patcher_description">باندڵی &lt;b&gt;%1$s&lt;/b&gt; پێویستی بە وەشانی پینەکەری &lt;b&gt;%2$s&lt;/b&gt; هەیە یان نوێتر. تکایە Morphe نوێبکەرەوە بۆ پینەکردنی ئەم ئەپە</string>
+    <string name="patcher_incompatible_patcher_update_button">داگرتن و نوێکردنەوەی Morphe</string>
+    <string name="patcher_storage_permission_description_api30">یەکێک یان زیاتر لە هەڵبژاردنەکانی پینەکردن ئاماژە بۆ ئەو ڕێچکانە دەکات کە Morphe ناتوانێت بیخوێنێتەوە. پێدانی دەستگەیشتنی هەمارگە و کرتە لە دوگمەکە، پاشان پینەکردن بە شێوەیەکی خۆکەرانە دەست پێدەکات</string>
     <string name="patcher_storage_permission_description_legacy">یەکێک یان زیاتر لە هەڵبژاردنەکانی پینەکردن ئاماژە بە ڕێڕەوەکان دەکەن کە ناتوانن بگەنە ژورەوە. نوێکردنەوەی ڕێڕەوەکان لە بەربژارەکانی پینەکردن و دووبارە هەوڵدەوە</string>
     <string name="patcher_storage_permission_grant">پێدانی مۆڵەتی کۆگا</string>
     <string name="patcher_storage_permission_denied_warning">مۆڵەتی کۆگا ڕەتکرایەوە. پێدانی مۆڵەت بۆ بەکارهێنانی ئەم ڕێگایە، یان گواستنەوەی فایلەکان بۆ ڕێبەری تایبەتی ئەپەکە</string>
@@ -282,8 +279,9 @@
     <string name="patcher_step_sign_apk">واژۆکردنی فایلی APK پینەکراو</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">پاراستن لە پینەکردنی پاشخان</string>
-    <string name="battery_optimization_dialog_description">هەندێک ئامێر لەوانەیە پینەکەرەکە بوەستێنن کاتێک ئەپەکە بچووک دەکرێتەوە. ڕێگە بە SyMorphe بدە بە کارکردن بەبێ سنووردارکردنی پاتری بۆ دڵنیابوون لە تەواوبوونی پینەکردن بە شێوەیەکی باوەڕپێکراو</string>
+    <string name="battery_optimization_dialog_description">هەندێک ئامێر لەوانەیە پینەکەرەکە بوەستێنن کاتێک ئەپەکە بچووک دەکرێتەوە. ڕێگە بە Morphe بدە بە کارکردن بەبێ سنووردارکردنی پاتری بۆ دڵنیابوون لە تەواوبوونی پینەکردن بە شێوەیەکی باوەڕپێکراو</string>
     <string name="battery_optimization_not_now">ئێستا نا</string>
+    <!-- Memory limit dialog, shown after the patcher process was killed -->
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">پینەکردن بەردەوامە…</string>
     <string name="patcher_notification_text">کرتە بکە بۆ گەڕانەوە بۆ پینەکەرەکە</string>
@@ -296,9 +294,8 @@
     <string name="patcher_message_4">دروستکردنی جادووی دیجیتاڵی… ☕</string>
     <string name="patcher_message_5">پشووی قاوە پێشنیار کراوە… ☕</string>
     <string name="patcher_message_6">سەیری دەرەوە بکە، دەرەوە خۆشە… 🌤️</string>
-    <string name="patcher_message_7">ڕێکخستنی 1 و 0… 🤖</string>
     <string name="patcher_message_8">هەڵوەشاندنەوەی سپاگێتی دیجیتاڵی… 🍝</string>
-    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">چارەسەرکردنی کێشەکان لە ئەپە پینەنەکراوەکە… 🪲</string>
     <string name="patcher_message_10">پینەی مەزن شایەنی چاوەڕوانکردنن… ⏳</string>
     <string name="patcher_message_11">بریقەدار کردنی پیکسڵەکان تا دەدرەوشێنەوە… 💎</string>
@@ -321,7 +318,6 @@
     <!-- Patcher Screen - Other hidden strings -->
     <string name="applying_patches">جێگیرکردنی پینەکان</string>
     <string name="failed_to_execute_patch">شکستی هێنا لە جێگیرکردنی %s</string>
-    <string name="patched_app_saved_toast">ئەپی پینەکراو پاشەکەوت کراوە بۆ دواتر</string>
     <string name="patched_app_save_failed_toast">شکستی هێنا لە پاشەکەوت کردنی ئەپی پینەکراو</string>
     <string name="plugin_activity_dialog_body">کارلێکردنی بەکارهێنەر پێویستە بۆ ئەوەی بەردەوام بیت لەگەڵ ئەم پێوەکراوە</string>
     <string name="patcher_process_exit_message">پرۆسەی پینەکەر دەرچوو بە کۆدی %s</string>
@@ -363,17 +359,19 @@
     <string name="settings_appearance_light">ڕووناک</string>
     <string name="settings_appearance_dark">تاریک</string>
     <string name="settings_appearance_dynamic">ماتریال یو</string>
+    <string name="settings_appearance_monochrome">منۆكرۆم</string>
     <string name="settings_appearance_accent_color">ڕەنگی جیاواز</string>
     <string name="settings_appearance_pure_black">ڕەشی بێگەرد</string>
     <!-- Settings - Appearance Tab - Language Selector -->
     <string name="settings_appearance_app_language">زمانی ئەپ</string>
     <string name="settings_appearance_app_language_current">زمانی ئێستا</string>
     <string name="settings_appearance_translations_info_title">وەرگێڕانەکان بۆ هەندێک زمانەکان لەوانەیە وون یان ناتەواو بن</string>
-    <string name="settings_appearance_translations_info_text">بۆ وەرگێڕانی زمانی نوێ یان باشترکردنی وەرگێڕانەکانی بەردەست، سەردانی %s بکە</string>
+    <!-- Settings - Appearance Tab - Interface Scale -->
     <!-- Settings - Appearance Tab - Home Screen Section -->
     <string name="settings_appearance_home_screen">شاشەی ماڵەوە</string>
     <string name="settings_appearance_greeting_phrases">دەستەواژەی بەخێرهاتن</string>
     <string name="settings_appearance_greeting_phrases_subtitle">پەیامێکی بەخێرهاتن پیشان بدە لەسەر شاشەی سەرەکی</string>
+    <string name="settings_appearance_app_card_colors_default">بنەڕەت</string>
     <!-- Settings - Appearance Tab - App Icon Selector -->
     <string name="settings_appearance_app_icon_selector_title">وێنۆچکەی ئەپ</string>
     <string name="settings_appearance_app_icon_default">بنەڕەت</string>
@@ -398,15 +396,18 @@
     <string name="settings_advanced_update_interval_chip_subtitle">فریکوێنسی پشکنینی پاشخان</string>
     <string name="settings_advanced_update_interval_battery_warning">لەوانەیە پشکنینی پاشبنەما بە شێوەیەکی باوەڕپێکراو کار نەکات لەسەر هەندێک ئامێر. بەرهەمهێنەرانی وەک شیاومی، هواوی، سامسۆنگ و وەن پڵەس زۆرجار پرۆسەکانی پاشخان سنووردار دەکەن بۆ پاشەکەوت کردنی پاتری.</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">نوێکردنەوەی SyMorphe بەردەستە</string>
+    <string name="notification_manager_update_title">نوێکردنەوەی Morphe بەردەستە</string>
     <string name="notification_bundle_update_title">پینەی نوێ بەردەستە</string>
     <string name="notification_update_text">وەشانی %s ئامادەیە بۆ دابەزاندن</string>
+    <string name="notification_channel_patcher">پینەکردن</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
+    <string name="settings_advanced_expert_mode">مۆدی شارەزا</string>
     <!-- Bytecode mode -->
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
     <!-- Settings - Advanced Tab - Patch Options Section -->
-    <!-- Settings - Advanced Tab - Patch Options Section: Theme Colors -->
+    <string name="settings_advanced_patch_options">هەڵبژاردەکانی پینە</string>
     <!-- Settings - Advanced Tab - Patch Options Section: Custom Branding -->
+    <string name="settings_advanced_patch_options_custom_branding_app_name">ناوی ئەپ</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"فۆڵدەرێک لەگەڵ وێنەکانی کە دەبێت بە وێنەیەکی خۆشکردن. 
 
 ئەو فۆڵدەرە دەبێت لە یەکێکێک یاخود زیاتر لە خوارەوەیەکانی بێت، به‌گوێره‌ی DPIی دەستە: 
@@ -444,17 +445,41 @@ morphe_adaptive_monochrome_custom.xml
     <!-- Settings - System Tab - Installer Section -->
     <!-- Settings - System Tab - Performance Section -->
     <string name="settings_system_battery_optimization">باشکردنی پاتری</string>
+    <!-- Settings - System Tab - Notifications Section -->
+    <string name="settings_system_notifications_sound_default">بنەڕەت</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <!-- Settings - System Tab - Files & Storage Section -->
+    <!-- Settings - System Tab - Storage Management screen -->
     <!-- Settings - System Tab - Storage Management - Patched APKs Management -->
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
+    <string name="settings_system_patch_options_section">هەڵبژاردەکانی پینە</string>
+    <!-- Copy selection from another bundle -->
     <!-- Settings - System Tab - Custom file picker -->
+    <!-- Settings - System Tab - APK download helper -->
     <!-- File Picker -->
     <!-- Settings - System Tab - About Section -->
+    <string name="settings_system_about">دربارە</string>
+    <string name="credits">کۆددان</string>
+    <!-- Easter egg offered after seven taps on the version in the about dialog -->
     <!-- Shared strings -->
+    <string name="patches">پینەکان</string>
+    <string name="settings">ڕێکخستنەکان</string>
+    <string name="skip">لەوەشدا بجە</string>
+    <string name="remove">سڕینەوە</string>
+    <string name="disable">خۆراکە</string>
+    <string name="search">گەڕان</string>
+    <string name="enabled">چالاککراو</string>
+    <string name="disabled">لەکارخراو</string>
+    <string name="copy">وێنەلەمەر</string>
+    <string name="download">دابەزاندن</string>
+    <string name="continue_">بەردەوامبوون</string>
+    <string name="patching">پینەکردن</string>
+    <string name="patched">پینەکراو</string>
+    <string name="allow">ڕێگەپێدان</string>
+    <!-- Shown while resuming a download, before the total size is known -->
     <!-- Onboarding coach marks -->
-    <!-- %1$d = current step number, %2$d = total number of steps (e.g. "3 of 13") -->
+    <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <!-- Translate "System" the same way as the System settings tab -->
     <!-- Tour prompt dialog shown after first successful patch install -->
 </resources>

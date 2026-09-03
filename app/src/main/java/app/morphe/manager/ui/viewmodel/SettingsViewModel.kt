@@ -12,12 +12,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
+import app.morphe.manager.domain.installer.SessionInstaller
 import app.morphe.manager.domain.manager.PreferencesManager
-import app.morphe.manager.domain.repository.*
+import app.morphe.manager.domain.manager.filterOptionsForTarget
+import app.morphe.manager.domain.manager.loadCopySelectionCandidates as loadCopySelectionCandidatesShared
+import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
+import app.morphe.manager.domain.repository.PatchOptionsRepository
+import app.morphe.manager.domain.repository.PatchSelectionRepository
+import app.morphe.manager.patcher.patch.PatchInfo
+import app.morphe.manager.ui.screen.settings.system.CopyTarget
+import app.morphe.manager.ui.screen.shared.CopySelectionCandidate
 import app.morphe.manager.util.AppDataResolver
 import app.morphe.manager.util.AppDataSource
 import app.morphe.manager.util.syncFcmTopics
+import app.morphe.manager.worker.AutoPatchWorker
 import app.morphe.manager.worker.UpdateCheckInterval
 import app.morphe.manager.worker.UpdateCheckWorker
 import app.morphe.patcher.dex.BytecodeMode
@@ -33,10 +42,8 @@ class SettingsViewModel(
     private val rootInstaller: RootInstaller,
     private val selectionRepository: PatchSelectionRepository,
     private val optionsRepository: PatchOptionsRepository,
-    patchBundleRepository: PatchBundleRepository,
+    private val patchBundleRepository: PatchBundleRepository,
     private val appDataResolver: AppDataResolver,
-    originalApkRepository: OriginalApkRepository,
-    installedAppRepository: InstalledAppRepository,
     private val appContext: Context,
 ) : ViewModel() {
     /** SyMorphe always uses WorkManager and needs no Firebase configuration. */
@@ -137,18 +144,52 @@ class SettingsViewModel(
     fun toggleAllowMeteredUpdates(current: Boolean) = viewModelScope.launch {
         prefs.allowMeteredUpdates.update(!current)
     }
-    val originalApkCount: StateFlow<Int> = originalApkRepository.getAll()
-        .map { it.size }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    val patchedApkCount: StateFlow<Int> = installedAppRepository.getAll()
-        .map { it.size }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+    /** Turns automatic re-patching on or off and schedules or cancels its periodic work. */
+    fun toggleAutoPatch(current: Boolean) = viewModelScope.launch {
+        val enabled = !current
+        prefs.autoPatchEnabled.update(enabled)
+        if (enabled) {
+            AutoPatchWorker.schedule(
+                appContext,
+                prefs.autoPatchInterval.get(),
+                prefs.autoPatchRequiresCharging.get()
+            )
+        } else {
+            AutoPatchWorker.cancel(appContext)
+        }
+    }
 
-    val patchedPackagesCount: StateFlow<Int> =
-        selectionRepository.getPackagesWithSavedSelection()
-            .map { it.size }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+    /** Persists the automatic re-patch interval and reschedules the worker when it is on. */
+    fun selectAutoPatchInterval(interval: UpdateCheckInterval) = viewModelScope.launch {
+        prefs.autoPatchInterval.update(interval)
+        if (prefs.autoPatchEnabled.get()) {
+            AutoPatchWorker.schedule(appContext, interval, prefs.autoPatchRequiresCharging.get())
+        }
+    }
+
+    /** Reschedules automatic re-patching with the new charging constraint. */
+    fun toggleAutoPatchCharging(current: Boolean) = viewModelScope.launch {
+        val requiresCharging = !current
+        prefs.autoPatchRequiresCharging.update(requiresCharging)
+        if (prefs.autoPatchEnabled.get()) {
+            AutoPatchWorker.schedule(appContext, prefs.autoPatchInterval.get(), requiresCharging)
+        }
+    }
+
+    fun toggleAutoPatchInstall(current: Boolean) = viewModelScope.launch {
+        prefs.autoPatchInstall.update(!current)
+    }
+
+    /**
+     * Turns the external batch patch entry point on or off. Disabling it also forgets every
+     * app that was trusted before, so re-enabling starts from a clean allowlist.
+     */
+    fun toggleExternalBatchPatch(current: Boolean) = viewModelScope.launch {
+        val enabled = !current
+        prefs.externalBatchPatchEnabled.update(enabled)
+        if (!enabled) prefs.externalBatchPatchAllowlist.update(emptySet())
+    }
 
     /**
      * True for the duration of the current settings session after the user enables expert mode for the first time.
@@ -212,9 +253,29 @@ class SettingsViewModel(
         prefs.autoInstallWithShizuku.update(enabled)
     }
 
+    fun setAutoUninstallWithShizuku(enabled: Boolean) = viewModelScope.launch {
+        prefs.autoUninstallWithShizuku.update(enabled)
+    }
+
     fun setUseCustomFilePicker(enabled: Boolean) = viewModelScope.launch {
         prefs.useCustomFilePicker.update(enabled)
         prefs.customFilePickerUserConfigured.update(true)
+    }
+
+    fun setUseApkDownloadHelper(enabled: Boolean) = viewModelScope.launch {
+        prefs.useApkDownloadHelper.update(enabled)
+    }
+
+    fun setPatcherCompletionSound(enabled: Boolean) = viewModelScope.launch {
+        prefs.patcherCompletionSound.update(enabled)
+    }
+
+    fun setPatcherSuccessSoundUri(uri: String) = viewModelScope.launch {
+        prefs.patcherSuccessSoundUri.update(uri)
+    }
+
+    fun setPatcherErrorSoundUri(uri: String) = viewModelScope.launch {
+        prefs.patcherErrorSoundUri.update(uri)
     }
 
     /**
@@ -252,6 +313,11 @@ class SettingsViewModel(
     ): InstallerManager.Entry? = installerManager.describeEntry(token, installTarget)
 
     fun openShizukuApp(): Boolean = installerManager.openShizukuApp()
+
+    fun getShizukuStatus(): SessionInstaller.ShizukuStatus =
+        installerManager.shizukuStatus(InstallerManager.InstallTarget.PATCHER)
+
+    fun requestShizukuPermission(): Boolean = installerManager.requestShizukuPermission()
 
     /** Summary flow: packageName → (bundleUid → patchCount) */
     val selectionsSummary: StateFlow<Map<String, Map<Int, Int>>> =
@@ -306,15 +372,15 @@ class SettingsViewModel(
         }
 
     data class PatchDetails(
-        val displayName: String,
         val patchList: List<String>,
         val optionsMap: Map<String, Map<String, Any?>>,
+        /** Stored key to the name its bundle declares, for keys the bundle still knows. */
+        val displayNames: Map<String, String>,
     )
 
-    /** Loads all display data for the patch-details dialog. */
+    /** Loads patch selections and options for one package+bundle. */
     suspend fun loadPatchDetails(packageName: String, bundleUid: Int): PatchDetails =
         withContext(Dispatchers.IO) {
-            val displayName = appDataResolver.resolveAppData(packageName).displayName
             val patchList = selectionRepository.exportForPackageAndBundle(packageName, bundleUid)
             val rawOptions = optionsRepository.exportOptionsForBundle(
                 packageName = packageName,
@@ -323,8 +389,74 @@ class SettingsViewModel(
             val optionsMap = rawOptions.mapValues { (_, patchOptions) ->
                 patchOptions.mapValues { (_, jsonString) -> parseJsonValue(jsonString) }
             }
-            PatchDetails(displayName, patchList, optionsMap)
+            val displayNames = targetBundlePatchInfos(packageName, bundleUid)
+                .mapValues { (_, info) -> info.displayName }
+            PatchDetails(patchList, optionsMap, displayNames)
         }
+
+    /** Assemble picker candidates intersected against the target bundle's patch list. */
+    suspend fun loadCopySelectionCandidates(
+        targetPackageName: String,
+        targetBundleUid: Int
+    ): List<CopySelectionCandidate> = withContext(Dispatchers.IO) {
+        val targetPatchNames = targetBundlePatchNames(targetPackageName, targetBundleUid)
+        loadCopySelectionCandidatesShared(
+            patchSelectionRepository = selectionRepository,
+            patchBundleRepository = patchBundleRepository,
+            appDataResolver = appDataResolver,
+            targetPackageName = targetPackageName,
+            targetBundleUid = targetBundleUid,
+            targetPatchNames = targetPatchNames
+        )
+    }
+
+    /**
+     * Replace the target's saved selection (and matching options) with a filtered copy of
+     * [candidate]'s data. Entries the target bundle no longer defines are silently dropped.
+     */
+    fun copySelectionFromBundle(
+        target: CopyTarget,
+        candidate: CopySelectionCandidate
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        val targetPatches = targetBundlePatchInfos(target.packageName, target.bundleUid)
+        val sourcePatchNames = selectionRepository.exportForPackageAndBundle(
+            candidate.packageName,
+            candidate.bundleUid
+        )
+        val filteredPatches = sourcePatchNames.filter { it in targetPatches }
+        if (filteredPatches.isEmpty()) return@launch
+
+        selectionRepository.importForPackageAndBundle(
+            packageName = target.packageName,
+            bundleUid = target.bundleUid,
+            patches = filteredPatches
+        )
+
+        val sourceOptions = optionsRepository.exportOptionsForBundle(
+            packageName = candidate.packageName,
+            bundleUid = candidate.bundleUid
+        )
+        val filteredOptions = filterOptionsForTarget(sourceOptions, targetPatches)
+        if (filteredOptions.isNotEmpty()) {
+            optionsRepository.importOptionsForBundle(
+                packageName = target.packageName,
+                bundleUid = target.bundleUid,
+                options = filteredOptions
+            )
+        }
+    }
+
+    private suspend fun targetBundlePatchNames(packageName: String, bundleUid: Int): Set<String> =
+        targetBundlePatchInfos(packageName, bundleUid).keys
+
+    /**
+     * Patches the bundle offers for [packageName], keyed the way selections are stored.
+     * Scoped to the app because that is where duplicate names get their suffix.
+     */
+    private suspend fun targetBundlePatchInfos(packageName: String, bundleUid: Int): Map<String, PatchInfo> {
+        val info = patchBundleRepository.allBundlesInfoFlow.first()[bundleUid] ?: return emptyMap()
+        return info.forPackage(packageName, null).patches.associateBy { it.name }
+    }
 
     companion object {
         fun parseJsonValue(jsonString: String): Any? = try {
@@ -357,15 +489,6 @@ class SettingsViewModel(
             }
         } catch (_: Exception) {
             jsonString
-        }
-
-        fun formatOptionValue(value: Any?): String = when (value) {
-            null -> "null"
-            is String -> value
-            is Boolean -> value.toString()
-            is Number -> value.toString()
-            is List<*> -> if (value.isEmpty()) "[]" else value.joinToString(", ")
-            else -> value.toString()
         }
     }
 }

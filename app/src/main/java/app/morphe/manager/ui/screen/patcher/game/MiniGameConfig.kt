@@ -18,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -29,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.ui.screen.shared.GradientCircleIcon
-import app.morphe.manager.ui.screen.shared.MorpheAnimations
-import app.morphe.manager.ui.screen.shared.MorpheCard
-import app.morphe.manager.ui.screen.shared.MorpheDefaults
+import app.morphe.manager.ui.screen.shared.Animations
+import app.morphe.manager.ui.screen.shared.SurfaceCard
+import app.morphe.manager.ui.screen.shared.Defaults
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -47,7 +48,46 @@ enum class MiniGame {
 interface MiniGameStateBase {
     val score: Int
     val highScore: Int
+
+    /** True while a round is being played: started, not over and not paused. */
+    val isPlaying: Boolean
+
+    val isGameOver: Boolean
+    val isPaused: Boolean
+
     fun restart()
+
+    /** Pauses a running round. A game that is over, or not started yet, is left alone. */
+    fun pause()
+
+    fun resume()
+}
+
+/**
+ * A game's running score and the record it is measured against.
+ *
+ * Games keep it instead of two loose counters so the rule for beating a record, and saving it,
+ * lives in one place: a game that can be lost in more than one way cannot commit the score on
+ * some of those paths and forget it on the others.
+ */
+@Stable
+internal class GameScore(initialHighScore: Int, private val onHighScoreUpdated: (Int) -> Unit) {
+    var value by mutableIntStateOf(0)
+
+    var high by mutableIntStateOf(initialHighScore)
+        private set
+
+    /** Takes the round's score as the new record if it beats the old one. Call when a round ends. */
+    fun commit() {
+        if (value > high) {
+            high = value
+            onHighScoreUpdated(high)
+        }
+    }
+
+    fun reset() {
+        value = 0
+    }
 }
 
 /**
@@ -85,15 +125,32 @@ class MiniGameState(prefs: PreferencesManager, scope: CoroutineScope) {
         selectedGame = game
     }
 
+    /** State of the game on screen, or null while the picker is showing. */
+    private val activeState: MiniGameStateBase?
+        get() = when (selectedGame) {
+            MiniGame.GAME_2048 -> game2048
+            MiniGame.FLAPPY -> flappy
+            MiniGame.SNAKE -> snake
+            MiniGame.DINO -> dino
+            null -> null
+        }
+
+    /**
+     * True while a round is being played, which a finished patch run waits for instead of
+     * taking the screen away mid-game.
+     */
+    val isPlaying get() = activeState?.isPlaying == true
+
+    /**
+     * True once a game has been picked, which is what the screen that took its place points the
+     * player back to. Deliberately not narrowed to a paused round: the screen waits for the round
+     * to end before it appears, so by then there is usually nothing paused left to point at.
+     */
+    val hasOpenGame get() = selectedGame != null
+
     /** Pauses the currently selected game if it is active (started and not game-over). */
     fun pauseActiveGame() {
-        when (selectedGame) {
-            MiniGame.GAME_2048 -> game2048.pause()
-            MiniGame.FLAPPY -> flappy.pause()
-            MiniGame.SNAKE -> snake.pause()
-            MiniGame.DINO -> dino.pause()
-            null -> {}
-        }
+        activeState?.pause()
     }
 }
 
@@ -185,9 +242,9 @@ private fun GamePickerGridCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    MorpheCard(
+    SurfaceCard(
         onClick = onClick,
-        cornerRadius = MorpheDefaults.SectionCornerRadius,
+        cornerRadius = Defaults.SectionCornerRadius,
         modifier = modifier
     ) {
         Column(
@@ -228,7 +285,7 @@ internal fun MiniGameContent(
 ) {
     AnimatedContent(
         targetState = state.selectedGame,
-        transitionSpec = MorpheAnimations.fadeCrossfade(200),
+        transitionSpec = Animations.fadeCrossfade(200),
         modifier = Modifier.fillMaxSize(),
         label = "game_picker_game"
     ) { selected ->
@@ -262,8 +319,28 @@ internal fun MiniGameContent(
                                 modifier = Modifier
                                     .size(size)
                                     .align(Alignment.Center)
+                                    // The canvases round their own corners, and the overlays
+                                    // drawn over them have to stop at the same edge
+                                    .clip(RoundedCornerShape(Defaults.CompactCornerRadius))
                             ) {
                                 GameCanvasSlot(selected = selected, state = state)
+
+                                GameOverHaptic { activeState.isGameOver }
+
+                                if (activeState.isGameOver) {
+                                    GameOverOverlay(
+                                        score = activeState.score,
+                                        highScore = activeState.highScore,
+                                        onRestart = activeState::restart,
+                                        modifier = Modifier.matchParentSize()
+                                    )
+                                }
+                                if (activeState.isPaused) {
+                                    GamePauseOverlay(
+                                        onResume = activeState::resume,
+                                        modifier = Modifier.matchParentSize()
+                                    )
+                                }
                             }
                         }
                     }
@@ -317,10 +394,18 @@ internal fun GameScoreRow(
         }
         Spacer(Modifier.weight(1f))
         GameChip(onClick = onRestart) {
-            Icon(Icons.Outlined.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
+            Icon(
+                imageVector = Icons.Outlined.Refresh,
+                contentDescription = null,
+                modifier = Modifier.size(Defaults.IconSizeSmall)
+            )
         }
         GameChip(onClick = onChangeGame) {
-            Icon(Icons.Outlined.SportsEsports, contentDescription = null, modifier = Modifier.size(20.dp))
+            Icon(
+                imageVector = Icons.Outlined.SportsEsports,
+                contentDescription = null,
+                modifier = Modifier.size(Defaults.IconSizeSmall)
+            )
         }
     }
 }

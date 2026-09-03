@@ -3,6 +3,7 @@ package app.morphe.manager.domain.manager
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import app.morphe.manager.BuildConfig
 import app.morphe.manager.domain.manager.base.BasePreferencesManager
 import app.morphe.manager.domain.manager.base.IntPreference
@@ -13,12 +14,17 @@ import app.morphe.manager.patcher.runtime.PROCESS_RUNTIME_MEMORY_NOT_SET
 import app.morphe.manager.patcher.runtime.calculateAdaptiveMemoryLimit
 import app.morphe.manager.ui.screen.shared.BackgroundType
 import app.morphe.manager.ui.theme.Theme
+import app.morphe.manager.ui.theme.ThemeStyle
+import app.morphe.manager.ui.theme.UI_SCALE_DEFAULT
+import app.morphe.manager.ui.theme.coerceToUiScale
 import app.morphe.manager.ui.viewmodel.BundleSnapshot
 import app.morphe.manager.ui.viewmodel.RandomInterval
+import app.morphe.manager.util.AppCardColorMode
 import app.morphe.manager.util.isArmV7
 import app.morphe.manager.util.tag
 import app.morphe.manager.worker.UpdateCheckInterval
 import app.morphe.patcher.dex.BytecodeMode
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 
@@ -31,14 +37,23 @@ class PreferencesManager(
     val enableBackgroundParallax = booleanPreference("enable_background_parallax", true)
     val randomBackgroundInterval = enumPreference("random_background_interval", RandomInterval.ON_LAUNCH)
 
-    val dynamicColor = booleanPreference("dynamic_color", true)
+    /** Whether the hidden Matrix background has been found and taken. */
+    val matrixBackgroundUnlocked = booleanPreference("matrix_background_unlocked", false)
+
     val pureBlackTheme = booleanPreference("pure_black_theme", false)
     val showGreetingPhrases = booleanPreference("show_greeting_phrases", true)
-    val themePresetSelectionEnabled = booleanPreference("theme_preset_selection_enabled", true)
-    val themePresetSelectionName = stringPreference("theme_preset_selection_name", "DEFAULT")
     val customAccentColor = stringPreference("custom_accent_color", "")
     val customThemeColor = stringPreference("custom_theme_color", "")
+    val appCardColorMode = enumPreference("app_card_color_mode", AppCardColorMode.DEFAULT)
+    val customAppCardColors = stringPreference("custom_app_card_colors", "")
     val theme = enumPreference("theme", Theme.SYSTEM)
+    val themeStyle = enumPreference("theme_style", ThemeStyle.MORPHE)
+
+    /** Display scale of the whole interface, applied on top of the system screen zoom. */
+    val uiScale = floatPreference("ui_scale", UI_SCALE_DEFAULT)
+
+    /** Guards the one-shot migration that folds the retired `dynamic_color` toggle into [themeStyle]. */
+    private val themeStyleMigrated = booleanPreference("theme_style_migrated_v1", false)
 
     val appLanguage = stringPreference("app_language", "system")
 
@@ -57,6 +72,27 @@ class PreferencesManager(
     /**  How often the background update check should run. */
     val updateCheckInterval = enumPreference("update_check_interval", UpdateCheckInterval.HOURLY)
 
+    /** Whether patched apps are re-patched automatically when their patch bundle changes. */
+    val autoPatchEnabled = booleanPreference("auto_patch_enabled", false)
+
+    /** How often the automatic re-patch check runs. */
+    val autoPatchInterval = enumPreference("auto_patch_interval", UpdateCheckInterval.WEEKLY)
+
+    /** Restricts automatic re-patching to a charging device, patching is CPU and RAM heavy. */
+    val autoPatchRequiresCharging = booleanPreference("auto_patch_requires_charging", true)
+
+    /**
+     * Installs automatically re-patched apps without asking. Only possible with an installer
+     * that works unattended, otherwise the run stops after saving the APKs.
+     */
+    val autoPatchInstall = booleanPreference("auto_patch_install", false)
+
+    /** Whether other apps may start a batch patch run through an intent. */
+    val externalBatchPatchEnabled = booleanPreference("external_batch_patch_enabled", false)
+
+    /** Packages allowed to start a batch patch run without a confirmation dialog. */
+    val externalBatchPatchAllowlist = stringSetPreference("external_batch_patch_allowlist", emptySet())
+
     /** Tracks whether the POST_NOTIFICATIONS runtime permission dialog has already been shown at least once on first launch (Android 13+). */
     val notificationPermissionRequested = booleanPreference("notification_permission_requested", false)
 
@@ -67,10 +103,7 @@ class PreferencesManager(
 
     val stripUnusedNativeLibs = booleanPreference("strip_unused_native_libs", false)
 
-    /**
-     * Bytecode processing mode for the patcher.
-     * Defaults to [BytecodeMode.STRIP_FAST].
-     */
+    /** Bytecode processing mode for the patcher. Defaults to [BytecodeMode.STRIP_FAST]. */
     val bytecodeModePreference = enumPreference(
         "bytecode_mode",
         BytecodeMode.STRIP_FAST
@@ -82,6 +115,7 @@ class PreferencesManager(
     val installerCustomComponents = stringSetPreference("installer_custom_components", emptySet())
     val installerHiddenComponents = stringSetPreference("installer_hidden_components", emptySet())
     val autoInstallWithShizuku = booleanPreference("auto_install_with_shizuku", false)
+    val autoUninstallWithShizuku = booleanPreference("auto_uninstall_with_shizuku", false)
 
     val useProcessRuntime = booleanPreference(
         "process_runtime", // Old key was 'use_process_runtime' and may have the wrong default for some devices.
@@ -111,12 +145,34 @@ class PreferencesManager(
     val disablePatchVersionCompatCheck = booleanPreference("disable_patch_version_compatibility_check", false)
 
     val useCustomFilePicker = booleanPreference("use_custom_file_picker", false)
+
+    /** Whether an installed third-party APK download helper may be offered. */
+    val useApkDownloadHelper = booleanPreference("use_apk_download_helper", false)
+
     val lastFilePickerPath = stringPreference("last_file_picker_path", "")
     val filePickerSortMode = stringPreference("file_picker_sort_mode", "NAME_ASC")
     val filePickerShowHiddenFiles = booleanPreference("file_picker_show_hidden_files", false)
 
-    // Patch source list ordering mode.
+    /** Persist the pre-patch APK so it can be reused for repatching without asking the user to reselect it. */
+    val saveOriginalApks = booleanPreference("save_original_apks", true)
+
+    /** Persist the post-patch APK so it can be exported or reinstalled after the patcher screen is closed. */
+    val savePatchedApks = booleanPreference("save_patched_apks", true)
+
+    /** Play a distinct notification sound when patching finishes. */
+    val patcherCompletionSound = booleanPreference("patcher_completion_sound", true)
+
+    /** URI of a user-picked success tone. Empty falls back to the bundled `R.raw.success`. */
+    val patcherSuccessSoundUri = stringPreference("patcher_success_sound_uri", "")
+
+    /** URI of a user-picked failure tone. Empty falls back to the bundled `R.raw.error`. */
+    val patcherErrorSoundUri = stringPreference("patcher_error_sound_uri", "")
+
+    /** Patch source list ordering mode */
     val sourceBundleSortMode = stringPreference("source_bundle_sort_mode", SourceBundleSortMode.MANUAL.name)
+
+    /** On-disk cache of the remote source blocklist (JSON), so offline launches still enforce it. */
+    val blocklistCache = stringPreference("blocklist_cache", "")
 
     /** Tracks whether the user has explicitly toggled the custom file picker preference. */
     val customFilePickerUserConfigured = booleanPreference("custom_file_picker_user_configured", false)
@@ -126,6 +182,9 @@ class PreferencesManager(
     val miniGameFlappyHighScore = intPreference("mini_game_flappy_high_score", 0)
     val miniGameSnakeHighScore  = intPreference("mini_game_snake_high_score", 0)
     val miniGameDinoHighScore   = intPreference("mini_game_dino_high_score", 0)
+
+    /** Set once the user has found the way back to a mini-game, which retires the hint for it. */
+    val backToGameHintSeen = booleanPreference("back_to_game_hint_seen", false)
 
     /**  Hidden preference to track if prerelease was auto-enabled. */
     private val prereleaseAutoEnabled = booleanPreference("prerelease_auto_enabled", false)
@@ -147,6 +206,17 @@ class PreferencesManager(
                 patcherProcessMemoryLimit.update(adaptive)
             }
 
+            // Existing installs stored their Material You preference in `dynamic_color`;
+            // fold it into [themeStyle] once so the new selector reflects the user's choice
+            if (!themeStyleMigrated.get()) {
+                val raw = dataStore.data.first()
+                val legacyDynamicColor = raw[booleanPreferencesKey("dynamic_color")] ?: true
+                if (legacyDynamicColor && themeStyle.get() == ThemeStyle.MORPHE) {
+                    themeStyle.update(ThemeStyle.MATERIAL_YOU)
+                }
+                themeStyleMigrated.update(true)
+            }
+
             // Auto-enable prereleases for dev versions
             if (isDevVersion() && !prereleaseAutoEnabled.get()) {
                 Log.d(tag, "Dev version detected (${BuildConfig.VERSION_NAME}), auto-enabling prereleases")
@@ -165,19 +235,17 @@ class PreferencesManager(
         val pureBlackTheme: Boolean? = null,
         val customAccentColor: String? = null,
         val customThemeColor: String? = null,
-        val themePresetSelectionName: String? = null,
-        val themePresetSelectionEnabled: Boolean? = null,
+        val appCardColorMode: AppCardColorMode? = null,
+        val customAppCardColors: String? = null,
         val stripUnusedNativeLibs: Boolean? = null,
         val theme: Theme? = null,
+        val themeStyle: ThemeStyle? = null,
+        val uiScale: Float? = null,
         val appLanguage: String? = null,
-        val api: String? = null,
         val gitHubPat: String? = null,
         val includeGitHubPatInExports: Boolean? = null,
         val useProcessRuntime: Boolean? = null,
         val patcherProcessMemoryLimit: Int? = null,
-        val autoCollapsePatcherSteps: Boolean? = null,
-        val officialBundleRemoved: Boolean? = null,
-        val officialBundleCustomDisplayName: String? = null,
         val allowMeteredUpdates: Boolean? = null,
         val installerPrimary: String? = null,
         val installerCustomComponents: Set<String>? = null,
@@ -186,46 +254,51 @@ class PreferencesManager(
         val keystorePass: String? = null,
         val keystorePassword: String? = null,
         val firstLaunch: Boolean? = null,
-        val showManagerUpdateDialogOnLaunch: Boolean? = null,
         val useManagerPrereleases: Boolean? = null,
+        val officialBundlePrerelease: Boolean? = null,
+        val officialBundleExperimentalVersions: Boolean? = null,
         val bundlePrereleasesEnabled: Set<String>? = null,
         val bundleExperimentalVersionsEnabled: Set<String>? = null,
         val disablePatchVersionCompatCheck: Boolean? = null,
-        val disableSelectionWarning: Boolean? = null,
-        val disableUniversalPatchCheck: Boolean? = null,
-        val suggestedVersionSafeguard: Boolean? = null,
-        val disablePatchSelectionConfirmations: Boolean? = null,
-        val collapsePatchActionsOnSelection: Boolean? = null,
-        val patchSelectionFilterFlags: Int? = null,
-        val patchSelectionSortAlphabetical: Boolean? = null,
-        val patchSelectionSortSettingsMode: String? = null,
-        val patchSelectionActionOrder: String? = null,
-        val patchSelectionHiddenActions: Set<String>? = null,
-        val acknowledgedDownloaderPlugins: Set<String>? = null,
-        val autoSaveDownloaderApks: Boolean? = null,
         val showGreetingPhrases: Boolean? = null,
         val backgroundType: BackgroundType? = null,
         val randomBackgroundInterval: RandomInterval? = null,
+        val matrixBackgroundUnlocked: Boolean? = null,
         val useExpertMode: Boolean? = null,
         val updateCheckInterval: UpdateCheckInterval? = null,
+        val autoPatchEnabled: Boolean? = null,
+        val autoPatchInterval: UpdateCheckInterval? = null,
+        val autoPatchRequiresCharging: Boolean? = null,
+        val autoPatchInstall: Boolean? = null,
+        val externalBatchPatchEnabled: Boolean? = null,
+        val externalBatchPatchAllowlist: Set<String>? = null,
         val customBundles: List<BundleSnapshot>? = null,
         val bytecodeModePreference: BytecodeMode? = null,
         val filePickerSortMode: String? = null,
         val filePickerShowHiddenFiles: Boolean? = null,
         val useCustomFilePicker: Boolean? = null,
         val customFilePickerUserConfigured: Boolean? = null,
-        val sourceBundleSortMode: String? = null
+        val useApkDownloadHelper: Boolean? = null,
+        val sourceBundleSortMode: String? = null,
+        val saveOriginalApks: Boolean? = null,
+        val savePatchedApks: Boolean? = null,
+        val patcherCompletionSound: Boolean? = null,
+        val patcherSuccessSoundUri: String? = null,
+        val patcherErrorSoundUri: String? = null,
+        val homeAppButtons: HomeAppButtonSnapshot? = null
     )
 
     suspend fun exportSettings() = SettingsSnapshot(
-        dynamicColor = dynamicColor.get(),
+        dynamicColor = themeStyle.get() == ThemeStyle.MATERIAL_YOU,
         pureBlackTheme = pureBlackTheme.get(),
         customAccentColor = customAccentColor.get(),
         customThemeColor = customThemeColor.get(),
-        themePresetSelectionName = themePresetSelectionName.get(),
-        themePresetSelectionEnabled = themePresetSelectionEnabled.get(),
+        appCardColorMode = appCardColorMode.get(),
+        customAppCardColors = customAppCardColors.get(),
         stripUnusedNativeLibs = stripUnusedNativeLibs.get(),
         theme = theme.get(),
+        themeStyle = themeStyle.get(),
+        uiScale = uiScale.get(),
         appLanguage = appLanguage.get(),
         gitHubPat = gitHubPat.get().takeIf { includeGitHubPatInExports.get() },
         includeGitHubPatInExports = includeGitHubPatInExports.get(),
@@ -240,31 +313,53 @@ class PreferencesManager(
         keystorePassword = keystorePassword.get().takeIf { it.isNotEmpty() },
         firstLaunch = firstLaunch.get(),
         useManagerPrereleases = useManagerPrereleases.get(),
-        bundlePrereleasesEnabled = bundlePrereleasesEnabled.get(),
-        bundleExperimentalVersionsEnabled = bundleExperimentalVersionsEnabled.get(),
+        // Custom sources carry prerelease/experimental toggles in customBundles, and the official
+        // source (UID 0) gets readable booleans below - so raw UID sets are no longer exported
+        officialBundlePrerelease = bundlePrereleasesEnabled.get().contains(DEFAULT_SOURCE_UID.toString()),
+        officialBundleExperimentalVersions =
+            bundleExperimentalVersionsEnabled.get().contains(DEFAULT_SOURCE_UID.toString()),
         disablePatchVersionCompatCheck = disablePatchVersionCompatCheck.get(),
         showGreetingPhrases = showGreetingPhrases.get(),
         backgroundType = backgroundType.get(),
         randomBackgroundInterval = randomBackgroundInterval.get(),
+        matrixBackgroundUnlocked = matrixBackgroundUnlocked.get(),
         useExpertMode = useExpertMode.get(),
         updateCheckInterval = updateCheckInterval.get(),
+        autoPatchEnabled = autoPatchEnabled.get(),
+        autoPatchInterval = autoPatchInterval.get(),
+        autoPatchRequiresCharging = autoPatchRequiresCharging.get(),
+        autoPatchInstall = autoPatchInstall.get(),
+        externalBatchPatchEnabled = externalBatchPatchEnabled.get(),
+        externalBatchPatchAllowlist = externalBatchPatchAllowlist.get(),
         bytecodeModePreference = bytecodeModePreference.get(),
         filePickerSortMode = filePickerSortMode.get(),
         filePickerShowHiddenFiles = filePickerShowHiddenFiles.get(),
         useCustomFilePicker = useCustomFilePicker.get(),
         customFilePickerUserConfigured = customFilePickerUserConfigured.get(),
-        sourceBundleSortMode = sourceBundleSortMode.get()
+        useApkDownloadHelper = useApkDownloadHelper.get(),
+        sourceBundleSortMode = sourceBundleSortMode.get(),
+        saveOriginalApks = saveOriginalApks.get(),
+        savePatchedApks = savePatchedApks.get(),
+        patcherCompletionSound = patcherCompletionSound.get(),
+        patcherSuccessSoundUri = patcherSuccessSoundUri.get(),
+        patcherErrorSoundUri = patcherErrorSoundUri.get()
     )
 
     suspend fun importSettings(snapshot: SettingsSnapshot) = edit {
-        snapshot.dynamicColor?.let { dynamicColor.value = it }
         snapshot.pureBlackTheme?.let { pureBlackTheme.value = it }
         snapshot.customAccentColor?.let { customAccentColor.value = it }
         snapshot.customThemeColor?.let { customThemeColor.value = it }
-        snapshot.themePresetSelectionName?.let { themePresetSelectionName.value = it }
-        snapshot.themePresetSelectionEnabled?.let { themePresetSelectionEnabled.value = it }
+        snapshot.appCardColorMode?.let { appCardColorMode.value = it }
+        snapshot.customAppCardColors?.let { customAppCardColors.value = it }
         snapshot.stripUnusedNativeLibs?.let { stripUnusedNativeLibs.value = it }
         snapshot.theme?.let { theme.value = it }
+        snapshot.themeStyle?.let { themeStyle.value = it }
+            ?: run {
+                // Pre-migration snapshots only carry `dynamicColor`; treat it as the missing style
+                if (snapshot.dynamicColor == true) themeStyle.value = ThemeStyle.MATERIAL_YOU
+            }
+        // Snapped rather than taken as-is, so a scale from a build with a different range still fits
+        snapshot.uiScale?.let { uiScale.value = it.coerceToUiScale() }
         snapshot.appLanguage?.let { appLanguage.value = it }
         snapshot.gitHubPat?.let { gitHubPat.value = it }
         snapshot.includeGitHubPatInExports?.let { includeGitHubPatInExports.value = it }
@@ -279,26 +374,52 @@ class PreferencesManager(
         snapshot.keystorePassword?.let { keystorePassword.value = it }
         snapshot.firstLaunch?.let { firstLaunch.value = it }
         snapshot.useManagerPrereleases?.let { useManagerPrereleases.value = it }
-        snapshot.bundlePrereleasesEnabled?.let { bundlePrereleasesEnabled.value = it }
-        snapshot.bundleExperimentalVersionsEnabled?.let { bundleExperimentalVersionsEnabled.value = it }
+        // Exports carry the official source's toggles as readable booleans; older ones only have
+        // the UID sets, where the official source is the one UID that is stable across devices
+        val officialUid = DEFAULT_SOURCE_UID.toString()
+        val officialPrerelease = snapshot.officialBundlePrerelease
+            ?: snapshot.bundlePrereleasesEnabled?.contains(officialUid)
+        val officialExperimental = snapshot.officialBundleExperimentalVersions
+            ?: snapshot.bundleExperimentalVersionsEnabled?.contains(officialUid)
+        officialPrerelease?.let { enabled ->
+            val current = bundlePrereleasesEnabled.value.toMutableSet()
+            if (enabled) current.add(officialUid) else current.remove(officialUid)
+            bundlePrereleasesEnabled.value = current
+        }
+        officialExperimental?.let { enabled ->
+            val current = bundleExperimentalVersionsEnabled.value.toMutableSet()
+            if (enabled) current.add(officialUid) else current.remove(officialUid)
+            bundleExperimentalVersionsEnabled.value = current
+        }
         snapshot.disablePatchVersionCompatCheck?.let { disablePatchVersionCompatCheck.value = it }
         snapshot.showGreetingPhrases?.let { showGreetingPhrases.value = it }
         snapshot.backgroundType?.let { backgroundType.value = it }
         snapshot.randomBackgroundInterval?.let { randomBackgroundInterval.value = it }
+        snapshot.matrixBackgroundUnlocked?.let { matrixBackgroundUnlocked.value = it }
         snapshot.useExpertMode?.let { useExpertMode.value = it }
         snapshot.updateCheckInterval?.let { updateCheckInterval.value = it }
+        snapshot.autoPatchEnabled?.let { autoPatchEnabled.value = it }
+        snapshot.autoPatchInterval?.let { autoPatchInterval.value = it }
+        snapshot.autoPatchRequiresCharging?.let { autoPatchRequiresCharging.value = it }
+        snapshot.autoPatchInstall?.let { autoPatchInstall.value = it }
+        snapshot.externalBatchPatchEnabled?.let { externalBatchPatchEnabled.value = it }
+        snapshot.externalBatchPatchAllowlist?.let { externalBatchPatchAllowlist.value = it }
         snapshot.bytecodeModePreference?.let { bytecodeModePreference.value = it }
         snapshot.filePickerSortMode?.let { filePickerSortMode.value = it }
         snapshot.filePickerShowHiddenFiles?.let { filePickerShowHiddenFiles.value = it }
         snapshot.useCustomFilePicker?.let { useCustomFilePicker.value = it }
         snapshot.customFilePickerUserConfigured?.let { customFilePickerUserConfigured.value = it }
+        snapshot.useApkDownloadHelper?.let { useApkDownloadHelper.value = it }
         snapshot.sourceBundleSortMode?.let { sourceBundleSortMode.value = it }
+        snapshot.saveOriginalApks?.let { saveOriginalApks.value = it }
+        snapshot.savePatchedApks?.let { savePatchedApks.value = it }
+        snapshot.patcherCompletionSound?.let { patcherCompletionSound.value = it }
+        snapshot.patcherSuccessSoundUri?.let { patcherSuccessSoundUri.value = it }
+        snapshot.patcherErrorSoundUri?.let { patcherErrorSoundUri.value = it }
     }
 
     companion object {
-        /**
-         * Check if current version is a development/prerelease version
-         */
+        /** Check if current version is a development/prerelease version. */
         fun isDevVersion(): Boolean {
             return BuildConfig.VERSION_NAME.contains("-dev", ignoreCase = true)
         }
@@ -308,7 +429,7 @@ class PreferencesManager(
 object InstallerPreferenceTokens {
     const val INTERNAL = ":internal:"
     const val SYSTEM = ":system:"
-    const val ROOT = ":root:" // Legacy value, mapped to AUTO_SAVED.
+    const val ROOT = ":root:" // Legacy value, mapped to AUTO_SAVED
     const val AUTO_SAVED = ":auto_saved:"
     const val PLAY_STORE = ":play_store:"
     const val ROOT_PLAY_STORE = ":root_play_store:"

@@ -4,7 +4,10 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -12,83 +15,103 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import app.morphe.manager.R
+import app.morphe.manager.util.AppCardColorDefaults
+import app.morphe.manager.util.AppCardColorMode
+import app.morphe.manager.util.AppCardColorResolver
+import app.morphe.manager.util.AppCardColorValues
 import app.morphe.manager.util.toColorOrNull
 import kotlinx.serialization.Serializable
 
 private val DarkColorScheme = darkColorScheme(
-    primary = rv_theme_dark_primary,
-    onPrimary = rv_theme_dark_onPrimary,
-    primaryContainer = rv_theme_dark_primaryContainer,
-    onPrimaryContainer = rv_theme_dark_onPrimaryContainer,
-    secondary = rv_theme_dark_secondary,
-    onSecondary = rv_theme_dark_onSecondary,
-    secondaryContainer = rv_theme_dark_secondaryContainer,
-    onSecondaryContainer = rv_theme_dark_onSecondaryContainer,
-    tertiary = rv_theme_dark_tertiary,
-    onTertiary = rv_theme_dark_onTertiary,
-    tertiaryContainer = rv_theme_dark_tertiaryContainer,
-    onTertiaryContainer = rv_theme_dark_onTertiaryContainer,
-    error = rv_theme_dark_error,
-    errorContainer = rv_theme_dark_errorContainer,
-    onError = rv_theme_dark_onError,
-    onErrorContainer = rv_theme_dark_onErrorContainer,
-    background = rv_theme_dark_background,
-    onBackground = rv_theme_dark_onBackground,
-    surface = rv_theme_dark_surface,
-    onSurface = rv_theme_dark_onSurface,
-    surfaceVariant = rv_theme_dark_surfaceVariant,
-    onSurfaceVariant = rv_theme_dark_onSurfaceVariant,
-    outline = rv_theme_dark_outline,
-    inverseOnSurface = rv_theme_dark_inverseOnSurface,
-    inverseSurface = rv_theme_dark_inverseSurface,
-    inversePrimary = rv_theme_dark_inversePrimary,
-    surfaceTint = rv_theme_dark_surfaceTint,
-    outlineVariant = rv_theme_dark_outlineVariant,
-    scrim = rv_theme_dark_scrim,
+    primary = theme_dark_primary,
+    onPrimary = theme_dark_onPrimary,
+    primaryContainer = theme_dark_primaryContainer,
+    onPrimaryContainer = theme_dark_onPrimaryContainer,
+    secondary = theme_dark_secondary,
+    onSecondary = theme_dark_onSecondary,
+    secondaryContainer = theme_dark_secondaryContainer,
+    onSecondaryContainer = theme_dark_onSecondaryContainer,
+    tertiary = theme_dark_tertiary,
+    onTertiary = theme_dark_onTertiary,
+    tertiaryContainer = theme_dark_tertiaryContainer,
+    onTertiaryContainer = theme_dark_onTertiaryContainer,
+    error = theme_dark_error,
+    errorContainer = theme_dark_errorContainer,
+    onError = theme_dark_onError,
+    onErrorContainer = theme_dark_onErrorContainer,
+    background = theme_dark_background,
+    onBackground = theme_dark_onBackground,
+    surface = theme_dark_surface,
+    onSurface = theme_dark_onSurface,
+    surfaceVariant = theme_dark_surfaceVariant,
+    onSurfaceVariant = theme_dark_onSurfaceVariant,
+    outline = theme_dark_outline,
+    inverseOnSurface = theme_dark_inverseOnSurface,
+    inverseSurface = theme_dark_inverseSurface,
+    inversePrimary = theme_dark_inversePrimary,
+    surfaceTint = theme_dark_surfaceTint,
+    outlineVariant = theme_dark_outlineVariant,
+    scrim = theme_dark_scrim,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = rv_theme_light_primary,
-    onPrimary = rv_theme_light_onPrimary,
-    primaryContainer = rv_theme_light_primaryContainer,
-    onPrimaryContainer = rv_theme_light_onPrimaryContainer,
-    secondary = rv_theme_light_secondary,
-    onSecondary = rv_theme_light_onSecondary,
-    secondaryContainer = rv_theme_light_secondaryContainer,
-    onSecondaryContainer = rv_theme_light_onSecondaryContainer,
-    tertiary = rv_theme_light_tertiary,
-    onTertiary = rv_theme_light_onTertiary,
-    tertiaryContainer = rv_theme_light_tertiaryContainer,
-    onTertiaryContainer = rv_theme_light_onTertiaryContainer,
-    error = rv_theme_light_error,
-    errorContainer = rv_theme_light_errorContainer,
-    onError = rv_theme_light_onError,
-    onErrorContainer = rv_theme_light_onErrorContainer,
-    background = rv_theme_light_background,
-    onBackground = rv_theme_light_onBackground,
-    surface = rv_theme_light_surface,
-    onSurface = rv_theme_light_onSurface,
-    surfaceVariant = rv_theme_light_surfaceVariant,
-    onSurfaceVariant = rv_theme_light_onSurfaceVariant,
-    outline = rv_theme_light_outline,
-    inverseOnSurface = rv_theme_light_inverseOnSurface,
-    inverseSurface = rv_theme_light_inverseSurface,
-    inversePrimary = rv_theme_light_inversePrimary,
-    surfaceTint = rv_theme_light_surfaceTint,
-    outlineVariant = rv_theme_light_outlineVariant,
-    scrim = rv_theme_light_scrim,
+    primary = theme_light_primary,
+    onPrimary = theme_light_onPrimary,
+    primaryContainer = theme_light_primaryContainer,
+    onPrimaryContainer = theme_light_onPrimaryContainer,
+    secondary = theme_light_secondary,
+    onSecondary = theme_light_onSecondary,
+    secondaryContainer = theme_light_secondaryContainer,
+    onSecondaryContainer = theme_light_onSecondaryContainer,
+    tertiary = theme_light_tertiary,
+    onTertiary = theme_light_onTertiary,
+    tertiaryContainer = theme_light_tertiaryContainer,
+    onTertiaryContainer = theme_light_onTertiaryContainer,
+    error = theme_light_error,
+    errorContainer = theme_light_errorContainer,
+    onError = theme_light_onError,
+    onErrorContainer = theme_light_onErrorContainer,
+    background = theme_light_background,
+    onBackground = theme_light_onBackground,
+    surface = theme_light_surface,
+    onSurface = theme_light_onSurface,
+    surfaceVariant = theme_light_surfaceVariant,
+    onSurfaceVariant = theme_light_onSurfaceVariant,
+    outline = theme_light_outline,
+    inverseOnSurface = theme_light_inverseOnSurface,
+    inverseSurface = theme_light_inverseSurface,
+    inversePrimary = theme_light_inversePrimary,
+    surfaceTint = theme_light_surfaceTint,
+    outlineVariant = theme_light_outlineVariant,
+    scrim = theme_light_scrim,
 )
+
+/**
+ * Resolves home app card colors from the appearance settings, or `null` when cards keep the
+ * per-app colors declared by their bundle.
+ */
+val LocalAppCardColorResolver = staticCompositionLocalOf<AppCardColorResolver?> { null }
 
 @Composable
 fun ManagerTheme(
     darkTheme: Boolean,
     dynamicColor: Boolean,
     pureBlackTheme: Boolean,
+    monochromeTheme: Boolean = false,
     accentColorHex: String? = null,
     themeColorHex: String? = null,
+    appCardColorMode: AppCardColorMode = AppCardColorMode.DEFAULT,
+    appCardColorValues: AppCardColorValues = AppCardColorValues(),
     content: @Composable () -> Unit
 ) {
     val baseScheme = when {
+        monochromeTheme -> {
+            monochromeColorScheme(
+                base = if (darkTheme) DarkColorScheme else LightColorScheme,
+                darkTheme = darkTheme
+            )
+        }
+
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -111,9 +134,13 @@ fun ManagerTheme(
         applyCustomAccent(baseScheme, it, darkTheme)
     } ?: baseScheme
 
-    val finalScheme = themeColorHex.toColorOrNull()?.let {
-        applyCustomThemeColor(schemeWithAccent, it, darkTheme)
-    } ?: schemeWithAccent
+    val finalScheme = if (monochromeTheme) {
+        schemeWithAccent
+    } else {
+        themeColorHex.toColorOrNull()?.let {
+            applyCustomThemeColor(schemeWithAccent, it, darkTheme)
+        } ?: schemeWithAccent
+    }
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -131,11 +158,37 @@ fun ManagerTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = finalScheme,
-        typography = Typography,
-        content = content
-    )
+    // Monochrome cards draw on neutral theme surfaces, so custom card colors never apply there.
+    // Remembered because a new resolver instance would invalidate every card that reads it
+    val appCardColorResolver = remember(
+        monochromeTheme,
+        appCardColorMode,
+        accentColorHex,
+        finalScheme.primary,
+        appCardColorValues
+    ) {
+        if (monochromeTheme) {
+            null
+        } else {
+            AppCardColorDefaults.resolver(
+                mode = appCardColorMode,
+                accentHex = accentColorHex.orEmpty(),
+                accentFallback = finalScheme.primary,
+                values = appCardColorValues
+            )
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalMonochromeTheme provides monochromeTheme,
+        LocalAppCardColorResolver provides appCardColorResolver
+    ) {
+        MaterialTheme(
+            colorScheme = finalScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
 
 @Serializable
@@ -144,6 +197,21 @@ enum class Theme(val displayName: Int) {
     LIGHT(R.string.settings_appearance_light),
     DARK(R.string.settings_appearance_dark);
 }
+
+@Serializable
+enum class ThemeStyle(val displayName: Int) {
+    MORPHE(R.string.settings_appearance_style_morphe),
+    MATERIAL_YOU(R.string.settings_appearance_dynamic),
+    MONOCHROME(R.string.settings_appearance_monochrome);
+}
+
+/**
+ * Downgrades [ThemeStyle.MATERIAL_YOU] to [ThemeStyle.MORPHE] on devices that
+ * do not expose the platform dynamic color palette.
+ */
+fun resolveThemeStyle(storedStyle: ThemeStyle, supportsDynamicColor: Boolean): ThemeStyle =
+    if (storedStyle == ThemeStyle.MATERIAL_YOU && !supportsDynamicColor) ThemeStyle.MORPHE
+    else storedStyle
 
 private fun applyCustomAccent(
     colorScheme: ColorScheme,

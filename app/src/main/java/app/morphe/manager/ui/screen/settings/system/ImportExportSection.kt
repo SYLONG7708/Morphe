@@ -36,51 +36,49 @@ fun ImportExportSection(
     // Extract strings to avoid LocalContext issues
     val keystoreUnavailable = stringResource(R.string.settings_system_export_keystore_unavailable)
 
-    Column(verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)) {
+    Column(verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)) {
         SectionTitle(
             text = stringResource(R.string.settings_system_import_export),
             icon = Icons.Outlined.SwapHoriz
         )
 
-        SectionCard {
-            Column {
-                // Keystore
-                ImportExportRow(
-                    leadingContent = { MorpheIcon(icon = Icons.Outlined.Key) },
-                    title = stringResource(R.string.settings_system_keystore),
-                    description = stringResource(R.string.settings_system_import_keystore_description),
-                    onImport = onImportKeystore,
-                    onExport = {
-                        if (!importExportViewModel.canExport()) {
-                            context.toast(keystoreUnavailable)
-                        } else {
-                            onExportKeystore()
-                        }
+        SettingsGroup {
+            // Keystore
+            ImportExportRow(
+                leadingContent = { ThemedIcon(icon = Icons.Outlined.Key) },
+                title = stringResource(R.string.settings_system_keystore),
+                description = stringResource(R.string.settings_system_import_keystore_description),
+                onImport = onImportKeystore,
+                onExport = {
+                    if (!importExportViewModel.canExport()) {
+                        context.toast(keystoreUnavailable)
+                    } else {
+                        onExportKeystore()
                     }
-                )
+                }
+            )
 
-                MorpheSettingsDivider()
+            SettingsDivider()
 
-                // Manager Settings
-                ImportExportRow(
-                    leadingContent = { MorpheIcon(icon = Icons.Outlined.Settings) },
-                    title = stringResource(R.string.settings_system_morphe_settings),
-                    description = stringResource(R.string.settings_system_import_manager_settings_description),
-                    onImport = onImportSettings,
-                    onExport = onExportSettings
-                )
+            // Manager Settings
+            ImportExportRow(
+                leadingContent = { ThemedIcon(icon = Icons.Outlined.Settings) },
+                title = stringResource(R.string.settings_system_morphe_settings),
+                description = stringResource(R.string.settings_system_import_manager_settings_description),
+                onImport = onImportSettings,
+                onExport = onExportSettings
+            )
 
-                MorpheSettingsDivider()
+            SettingsDivider()
 
-                // Debug Logs
-                ImportExportRow(
-                    leadingContent = { MorpheIcon(icon = Icons.Outlined.BugReport) },
-                    title = stringResource(R.string.settings_system_debug),
-                    description = stringResource(R.string.settings_system_export_debug_logs_description),
-                    onImport = null,
-                    onExport = onExportDebugLogs
-                )
-            }
+            // Debug Logs
+            ImportExportRow(
+                leadingContent = { ThemedIcon(icon = Icons.Outlined.BugReport) },
+                title = stringResource(R.string.settings_system_debug),
+                description = stringResource(R.string.settings_system_export_debug_logs_description),
+                onImport = null,
+                onExport = onExportDebugLogs
+            )
         }
     }
 }

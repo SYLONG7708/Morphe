@@ -27,18 +27,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
+import app.morphe.manager.ui.screen.shared.Defaults
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val SNAKE_GRID = 20
 
 @Stable
 class SnakeGameState(
     initialHighScore: Int = 0,
-    private val onHighScoreUpdated: (Int) -> Unit = {}
+    onHighScoreUpdated: (Int) -> Unit = {}
 ) : MiniGameStateBase {
     var snake by mutableStateOf(listOf(10 to 10, 9 to 10, 8 to 10))
         private set
@@ -46,15 +48,14 @@ class SnakeGameState(
         private set
     private var direction = SnakeDir.RIGHT
     private var pendingDir = SnakeDir.RIGHT
-    override var score by mutableIntStateOf(0)
-        private set
-    override var highScore by mutableIntStateOf(initialHighScore)
-        private set
-    var isGameOver by mutableStateOf(false)
+    private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val score get() = points.value
+    override val highScore get() = points.high
+    override var isGameOver by mutableStateOf(false)
         private set
     var isStarted by mutableStateOf(false)
         private set
-    var isPaused by mutableStateOf(false)
+    override var isPaused by mutableStateOf(false)
         private set
 
     val tickMs: Long get() = max(80L, 180L - score * 5L)
@@ -77,12 +78,12 @@ class SnakeGameState(
         if (newHead.first !in 0 until SNAKE_GRID ||
             newHead.second !in 0 until SNAKE_GRID ||
             snake.contains(newHead)) {
-            if (score > highScore) { highScore = score; onHighScoreUpdated(highScore) }
+            points.commit()
             isGameOver = true; return
         }
         val ateFood = newHead == food
         snake = if (ateFood) listOf(newHead) + snake else listOf(newHead) + snake.dropLast(1)
-        if (ateFood) { score++; spawnFood() }
+        if (ateFood) { points.value++; spawnFood() }
     }
 
     override fun restart() {
@@ -90,14 +91,16 @@ class SnakeGameState(
         food = 15 to 10
         direction = SnakeDir.RIGHT
         pendingDir = SnakeDir.RIGHT
-        score = 0
+        points.reset()
         isGameOver = false
         isStarted = false
         isPaused = false
     }
 
-    fun pause() { if (isStarted && !isGameOver) isPaused = true }
-    fun resume() { isPaused = false }
+    override val isPlaying get() = isStarted && !isGameOver && !isPaused
+
+    override fun pause() { if (isStarted && !isGameOver) isPaused = true }
+    override fun resume() { isPaused = false }
 
     private fun spawnFood() {
         val occupied = snake.toHashSet()
@@ -116,10 +119,9 @@ enum class SnakeDir {
 
 @Composable
 fun SnakeGame(state: SnakeGameState) {
-    GameOverHaptic { state.isGameOver }
     LaunchedEffect(Unit) {
         while (isActive) {
-            delay(state.tickMs)
+            delay(state.tickMs.milliseconds)
             state.tick()
         }
     }
@@ -132,7 +134,7 @@ private const val SNAKE_SWIPE_THRESHOLD = 30f
 private fun SnakeCanvas(state: SnakeGameState, modifier: Modifier) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(Defaults.CompactCornerRadius))
             .background(SnakeBg)
             .pointerInput(Unit) {
                 var drag = Offset.Zero
@@ -187,18 +189,6 @@ private fun SnakeCanvas(state: SnakeGameState, modifier: Modifier) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-        }
-
-        if (state.isGameOver) {
-            GameOverOverlay(
-                score = state.score,
-                highScore = state.highScore,
-                onRestart = state::restart,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-        if (state.isPaused) {
-            GamePauseOverlay(onResume = state::resume, modifier = Modifier.fillMaxSize())
         }
     }
 }

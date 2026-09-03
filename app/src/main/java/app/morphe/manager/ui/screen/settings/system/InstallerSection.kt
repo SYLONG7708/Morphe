@@ -5,37 +5,35 @@
 
 package app.morphe.manager.ui.screen.settings.system
 
-import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.domain.installer.InstallerManager
+import app.morphe.manager.domain.installer.SessionInstaller
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.InstallViewModel
 import app.morphe.manager.ui.viewmodel.SettingsViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -47,7 +45,6 @@ fun InstallerSection(
     onShowInstallerDialog: () -> Unit,
     onInstallerItemPositioned: ((Rect) -> Unit)? = null
 ) {
-    val expertMode by settingsViewModel.prefs.useExpertMode.getAsState()
     val primaryPreference by settingsViewModel.prefs.installerPrimary.getAsState()
     val primaryToken = remember(primaryPreference) {
         settingsViewModel.parseInstallerToken(primaryPreference)
@@ -73,51 +70,16 @@ fun InstallerSection(
         ?: settingsViewModel.describeInstallerEntry(primaryToken, installTarget)
         ?: primaryEntries.value.firstOrNull()
 
-    // Prompt installer on installation preference
-    val promptInstallerOnInstall by settingsViewModel.prefs.promptInstallerOnInstall.getAsState()
-
-    // Localized strings for accessibility
-    val enabledState = stringResource(R.string.enabled)
-    val disabledState = stringResource(R.string.disabled)
-
-    Column {
-        if (primaryEntry != null) {
-            Box(
-                modifier = if (onInstallerItemPositioned != null)
-                    Modifier.onGloballyPositioned { coords -> onInstallerItemPositioned(coords.boundsInWindow()) }
-                else Modifier
-            ) {
-                InstallerSettingsItem(
-                    title = stringResource(R.string.installer_title),
-                    entry = primaryEntry,
-                    onClick = onShowInstallerDialog
-                )
-            }
-        }
-
-        // Prompt installer toggle (Expert mode only)
-        if (expertMode) {
-            MorpheSettingsDivider()
-
-            RichSettingsItem(
-                onClick = {
-                    settingsViewModel.setPromptInstallerOnInstall(!promptInstallerOnInstall)
-                },
-                modifier = Modifier.semantics {
-                    role = Role.Switch
-                    stateDescription = if (promptInstallerOnInstall) enabledState else disabledState
-                },
-                leadingContent = {
-                    MorpheIcon(icon = Icons.Outlined.Android)
-                },
-                title = stringResource(R.string.settings_prompt_installer_on_install),
-                subtitle = stringResource(R.string.settings_prompt_installer_on_install_description),
-                trailingContent = {
-                    MorpheSwitch(
-                        checked = promptInstallerOnInstall,
-                        onCheckedChange = null
-                    )
-                }
+    if (primaryEntry != null) {
+        Box(
+            modifier = if (onInstallerItemPositioned != null)
+                Modifier.onGloballyPositioned { coords -> onInstallerItemPositioned(coords.boundsInWindow()) }
+            else Modifier
+        ) {
+            InstallerSettingsItem(
+                title = stringResource(R.string.installer_settings_title),
+                entry = primaryEntry,
+                onClick = onShowInstallerDialog
             )
         }
     }
@@ -142,6 +104,7 @@ fun InstallerSelectionDialogContainer(
     }
 
     val autoInstallEnabled by settingsViewModel.prefs.autoInstallWithShizuku.getAsState()
+    val autoUninstallEnabled by settingsViewModel.prefs.autoUninstallWithShizuku.getAsState()
     val promptEnabled by settingsViewModel.prefs.promptInstallerOnInstall.getAsState()
 
     InstallerSelectionDialog(
@@ -154,9 +117,14 @@ fun InstallerSelectionDialogContainer(
             onDismiss()
         },
         onOpenShizuku = settingsViewModel::openShizukuApp,
+        shizukuStatusProvider = settingsViewModel::getShizukuStatus,
+        onRequestShizukuPermission = settingsViewModel::requestShizukuPermission,
         autoInstallEnabled = autoInstallEnabled,
         onAutoInstallToggle = settingsViewModel::setAutoInstallWithShizuku,
-        installerPromptEnabled = promptEnabled
+        autoUninstallEnabled = autoUninstallEnabled,
+        onAutoUninstallToggle = settingsViewModel::setAutoUninstallWithShizuku,
+        installerPromptEnabled = promptEnabled,
+        onInstallerPromptToggle = settingsViewModel::setPromptInstallerOnInstall
     )
 }
 
@@ -179,7 +147,7 @@ private fun InstallerSettingsItem(
         }.joinToString("\n")
     }
 
-    RichSettingsItem(
+    SettingsItem(
         onClick = onClick,
         leadingContent = {
             if (entry.icon != null &&
@@ -189,13 +157,14 @@ private fun InstallerSettingsItem(
                         entry.token == InstallerManager.Token.RootPlayStore ||
                         entry.token is InstallerManager.Token.Component)
             ) {
-                InstallerIconPreview(
-                    drawable = entry.icon,
-                    selected = true,
-                    enabled = entry.availability.available
+                Image(
+                    painter = rememberDrawablePainter(drawable = entry.icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(Defaults.IconSize),
+                    alpha = if (entry.availability.available) 1f else 0.4f
                 )
             } else {
-                MorpheIcon(icon = Icons.Outlined.Android)
+                ThemedIcon(icon = Icons.Outlined.Android)
             }
         },
         title = title,
@@ -214,9 +183,14 @@ fun InstallerSelectionDialog(
     onDismiss: () -> Unit,
     onConfirm: (InstallerManager.Token) -> Unit,
     onOpenShizuku: (() -> Boolean)?,
+    shizukuStatusProvider: (() -> SessionInstaller.ShizukuStatus)? = null,
+    onRequestShizukuPermission: (() -> Boolean)? = null,
     autoInstallEnabled: Boolean = false,
     onAutoInstallToggle: ((Boolean) -> Unit)? = null,
-    installerPromptEnabled: Boolean = false
+    autoUninstallEnabled: Boolean = false,
+    onAutoUninstallToggle: ((Boolean) -> Unit)? = null,
+    installerPromptEnabled: Boolean = false,
+    onInstallerPromptToggle: ((Boolean) -> Unit)? = null
 ) {
     val shizukuPromptReasons = remember {
         setOf(
@@ -225,61 +199,79 @@ fun InstallerSelectionDialog(
         )
     }
 
-    val currentSelection = remember(selected) { mutableStateOf(selected) }
+    val visibleOptions = remember(options) {
+        options.filterNot { it.token.isCollapsedPlayStoreVariant() }
+    }
+    val currentSelection = remember(selected) { mutableStateOf(selected.baseInstallerToken()) }
+    val selectedToken = currentSelection.value
+    var installAsPlayStore by remember(selected) { mutableStateOf(selected.isPlayStoreModeToken()) }
+    val effectiveToken = selectedToken.withPlayStoreMode(installAsPlayStore)
+    var inlineShizukuStatus by remember { mutableStateOf<SessionInstaller.ShizukuStatus?>(null) }
 
     // Ensure valid selection when options change
-    LaunchedEffect(options, selected) {
-        val tokens = options.map { it.token }
+    LaunchedEffect(visibleOptions, selected) {
+        val tokens = visibleOptions.map { it.token }
         if (currentSelection.value !in tokens) {
-            currentSelection.value = options.firstOrNull { it.availability.available }?.token
+            currentSelection.value = visibleOptions.firstOrNull { it.availability.available }?.token
                 ?: tokens.firstOrNull()
-                        ?: selected
+                        ?: selected.baseInstallerToken()
         }
     }
 
-    val confirmEnabled = options.find { it.token == currentSelection.value }?.availability?.available != false
+    LaunchedEffect(selectedToken) {
+        if (!selectedToken.supportsPlayStoreMode()) {
+            installAsPlayStore = false
+        }
+    }
 
-    // Warn once when the user is switching TO a Play Store variant they didn't have before
-    var pendingPlayStoreConfirm by remember { mutableStateOf<InstallerManager.Token?>(null) }
+    LaunchedEffect(selectedToken, shizukuStatusProvider) {
+        if (!selectedToken.isShizukuToken() || shizukuStatusProvider == null) {
+            inlineShizukuStatus = null
+            return@LaunchedEffect
+        }
+
+        while (isActive) {
+            inlineShizukuStatus = withContext(Dispatchers.IO) { shizukuStatusProvider() }
+            delay(1.5.seconds)
+        }
+    }
+
+    val confirmEnabled = (options.find { it.token == effectiveToken }
+        ?: visibleOptions.find { it.token == selectedToken })?.availability?.available != false
+
+    var pendingPlayStoreModeConfirm by remember { mutableStateOf(false) }
+    var pendingAutoUninstallConfirm by remember { mutableStateOf(false) }
+    var showShizukuStatus by remember { mutableStateOf(false) }
 
     // Localized strings for accessibility
     val selectedState = stringResource(R.string.selected)
     val notSelectedState = stringResource(R.string.not_selected)
-    val enabledState = stringResource(R.string.enabled)
     val disabledState = stringResource(R.string.disabled)
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = title,
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(R.string.confirm),
                 onPrimaryClick = {
-                    val token = currentSelection.value
-                    val isPlayStoreVariant = token == InstallerManager.Token.PlayStore ||
-                            token == InstallerManager.Token.RootPlayStore ||
-                            token == InstallerManager.Token.ShizukuPlayStore
-                    if (isPlayStoreVariant && token != selected) {
-                        pendingPlayStoreConfirm = token
-                    } else {
-                        onConfirm(token)
-                    }
+                    onConfirm(effectiveToken)
                 },
                 primaryEnabled = confirmEnabled,
                 secondaryText = stringResource(android.R.string.cancel),
                 onSecondaryClick = onDismiss
             )
-        }
+        },
+        padding = DialogPadding.Compact
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall)
         ) {
-            options.forEach { option ->
+            visibleOptions.forEach { option ->
                 val enabled = option.availability.available
-                val isSelected = currentSelection.value == option.token
-                val isShizukuOption = option.token == InstallerManager.Token.Shizuku ||
-                        option.token == InstallerManager.Token.ShizukuPlayStore
+                val isSelected = selectedToken == option.token
+                val isShizukuOption = option.token.isShizukuToken()
                 val showShizukuAction = isShizukuOption &&
                         option.availability.reason in shizukuPromptReasons &&
                         onOpenShizuku != null
@@ -293,12 +285,22 @@ fun InstallerSelectionDialog(
                     }
                 }
 
+                val shizukuFooterText = if (isSelected &&
+                    isShizukuOption &&
+                    inlineShizukuStatus != null &&
+                    !inlineShizukuStatus!!.availability.available
+                ) {
+                    inlineShizukuStatus!!.availability.reason?.let { stringResource(it) }
+                        ?: stringResource(R.string.installer_shizuku_status_issue)
+                } else null
+
                 InstallerOptionItem(
                     option = option,
                     selected = isSelected,
                     enabled = enabled,
                     onSelect = { if (enabled) currentSelection.value = option.token },
-                    stateDescription = stateDesc
+                    stateDescription = stateDesc,
+                    footerText = shizukuFooterText
                 )
 
                 if (showShizukuAction) {
@@ -312,63 +314,118 @@ fun InstallerSelectionDialog(
                         )
                     }
                 }
+
+                if (isSelected && isShizukuOption && shizukuStatusProvider != null) {
+                    AppDialogOutlinedButton(
+                        text = stringResource(R.string.installer_shizuku_status_action),
+                        onClick = { showShizukuStatus = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = Icons.Outlined.Info
+                    )
+                }
             }
 
-            // Auto-install toggle
+            val showPlayStoreToggle = selectedToken.supportsPlayStoreMode() &&
+                    options.any { it.token == selectedToken.withPlayStoreMode(true) }
+            val showAutoInstallToggle = selectedToken.isShizukuToken() && onAutoInstallToggle != null
+            val showPromptToggle = onInstallerPromptToggle != null
+
             AnimatedVisibility(
-                visible = (currentSelection.value == InstallerManager.Token.Shizuku ||
-                        currentSelection.value == InstallerManager.Token.ShizukuPlayStore) &&
-                        onAutoInstallToggle != null,
-                enter = MorpheAnimations.expandFadeEnter,
-                exit = MorpheAnimations.shrinkFadeExit
+                visible = currentSelection.value == InstallerManager.Token.AutoSaved,
+                enter = Animations.expandFadeEnter,
+                exit = Animations.shrinkFadeExit
             ) {
-                Column {
-                    HorizontalDivider(modifier = Modifier.padding(top = 4.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(MaterialTheme.shapes.medium)
-                            .toggleable(
-                                value = autoInstallEnabled,
-                                role = Role.Switch,
-                                onValueChange = { onAutoInstallToggle?.invoke(it) }
-                            )
-                            .semantics {
-                                stateDescription = if (autoInstallEnabled) enabledState else disabledState
-                            }
-                            .padding(vertical = 12.dp, horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                Notice(
+                    text = stringResource(R.string.root_mount_module_unmount_warning),
+                    tone = SemanticTone.Warning,
+                    icon = Icons.Outlined.Warning
+                )
+            }
+
+            if (showPlayStoreToggle || showAutoInstallToggle || showPromptToggle) {
+                SettingsDivider(fullWidth = true)
+
+                SettingsGroup {
+                    AnimatedVisibility(
+                        visible = showPlayStoreToggle,
+                        enter = Animations.expandFadeEnter,
+                        exit = Animations.shrinkFadeExit
                     ) {
-                        MorpheIcon(icon = Icons.Outlined.Bolt)
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.settings_auto_install_with_shizuku),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = stringResource(R.string.settings_auto_install_with_shizuku_description),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        MorpheSwitch(
-                            checked = autoInstallEnabled,
-                            onCheckedChange = null
+                        SettingsSwitchItem(
+                            checked = installAsPlayStore,
+                            onToggle = {
+                                if (installAsPlayStore) {
+                                    installAsPlayStore = false
+                                } else {
+                                    pendingPlayStoreModeConfirm = true
+                                }
+                            },
+                            leadingContent = { ThemedIcon(icon = Icons.Outlined.Storefront, size = 28.dp) },
+                            title = stringResource(R.string.installer_play_store_mode),
+                            subtitle = stringResource(R.string.installer_play_store_mode_description)
                         )
                     }
 
-                    if (installerPromptEnabled) {
-                        InfoBadge(
-                            text = stringResource(
-                                R.string.settings_auto_install_prompt_conflict,
-                                stringResource(R.string.settings_prompt_installer_on_install)
-                            ),
-                            style = InfoBadgeStyle.Warning,
-                            icon = Icons.Outlined.Warning,
-                            isExpanded = true,
-                            modifier = Modifier.padding(top = 4.dp)
+                    AnimatedVisibility(
+                        visible = showAutoInstallToggle,
+                        enter = Animations.expandFadeEnter,
+                        exit = Animations.shrinkFadeExit
+                    ) {
+                        Column {
+                            if (showPlayStoreToggle) SettingsDivider()
+                            SettingsSwitchItem(
+                                checked = autoInstallEnabled,
+                                onToggle = {
+                                    val newValue = !autoInstallEnabled
+                                    onAutoInstallToggle?.invoke(newValue)
+                                    if (newValue && installerPromptEnabled) {
+                                        onInstallerPromptToggle?.invoke(false)
+                                    }
+                                },
+                                leadingContent = { ThemedIcon(icon = Icons.Outlined.Bolt, size = 28.dp) },
+                                title = stringResource(R.string.settings_auto_install_with_shizuku),
+                                subtitle = stringResource(R.string.settings_auto_install_with_shizuku_description)
+                            )
+
+                            AnimatedVisibility(
+                                visible = autoInstallEnabled && onAutoUninstallToggle != null,
+                                enter = Animations.expandFadeEnter,
+                                exit = Animations.shrinkFadeExit
+                            ) {
+                                Column {
+                                    SettingsDivider()
+                                    SettingsSwitchItem(
+                                        checked = autoUninstallEnabled,
+                                        onToggle = {
+                                            if (autoUninstallEnabled) {
+                                                onAutoUninstallToggle?.invoke(false)
+                                            } else {
+                                                pendingAutoUninstallConfirm = true
+                                            }
+                                        },
+                                        leadingContent = { ThemedIcon(icon = Icons.Outlined.Delete, size = 28.dp) },
+                                        title = stringResource(R.string.settings_auto_uninstall_with_shizuku),
+                                        subtitle = stringResource(R.string.settings_auto_uninstall_with_shizuku_description)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (showPromptToggle) {
+                        if (showPlayStoreToggle || showAutoInstallToggle) SettingsDivider()
+                        SettingsSwitchItem(
+                            checked = installerPromptEnabled,
+                            onToggle = {
+                                val newValue = !installerPromptEnabled
+                                onInstallerPromptToggle(newValue)
+                                if (newValue && autoInstallEnabled) {
+                                    onAutoInstallToggle?.invoke(false)
+                                }
+                            },
+                            leadingContent = { ThemedIcon(icon = Icons.Outlined.Android, size = 28.dp) },
+                            title = stringResource(R.string.settings_prompt_installer_on_install),
+                            subtitle = stringResource(R.string.settings_prompt_installer_on_install_description)
                         )
                     }
                 }
@@ -376,13 +433,287 @@ fun InstallerSelectionDialog(
         }
     }
 
-    pendingPlayStoreConfirm?.let { token ->
+    if (pendingPlayStoreModeConfirm) {
         PlayStoreInstallerWarningDialog(
             onConfirm = {
-                pendingPlayStoreConfirm = null
-                onConfirm(token)
+                pendingPlayStoreModeConfirm = false
+                installAsPlayStore = true
             },
-            onDismiss = { pendingPlayStoreConfirm = null }
+            onDismiss = { pendingPlayStoreModeConfirm = false }
+        )
+    }
+
+    if (pendingAutoUninstallConfirm) {
+        AutoUninstallWarningDialog(
+            onConfirm = {
+                pendingAutoUninstallConfirm = false
+                onAutoUninstallToggle?.invoke(true)
+            },
+            onDismiss = { pendingAutoUninstallConfirm = false }
+        )
+    }
+
+    if (showShizukuStatus && shizukuStatusProvider != null) {
+        ShizukuStatusDialog(
+            statusProvider = shizukuStatusProvider,
+            onOpenShizuku = onOpenShizuku,
+            onRequestPermission = onRequestShizukuPermission,
+            onDismiss = { showShizukuStatus = false }
+        )
+    }
+}
+
+private fun InstallerManager.Token.baseInstallerToken(): InstallerManager.Token = when (this) {
+    InstallerManager.Token.PlayStore -> InstallerManager.Token.Internal
+    InstallerManager.Token.RootPlayStore -> InstallerManager.Token.AutoSaved
+    InstallerManager.Token.ShizukuPlayStore -> InstallerManager.Token.Shizuku
+    else -> this
+}
+
+private fun InstallerManager.Token.isCollapsedPlayStoreVariant(): Boolean =
+    this == InstallerManager.Token.PlayStore ||
+            this == InstallerManager.Token.RootPlayStore ||
+            this == InstallerManager.Token.ShizukuPlayStore
+
+private fun InstallerManager.Token.isPlayStoreModeToken(): Boolean =
+    this == InstallerManager.Token.PlayStore ||
+            this == InstallerManager.Token.RootPlayStore ||
+            this == InstallerManager.Token.ShizukuPlayStore
+
+private fun InstallerManager.Token.supportsPlayStoreMode(): Boolean =
+    this == InstallerManager.Token.Internal ||
+            this == InstallerManager.Token.AutoSaved ||
+            this == InstallerManager.Token.Shizuku
+
+private fun InstallerManager.Token.withPlayStoreMode(enabled: Boolean): InstallerManager.Token = when {
+    this == InstallerManager.Token.Internal && enabled -> InstallerManager.Token.PlayStore
+    this == InstallerManager.Token.AutoSaved && enabled -> InstallerManager.Token.RootPlayStore
+    this == InstallerManager.Token.Shizuku && enabled -> InstallerManager.Token.ShizukuPlayStore
+    else -> this
+}
+
+private fun InstallerManager.Token.isShizukuToken(): Boolean =
+    baseInstallerToken() == InstallerManager.Token.Shizuku
+
+@Composable
+private fun AutoUninstallWarningDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(R.string.settings_auto_uninstall_warning_title),
+        footer = {
+            AppDialogActions(
+                actions = listOf(
+                    DialogAction(
+                        text = stringResource(R.string.installer_play_store_warning_continue),
+                        onClick = onConfirm
+                    ),
+                    DialogAction(
+                        text = stringResource(android.R.string.cancel),
+                        onClick = onDismiss
+                    )
+                ),
+                layout = DialogButtonLayout.Vertical
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.settings_auto_uninstall_warning_message),
+                style = MaterialTheme.typography.bodyMedium,
+                color = LocalDialogSecondaryTextColor.current
+            )
+
+            Notice(
+                text = stringResource(R.string.settings_auto_uninstall_warning_risk),
+                tone = SemanticTone.Error,
+                icon = Icons.Outlined.Warning
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShizukuStatusDialog(
+    statusProvider: () -> SessionInstaller.ShizukuStatus,
+    onOpenShizuku: (() -> Boolean)?,
+    onRequestPermission: (() -> Boolean)?,
+    onDismiss: () -> Unit
+) {
+    var status by remember { mutableStateOf<SessionInstaller.ShizukuStatus?>(null) }
+    var refreshKey by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(refreshKey) {
+        status = withContext(Dispatchers.IO) { statusProvider() }
+    }
+
+    LaunchedEffect(Unit) {
+        while (isActive) {
+            delay(1.seconds)
+            status = withContext(Dispatchers.IO) { statusProvider() }
+        }
+    }
+
+    val current = status
+    val issueText = current?.availability?.reason?.let { stringResource(it) }
+
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(R.string.installer_shizuku_status_title),
+        footer = {
+            AppDialogActions(
+                actions = buildList {
+                    if (current != null &&
+                        current.installed &&
+                        current.running &&
+                        !current.permissionGranted &&
+                        onRequestPermission != null
+                    ) {
+                        add(
+                            DialogAction(
+                                text = stringResource(R.string.installer_shizuku_request_permission),
+                                onClick = {
+                                    runCatching { onRequestPermission.invoke() }
+                                    refreshKey++
+                                },
+                                icon = Icons.Outlined.Key
+                            )
+                        )
+                    }
+
+                    if (onOpenShizuku != null) {
+                        add(
+                            DialogAction(
+                                text = stringResource(R.string.installer_action_open_shizuku),
+                                onClick = { runCatching { onOpenShizuku.invoke() } },
+                                icon = Icons.AutoMirrored.Outlined.OpenInNew,
+                                emphasis = DialogActionEmphasis.Outlined
+                            )
+                        )
+                    }
+
+                    add(
+                        DialogAction(
+                            text = stringResource(R.string.refresh),
+                            onClick = { refreshKey++ },
+                            icon = Icons.Outlined.Refresh,
+                            emphasis = DialogActionEmphasis.Outlined
+                        )
+                    )
+
+                    add(
+                        DialogAction(
+                            text = stringResource(R.string.close),
+                            onClick = onDismiss,
+                            emphasis = DialogActionEmphasis.Outlined
+                        )
+                    )
+                },
+                layout = DialogButtonLayout.Vertical
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (current != null) {
+                Notice(
+                    text = if (current.availability.available) {
+                        stringResource(R.string.installer_shizuku_status_ready)
+                    } else {
+                        stringResource(R.string.installer_shizuku_status_issue)
+                    },
+                    tone = if (current.availability.available) SemanticTone.Success else SemanticTone.Warning,
+                    icon = if (current.availability.available) Icons.Outlined.CheckCircle else Icons.Outlined.Warning
+                )
+
+                if (issueText != null) {
+                    Notice(
+                        text = issueText,
+                        tone = SemanticTone.Primary,
+                        icon = Icons.Outlined.Info
+                    )
+                }
+
+                ShizukuStatusRow(
+                    label = stringResource(R.string.installer_shizuku_status_mode),
+                    value = when (current.mode) {
+                        SessionInstaller.ShizukuMode.Shizuku -> stringResource(R.string.home_app_info_install_type_shizuku)
+                        SessionInstaller.ShizukuMode.Sui -> "Sui"
+                    }
+                )
+                ShizukuStatusRow(
+                    label = stringResource(R.string.installed),
+                    value = statusYesNo(current.installed)
+                )
+                ShizukuStatusRow(
+                    label = stringResource(R.string.installer_shizuku_status_supported),
+                    value = statusYesNo(current.supported)
+                )
+                ShizukuStatusRow(
+                    label = stringResource(R.string.installer_shizuku_status_running),
+                    value = statusYesNo(current.running)
+                )
+                ShizukuStatusRow(
+                    label = stringResource(R.string.installer_shizuku_status_permission),
+                    value = if (current.permissionGranted) {
+                        stringResource(R.string.installer_shizuku_status_granted)
+                    } else {
+                        stringResource(R.string.installer_shizuku_status_missing)
+                    }
+                )
+                current.packageName?.let { provider ->
+                    ShizukuStatusRow(
+                        label = stringResource(R.string.installer_shizuku_status_provider),
+                        value = provider
+                    )
+                }
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun statusYesNo(value: Boolean): String =
+    if (value) {
+        stringResource(R.string.yes)
+    } else {
+        stringResource(R.string.no)
+    }
+
+@Composable
+private fun ShizukuStatusRow(
+    label: String,
+    value: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = LocalDialogSecondaryTextColor.current,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = LocalDialogTextColor.current
         )
     }
 }
@@ -396,7 +727,8 @@ fun InstallerOptionItem(
     selected: Boolean,
     enabled: Boolean,
     onSelect: () -> Unit,
-    stateDescription: String
+    stateDescription: String,
+    footerText: String? = null
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -408,116 +740,66 @@ fun InstallerOptionItem(
     val reasonResId = option.availability.reason
     val reasonText = if (!enabled && reasonResId != null) stringResource(reasonResId) else null
 
-    SettingsItemCard(
-        onClick = onSelect,
+    val hasCustomIcon = option.icon != null &&
+        (option.token == InstallerManager.Token.Shizuku ||
+                option.token == InstallerManager.Token.ShizukuPlayStore ||
+                option.token == InstallerManager.Token.PlayStore ||
+                option.token == InstallerManager.Token.RootPlayStore ||
+                option.token is InstallerManager.Token.Component)
+
+    RadioSelectionCard(
+        selected = selected,
+        onSelect = onSelect,
         enabled = enabled,
-        borderWidth = 1.dp,
-        modifier = Modifier
-            .padding(vertical = 2.dp)
-            .semantics {
-                role = Role.RadioButton
-                this.selected = selected
-                this.stateDescription = stateDescription
+        hasWarning = footerText != null,
+        stateDescription = stateDescription,
+        leadingContent = if (hasCustomIcon) {
+            {
+                SelectionLeadingBox(selected = selected, enabled = enabled) {
+                    Image(
+                        painter = rememberDrawablePainter(drawable = option.icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(Defaults.IconSize),
+                        alpha = if (enabled) 1f else 0.4f
+                    )
+                }
             }
-    ) {
-        Column(
-            modifier = Modifier.padding(MorpheDefaults.ContentPadding),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            IconTextRow(
-                leadingContent = if (option.icon != null &&
-                    (option.token == InstallerManager.Token.Shizuku ||
-                            option.token == InstallerManager.Token.ShizukuPlayStore ||
-                            option.token == InstallerManager.Token.PlayStore ||
-                            option.token == InstallerManager.Token.RootPlayStore ||
-                            option.token is InstallerManager.Token.Component)
-                ) {
-                    {
-                        InstallerIconPreview(
-                            drawable = option.icon,
-                            selected = selected,
-                            enabled = enabled
-                        )
-                    }
+        } else null,
+        footerContent = (reasonText ?: footerText)?.let { text ->
+            {
+                val tint = if (footerText != null) {
+                    MaterialTheme.colorScheme.onSecondaryContainer
                 } else {
-                    {
-                        if (selected) {
-                            StatusCircleIcon(
-                                icon = Icons.Outlined.Check,
-                                containerColor = if (enabled) colors.primaryContainer
-                                else colors.primaryContainer.copy(alpha = 0.38f),
-                                contentColor = if (enabled) colors.onPrimaryContainer
-                                else colors.onPrimaryContainer.copy(alpha = 0.38f)
-                            )
-                        } else {
-                            StatusCirclePlaceholder()
-                        }
-                    }
-                },
-                title = option.label,
-                description = description,
-                titleColor = if (enabled) colors.onSurface else colors.onSurface.copy(alpha = 0.38f),
-                descriptionColor = if (enabled) colors.onSurfaceVariant else colors.onSurfaceVariant.copy(alpha = 0.38f),
-                trailingContent = null
-            )
-
-            if (reasonText != null) {
-                InfoBadge(
-                    text = reasonText,
-                    style = InfoBadgeStyle.Warning,
-                    icon = Icons.Outlined.Warning,
-                    isCompact = true,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Warning,
+                        contentDescription = null,
+                        tint = tint,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = tint
+                    )
+                }
             }
         }
-    }
-}
-
-/**
- * Installer icon preview component.
- */
-@Composable
-fun InstallerIconPreview(
-    drawable: Drawable?,
-    selected: Boolean,
-    enabled: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val colors = MaterialTheme.colorScheme
-
-    Box(
-        modifier = modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                if (enabled) colors.surfaceVariant
-                else colors.surfaceVariant.copy(alpha = 0.4f)
-            )
-            .border(
-                width = if (selected && enabled) 2.dp else 1.dp,
-                color = when {
-                    !enabled -> colors.outlineVariant.copy(alpha = 0.5f)
-                    selected -> colors.primary
-                    else -> colors.outlineVariant
-                },
-                shape = RoundedCornerShape(12.dp)
-            ),
-        contentAlignment = Alignment.Center
     ) {
-        if (drawable != null) {
-            Image(
-                painter = rememberDrawablePainter(drawable = drawable),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                alpha = if (enabled) 1f else 0.4f
-            )
-        } else {
-            MorpheIcon(
-                icon = Icons.Outlined.ChevronRight,
-                tint = colors.primary.copy(alpha = if (enabled) 1f else 0.4f)
-            )
-        }
+        IconTextRow(
+            modifier = Modifier.weight(1f),
+            leadingContent = null,
+            title = option.label,
+            description = description,
+            titleColor = if (enabled) colors.onSurface else colors.onSurface.copy(alpha = 0.38f),
+            descriptionColor = if (enabled) colors.onSurfaceVariant else colors.onSurfaceVariant.copy(alpha = 0.38f),
+            trailingContent = null
+        )
     }
 }
 
@@ -542,45 +824,53 @@ fun InstallerUnavailableDialog(
 
     val reasonText = state.reason?.let { stringResource(it) }
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.installer_unavailable_title, installerName),
         footer = {
-            MorpheDialogButtonColumn {
-                // Primary action - Retry
-                MorpheDialogButton(
-                    text = stringResource(R.string.retry),
-                    onClick = onRetry,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                // Secondary action - Open app (if available)
-                if (state.canOpenApp) {
-                    MorpheDialogButton(
-                        text = when (state.installerToken) {
-                            InstallerManager.Token.Shizuku -> stringResource(R.string.installer_action_open_shizuku)
-                            InstallerManager.Token.ShizukuPlayStore -> stringResource(R.string.installer_action_open_shizuku)
-                            else -> stringResource(R.string.open)
-                        },
-                        onClick = onOpenApp,
-                        modifier = Modifier.fillMaxWidth()
+            AppDialogActions(
+                actions = buildList {
+                    // Primary action - Retry
+                    add(
+                        DialogAction(
+                            text = stringResource(R.string.retry),
+                            onClick = onRetry
+                        )
                     )
-                }
 
-                // Fallback option
-                MorpheDialogOutlinedButton(
-                    text = stringResource(R.string.installer_use_standard),
-                    onClick = onUseFallback,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    // Secondary action - Open app (if available)
+                    if (state.canOpenApp) {
+                        add(
+                            DialogAction(
+                                text = when (state.installerToken) {
+                                    InstallerManager.Token.Shizuku -> stringResource(R.string.installer_action_open_shizuku)
+                                    InstallerManager.Token.ShizukuPlayStore -> stringResource(R.string.installer_action_open_shizuku)
+                                    else -> stringResource(R.string.open)
+                                },
+                                onClick = onOpenApp,
+                                emphasis = DialogActionEmphasis.Filled
+                            )
+                        )
+                    }
 
-                // Cancel
-                MorpheDialogOutlinedButton(
-                    text = stringResource(android.R.string.cancel),
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+                    // Fallback option
+                    add(
+                        DialogAction(
+                            text = stringResource(R.string.installer_use_standard),
+                            onClick = onUseFallback
+                        )
+                    )
+
+                    // Cancel
+                    add(
+                        DialogAction(
+                            text = stringResource(android.R.string.cancel),
+                            onClick = onDismiss
+                        )
+                    )
+                },
+                layout = DialogButtonLayout.Vertical
+            )
         }
     ) {
         Column(
@@ -596,11 +886,10 @@ fun InstallerUnavailableDialog(
 
             // Error reason badge
             if (reasonText != null) {
-                InfoBadge(
+                Notice(
                     text = reasonText,
-                    style = InfoBadgeStyle.Error,
-                    icon = Icons.Outlined.Warning,
-                    isExpanded = true
+                    tone = SemanticTone.Error,
+                    icon = Icons.Outlined.Warning
                 )
             }
 
@@ -609,10 +898,9 @@ fun InstallerUnavailableDialog(
                 (state.installerToken == InstallerManager.Token.Shizuku ||
                         state.installerToken == InstallerManager.Token.ShizukuPlayStore)
             ) {
-                InfoBadge(
+                Notice(
                     text = stringResource(R.string.installer_unavailable_shizuku_hint),
-                    style = InfoBadgeStyle.Primary,
-                    isExpanded = true
+                    tone = SemanticTone.Primary
                 )
             }
         }
@@ -620,7 +908,7 @@ fun InstallerUnavailableDialog(
 }
 
 /**
- * Warning shown when the user picks a Play Store install variant.
+ * Warning shown when the user enables Play Store install-source mode.
  *
  * Recording Google Play Store as the installation source lets Play Store offer updates for the patched
  * app - accepting the update overwrites the patched APK with the stock one and loses the patches.
@@ -630,22 +918,23 @@ fun PlayStoreInstallerWarningDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.installer_play_store_warning_title),
         footer = {
-            MorpheDialogButtonColumn {
-                MorpheDialogButton(
-                    text = stringResource(R.string.installer_play_store_warning_continue),
-                    onClick = onConfirm,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                MorpheDialogOutlinedButton(
-                    text = stringResource(android.R.string.cancel),
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            AppDialogActions(
+                actions = listOf(
+                    DialogAction(
+                        text = stringResource(R.string.installer_play_store_warning_continue),
+                        onClick = onConfirm
+                    ),
+                    DialogAction(
+                        text = stringResource(android.R.string.cancel),
+                        onClick = onDismiss
+                    )
+                ),
+                layout = DialogButtonLayout.Vertical
+            )
         }
     ) {
         Column(
@@ -658,25 +947,24 @@ fun PlayStoreInstallerWarningDialog(
                 color = LocalDialogSecondaryTextColor.current
             )
 
-            InfoBadge(
+            Notice(
                 text = stringResource(R.string.installer_play_store_warning_risk),
-                style = InfoBadgeStyle.Error,
-                icon = Icons.Outlined.Warning,
-                isExpanded = true
+                tone = SemanticTone.Error,
+                icon = Icons.Outlined.Warning
             )
         }
     }
 }
 
 /**
- * Dialog shown to root device users before patching to choose between Root Mount and Standard Install.
+ * Dialog shown to root device users before patching to choose between root mount mode and
+ * standard install mode.
  *
- * The installation method directly affects how the APK is patched:
- * - **Root Mount** excludes the GmsCore support patch - the mounted APK replaces the
- *   stock APK in-place via bind-mount, so the original Google services remain available
- *   and GmsCore would actually interfere.
- * - **Standard Install** includes GmsCore support - the patched APK is installed as a
- *   separate app that needs the microG / GmsCore bridge to communicate with Google services.
+ * The patch mode is the install target patches declare their availability against, so it decides
+ * which of them can run at all:
+ * - **Root Mount** replaces the stock APK in-place via bind-mount, so the original Google services
+ *   remain available and patches that bridge them declare themselves unavailable here.
+ * - **Standard Install** produces a separate app, where those same patches are required instead.
  *
  * Because of this, the choice cannot be deferred to after patching. The user must decide now so
  * the correct set of patches is applied.
@@ -687,11 +975,11 @@ fun PrePatchInstallerDialog(
     onSelectStandard: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.root_pre_patch_installer_title),
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(android.R.string.cancel),
                 onPrimaryClick = onDismiss
             )
@@ -716,6 +1004,12 @@ fun PrePatchInstallerDialog(
                 onClick = onSelectMount
             )
 
+            Notice(
+                text = stringResource(R.string.root_mount_module_unmount_warning),
+                tone = SemanticTone.Warning,
+                icon = Icons.Outlined.Warning
+            )
+
             // Standard Install option
             InstallerOptionCard(
                 icon = Icons.Outlined.InstallMobile,
@@ -725,11 +1019,10 @@ fun PrePatchInstallerDialog(
             )
 
             // Info hint
-            InfoBadge(
+            Notice(
                 text = stringResource(R.string.root_pre_patch_installer_hint),
-                style = InfoBadgeStyle.Primary,
-                icon = Icons.Outlined.Info,
-                isExpanded = true
+                tone = SemanticTone.Primary,
+                icon = Icons.Outlined.Info
             )
         }
     }
@@ -747,7 +1040,7 @@ private fun InstallerOptionCard(
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(Defaults.CompactCornerRadius),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -756,7 +1049,7 @@ private fun InstallerOptionCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            MorpheIcon(
+            ThemedIcon(
                 icon = icon,
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -765,20 +1058,18 @@ private fun InstallerOptionCard(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = LocalDialogTextColor.current
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = LocalDialogSecondaryTextColor.current
                 )
             }
-            Icon(
-                imageVector = Icons.Outlined.ChevronRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(20.dp)
+            ForwardChevronIcon(
+                size = Defaults.IconSizeSmall,
+                tint = LocalDialogSecondaryTextColor.current.copy(alpha = 0.5f)
             )
         }
     }

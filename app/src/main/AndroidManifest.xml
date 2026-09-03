@@ -52,7 +52,7 @@
         android:name="app.morphe.manager.ManagerApplication"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:enableOnBackInvokedCallback="false"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
@@ -112,8 +112,14 @@
                 <data android:mimeType="application/apks" />
             </intent-filter>
 
-            <!-- Deep link: App Links (https://morphe.software/add-source?github=...) -->
-            <intent-filter android:autoVerify="true">
+            <!-- Batch patching triggered by another app -->
+            <intent-filter>
+                <action android:name="app.morphe.manager.action.BATCH_PATCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- Add-source deep link. Website acts as the gateway for repo validation -->
+            <intent-filter android:autoVerify="false">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />

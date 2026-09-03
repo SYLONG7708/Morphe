@@ -17,13 +17,34 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
+import app.morphe.manager.ui.theme.MonochromeThemeDefaults
 import app.morphe.manager.util.toast
+
+/**
+ * Metrics of the [MultiSelectShell] surface. The bar floats over the content it belongs to, so
+ * layouts underneath have to keep that content clear of it; the values they pad by live here
+ * rather than being restated at each call site, where nothing would keep them in step.
+ */
+object MultiSelectBarDefaults {
+    /** Padding the shell keeps above and below its surface. */
+    val SurfacePadding = 8.dp
+
+    /** Height of a bar carrying a counter line and one row of pills. */
+    val Height = 100.dp
+
+    /** Bottom padding a scrolling list needs for its last item to clear the bar. */
+    val ListClearance = Height - SurfacePadding
+
+    /** Clearance for floating controls, which keep a little more air between them and the bar. */
+    val ControlClearance = 96.dp
+}
 
 /**
  * Slide-up surface used to host a multi-select action row. Keeps the surface, elevation
@@ -38,21 +59,39 @@ fun MultiSelectShell(
 ) {
     AnimatedVisibility(
         visible = visible,
-        enter = MorpheAnimations.springSlideUpEnter,
-        exit = MorpheAnimations.springSlideDownExit,
+        enter = Animations.springSlideUpEnter,
+        exit = Animations.springSlideDownExit,
         modifier = modifier
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = MultiSelectBarDefaults.SurfacePadding),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            color = MonochromeThemeDefaults.surfaceColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             shadowElevation = 8.dp,
             tonalElevation = 4.dp,
             content = content
         )
     }
+}
+
+private class LastVisibleValue<T>(var value: T)
+
+/**
+ * Returns [value] while [visible] is true, and the last value seen before that afterwards.
+ *
+ * Action handlers clear the selection in the same pass that hides the bar, so a row rendered
+ * from live state loses buttons and zeroes its counter while it is still sliding out.
+ *
+ * This holds only while both writes land in one snapshot. A handler that hides the bar and
+ * clears its state in separate frames has nothing left to freeze by the time [visible] flips.
+ */
+@Composable
+fun <T> rememberWhileVisible(visible: Boolean, value: T): T {
+    val holder = remember { LastVisibleValue(value) }
+    if (visible) holder.value = value
+    return holder.value
 }
 
 /**
@@ -83,6 +122,10 @@ fun SelectionActionBar(
     val deselectAllDone = stringResource(R.string.deselect_all_done)
     val cancelLabel = stringResource(android.R.string.cancel)
     val selectedLabel = stringResource(R.string.selected).lowercase()
+    val allSelected = totalCount in 1..selectedCount
+    val canToggleToDeselect = allSelected && onDeselectAll != null
+    val selectionToggleLabel = if (canToggleToDeselect) deselectAllLabel else selectAllLabel
+    val selectionToggleDone = if (canToggleToDeselect) deselectAllDone else selectAllDone
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -91,7 +134,7 @@ fun SelectionActionBar(
     ) {
         AnimatedContent(
             targetState = selectedCount,
-            transitionSpec = MorpheAnimations.compactCounterTransitionSpec,
+            transitionSpec = Animations.compactCounterTransitionSpec,
             label = "selected_count"
         ) { count ->
             Text(
@@ -104,7 +147,7 @@ fun SelectionActionBar(
         if (subtitle != null) {
             AnimatedContent(
                 targetState = subtitle,
-                transitionSpec = MorpheAnimations.compactCounterTransitionSpec,
+                transitionSpec = Animations.compactCounterTransitionSpec,
                 label = "selection_subtitle"
             ) { text ->
                 Text(
@@ -117,21 +160,15 @@ fun SelectionActionBar(
 
         ActionPillRow {
             ActionPillButton(
-                onClick = withToast(selectAllDone, onSelectAll),
-                icon = Icons.Outlined.DoneAll,
-                contentDescription = selectAllLabel,
-                tooltip = selectAllLabel,
-                enabled = selectedCount < totalCount
+                onClick = withToast(selectionToggleDone) {
+                    if (canToggleToDeselect) onDeselectAll() else onSelectAll()
+                },
+                icon = if (canToggleToDeselect) Icons.Outlined.RemoveDone else Icons.Outlined.DoneAll,
+                contentDescription = selectionToggleLabel,
+                tooltip = selectionToggleLabel,
+                enabled = canToggleToDeselect || selectedCount < totalCount
             )
-            if (onDeselectAll != null) {
-                ActionPillButton(
-                    onClick = withToast(deselectAllDone, onDeselectAll),
-                    icon = Icons.Outlined.RemoveDone,
-                    contentDescription = deselectAllLabel,
-                    tooltip = deselectAllLabel,
-                    enabled = selectedCount > 0
-                )
-            }
+            actions()
             if (onCancel != null) {
                 ActionPillButton(
                     onClick = onCancel,
@@ -140,7 +177,6 @@ fun SelectionActionBar(
                     tooltip = cancelLabel
                 )
             }
-            actions()
         }
     }
 }

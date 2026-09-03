@@ -1,16 +1,18 @@
 package app.morphe.manager.di
 
+import app.morphe.manager.domain.apk.ApkSignatureCache
+import app.morphe.manager.domain.apk.LocalApkSources
+import app.morphe.manager.domain.batch.BatchPatchCoordinator
+import app.morphe.manager.domain.batch.BatchPlanResolver
+import app.morphe.manager.domain.bundles.AppVersionCatalog
 import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
 import app.morphe.manager.domain.installer.SessionInstaller
-import app.morphe.manager.domain.manager.AppIconManager
-import app.morphe.manager.domain.manager.HomeAppButtonPreferences
-import app.morphe.manager.domain.manager.KeystoreManager
-import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
-import app.morphe.manager.domain.update.DetachedSignatureVerifier
 import app.morphe.manager.domain.update.BundledEcosystemProvisioner
+import app.morphe.manager.domain.update.DetachedSignatureVerifier
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
 import app.morphe.manager.domain.update.SignedUpdateManifestRepository
+import app.morphe.manager.domain.manager.*
 import app.morphe.manager.util.AppCoroutineScope
 import app.morphe.manager.util.PM
 import app.morphe.manager.util.UpdateNotificationManager
@@ -19,6 +21,7 @@ import org.koin.dsl.module
 
 val managerModule = module {
     singleOf(::KeystoreManager)
+    singleOf(::ApkSignatureCache)
     singleOf(::PM)
     singleOf(::RootInstaller)
     singleOf(::SessionInstaller)
@@ -26,10 +29,15 @@ val managerModule = module {
     singleOf(::PatchOptionsPreferencesManager)
     singleOf(::AppIconManager)
     singleOf(::UpdateNotificationManager)
+    singleOf(::DownloadUrlResolver)
+    singleOf(::AppVersionCatalog)
+    singleOf(::LocalApkSources)
     singleOf(::HomeAppButtonPreferences)
     singleOf(::AppCoroutineScope)
     singleOf(::DetachedSignatureVerifier)
     singleOf(::BundledEcosystemProvisioner)
     singleOf(::SignedUpdateManifestRepository)
     singleOf(::EcosystemUpdateCoordinator)
+    singleOf(::BatchPlanResolver)
+    singleOf(::BatchPatchCoordinator)
 }

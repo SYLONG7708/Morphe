@@ -9,6 +9,23 @@
 -keepnames class com.android.apksig.internal.** { *; }
 -keepnames class org.xmlpull.** { *; }
 
+# apksig builds its ASN.1 models reflectively, so the no-arg constructors and the annotated
+# fields must survive shrinking or signing degrades to a fallback public key encoding
+-keepclassmembers class com.android.apksig.internal.** {
+    <init>();
+    <fields>;
+}
+
+-keepattributes RuntimeVisibleAnnotations,RuntimeInvisibleAnnotations,AnnotationDefault,Signature,InnerClasses,EnclosingMethod
+-renamesourcefileattribute SourceFile
+
+# Remove verbose operational details from production builds while retaining warnings/errors.
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+}
+
 -dontwarn android.content.res.**
 -dontwarn com.google.j2objc.annotations.*
 -dontwarn java.awt.**

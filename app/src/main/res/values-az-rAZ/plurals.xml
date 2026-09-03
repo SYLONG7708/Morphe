@@ -24,6 +24,34 @@
         <item quantity="one">%s APK faylı</item>
         <item quantity="other">%s APK faylı</item>
     </plurals>
+    <plurals name="batch_install_summary">
+        <item quantity="one">%s tətbiq quraşdırıldı</item>
+        <item quantity="other">%s tətbiq quraşdırıldı</item>
+    </plurals>
+    <plurals name="batch_reinstall_summary">
+        <item quantity="one">%s tətbiq yenidən quraşdırıldı</item>
+        <item quantity="other">%s tətbiq yenidən quraşdırıldı</item>
+    </plurals>
+    <plurals name="batch_uninstall_summary">
+        <item quantity="one">%s tətbiq silindi</item>
+        <item quantity="other">%s tətbiq silindi</item>
+    </plurals>
+    <plurals name="batch_uninstall_confirm_title">
+        <item quantity="one">%s tətbiq silinsin?</item>
+        <item quantity="other">%s tətbiq silinsin?</item>
+    </plurals>
+    <plurals name="batch_patch_ready_count">
+        <item quantity="one">%s tətbiq yamaqlanmağa hazırdır</item>
+        <item quantity="other">%s tətbiq yamaqlanmağa hazırdır</item>
+    </plurals>
+    <plurals name="batch_patch_notification_ready">
+        <item quantity="one">%s tətbiq quraşdırılmağa hazırdır</item>
+        <item quantity="other">%s tətbiq quraşdırılmağa hazırdır</item>
+    </plurals>
+    <plurals name="batch_skipped_summary">
+        <item quantity="one">%s tətbiq ötürüldü</item>
+        <item quantity="other">%s tətbiq ötürüldü</item>
+    </plurals>
     <plurals name="home_app_info_repatch_cleaned_invalid_data">
         <item quantity="one">Saxlanılan seçimdən %s köhnəlmiş yamaq silindi</item>
         <item quantity="other">Saxlanılan seçimdən %s köhnəlmiş yamaq silindi</item>
@@ -32,12 +60,16 @@
         <item quantity="one">%s mənbə quraşdırılıb</item>
         <item quantity="other">%s mənbə quraşdırılıb</item>
     </plurals>
-    <plurals name="patch_selection_total_patches">
-        <item quantity="one">%s yamaq seçildi</item>
-        <item quantity="other">%s yamaq seçildi</item>
-    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s gizli tətbiq</item>
         <item quantity="other">%s gizli tətbiq</item>
+    </plurals>
+    <plurals name="home_category_app_count">
+        <item quantity="one">%s tətbiq</item>
+        <item quantity="other">%s tətbiq</item>
+    </plurals>
+    <plurals name="expert_mode_copy_from_bundle_done">
+        <item quantity="one">Seçilmiş paketdən %s yamaq köçürüldü</item>
+        <item quantity="other">Seçilmiş paketdən %s yamaq köçürüldü</item>
     </plurals>
 </resources>

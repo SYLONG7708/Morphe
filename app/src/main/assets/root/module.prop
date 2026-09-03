@@ -1,4 +1,4 @@
-id=__PKG_NAME__-Morphe
+id=__MODULE_ID__
 name=__LABEL__ Morphe
 version=__VERSION__
 versionCode=0

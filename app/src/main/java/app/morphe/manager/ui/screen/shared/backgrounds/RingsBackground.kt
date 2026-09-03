@@ -41,8 +41,7 @@ fun RingsBackground(
     val parallaxState = rememberParallaxState(
         enableParallax = enableParallax,
         sensitivity = 0.3f,
-        context = context,
-        coroutineScope = coroutineScope
+        context = context
     )
 
     // Ring configurations - defined once, positions oscillate via sin() each frame

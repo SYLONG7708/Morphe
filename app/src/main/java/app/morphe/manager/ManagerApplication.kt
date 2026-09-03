@@ -3,19 +3,27 @@ package app.morphe.manager
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
+import androidx.core.graphics.drawable.toBitmap
 import app.morphe.manager.data.platform.Filesystem
+import app.morphe.manager.data.room.apps.installed.InstalledApp
 import app.morphe.manager.di.*
-import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.bundleAvatarUrl
-import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.githubAvatarUrl
-import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.gitlabAvatarUrl
+import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.avatarUrls
 import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.domain.repository.BlocklistRepository
+import app.morphe.manager.domain.repository.InstalledAppRepository
 import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.update.BundledEcosystemProvisioner
 import app.morphe.manager.license.DeviceLicenseManager
 import app.morphe.manager.util.*
+import app.morphe.manager.worker.AutoPatchWorker
 import app.morphe.manager.worker.UpdateCheckWorker
 import coil.Coil
 import coil.ImageLoader
@@ -35,15 +43,37 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 class ManagerApplication : Application() {
     companion object {
-        @Volatile var startedActivityCount: Int = 0
+        /**
+         * Resumed rather than started activities, because this answers "is the user looking at
+         * the result right now". A started activity can sit unfocused beside another app in
+         * split screen, where a completion notification is exactly what is wanted.
+         */
+        @Volatile var resumedActivityCount: Int = 0
             private set
+
+        /** True while a Morphe screen is in focus, so a result needs no notification. */
+        val isInForeground: Boolean get() = resumedActivityCount > 0
+
+        /** Launcher shortcut that opens the batch queue with everything worth re-patching. */
+        private const val SHORTCUT_ID_REPATCH = "repatch_outdated"
+        private const val SHORTCUT_ID_UPDATES = "check_updates"
+        private const val SHORTCUT_ID_PATCH_PREFIX = "patch_"
+
+        /** Launchers show about four entries in the long-press menu. */
+        private const val MIN_SHORTCUT_SLOTS = 2
+        private const val MAX_SHORTCUT_SLOTS = 4
+        private const val SHORTCUT_ICON_PX = 192
     }
     private val scope = MainScope()
+    private val licensedRuntimeGate = LicensedRuntimeGate()
     private val prefs: PreferencesManager by inject()
     private val patchBundleRepository: PatchBundleRepository by inject()
     private val bundledEcosystemProvisioner: BundledEcosystemProvisioner by inject()
+    private val blocklistRepository: BlocklistRepository by inject()
     private val fs: Filesystem by inject()
     private val updateNotificationManager: UpdateNotificationManager by inject()
+    private val installedAppRepository: InstalledAppRepository by inject()
+    private val appDataResolver: AppDataResolver by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -65,8 +95,7 @@ class ManagerApplication : Application() {
                 managerModule,
                 workerModule,
                 viewModelModule,
-                databaseModule,
-                rootModule
+                databaseModule
             )
         }
 
@@ -91,11 +120,25 @@ class ManagerApplication : Application() {
         // Create notification channels before any notification can be posted (required on API 26+)
         updateNotificationManager.createNotificationChannels()
 
+        observeLauncherShortcuts()
+        registerActivityTracking()
+
         if (!DeviceLicenseManager.isLicensed(this)) {
             UpdateCheckWorker.cancel(this)
+            AutoPatchWorker.cancel(this)
             Log.i(tag, "SyMorphe is waiting for device-bound owner authorization")
-            return
+        } else {
+            onDeviceLicenseAvailable()
         }
+    }
+
+    /** Starts all network and patching services immediately after an in-process activation. */
+    fun onDeviceLicenseAvailable() {
+        if (!DeviceLicenseManager.isLicensed(this)) return
+        licensedRuntimeGate.start(::startLicensedRuntime)
+    }
+
+    private fun startLicensedRuntime() {
 
         // Preload preferences and kick off background worker/FCM sync
         scope.launch {
@@ -108,13 +151,37 @@ class ManagerApplication : Application() {
             // Use the same deterministic WorkManager path on every device. This derivative
             // intentionally has no private Firebase project or Google configuration.
             val notificationsEnabled = prefs.backgroundUpdateNotifications.get()
-            if (notificationsEnabled) {
+            val automaticUpdatesEnabled = prefs.automaticEcosystemUpdates.get()
+            val useManagerPrereleases = prefs.useManagerPrereleases.get()
+            val usePatchesPrereleases = prefs.bundlePrereleasesEnabled.get()
+                .contains(PatchBundleRepository.DEFAULT_SOURCE_UID.toString())
+            if (notificationsEnabled || automaticUpdatesEnabled) {
                 UpdateCheckWorker.schedule(this@ManagerApplication, prefs.updateCheckInterval.get())
+                UpdateCheckWorker.runNow(this@ManagerApplication)
             } else {
                 UpdateCheckWorker.cancel(this@ManagerApplication)
             }
+            syncFcmTopics(
+                notificationsEnabled = notificationsEnabled,
+                useManagerPrereleases = useManagerPrereleases,
+                usePatchesPrereleases = usePatchesPrereleases,
+            )
+
+            // Re-register automatic re-patching, so a manager update or a wiped WorkManager
+            // database does not silently stop the schedule
+            if (prefs.autoPatchEnabled.get()) {
+                AutoPatchWorker.schedule(
+                    this@ManagerApplication,
+                    prefs.autoPatchInterval.get(),
+                    prefs.autoPatchRequiresCharging.get()
+                )
+            } else {
+                AutoPatchWorker.cancel(this@ManagerApplication)
+            }
         }
 
+        // First touch of the repository builds the Ktor client, which costs seconds on a cold
+        // start, so it happens here on a background dispatcher rather than in the Koin graph
         scope.launch(Dispatchers.Default) {
             with(patchBundleRepository) {
                 reload()
@@ -129,23 +196,29 @@ class ManagerApplication : Application() {
             }
         }
 
+        // Cache first for offline launches, then refresh from the network. Any matches are
+        // logged for support diagnostics; the in-app snackbar is state-driven so it updates
+        // automatically without a callback here
+        scope.launch(Dispatchers.Default) {
+            blocklistRepository.loadFromCache()
+            blocklistRepository.refresh()
+            patchBundleRepository.logBlockedSources()
+        }
+
         // Preload bundle avatar images into AvatarCache while the user hasn't opened the sheet yet.
-        // Suspends until sources are ready, then fetches all URLs in parallel on IO threads.
+        // Suspends until sources are ready, then fetches all URLs in parallel on IO threads
         scope.launch(Dispatchers.IO) {
             patchBundleRepository.sources.first { it.isNotEmpty() }.forEach { bundle ->
                 launch {
-                    val primary = bundle.bundleAvatarUrl ?: bundle.githubAvatarUrl ?: bundle.gitlabAvatarUrl
-                    val fallback = when {
-                        bundle.bundleAvatarUrl != null -> bundle.githubAvatarUrl ?: bundle.gitlabAvatarUrl
-                        bundle.githubAvatarUrl != null -> bundle.gitlabAvatarUrl
-                        else -> null
-                    }
-                    primary?.let { loadRemoteAvatar(it) }
-                    fallback?.let { loadRemoteAvatar(it) }
+                    val avatarUrls = bundle.avatarUrls
+                    avatarUrls.primary?.let { loadRemoteAvatar(it) }
+                    avatarUrls.fallback?.let { loadRemoteAvatar(it) }
                 }
             }
         }
+    }
 
+    private fun registerActivityTracking() {
         // Clean temp dir on fresh start
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             private var firstActivityCreated = false
@@ -162,10 +235,10 @@ class ManagerApplication : Application() {
                 } else Log.d(tag, "System-initiated process death detected")
             }
 
-            override fun onActivityStarted(activity: Activity) { startedActivityCount++ }
-            override fun onActivityResumed(activity: Activity) {}
-            override fun onActivityPaused(activity: Activity) {}
-            override fun onActivityStopped(activity: Activity) { startedActivityCount-- }
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) { resumedActivityCount++ }
+            override fun onActivityPaused(activity: Activity) { resumedActivityCount-- }
+            override fun onActivityStopped(activity: Activity) {}
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
             override fun onActivityDestroyed(activity: Activity) {}
         })
@@ -186,6 +259,104 @@ class ManagerApplication : Application() {
         val storedLang = base?.let { readLanguageFromPrefs(it) } ?: return
         applyAppLanguage(storedLang)
     }
+
+    /**
+     * Keeps the long-press menu on the launcher icon in sync with the patched apps.
+     *
+     * Dynamic rather than declared in XML on purpose: the launcher entry is one of several
+     * activity aliases that swap with the icon style, and a dynamic shortcut is published for
+     * the app as a whole instead of per alias.
+     */
+    private fun observeLauncherShortcuts() {
+        scope.launch(Dispatchers.IO) {
+            installedAppRepository.getAll().collect { apps -> publishLauncherShortcuts(apps) }
+        }
+    }
+
+    private suspend fun publishLauncherShortcuts(installedApps: List<InstalledApp>) {
+        // The system allows far more than a launcher ever shows, so publish only what fits in
+        // the long-press menu instead of turning every patched app into a shortcut
+        val maxShortcuts = ShortcutManagerCompat.getMaxShortcutCountPerActivity(this)
+            .coerceIn(MIN_SHORTCUT_SLOTS, MAX_SHORTCUT_SLOTS)
+
+        val shortcuts = mutableListOf(
+            shortcut(
+                id = SHORTCUT_ID_REPATCH,
+                shortLabel = getString(R.string.shortcut_repatch_short),
+                longLabel = getString(R.string.shortcut_repatch_long),
+                icon = IconCompat.createWithResource(this, R.drawable.ic_shortcut_repatch),
+                rank = 0,
+                intent = shortcutIntent(MainActivity.ACTION_BATCH_PATCH)
+            ),
+            shortcut(
+                id = SHORTCUT_ID_UPDATES,
+                shortLabel = getString(R.string.shortcut_check_updates_short),
+                longLabel = getString(R.string.shortcut_check_updates_long),
+                icon = IconCompat.createWithResource(this, R.drawable.ic_shortcut_updates),
+                rank = 1,
+                intent = shortcutIntent(MainActivity.ACTION_CHECK_UPDATES).apply {
+                    putExtra(UpdateNotificationManager.EXTRA_TRIGGER_UPDATE_CHECK, true)
+                }
+            )
+        )
+
+        // The apps patched most recently are the ones most likely to be patched again
+        installedApps
+            .sortedByDescending { it.patchedAt ?: 0L }
+            .take(maxShortcuts - shortcuts.size)
+            .forEachIndexed { index, app ->
+                // Patching renames packages, so an app that was saved but never installed can
+                // only be named from its saved APK, the same source the home screen reads
+                val appData = appDataResolver.resolveAppData(
+                    packageName = app.originalPackageName,
+                    preferredSource = AppDataSource.ORIGINAL_APK
+                )
+
+                shortcuts += shortcut(
+                    id = "$SHORTCUT_ID_PATCH_PREFIX${app.originalPackageName}",
+                    shortLabel = appData.displayName,
+                    longLabel = getString(R.string.shortcut_patch_app, appData.displayName),
+                    icon = appIcon(appData.icon),
+                    rank = shortcuts.size + index,
+                    intent = shortcutIntent(MainActivity.ACTION_PATCH_APP).apply {
+                        putExtra(MainActivity.EXTRA_PATCH_PACKAGE, app.originalPackageName)
+                    }
+                )
+            }
+
+        runCatching {
+            ShortcutManagerCompat.setDynamicShortcuts(this, shortcuts.take(maxShortcuts))
+        }.onFailure { Log.w(tag, "Failed to publish launcher shortcuts", it) }
+    }
+
+    private fun shortcutIntent(action: String) = Intent(this, MainActivity::class.java).apply {
+        this.action = action
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+    }
+
+    private fun shortcut(
+        id: String,
+        shortLabel: String,
+        longLabel: String,
+        icon: IconCompat,
+        rank: Int,
+        intent: Intent
+    ) = ShortcutInfoCompat.Builder(this, id)
+        .setShortLabel(shortLabel)
+        .setLongLabel(longLabel)
+        .setIcon(icon)
+        .setRank(rank)
+        .setIntent(intent)
+        .build()
+
+    /**
+     * Real app icon so the shortcut reads like the app it patches, with the wand as a
+     * fallback for apps whose icon cannot be resolved.
+     */
+    private fun appIcon(icon: Drawable?): IconCompat = runCatching {
+        icon?.let { IconCompat.createWithBitmap(it.toBitmap(SHORTCUT_ICON_PX, SHORTCUT_ICON_PX)) }
+    }.getOrNull()
+        ?: IconCompat.createWithResource(this, R.drawable.ic_shortcut_repatch)
 
     private fun onFreshProcessStart() {
         fs.uiTempDir.apply {

@@ -1,7 +1,10 @@
 package app.morphe.manager.patcher.worker
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.ActivityManager
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -13,6 +16,7 @@ import android.util.Log
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import app.morphe.manager.BuildConfig
 import app.morphe.manager.MainActivity
 import app.morphe.manager.ManagerApplication
 import app.morphe.manager.R
@@ -27,6 +31,8 @@ import app.morphe.manager.domain.repository.OriginalApkRepository
 import app.morphe.manager.domain.worker.Worker
 import app.morphe.manager.domain.worker.WorkerRepository
 import app.morphe.manager.patcher.logger.Logger
+import app.morphe.manager.patcher.patch.ApkArchitectureResolver
+import app.morphe.manager.patcher.patch.PatchSourceRef
 import app.morphe.manager.patcher.runtime.CoroutineRuntime
 import app.morphe.manager.patcher.runtime.ProcessRuntime
 import app.morphe.manager.patcher.split.SplitApkPreparer
@@ -63,12 +69,27 @@ class PatcherWorker(
         val options: Options,
         val logger: Logger,
         val onPatchCompleted: suspend () -> Unit,
+        /**
+         * Patching was abandoned and started over from the first step, so anything reported by
+         * the previous attempt has to be discarded rather than counted twice.
+         */
+        val onPatchingRestarted: suspend () -> Unit,
         val setInputFile: suspend (File, Boolean, Boolean) -> Unit,
         val onProgress: ProgressEventHandler,
-        val bundleVersions: List<String> = emptyList(),
+        val patchSources: List<PatchSourceRef> = emptyList(),
+        /**
+         * Batch runs announce the whole queue once instead of every app, so the completion
+         * tone and notification are suppressed per item.
+         */
+        val announceCompletion: Boolean = true,
+        /** Apps already done and the queue total, null for a single run. */
+        val queuePosition: Pair<Int, Int>? = null
     ) {
         val packageName get() = input.packageName
     }
+
+    /** Queue position shown in the ongoing notification, set once the args are claimed. */
+    private var queueLabel: String? = null
 
     override suspend fun getForegroundInfo() =
         ForegroundInfo(
@@ -77,35 +98,35 @@ class PatcherWorker(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE else 0
         )
 
+    @SuppressLint("WrongConstant")
     private fun mainActivityPendingIntent(): PendingIntent {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
-        return PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        return PendingIntent.getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     @SuppressLint("WrongConstant")
     private fun createNotification(
         stepName: String? = null,
-        patchProgress: Pair<Int, Int>? = null,  // completed to total patches
+        patchProgress: Pair<Int, Int>? = null, // Completed to total patches
         contentText: String? = null,
     ): Notification {
         val pendingIntent = mainActivityPendingIntent()
-        val channel = NotificationChannel(
-            "morphe-patcher-patching",
-            applicationContext.getString(R.string.notification_channel_patcher),
-            NotificationManager.IMPORTANCE_LOW
-        ).apply {
-            description = applicationContext.getString(R.string.notification_channel_patcher_description)
-        }
-        val notificationManager =
-            applicationContext.getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
-        return Notification.Builder(applicationContext, channel.id)
+        return Notification.Builder(applicationContext, UpdateNotificationManager.CHANNEL_PATCHER)
             .setContentTitle(
                 stepName ?: applicationContext.getString(R.string.patcher_notification_title)
             )
-            .setContentText(contentText ?: applicationContext.getText(R.string.patcher_notification_text))
+            .setContentText(
+                contentText
+                    ?: queueLabel
+                    ?: applicationContext.getText(R.string.patcher_notification_text)
+            )
             .apply {
                 if (patchProgress != null) {
                     val (completed, total) = patchProgress
@@ -116,6 +137,7 @@ class PatcherWorker(
             .setSmallIcon(Icon.createWithResource(applicationContext, R.drawable.ic_notification))
             .setContentIntent(pendingIntent)
             .setCategory(Notification.CATEGORY_SERVICE)
+            .setGroup(UpdateNotificationManager.GROUP_PATCHING)
             .setOngoing(true)
             .build()
     }
@@ -133,12 +155,24 @@ class PatcherWorker(
         notificationManager.notify(NOTIFICATION_ID, createNotification(stepName, patchProgress, contentText))
     }
 
-    private fun showCompletionNotification(succeeded: Boolean, autoInstallPending: Boolean) {
-        // Don't notify when the app is in the foreground - user sees the result on screen
-        if (isAppInForeground()) return
+    private fun showCompletionNotification(
+        succeeded: Boolean,
+        autoInstallPending: Boolean,
+        playSound: Boolean,
+        successSoundUri: String,
+        errorSoundUri: String,
+    ) {
+        if (playSound) CompletionSound.play(
+            applicationContext,
+            succeeded,
+            successSoundUri,
+            errorSoundUri
+        )
         // Don't show "patching complete" when Shizuku auto-install will immediately follow
         if (succeeded && autoInstallPending) return
-        val notification = Notification.Builder(applicationContext, "morphe-patcher-patching")
+        // Don't notify when the app is in the foreground - user sees the result on screen
+        if (ManagerApplication.isInForeground) return
+        val notification = Notification.Builder(applicationContext, UpdateNotificationManager.CHANNEL_PATCHER)
             .setContentTitle(
                 applicationContext.getString(
                     if (succeeded) R.string.patcher_complete_title else R.string.patcher_failed_title
@@ -153,9 +187,6 @@ class PatcherWorker(
             .notify(COMPLETION_NOTIFICATION_ID, notification)
     }
 
-    private fun isAppInForeground(): Boolean =
-        ManagerApplication.startedActivityCount > 0
-
     override suspend fun doWork(): Result {
         if (!DeviceLicenseManager.isLicensed(applicationContext)) {
             Log.e(tag, "Refusing to patch without a valid device-bound license".logFmt())
@@ -167,11 +198,11 @@ class PatcherWorker(
         }
 
         try {
-            // This does not always show up for some reason.
+            // This does not always show up for some reason
             setForeground(getForegroundInfo())
         } catch (e: Exception) {
             // Foreground promotion can fail on some devices or when notification permission is
-            // denied. Log it but continue - patching still works, just with less OS protection.
+            // denied. Log it but continue - patching still works, just with less OS protection
             Log.w(tag, "Failed to promote worker to foreground service:".logFmt(), e)
         }
 
@@ -190,13 +221,20 @@ class PatcherWorker(
         var patchingSucceeded = false
         val result = try {
             args = workerRepository.claimInput(this)
+            queueLabel = args.queuePosition?.let { (done, total) ->
+                applicationContext.getString(
+                    R.string.batch_patch_progress_counter,
+                    done.toString(),
+                    total.toString()
+                )
+            }
             runPatcher(args).also { if (it == Result.success()) patchingSucceeded = true }
         } finally {
             wakeLock.release()
         }
 
         // Only delete the temporary input APK after patching if not rooted, since root mount
-        // install still needs it - it will be deleted inside RootInstaller after pm install
+        // install still needs it. The UI install flow deletes disposable inputs after mounting.
         if (patchingSucceeded && Shell.isAppGrantedRoot() == false) {
             (args.input as? SelectedApp.Local)?.takeIf { it.temporary }?.file?.delete()
         }
@@ -247,9 +285,23 @@ class PatcherWorker(
             args.onPatchCompleted()
         }
 
+        // The notification carries a patch count of its own, which would otherwise keep
+        // climbing past the total once a restarted attempt reports the same patches again.
+        // It goes back to the indeterminate form because the next attempt starts at loading
+        // patches, not at applying them
+        val onRestart: suspend () -> Unit = {
+            completedPatches = 0
+            patchingPhaseCompleted = false
+            updatePatcherNotification(stepName = null, patchProgress = null)
+            args.onPatchingRestarted()
+        }
+
         val patchedApk = fs.tempDir.resolve("patched.apk")
         var succeeded = false
         var autoInstallPending = false
+        val completionSoundEnabled = prefs.patcherCompletionSound.get()
+        val successSoundUri = prefs.patcherSuccessSoundUri.get()
+        val errorSoundUri = prefs.patcherErrorSoundUri.get()
 
         return try {
             val startTime = System.currentTimeMillis()
@@ -279,6 +331,11 @@ class PatcherWorker(
             val useProcessRuntime = prefs.useProcessRuntime.get()
             val stripNativeLibs = prefs.stripUnusedNativeLibs.get()
             val inputIsSplitArchive = SplitApkPreparer.isSplitArchive(inputFile)
+            // The architecture the patches were selected against, worth a line of its own now
+            // that a patch can declare itself unavailable for the one the input carries. Read
+            // from the app rather than from [inputFile], which for an installed one is the base
+            // APK alone and says nothing about the split its native libraries live in
+            val apkArchitecture = ApkArchitectureResolver.resolve(args.input, pm)
             val selectedCount = args.selectedPatches.values.sumOf { it.size }
 
             // Log device environment for diagnostics
@@ -287,6 +344,17 @@ class PatcherWorker(
                     .getMemoryInfo(it)
             }
             val statFs = StatFs(applicationContext.filesDir.absolutePath)
+
+            // What this build of Morphe brings to the run. Every bug report needs the versions,
+            // and native lib stripping silently changes what ends up in the output APK.
+            // The bytecode mode is left out, the patcher logs it itself while writing dex
+            args.logger.info(
+                "$LOG_WORKER_PREFIX_BUILD " +
+                        "$LOG_WORKER_FIELD_MANAGER=${BuildConfig.VERSION_NAME} " +
+                        "$LOG_WORKER_FIELD_PATCHER=${BuildConfig.PATCHER_VERSION} " +
+                        "$LOG_WORKER_FIELD_NATIVE_LIBS=$stripNativeLibs"
+            )
+
             args.logger.info(
                 "$LOG_WORKER_PREFIX_DEVICE " +
                         "$LOG_WORKER_FIELD_ANDROID=${Build.VERSION.RELEASE} " +
@@ -300,11 +368,19 @@ class PatcherWorker(
             args.logger.info(
                 "Patching started at ${System.currentTimeMillis()} " +
                         "pkg=${args.packageName} version=${args.input.version} " +
-                        "bundle=${args.bundleVersions.joinToString(",").ifBlank { "?" }} " +
                         "input=${inputFile.absolutePath} size=${inputFile.length()} " +
-                        "split=$inputIsSplitArchive patches=$selectedCount " +
+                        "split=$inputIsSplitArchive arch=$apkArchitecture patches=$selectedCount " +
                         "device=${Build.MANUFACTURER} model=${Build.MODEL}"
             )
+
+            // One line per source rather than a joined list, so a name and its version stay
+            // together no matter how many sources contributed to this run
+            args.patchSources.forEach { source ->
+                args.logger.info(
+                    "$LOG_WORKER_PREFIX_SOURCE $LOG_WORKER_FIELD_NAME=\"${source.name}\" " +
+                            "$LOG_WORKER_FIELD_VERSION=\"${source.version ?: "?"}\""
+                )
+            }
 
             // Log runtime mode info
             if (useProcessRuntime) {
@@ -350,7 +426,8 @@ class PatcherWorker(
                     onPatchCompleted,
                     ::updateProgress,
                     stripNativeLibs,
-                    onMergedApkReady
+                    onMergedApkReady,
+                    onRestart
                 )
             } catch (e: Exception) {
                 if (!useProcessRuntime || Build.VERSION.SDK_INT > Build.VERSION_CODES.Q || !isOomRelated(e)) {
@@ -358,6 +435,9 @@ class PatcherWorker(
                 }
 
                 args.logger.warn("Process runtime OOM on Android ${Build.VERSION.RELEASE}, falling back to coroutine runtime")
+
+                // The fallback is a fresh run of the whole pipeline, same as a memory retry
+                onRestart()
 
                 CoroutineRuntime(applicationContext).execute(
                     inputFile.absolutePath,
@@ -369,7 +449,8 @@ class PatcherWorker(
                     onPatchCompleted,
                     ::updateProgress,
                     stripNativeLibs,
-                    onMergedApkReady
+                    onMergedApkReady,
+                    onRestart
                 )
             }
 
@@ -415,9 +496,9 @@ class PatcherWorker(
             Log.i(tag, "Patching succeeded".logFmt())
             val installerPrimary = prefs.installerPrimary.get()
             autoInstallPending = prefs.autoInstallWithShizuku.get() &&
-                (installerPrimary == InstallerPreferenceTokens.SHIZUKU ||
-                        installerPrimary == InstallerPreferenceTokens.SHIZUKU_PLAY_STORE) &&
-                !prefs.promptInstallerOnInstall.get()
+                    (installerPrimary == InstallerPreferenceTokens.SHIZUKU ||
+                            installerPrimary == InstallerPreferenceTokens.SHIZUKU_PLAY_STORE) &&
+                    !prefs.promptInstallerOnInstall.get()
             succeeded = true
             Result.success()
         } catch (e: ProcessRuntime.ProcessExitException) {
@@ -431,13 +512,27 @@ class PatcherWorker(
                 e.exitCode.toString()
             )
             updateProgress(state = State.FAILED, message = message)
-            val previousLimit = prefs.patcherProcessMemoryLimit.get()
             Result.failure(
                 workDataOf(
                     PROCESS_EXIT_CODE_KEY to e.exitCode,
-                    PROCESS_PREVIOUS_LIMIT_KEY to previousLimit,
+                    PROCESS_PREVIOUS_LIMIT_KEY to e.heapLimitMb,
                     PROCESS_FAILURE_MESSAGE_KEY to message
                 )
+            )
+        } catch (e: ProcessRuntime.HeapExhaustedException) {
+            Log.e(
+                tag,
+                "Patcher exhausted its ${e.heapLimitMb}MB heap. ${e.originalStackTrace}".logFmt()
+            )
+            // The stack trace is already in the log; the failure itself says what the user can
+            // act on, since no memory limit this device allows would have been enough
+            val message = applicationContext.getString(
+                R.string.patcher_heap_exhausted_message,
+                e.heapLimitMb
+            )
+            updateProgress(state = State.FAILED, message = message)
+            Result.failure(
+                workDataOf(PROCESS_FAILURE_MESSAGE_KEY to message)
             )
         } catch (e: ProcessRuntime.RemoteFailureException) {
             Log.e(
@@ -458,13 +553,20 @@ class PatcherWorker(
             if (!patchedApk.delete() && patchedApk.exists()) {
                 Log.w(tag, "Failed to delete temporary patched APK: ${patchedApk.absolutePath}".logFmt())
             }
-            if (!isStopped) showCompletionNotification(succeeded, autoInstallPending)
+            if (!isStopped && args.announceCompletion) showCompletionNotification(
+                succeeded,
+                autoInstallPending,
+                completionSoundEnabled,
+                successSoundUri,
+                errorSoundUri
+            )
         }
     }
 
     private fun isOomRelated(e: Exception) = when (e) {
         is ProcessRuntime.ProcessExitException ->
             e.exitCode == ProcessRuntime.OOM_EXIT_CODE || e.exitCode == ProcessRuntime.SIGKILL_EXIT_CODE
+        is ProcessRuntime.HeapExhaustedException -> true
         is ProcessRuntime.RemoteFailureException ->
             e.originalStackTrace.contains("OutOfMemoryError", ignoreCase = true)
         else -> false
@@ -477,6 +579,9 @@ class PatcherWorker(
         const val NOTIFICATION_ID = 1
         const val COMPLETION_NOTIFICATION_ID = 2
 
+        /** Kept as the patcher screen's entry point now that the tone itself is shared. */
+        fun stopCompletionSound() = CompletionSound.stop()
+
         const val PROCESS_EXIT_CODE_KEY = "process_exit_code"
         const val PROCESS_PREVIOUS_LIMIT_KEY = "process_previous_limit"
         const val PROCESS_FAILURE_MESSAGE_KEY = "process_failure_message"
@@ -484,6 +589,14 @@ class PatcherWorker(
         const val LOG_WORKER_PREFIX_SUCCEEDED = "Patching succeeded:"
         const val LOG_WORKER_PREFIX_DEVICE = "Device:"
         const val LOG_WORKER_PREFIX_RUNTIME = "Runtime:"
+        const val LOG_WORKER_PREFIX_SOURCE = "Source:"
+        const val LOG_WORKER_PREFIX_BUILD = "Build:"
+
+        const val LOG_WORKER_FIELD_NAME = "name"
+        const val LOG_WORKER_FIELD_VERSION = "version"
+        const val LOG_WORKER_FIELD_MANAGER = "manager"
+        const val LOG_WORKER_FIELD_PATCHER = "patcher"
+        const val LOG_WORKER_FIELD_NATIVE_LIBS = "nativeLibs"
         const val LOG_PROCESS_PREFIX_COROUTINE_HEAP = "App memory limit:"
         const val LOG_WORKER_FIELD_SIZE = "size"
         const val LOG_WORKER_FIELD_MEMORY_LIMIT = "memoryLimit"

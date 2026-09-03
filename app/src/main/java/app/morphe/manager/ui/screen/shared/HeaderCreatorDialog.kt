@@ -9,7 +9,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.net.Uri
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -221,19 +220,18 @@ fun HeaderCreatorDialog(
 
     val showInfoDialog = remember { mutableStateOf(false) }
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = { if (!isCreating) onDismiss() },
         title = stringResource(R.string.header_creator_create),
         titleTrailingContent = {
-            DialogTitleAction(
+            TitleAction(
                 icon = Icons.Outlined.Info,
                 contentDescription = stringResource(R.string.header_creator_guide),
                 onClick = { showInfoDialog.value = true }
             )
         },
-        compactPadding = false,
         footer = {
-            MorpheDialogButton(
+            AppDialogButton(
                 text = stringResource(R.string.header_creator_create),
                 onClick = { openFolderPicker() },
                 enabled = canCreate && !isCreating,
@@ -245,7 +243,7 @@ fun HeaderCreatorDialog(
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)
+                verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
             ) {
                 // Light header section
                 if (showLightVariant) {
@@ -256,7 +254,7 @@ fun HeaderCreatorDialog(
                         color = LocalDialogTextColor.current
                     )
 
-                    MorpheDialogOutlinedButton(
+                    AppDialogOutlinedButton(
                         text = if (lightHeaderUri == null)
                             stringResource(R.string.adaptive_icon_select_image)
                         else
@@ -282,47 +280,16 @@ fun HeaderCreatorDialog(
                     )
 
                     if (lightHeaderBitmap != null) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+                        ScaleSliderRow(
+                            value = lightScale,
+                            onValueChange = { lightScale = it },
+                            valueRange = HeaderConfig.MIN_SCALE..HeaderConfig.MAX_SCALE
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Image,
+                            SliderResetAction(
+                                visible = lightScale != 1f || lightOffsetX != 0f || lightOffsetY != 0f,
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                onReset = { lightScale = 1f; lightOffsetX = 0f; lightOffsetY = 0f }
                             )
-                            Spacer(Modifier.width(8.dp))
-                            Slider(
-                                value = lightScale,
-                                onValueChange = { lightScale = it.coerceIn(HeaderConfig.MIN_SCALE, HeaderConfig.MAX_SCALE) },
-                                valueRange = HeaderConfig.MIN_SCALE..HeaderConfig.MAX_SCALE,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Icon(
-                                imageVector = Icons.Outlined.Image,
-                                contentDescription = null,
-                                modifier = Modifier.size(22.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            AnimatedVisibility(visible = lightScale != 1f || lightOffsetX != 0f || lightOffsetY != 0f) {
-                                Row {
-                                    Spacer(Modifier.width(8.dp))
-                                    IconButton(
-                                        onClick = { lightScale = 1f; lightOffsetX = 0f; lightOffsetY = 0f },
-                                        modifier = Modifier.size(40.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.RestartAlt,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                }
-                            }
                         }
                     }
 
@@ -337,7 +304,7 @@ fun HeaderCreatorDialog(
                     color = LocalDialogTextColor.current
                 )
 
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = if (darkHeaderUri == null)
                         stringResource(R.string.adaptive_icon_select_image)
                     else
@@ -363,63 +330,32 @@ fun HeaderCreatorDialog(
                 )
 
                 if (darkHeaderBitmap != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    ScaleSliderRow(
+                        value = darkScale,
+                        onValueChange = { darkScale = it },
+                        valueRange = HeaderConfig.MIN_SCALE..HeaderConfig.MAX_SCALE
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Image,
+                        SliderResetAction(
+                            visible = darkScale != 1f || darkOffsetX != 0f || darkOffsetY != 0f,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            onReset = { darkScale = 1f; darkOffsetX = 0f; darkOffsetY = 0f }
                         )
-                        Spacer(Modifier.width(8.dp))
-                        Slider(
-                            value = darkScale,
-                            onValueChange = { darkScale = it.coerceIn(HeaderConfig.MIN_SCALE, HeaderConfig.MAX_SCALE) },
-                            valueRange = HeaderConfig.MIN_SCALE..HeaderConfig.MAX_SCALE,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.Outlined.Image,
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        AnimatedVisibility(visible = darkScale != 1f || darkOffsetX != 0f || darkOffsetY != 0f) {
-                            Row {
-                                Spacer(Modifier.width(8.dp))
-                                IconButton(
-                                    onClick = { darkScale = 1f; darkOffsetX = 0f; darkOffsetY = 0f },
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.RestartAlt,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }
-            MorpheContentOverlay(visible = isCreating) {
+            ContentOverlay(visible = isCreating) {
                 PulsingLogoWithCaption(caption = stringResource(R.string.creating))
             }
         }
     }
 
     if (showInfoDialog.value) {
-        MorpheDialog(
+        AppDialog(
             onDismissRequest = { showInfoDialog.value = false },
             title = stringResource(R.string.header_creator_guide),
             footer = {
-                MorpheDialogButton(
-                    text = stringResource(android.R.string.ok),
+                AppDialogOutlinedButton(
+                    text = stringResource(R.string.close),
                     onClick = { showInfoDialog.value = false },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -506,7 +442,7 @@ private fun HeaderPreview(
             modifier = Modifier
                 .width(previewWidth)
                 .height(previewHeight)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(Defaults.CompactCornerRadius))
                 .background(
                     if (isDarkTheme)
                         Color(0xFF1C1C1C)
@@ -516,7 +452,7 @@ private fun HeaderPreview(
                 .border(
                     HeaderConfig.BORDER_STROKE_WIDTH.dp,
                     MaterialTheme.colorScheme.outline,
-                    RoundedCornerShape(12.dp)
+                    RoundedCornerShape(Defaults.CompactCornerRadius)
                 ),
             contentAlignment = Alignment.Center
         ) {

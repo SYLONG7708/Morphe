@@ -19,11 +19,9 @@
     <string name="home_update_available">Kemas kini Morphie tersedia</string>
     <string name="home_update_available_subtitle">Kemas kini baharu tersedia untuk di muat turun</string>
     <string name="home_update_error">Kemas kini gagal</string>
-    <string name="home_update_error_subtitle">Semak sambungan internet kamu dan cuba lagi</string>
     <string name="home_update_skipped_metered">Kemas kini taraf dilangkau</string>
     <string name="home_update_skipped_metered_subtitle">Data mudah alih aktif</string>
     <string name="home_updating_sources">Kemas kini sumber-sumber… </string>
-    <string name="home_update_progress_format">%s proses</string>
     <string name="home_update_success">Kemas kini sumber selesai</string>
     <string name="home_update_success_subtitle">Sumber-sumbee anda adalah yang terkini</string>
     <string name="home_sources_are_loading">Sumber sedang di muat naik, sila tunggu… </string>
@@ -33,6 +31,8 @@
     <string name="home_no_apps_search_subtitle">Tiada aplikasi bersesuaian \"%s\"</string>
     <string name="home_all_apps_hidden_title">Semua aplikasi telah disorokkan</string>
     <string name="home_all_apps_hidden_subtitle">Anda telah menyorokkan semua aplikasi daripada skrin utama</string>
+    <string name="home_category_all_apps">Semua aplikasi</string>
+    <string name="home_category_custom">Tersuai</string>
     <!-- Home Screen - Home Greetings -->
     <string name="home_greeting_1">Aplikasi apa yang hendak kamu tampal? </string>
     <!-- Humorous hype message with light nostalgia -->
@@ -132,7 +132,7 @@
     <string name="home_app_info_no_saved_apk">Tiada APK tersimpan. Tampalan akan memerlukan fail APK yang dipilih semula</string>
     <string name="home_version_requires_android">Memerlukan Android %s+</string>
     <string name="home_apk_no_compatible_versions_title">Tidak disokong pada peranti ini</string>
-    <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; tidak mempunyai versi yang disokong untuk Android %2$d (API %3$d). Semua versi yang dinyatakan memerlukan versi Android yang lebih tinggi</string>
+    <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; tidak mempunyai versi yang disokong untuk Android %2$s (API %3$s). Semua versi yang dinyatakan memerlukan versi Android yang lebih tinggi</string>
     <!-- Home Screen - Dialog 2: Download Instructions -->
     <string name="home_download_instructions_title">Muat turun APK asal</string>
     <string name="home_download_instructions_steps_title">Arahan:</string>
@@ -143,12 +143,11 @@
     <string name="home_download_instructions_download_button_toast_3">Alah bisa tegal biasa dan anda semakin hampir 💪</string>
     <string name="home_download_instructions_download_button_toast_4">Belum lagi… belum lagi… 🙈</string>
     <string name="home_download_instructions_download_button_toast_5">Okey, saya menghormati dedikasi ini 🫡</string>
-    <string name="home_download_instructions_download_button_toast_6">Anda kini penguji butang SyMorphe yang rasmi 🏅</string>
+    <string name="home_download_instructions_download_button_toast_6">Anda kini penguji butang Morphe yang rasmi 🏅</string>
     <string name="home_download_instructions_step3">Tunggu untuk muat turun selesai, dan &lt;b&gt;jangan muat turun&lt;/b&gt; APK itu</string>
     <string name="home_download_instructions_step3_mount">Tunggu untuk mhat turun selesai, kemudian &lt;b&gt;instal APK itu&lt;/b&gt;</string>
-    <string name="home_download_instructions_step4">Selepas muat turun selesai, pulang ke SyMorphe</string>
-    <string name="home_download_instructions_step4_mount">Selepas pasang APK asal, pulang ke SyMorphe</string>
-    <string name="home_download_instructions_continue">Teruskan ke APKMirror.com</string>
+    <string name="home_download_instructions_step4">Selepas muat turun selesai, pulang ke Morphe</string>
+    <string name="home_download_instructions_step4_mount">Selepas pasang APK asal, pulang ke Morphe</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Pilih APK yang telah dimuat turun</string>
     <string name="home_file_picker_prompt_description">Pilih fail APK &lt;b&gt;%s&lt;/b&gt; yang baru anda muat turun</string>
@@ -158,7 +157,6 @@
     <string name="home_select_apk_title">Pilih APK</string>
     <string name="home_select_any_apk_description">Memilih mana-mana fail APK atau aplikasi yang telah dipasang pada peranti ini</string>
     <string name="home_use_installed_app">Gunakan aplikasi terpasang</string>
-    <string name="home_installed_app_picker_title">Pilih aplikasi terpasang</string>
     <string name="home_installed_app_picker_empty">Tiada aplikasi dijumpai</string>
     <string name="home_installed_app_picker_filter_all">Semua aplikasi</string>
     <string name="home_installed_app_picker_filter_user">Aplikasi pengguna sahaja</string>
@@ -207,7 +205,7 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="home_dialog_unsupported_version_compatible_versions">Versi-versi bersesuaian:</string>
     <string name="home_dialog_unsupported_version_unsupported_label">Tidak disokong</string>
     <!-- "Build" here refers to a specific compiled version of the app (versionCode) -->
-    <string name="home_dialog_unsupported_version_build">Binaan %d</string>
+    <string name="home_dialog_unsupported_version_build">Binaan %s</string>
     <string name="home_dialog_unsupported_version_build_mismatch_description">Ini ialah binaan yang berbeza bagi versi yang sama. Tampalan memerlukan binaan tertentu</string>
     <string name="home_dialog_wrong_package_title">Pakej yang dipilih salah</string>
     <string name="home_dialog_wrong_package_description">APK yang dipilih bukan untuk aplikasi yang anda ingin tampal</string>
@@ -221,9 +219,10 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="home_low_disk_space_dialog_message">Hanya %1$.2f GB storan bebas yang tersedia. Tampalan memerlukan sekurang-kurangnya %2$.2f GB ruang kosong untuk berfungsi dengan baik</string>
     <string name="home_low_disk_space_dialog_warning">Teruskan mungkin boleh mengakibatkan ralat \"Fail tidak dijumpai\" atau memcemarkan keluaran APK</string>
     <string name="home_simple_bundle_select_title">Pilih sumber tampalan</string>
-    <!-- Patch Options -->
+    <!-- Color picker -->
     <string name="custom_color">Warna tersuai</string>
     <string name="hex_color">Warna Hex</string>
+    <!-- Patch Options -->
     <string name="patch_option_instructions">Panduan</string>
     <string name="patch_option_enter_value">Masukkan nilai</string>
     <string name="patch_option_enter_number">Masukkan nombor</string>
@@ -264,6 +263,7 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="header_creator_guide_themes_title">Tema cerah dan gelap</string>
     <string name="header_creator_guide_themes_body">Kebanyakan aplikasi memerlukan imej berasingan untuk tema cerah dan gelap. Sesetengah aplikasi (seperti YouTube Music) hanya menggunakan tema gelap, jadi hanya bahagian itu yang ditunjukkan.</string>
     <string name="header_creator_guide_positioning_title">Kedudukan dan penskalaan</string>
+    <!-- Batch patching -->
     <!-- Home Screen - App Info Screen -->
     <string name="home_app_info_uninstall_app_confirmation">Adakah anda pasti mahu menyahpasang aplikasi ini?</string>
     <string name="home_app_info_remove_app_warning">Ini akan dipadam secara kekal:</string>
@@ -283,16 +283,10 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="home_app_info_patch_update_available">Kemas kini tampalan tersedia</string>
     <string name="home_app_info_patch_update_available_description">Versi patch yang lebih baru tersedia. Repatch aplikasi anda untuk mendapatkan penambahbaikan dan pembaikan terkini</string>
     <string name="home_app_info_app_deleted_warning">Aplikasi telah dinyahpasangkan</string>
-    <string name="home_app_info_app_deleted_description">Aplikasi ini telah dinyahpasangkan di luar SyMorphe. Kembalikan ia untuk memulihkan fungsi</string>
+    <string name="home_app_info_app_deleted_description">Aplikasi ini telah dinyahpasangkan di luar Morphe. Kembalikan ia untuk memulihkan fungsi</string>
     <string name="home_app_info_apk_size">Saiz APK</string>
     <!-- Home Screen - Root Mode -->
     <string name="root_install_apk_required">Mod root memerlukan APK asal diinstal pada peranti anda sebelum menampal</string>
-    <string name="root_gmscore_excluded">Tampalan sokongan GmsCore dikecualikan dalam mod root</string>
-    <string name="root_pre_patch_installer_title">Pilih kaedah pemasangan</string>
-    <string name="root_pre_patch_installer_description">Peranti anda mempunyai akses root. Pilih cara anda ingin memasang aplikasi yang ditampal</string>
-    <string name="root_pre_patch_installer_standard_title">Pemasangan Standard</string>
-    <string name="root_pre_patch_installer_standard_description">Pasang sebagai aplikasi berasingan dengan sokongan GmsCore. Pemasang boleh dipilih selepas tampalan dibuat</string>
-    <string name="root_pre_patch_installer_hint">Kaedah pemasangan menentukan tampalan mana yang disertakan dan tidak boleh diubah selepas tampalan</string>
     <!-- Patcher Screen -->
     <string name="patcher_error_copied">Ralat disalin ke papan keratan</string>
     <string name="patcher_error_log">Log ralat</string>
@@ -314,8 +308,8 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="patcher_ready_to_mount_subtitle">Tekan butang dibawah untuk memasang</string>
     <string name="patcher_storage_permission_dialog_title">Laluan storan tidak dapat diakses</string>
     <string name="patcher_incompatible_patcher_title">Kemas kini diperlukan</string>
-    <string name="patcher_incompatible_patcher_update_button">Muat turun dan kemas kini SyMorphe</string>
-    <string name="patcher_storage_permission_description_api30">Satu atau lebih pilihan tampalan menuju ke laluan yang SyMorphe tidak dapat baca. Benarkan akses storan dan tekan butang kemudian tampalan akan mula secara automatik</string>
+    <string name="patcher_incompatible_patcher_update_button">Muat turun dan kemas kini Morphe</string>
+    <string name="patcher_storage_permission_description_api30">Satu atau lebih pilihan tampalan menuju ke laluan yang Morphe tidak dapat baca. Benarkan akses storan dan tekan butang kemudian tampalan akan mula secara automatik</string>
     <string name="patcher_storage_permission_description_legacy">Satu atau lebih pilihan tampalan menuju ke laluan yang tidak dapat diakses. Kemas kini laluan pada pilihan tampalan dan cuba semula</string>
     <string name="patcher_storage_permission_grant">Berikan akses storan</string>
     <string name="patcher_storage_permission_denied_warning">Akses storan ditolak. Berikan akses untuk gunakan laluan ini atau pindahkan fail-fail ke direktori peribadi aplikasi</string>
@@ -334,8 +328,9 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="patcher_step_sign_apk">Menandatangani fail APK ditampal</string>
     <!-- Battery optimization pre-flight dialog -->
     <string name="battery_optimization_dialog_title">Perlindungan tampalan latar belakang</string>
-    <string name="battery_optimization_dialog_description">Sesetengah peranti mungkin menghentikan penampal apabila aplikasi diminimumkan. Benarkan SyMorphe berjalan tanpa keterbatasan bateri untuk memastikan tampalan selesai dengan teliti</string>
+    <string name="battery_optimization_dialog_description">Sesetengah peranti mungkin menghentikan penampal apabila aplikasi diminimumkan. Benarkan Morphe berjalan tanpa keterbatasan bateri untuk memastikan tampalan selesai dengan teliti</string>
     <string name="battery_optimization_not_now">Bukan sekarang</string>
+    <!-- Memory limit dialog, shown after the patcher process was killed -->
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Tampalan sedang berjalan… </string>
     <string name="patcher_notification_text">Tekan untuk kembali ke penampal</string>
@@ -348,9 +343,8 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="patcher_message_4">Membancuh magik digital… ☕</string>
     <string name="patcher_message_5">Rehat berserta kopi disyorkan… ☕</string>
     <string name="patcher_message_6">Pandang ke luar, ia bagus di luar sana… 🌤️</string>
-    <string name="patcher_message_7">Melaraskan 1 dan 0… 🤖</string>
     <string name="patcher_message_8">Menguraikan spageti digital… 🍝</string>
-    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
     <string name="patcher_message_9">Membetulkan pepijat dalam aplikasi yang belum ditampal… 🪲</string>
     <string name="patcher_message_10">Tampalan yang hebat berbaloi untuk ditunggu… ⏳</string>
     <string name="patcher_message_11">Menggilap piksel sehingga ia bersinar… 💎</string>
@@ -373,7 +367,6 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <!-- Patcher Screen - Other hidden strings -->
     <string name="applying_patches">Memasang tampalan</string>
     <string name="failed_to_execute_patch">Gagal untuk memasang %s</string>
-    <string name="patched_app_saved_toast">Aplikasi telah ditampal disimpan untuk lain kali</string>
     <string name="patched_app_save_failed_toast">Gagal untuk menyimpan aplikasi yang telah ditampal</string>
     <string name="plugin_activity_dialog_body">Interaksi pengguna diperlukan untuk meneruskan dengan pemalam ini</string>
     <string name="patcher_process_exit_message">Proses penampalan keluar dengan kod %s</string>
@@ -387,8 +380,8 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="failed_to_mount">Gagal untuk ditunggang: %s</string>
     <string name="failed_to_unmount">Gagal untuk nyah-tunggang %s</string>
     <!-- Patcher Screen - Mini-games -->
-    <string name="mini_game_score">Markah %d</string>
-    <string name="mini_game_best">Terbaik %d</string>
+    <string name="mini_game_score">Markah %s</string>
+    <string name="mini_game_best">Terbaik %s</string>
     <string name="mini_game_new_record">Rekod baharu!</string>
     <string name="mini_game_game_over">Permainan Tamat</string>
     <string name="mini_game_try_again">Cuba Lagi</string>
@@ -417,14 +410,16 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="settings_appearance_light">Cahaya</string>
     <string name="settings_appearance_dark">Gelap</string>
     <string name="settings_appearance_dynamic">Material You</string>
+    <string name="settings_appearance_monochrome">Monokrom</string>
     <string name="settings_appearance_accent_color">Warna aksen</string>
     <string name="settings_appearance_pure_black">Hitam Tulen</string>
     <!-- Settings - Appearance Tab - Language Selector -->
     <string name="settings_appearance_app_language">Bahasa aplikasi</string>
     <string name="settings_appearance_app_language_current">Bahasa semasa</string>
     <string name="settings_appearance_translations_info_title">Terjemahan untuk sesetengah bahasa mungkin kurang atau tidak lengkap</string>
-    <string name="settings_appearance_translations_info_text">Untuk menterjemahkan bahasa baharu atau memperbaiki terjemahan yang sedia ada, lawati %s</string>
+    <!-- Settings - Appearance Tab - Interface Scale -->
     <!-- Settings - Appearance Tab - Home Screen Section -->
+    <string name="settings_appearance_app_card_colors_default">Lalai</string>
     <!-- Settings - Appearance Tab - App Icon Selector -->
     <string name="settings_appearance_app_icon_selector_title">Ikon aplikasi</string>
     <string name="settings_appearance_app_icon_default">Lalai</string>
@@ -437,6 +432,7 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="settings_appearance_app_icon_change_dialog_confirm">Tukar ikon</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Kemas kini</string>
+    <string name="settings_advanced_patcher">Penampal</string>
     <string name="settings_advanced_updates_background_notifications">Pemberitahuan kemas kini latar belakang</string>
     <string name="settings_advanced_updates_background_notifications_description">Semak kemas kini secara berkala di latar belakang dan beritahu apabila tersedia</string>
     <string name="settings_advanced_update_interval">Semak kekerapan</string>
@@ -451,14 +447,14 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="notification_manager_update_title">Kemas kini Morphie tersedia</string>
     <string name="notification_bundle_update_title">Tampalan baharu tersedia</string>
     <string name="notification_update_text">Versi %s sedia untuk dimuat turun</string>
-    <string name="notification_bundle_update_text_unversioned">Tekan untuk buka SyMorphe dan kemas kini</string>
+    <string name="notification_bundle_update_text_unversioned">Tekan untuk buka Morphe dan kemas kini</string>
     <string name="notification_permission_dialog_title">Benarkan notifikasi</string>
-    <string name="notification_permission_dialog_description">SyMorphe memerlukan kebenaran notifikasi untuk memberitahu anda apabila kemas kini tersedia di latar belakang</string>
+    <string name="notification_permission_dialog_description">Morphe memerlukan kebenaran notifikasi untuk memberitahu anda apabila kemas kini tersedia di latar belakang</string>
     <string name="notification_post_patch_dialog_title">Sudikah anda untuk menerima notifikasi apabila kemas kini tersedia? </string>
     <string name="notification_channel_fcm_updates">Kemas kini notifikasi</string>
-    <string name="notification_channel_fcm_updates_description">Notifikasi tentang SyMorphe baharu dan pelepasan tampalan</string>
+    <string name="notification_channel_fcm_updates_description">Notifikasi tentang Morphe baharu dan pelepasan tampalan</string>
     <string name="notification_channel_patcher">Menampal</string>
-    <string name="notification_channel_patcher_description">Ditunjukkan semasa SyMorphe menampal aplikasi di latar belakang</string>
+    <string name="notification_channel_patcher_description">Ditunjukkan semasa Morphe menampal aplikasi di latar belakang</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Tetapan pakar</string>
     <string name="settings_advanced_expert_mode">Mod mahir</string>
@@ -472,20 +468,14 @@ Teruskannya mungkin boleh menyebabkan aplikasi tidak dapat berfungsi</string>
     <string name="settings_advanced_github_pat_configured">Token dikonfigurasikan</string>
     <string name="settings_advanced_github_pat_how_to_get">Cara mendapatkan token</string>
     <string name="settings_advanced_github_pat_dialog_title">Tetapkan GitHub Personal Access Token</string>
-    <string name="settings_advanced_github_pat_dialog_description">Tetapkan Token Akses Peribadi GitHub untuk dapat menambah permintaan tarik sebagai sumber luaran. Buat PAT dengan skop awam_repo github.com</string>
     <string name="settings_advanced_github_pat_export_include_label">Sertakan dalam eksport tetapan</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Tambahkan PAT ini ke tetapan SyMorphe dieksport</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Tambahkan PAT ini ke tetapan Morphe dieksport</string>
     <string name="settings_advanced_github_pat_export_warning">Jangan kongsi PAT anda. Jika anda menyertakannya dalam satu eksport tetapan, simpan fail tersebut sebagai sulit kerana ia mengandungi token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Pilihan tampalan</string>
-    <string name="settings_advanced_patch_options_youtube_description">Pilihan tema, penjenamaan, dan kepala</string>
+    <string name="settings_advanced_patch_options_youtube_description">Branding and header options</string>
     <string name="settings_advanced_patch_options_restart_message">Mengubah pilihan tampalan memerlukan aplikasi ditampal semula agar berkesan</string>
     <string name="settings_advanced_patch_options_expert_mode_notice">Dalam mod Pakar pilihan tampalan akan tersedia semasa proses tampalan</string>
-    <!-- Settings - Advanced Tab - Patch Options Section: Theme Colors -->
-    <string name="settings_advanced_patch_options_theme_colors">Warna tema aplikasi</string>
-    <string name="settings_advanced_patch_options_dark_theme_color">Warna latar belakang tema gelap</string>
-    <string name="settings_advanced_patch_options_light_theme_color">Warna latar belakang tema terang</string>
-    <string name="settings_advanced_patch_options_theme_color_description">Boleh menjadi warna heks (#RRGGBB) atau rujukan sumber warna</string>
     <string name="settings_advanced_patch_options_loading">Memuatkan pilihan tampalan…</string>
     <string name="settings_advanced_patch_options_waiting_for_source">Tunggu sehingga sumber tampalan dikemas kini</string>
     <string name="settings_advanced_patch_options_load_error">Gagal memuatkan pilihan tampalan</string>
@@ -553,15 +543,12 @@ Dimensi gambar mestilah seperti berikut:
     <!-- Settings - System Tab - Installer Section -->
     <string name="installer">Pemasang</string>
     <string name="installer_title">Pilih pemasang</string>
-    <string name="installer_auto_saved_name">Pemasang pemasang berakar</string>
-    <string name="installer_auto_saved_description">Memasang APK yang ditampal di atas aplikasi yang dipasang</string>
     <string name="installer_option_none">Tiada kejatuhan</string>
     <string name="installer_none_description">Tiada kejatuhan pemasang yang dikonfigurasi</string>
     <string name="installer_status_requires_root">Memerlukan akses akar</string>
     <string name="installer_status_not_supported">Tidak disokong untuk tindakan ini</string>
     <string name="installer_status_shizuku_not_installed">Pasang Shizuku atau Sui untuk menggunakan pilihan ini</string>
     <string name="installer_status_shizuku_not_running">Mula Shizuku atau Sui dan cuba lagi</string>
-    <string name="installer_status_shizuku_permission">Berikan kebenaran Shizuku kepada SyMorphe dari aplikasi Shizuku</string>
     <string name="installer_mount_warning_install">Pemasang utama anda ditetapkan kepada pemasang mount berakar. Aplikasi yang disimpan ini tidak dipasang menggunakan mount</string>
     <string name="mount_version_mismatch_message">Versi aplikasi Stok (%2$s) tidak serasi dengan versi aplikasi yang dipatch (%1$s). Pasang versi Stok yang serasi, kemudian cuba lagi</string>
     <string name="installer_status_shizuku_unsupported">Pemasangan gagal. Cuba lagi atau tukar kepada pemasang yang berbeza</string>
@@ -572,17 +559,18 @@ Dimensi gambar mestilah seperti berikut:
     <string name="installer_unavailable_message">Pemasang pilihan anda (%s) tidak tersedia pada masa ini. Anda boleh memperbaiki isu itu dan cuba lagi, atau gunakan pemasang standard sebagai gantinya</string>
     <string name="installer_unavailable_shizuku_hint">Pastikan Shizuku berjalan dan izin telah diberikan kepada aplikasi ini</string>
     <string name="installer_use_standard">Gunakan standard</string>
+    <string name="installer_shizuku_status_missing">Hilang</string>
     <!-- Settings - System Tab - Performance Section -->
     <string name="settings_system_battery_optimization">Optimisasi bateri</string>
-    <string name="settings_system_performance">Prestasi</string>
     <string name="settings_system_process_runtime">Masa runtime proses</string>
-    <string name="settings_system_process_runtime_memory_limit">Had memori</string>
     <string name="settings_system_process_runtime_enable">Aktifkan masa runtime proses</string>
     <string name="settings_system_memory_limit_subtitle">Memori tersedia untuk tampalan</string>
     <string name="settings_system_memory_limit_warning">Had memori yang rendah mungkin menyebabkan kegagalan semasa menampal aplikasi yang lebih besar</string>
     <string name="settings_system_process_runtime_enabled_description">%s hadkan MB</string>
     <string name="settings_system_process_runtime_disabled_description">Klik untuk konfigurasi</string>
     <string name="settings_system_process_runtime_description_not_available">Ciri ini memerlukan Android 11 atau lebih tinggi</string>
+    <!-- Settings - System Tab - Notifications Section -->
+    <string name="settings_system_notifications_sound_default">Lalai</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">Import &amp; eksport</string>
     <string name="settings_system_import_keystore_dialog_title">Masukkan kelayakan kunci simpanan</string>
@@ -595,10 +583,10 @@ Dimensi gambar mestilah seperti berikut:
     <string name="settings_system_export_keystore_success">Kunci simpanan dieksport</string>
     <string name="settings_system_show_password_field">Tunjukkan kata lalu</string>
     <string name="settings_system_hide_password_field">Sembunyikan kata lalu</string>
-    <string name="settings_system_import_manager_settings_fail">Gagal mengimport tetapan SyMorphe: %s</string>
-    <string name="settings_system_import_manager_settings_success">Tetapan SyMorphe telah diimport</string>
-    <string name="settings_system_export_manager_settings_fail">Gagal mengeksport tetapan SyMorphe: %s</string>
-    <string name="settings_system_export_manager_settings_success">Tetapan SyMorphe telah dieksport</string>
+    <string name="settings_system_import_manager_settings_fail">Gagal mengimport tetapan Morphe: %s</string>
+    <string name="settings_system_import_manager_settings_success">Tetapan Morphe telah diimport</string>
+    <string name="settings_system_export_manager_settings_fail">Gagal mengeksport tetapan Morphe: %s</string>
+    <string name="settings_system_export_manager_settings_success">Tetapan Morphe telah dieksport</string>
     <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Gagal membaca log (kod keluar %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Gagal mengeksport log</string>
@@ -606,40 +594,35 @@ Dimensi gambar mestilah seperti berikut:
     <!-- Settings - System Tab - Files & Storage Section -->
     <string name="settings_system_apks_size">Saiz keseluruhan: %s</string>
     <string name="settings_system_apks_deleted_all">APKs telah padam dengan jayanya</string>
+    <!-- Settings - System Tab - Storage Management screen -->
     <!-- Settings - System Tab - Storage Management - Patched APKs Management -->
     <string name="settings_system_patched_apks_title">APK yang ditampal</string>
     <string name="settings_system_patched_apks_empty">Tiada APK yang ditampal disimpan lagi</string>
     <string name="settings_system_patched_apks_delete_title">Padam APK yang ditampal?</string>
-    <string name="settings_system_patched_apks_delete_confirm">Adakah anda pasti ingin memadam APK yang ditampal yang disimpan untuk %s?</string>
     <string name="settings_system_patched_apks_deleted">APK yang ditampal telah dipadam dengan jayanya</string>
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
     <string name="settings_system_original_apks_title">APK asal</string>
     <string name="settings_system_original_apks_empty">Tiada APK asal disimpan</string>
     <string name="settings_system_original_apks_deleted">APK asal telah dipadam dengan jayanya</string>
     <string name="settings_system_original_apks_delete_title">Padam APK asal?</string>
-    <string name="settings_system_original_apks_delete_confirm">Padam APK asal untuk %s? Anda tidak dapat repatch tanpa memberikan APK baharu</string>
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
     <string name="settings_system_patch_selections_title">Pilihan patch</string>
     <string name="settings_system_patch_selection_reset_all_confirm_title">Nyah semula semua pilihan?</string>
     <string name="settings_system_patch_selection_reset_package_confirm_title">Nyah semula pilihan pakej?</string>
     <string name="settings_system_patch_selection_reset_source_confirm_title">Nyah semula pilihan sumber?</string>
-    <string name="settings_system_patch_selection_no_saved">Tiada pilihan tampalan yang disimpan</string>
     <string name="settings_system_patch_selection_total_summary_format">%1$s merentasi %2$s</string>
     <string name="settings_system_patch_selection_patches_in_sources_format">%1$s dalam %2$s</string>
     <string name="settings_system_patch_selection_source_format">Sumber #%s</string>
-    <string name="settings_system_patch_selection_will_delete">Ini akan memadam:</string>
     <string name="settings_system_patch_selection_reset_all_warning">Ini akan memadam secara kekal semua pilihan tampalan yang disimpan untuk semua pakej dan sumber</string>
-    <string name="settings_system_patch_selection_reset_package_warning">Ini akan memadam secara kekal semua pilihan tampalan yang disimpan untuk %s merentasi semua sumber</string>
-    <string name="settings_system_patch_selection_reset_source_warning">Ini akan memadam secara kekal pilihan tampalan yang disimpan untuk %1$s dalam sumber #%2$s</string>
-    <string name="settings_system_export_source_data_fail">Gagal mengeksport data sumber</string>
+    <string name="settings_system_export_source_data_fail">Gagal membaca log (kod keluar %s)</string>
     <string name="settings_system_export_source_data_success">Data sumber dieksport dengan jayanya</string>
     <string name="settings_system_import_source_data_fail">Gagal mengimport data sumber</string>
     <string name="settings_system_import_source_data_success">Data sumber diimport dengan jayanya</string>
-    <string name="settings_system_patch_details_title">Butiran tampalan</string>
-    <string name="settings_system_selected_patches_title">Tampalan terpilih (%s)</string>
-    <string name="settings_system_patch_options_title">Pilihan tampalan (%s)</string>
+    <string name="settings_system_patch_options_section">Pilihan tampalan</string>
     <string name="settings_system_no_patches_or_options">Tiada tampalan atau pilihan yang disimpan</string>
+    <!-- Copy selection from another bundle -->
     <!-- Settings - System Tab - Custom file picker -->
+    <!-- Settings - System Tab - APK download helper -->
     <!-- File Picker -->
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Mengenai</string>
@@ -648,6 +631,7 @@ Dimensi gambar mestilah seperti berikut:
     <string name="credits_current_development">Pembangunan semasa</string>
     <string name="credits_prior_development">Pembangunan sebelumnya</string>
     <string name="opensource_licenses">Lesen sumber terbuka</string>
+    <!-- Easter egg offered after seven taps on the version in the about dialog -->
     <!-- Shared strings -->
     <string name="patches">Tampalan</string>
     <string name="home">Rumah</string>
@@ -692,7 +676,7 @@ Dimensi gambar mestilah seperti berikut:
     <string name="continue_">Teruskan</string>
     <string name="version">Versi</string>
     <string name="patch">Tampalan</string>
-    <string name="repatch">Tampalkan semula</string>
+    <string name="patching">Menampal</string>
     <string name="open">Buka</string>
     <string name="mount">Pasang</string>
     <string name="mounted">Dipasang</string>
@@ -708,7 +692,6 @@ Dimensi gambar mestilah seperti berikut:
     <string name="saved">Disimpan</string>
     <string name="update">Kemas kini</string>
     <string name="allow">Benarkan</string>
-    <string name="details">Butiran</string>
     <string name="hide">Sembunyikan</string>
     <string name="logs">Log</string>
     <string name="installing_ellipsis">Memasang…</string>
@@ -726,6 +709,7 @@ Dimensi gambar mestilah seperti berikut:
     <string name="install_update_manager_failed">Gagal memasang kemas kini</string>
     <string name="installing_manager_update">Memasang kemas kini…</string>
     <string name="downloading_manager_update">Memukim kemas kini…</string>
+    <!-- Shown while resuming a download, before the total size is known -->
     <string name="download_manager_failed">Gagal memukim kemas kini: %s</string>
     <string name="failed_to_check_updates">Gagal menyemak kemas kini: %s</string>
     <string name="failed_to_download_update">Gagal memukim kemas kini: %s</string>
@@ -735,8 +719,8 @@ Dimensi gambar mestilah seperti berikut:
 Adakah anda masih ingin meneruskan?"</string>
     <string name="download_update_confirmation">Mukim kemas kini?</string>
     <!-- Onboarding coach marks -->
-    <!-- %1$d = current step number, %2$d = total number of steps (e.g. "3 of 13") -->
+    <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <!-- Translate "System" the same way as the System settings tab -->
     <!-- Tour prompt dialog shown after first successful patch install -->
-    <string name="onboarding_restart_desc">Ikuti lawatan terpandu bagi ciri-ciri utama SyMorphe\'s</string>
+    <string name="onboarding_restart_desc">Ikuti lawatan terpandu bagi ciri-ciri utama Morphe\'s</string>
 </resources>

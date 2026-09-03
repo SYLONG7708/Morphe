@@ -7,6 +7,10 @@ import app.morphe.manager.R
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.ui.screen.shared.BackgroundType
 import app.morphe.manager.ui.theme.Theme
+import app.morphe.manager.ui.theme.ThemeStyle
+import app.morphe.manager.ui.theme.coerceToUiScale
+import app.morphe.manager.util.AppCardColorDefaults
+import app.morphe.manager.util.AppCardColorMode
 import app.morphe.manager.util.applyAppLanguage
 import app.morphe.manager.util.toHexString
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,13 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
-
-enum class ThemePreset {
-    DEFAULT,
-    LIGHT,
-    DARK,
-    DYNAMIC
-}
 
 /**
  * How often the random background rotates.
@@ -34,23 +31,9 @@ enum class RandomInterval(val labelResId: Int) {
     EVERY_3_DAYS(R.string.settings_appearance_background_random_interval_3days)
 }
 
-private data class ThemePresetConfig(
-    val theme: Theme,
-    val dynamicColor: Boolean = false,
-    val customAccentHex: String = "",
-    val customThemeHex: String = ""
-)
-
 class ThemeSettingsViewModel(
     val prefs: PreferencesManager
 ) : ViewModel() {
-    private val presetConfigs = mapOf(
-        ThemePreset.DEFAULT to ThemePresetConfig(theme = Theme.SYSTEM),
-        ThemePreset.LIGHT to ThemePresetConfig(theme = Theme.LIGHT),
-        ThemePreset.DARK to ThemePresetConfig(theme = Theme.DARK),
-        ThemePreset.DYNAMIC to ThemePresetConfig(theme = Theme.SYSTEM, dynamicColor = true)
-    )
-
     /**
      * The currently resolved background for this session when RANDOM mode is active.
      * Populated by [resolveRandomBackground]; null until first resolution.
@@ -66,8 +49,8 @@ class ThemeSettingsViewModel(
      * - [RandomInterval.DAILY] — uses today's epoch day as a stable index.
      * - [RandomInterval.EVERY_3_DAYS] — uses epoch day ÷ 3 as a stable index.
      */
-    fun resolveRandomBackground(interval: RandomInterval) {
-        val pool = BackgroundType.RANDOMIZABLE
+    suspend fun resolveRandomBackground(interval: RandomInterval) {
+        val pool = BackgroundType.randomizable(prefs.matrixBackgroundUnlocked.get())
         _resolvedRandomBackground.value = when (interval) {
             RandomInterval.ON_LAUNCH -> pool.random()
             RandomInterval.DAILY -> {
@@ -92,6 +75,28 @@ class ThemeSettingsViewModel(
     }
 
     /**
+     * Persists the card color [mode] together with the picked colors. The colors are kept even
+     * for [AppCardColorMode.DEFAULT] so switching modes back and forth does not discard them.
+     */
+    fun applyAppCardColors(
+        mode: AppCardColorMode,
+        startColorHex: String,
+        middleColorHex: String,
+        endColorHex: String,
+        solidColorHex: String
+    ) = viewModelScope.launch {
+        prefs.edit {
+            prefs.appCardColorMode.value = mode
+            prefs.customAppCardColors.value = AppCardColorDefaults.encodeColorValues(
+                startHex = startColorHex,
+                middleHex = middleColorHex,
+                endHex = endColorHex,
+                solidHex = solidColorHex
+            )
+        }
+    }
+
+    /**
      * Change the app language.
      */
     fun setAppLanguage(languageCode: String) = viewModelScope.launch {
@@ -105,46 +110,65 @@ class ThemeSettingsViewModel(
         prefs.showGreetingPhrases.update(!current)
     }
 
-    fun togglePureBlackTheme(current: Boolean) = viewModelScope.launch {
-        prefs.pureBlackTheme.update(!current)
+    fun setPureBlackTheme(enabled: Boolean) = viewModelScope.launch {
+        prefs.pureBlackTheme.update(enabled)
     }
 
     fun setBackgroundType(type: BackgroundType) = viewModelScope.launch {
         prefs.backgroundType.update(type)
     }
 
+    /**
+     * Takes the red pill: reveals the Matrix background in the picker and switches to it at once,
+     * so the choice is answered by the screen itself rather than by a line in the settings.
+     */
+    fun unlockMatrixBackground() = viewModelScope.launch {
+        prefs.edit {
+            prefs.matrixBackgroundUnlocked.value = true
+            prefs.backgroundType.value = BackgroundType.MATRIX
+        }
+    }
+
+    /**
+     * Takes the blue pill: hides the Matrix background away again. A background picked since is
+     * left alone, and the gesture that revealed it in the first place still works.
+     */
+    fun forgetMatrixBackground() = viewModelScope.launch {
+        prefs.edit {
+            prefs.matrixBackgroundUnlocked.value = false
+            if (prefs.backgroundType.value == BackgroundType.MATRIX) {
+                prefs.backgroundType.value = BackgroundType.DEFAULT
+            }
+        }
+
+        // A random rotation that had already landed on Matrix would keep it on screen until the
+        // next resolve, so it is drawn again from the pool Matrix has just left
+        if (_resolvedRandomBackground.value == BackgroundType.MATRIX) {
+            resolveRandomBackground(prefs.randomBackgroundInterval.get())
+        }
+    }
+
     fun toggleBackgroundParallax(current: Boolean) = viewModelScope.launch {
         prefs.enableBackgroundParallax.update(!current)
     }
 
-    fun applyThemePresetByKey(key: String) {
-        val preset = when (key) {
-            "SYSTEM"  -> ThemePreset.DEFAULT
-            "LIGHT"   -> ThemePreset.LIGHT
-            "DARK"    -> ThemePreset.DARK
-            "DYNAMIC" -> ThemePreset.DYNAMIC
-            else      -> ThemePreset.DEFAULT
-        }
-        applyThemePreset(preset)
-    }
-
-    fun applyThemePreset(preset: ThemePreset) = viewModelScope.launch {
-        val config = presetConfigs[preset] ?: return@launch
-        prefs.themePresetSelectionEnabled.update(true)
-        prefs.theme.update(config.theme)
-        prefs.dynamicColor.update(config.dynamicColor)
-
-        // Pure Black should be disabled for incompatible themes
-        if (preset == ThemePreset.LIGHT) {
+    fun setThemeMode(theme: Theme) = viewModelScope.launch {
+        prefs.theme.update(theme)
+        if (theme == Theme.LIGHT) {
             prefs.pureBlackTheme.update(false)
         }
+    }
 
-        // Only reset colors for DYNAMIC preset, preserve for others
-        if (preset == ThemePreset.DYNAMIC) {
+    fun setUiScale(scale: Float) = viewModelScope.launch {
+        prefs.uiScale.update(scale.coerceToUiScale())
+    }
+
+    fun setThemeStyle(style: ThemeStyle) = viewModelScope.launch {
+        prefs.themeStyle.update(style)
+        // Dynamic color drives its own accent from the wallpaper, so custom overrides are cleared
+        if (style == ThemeStyle.MATERIAL_YOU) {
             prefs.customAccentColor.update("")
             prefs.customThemeColor.update("")
         }
-
-        prefs.themePresetSelectionName.update(preset.name)
     }
 }

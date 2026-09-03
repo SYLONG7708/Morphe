@@ -35,6 +35,8 @@ object SplitApkPreparer {
         val normalized = abi.lowercase(Locale.ROOT)
         setOf(normalized, normalized.replace('-', '_'), normalized.replace('_', '-'))
     }.toSet()
+    // Longest name first, so armeabi-v7a and x86_64 are never read as the shorter names they contain
+    private val ABIS_LONGEST_FIRST = KNOWN_ABIS.sortedByDescending { it.length }
     // Ordered highest → lowest, matching Android's density fallback direction
     private val DENSITY_ORDER = listOf("xxxhdpi", "xxhdpi", "xhdpi", "hdpi", "tvdpi", "mdpi", "ldpi")
 
@@ -121,6 +123,29 @@ object SplitApkPreparer {
             throw error
         }
     }
+
+    /**
+     * ABIs [file] ships an APK split for, named as they would appear under lib/ once merged.
+     *
+     * Read from the module names instead of the modules themselves, which keeps the answer a
+     * question of reading the archive's index rather than unpacking every split in it.
+     */
+    fun splitArchiveAbis(file: File): List<String> =
+        runCatching {
+            ZipFile(file).use { zip ->
+                zip.entries().asSequence()
+                    .filterNot { it.isDirectory }
+                    .filter { isSplitModuleEntry(it.name) }
+                    .mapNotNull { entry ->
+                        val lower = entry.name.lowercase(Locale.ROOT)
+                        ABIS_LONGEST_FIRST.firstOrNull { abi ->
+                            buildAbiTokens(abi).any { it in lower }
+                        }
+                    }
+                    .distinct()
+                    .toList()
+            }
+        }.getOrDefault(emptyList())
 
     // Split module entries are always at the root of the archive (no path separator).
     // Nested .apk files (e.g. res/raw/) are embedded resources, not split modules.

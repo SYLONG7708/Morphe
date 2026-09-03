@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import app.morphe.manager.R
+import app.morphe.manager.ui.model.RenameWarning
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.util.MORPHE_WEBSITE_URL
 import app.morphe.manager.util.PathValidationResult
@@ -59,7 +61,7 @@ fun IncompatiblePatcherVersionDialog(
 ) {
     val context = LocalContext.current
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.patcher_incompatible_patcher_title),
         footer = {
@@ -67,7 +69,7 @@ fun IncompatiblePatcherVersionDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                MorpheDialogButton(
+                AppDialogButton(
                     text = stringResource(R.string.patcher_incompatible_patcher_update_button),
                     onClick = {
                         val intent = Intent(Intent.ACTION_VIEW, MORPHE_WEBSITE_URL.toUri())
@@ -76,7 +78,7 @@ fun IncompatiblePatcherVersionDialog(
                     icon = Icons.Outlined.SystemUpdate,
                     modifier = Modifier.fillMaxWidth()
                 )
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = stringResource(R.string.close),
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
@@ -99,66 +101,59 @@ fun IncompatiblePatcherVersionDialog(
 }
 
 /**
- * Shown when a conflict is detected after patching from the installed app (non-root).
- * Explains why uninstall is needed and warns about data loss, then triggers system uninstall.
+ * Shown when the finished APK answers to a package name of its own: installing it adds a clone
+ * instead of updating the app the run was aimed at, which is a surprise unless cloning was the
+ * intent. Offered before the install rather than the run, because only the output carries the name.
  */
 @Composable
-fun InstalledSourceConflictDialog(
-    onUninstall: () -> Unit,
+fun RenameWarningDialog(
+    warning: RenameWarning,
+    onContinue: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.patcher_installed_conflict_title),
+        title = stringResource(R.string.patcher_rename_title),
+        padding = DialogPadding.Compact,
         footer = {
-            MorpheDialogButtonRow(
-                primaryText = stringResource(R.string.uninstall),
-                onPrimaryClick = onUninstall,
-                isPrimaryDestructive = true,
+            AppDialogButtonRow(
+                primaryText = stringResource(R.string.continue_),
+                onPrimaryClick = onContinue,
                 secondaryText = stringResource(android.R.string.cancel),
                 onSecondaryClick = onDismiss
             )
         }
     ) {
-        Text(
-            text = stringResource(R.string.patcher_installed_conflict_body),
-            style = MaterialTheme.typography.bodyLarge,
-            color = LocalDialogSecondaryTextColor.current
-        )
-    }
-}
-
-/**
- * Cancel patching confirmation dialog.
- * Warns user about stopping patching process.
- */
-@Composable
-fun CancelPatchingDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    MorpheDialog(
-        onDismissRequest = onDismiss,
-        title = stringResource(R.string.patcher_stop_confirm_title),
-        footer = {
-            MorpheDialogButtonRow(
-                primaryText = stringResource(R.string.yes),
-                onPrimaryClick = onConfirm,
-                isPrimaryDestructive = true,
-                secondaryText = stringResource(R.string.no),
-                onSecondaryClick = onDismiss
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = htmlAnnotatedString(
+                    stringResource(
+                        R.string.patcher_rename_description,
+                        warning.targetPackageName
+                    )
+                ),
+                style = MaterialTheme.typography.bodyLarge,
+                color = LocalDialogSecondaryTextColor.current,
+                textAlign = TextAlign.Center
             )
-        }
-    ) {
-        val secondaryColor = LocalDialogSecondaryTextColor.current
 
-        Text(
-            text = stringResource(R.string.patcher_stop_confirm_description),
-            style = MaterialTheme.typography.bodyLarge,
-            color = secondaryColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+            MonospaceValuePanel(
+                value = warning.resultPackageName,
+                label = stringResource(R.string.patcher_rename_result_package)
+            )
+
+            if (warning.replacesExisting) {
+                Notice(
+                    text = stringResource(R.string.patcher_rename_replaces),
+                    tone = SemanticTone.Warning,
+                    icon = Icons.Outlined.Warning
+                )
+            }
+        }
     }
 }
 
@@ -199,7 +194,7 @@ fun StoragePermissionDialog(
         }
     }
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.patcher_storage_permission_dialog_title),
         footer = {
@@ -209,7 +204,7 @@ fun StoragePermissionDialog(
             ) {
                 if (isApi30Plus) {
                     // Android 11+ open the dedicated all-files-access settings screen
-                    MorpheDialogButton(
+                    AppDialogButton(
                         text = stringResource(R.string.patcher_storage_permission_open_settings),
                         onClick = {
                             // Open the per-app "Allow management of all files" system screen
@@ -228,7 +223,7 @@ fun StoragePermissionDialog(
                     )
                 } else {
                     // Android 10 and below request READ_EXTERNAL_STORAGE inline
-                    MorpheDialogButton(
+                    AppDialogButton(
                         text = stringResource(R.string.patcher_storage_permission_grant),
                         onClick = {
                             permissionDenied.value = false
@@ -239,7 +234,7 @@ fun StoragePermissionDialog(
                     )
                 }
 
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = stringResource(android.R.string.cancel),
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
@@ -251,7 +246,7 @@ fun StoragePermissionDialog(
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(MorpheDefaults.ContentPadding)
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
         ) {
             Text(
                 text = stringResource(
@@ -271,12 +266,10 @@ fun StoragePermissionDialog(
             // READ_EXTERNAL_STORAGE prompt. Explains they must either grant the
             // permission or move the files to the private app directory
             if (permissionDenied.value) {
-                InfoBadge(
+                Notice(
                     text = stringResource(R.string.patcher_storage_permission_denied_warning),
-                    style = InfoBadgeStyle.Error,
-                    icon = Icons.Outlined.Lock,
-                    isExpanded = true,
-                    modifier = Modifier.fillMaxWidth()
+                    tone = SemanticTone.Error,
+                    icon = Icons.Outlined.Lock
                 )
             }
 
@@ -324,7 +317,7 @@ fun StoragePermissionDialog(
 
                                 Spacer(Modifier.width(8.dp))
 
-                                InfoBadge(
+                                StatusBadge(
                                     text = stringResource(
                                         if (isPermissionError) {
                                             R.string.patcher_storage_badge_denied
@@ -332,8 +325,7 @@ fun StoragePermissionDialog(
                                             R.string.patcher_storage_badge_missing
                                         }
                                     ),
-                                    style = InfoBadgeStyle.Error,
-                                    isCompact = true
+                                    tone = SemanticTone.Error
                                 )
                             }
                         }
@@ -342,12 +334,10 @@ fun StoragePermissionDialog(
             }
 
             // Show hint so user knows the workaround even if they dismiss
-            InfoBadge(
+            Notice(
                 text = stringResource(R.string.patcher_storage_permission_hint),
-                style = InfoBadgeStyle.Warning,
-                icon = Icons.Outlined.FolderOff,
-                isExpanded = true,
-                modifier = Modifier.fillMaxWidth()
+                tone = SemanticTone.Warning,
+                icon = Icons.Outlined.FolderOff
             )
         }
     }
@@ -364,7 +354,7 @@ fun BatteryOptimizationDialog(
 ) {
     val context = LocalContext.current
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onResult,
         title = stringResource(R.string.battery_optimization_dialog_title),
         footer = {
@@ -372,7 +362,7 @@ fun BatteryOptimizationDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                MorpheDialogButton(
+                AppDialogButton(
                     text = stringResource(R.string.allow),
                     onClick = {
                         context.startActivity(
@@ -386,7 +376,7 @@ fun BatteryOptimizationDialog(
                     icon = Icons.Outlined.BatterySaver,
                     modifier = Modifier.fillMaxWidth()
                 )
-                MorpheDialogOutlinedButton(
+                AppDialogOutlinedButton(
                     text = stringResource(R.string.battery_optimization_not_now),
                     onClick = onResult,
                     modifier = Modifier.fillMaxWidth()
@@ -396,6 +386,67 @@ fun BatteryOptimizationDialog(
     ) {
         Text(
             text = stringResource(R.string.battery_optimization_dialog_description),
+            style = MaterialTheme.typography.bodyLarge,
+            color = LocalDialogSecondaryTextColor.current,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+/**
+ * Shown after the system killed the patcher process, offering the lower memory limit that
+ * might get the next run through. The limit is a user setting, so nothing changes until it
+ * is accepted here.
+ */
+@Composable
+fun MemoryAdjustmentDialog(
+    currentLimit: Int,
+    suggestedLimit: Int,
+    canAdjust: Boolean,
+    onApply: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(R.string.patcher_memory_adjustment_title),
+        footer = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (canAdjust) {
+                    AppDialogButton(
+                        text = stringResource(
+                            R.string.patcher_memory_adjustment_apply,
+                            suggestedLimit
+                        ),
+                        onClick = onApply,
+                        icon = Icons.Outlined.Memory,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                AppDialogOutlinedButton(
+                    text = stringResource(R.string.close),
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    ) {
+        Text(
+            text = if (canAdjust) {
+                stringResource(
+                    R.string.patcher_memory_adjustment_description,
+                    currentLimit,
+                    suggestedLimit
+                )
+            } else {
+                stringResource(
+                    R.string.patcher_memory_adjustment_description_at_minimum,
+                    currentLimit
+                )
+            },
             style = MaterialTheme.typography.bodyLarge,
             color = LocalDialogSecondaryTextColor.current,
             textAlign = TextAlign.Center,
@@ -418,13 +469,13 @@ fun PatcherErrorDialog(
     @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
 
-    MorpheDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.patcher_failed_dialog_title),
-        compactPadding = true,
+        padding = DialogPadding.Compact,
         scrollable = false,
         footer = {
-            MorpheDialogButtonRow(
+            AppDialogButtonRow(
                 primaryText = stringResource(android.R.string.copy),
                 onPrimaryClick = {
                     clipboardManager.setText(AnnotatedString(errorMessage))
@@ -453,7 +504,7 @@ fun PatcherErrorDialog(
 
                     if (errorInfo.bundles.isNotEmpty()) {
                         errorInfo.bundles.forEach { bundle ->
-                            MorpheSettingsDivider()
+                            SettingsDivider()
 
                             if (bundle.version != null) {
                                 ErrorInfoRow(bundle.name)
@@ -477,7 +528,7 @@ fun PatcherErrorDialog(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = MorpheDefaults.ContentPadding, vertical = 4.dp),
+                        .padding(horizontal = Defaults.ContentPadding, vertical = 4.dp),
                 ) {
                     Text(
                         text = errorMessage,
@@ -500,7 +551,7 @@ private fun ErrorInfoCard(
     errorBadge: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    MorpheCard(
+    SurfaceCard(
         modifier = modifier.fillMaxWidth(),
         elevation = 2.dp,
         cornerRadius = 16.dp
@@ -509,12 +560,12 @@ private fun ErrorInfoCard(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(topStart = MorpheDefaults.SectionCornerRadius, topEnd = MorpheDefaults.SectionCornerRadius)
+                shape = RoundedCornerShape(topStart = Defaults.SectionCornerRadius, topEnd = Defaults.SectionCornerRadius)
             ) {
                 IconTextRow(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     leadingContent = {
-                        MorpheIcon(
+                        ThemedIcon(
                             icon = icon,
                             size = 18.dp,
                             tint = if (errorBadge != null) MaterialTheme.colorScheme.error
@@ -527,7 +578,7 @@ private fun ErrorInfoCard(
                 )
             }
 
-            MorpheSettingsDivider(fullWidth = true)
+            SettingsDivider(fullWidth = true)
 
             content()
         }

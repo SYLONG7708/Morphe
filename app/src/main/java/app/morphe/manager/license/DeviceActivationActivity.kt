@@ -16,7 +16,9 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import app.morphe.manager.AppIntegrity
+import app.morphe.manager.BuildConfig
 import app.morphe.manager.MainActivity
+import app.morphe.manager.ManagerApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,6 +28,9 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DeviceActivationActivity : Activity() {
     private val backgroundColor = Color.rgb(5, 14, 21)
@@ -39,8 +44,10 @@ class DeviceActivationActivity : Activity() {
     private lateinit var countdownView: TextView
     private lateinit var progress: ProgressBar
     private lateinit var retryButton: Button
+    private lateinit var purchaseButton: Button
     private lateinit var enterButton: Button
     private var activationJob: Job? = null
+    private var currentUserCode: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,9 +78,18 @@ class DeviceActivationActivity : Activity() {
             setBusy(true, "正在建立安全配對…")
             runCatching { DeviceActivationClient.start(this@DeviceActivationActivity) }
                 .onSuccess { session ->
+                    currentUserCode = session.userCode
                     codeView.text = session.userCode.chunked(3).joinToString(" ")
-                    statusView.text = "請用 iPhone 或 Android 手機開啟私人授權網頁，輸入這組數字。"
-                    retryButton.isEnabled = true
+                    statusView.text = "正在為這台車機自動開通一次性免費 7 天試用…"
+                    runCatching { DeviceActivationClient.startTrial(session) }
+                        .onSuccess {
+                            statusView.text = "免費 7 天試用已核准，正在安全寫入裝置…"
+                        }
+                        .onFailure {
+                            statusView.text = "此機試用已使用或網路暫時無法核發；可輸入配對碼購買 2 年授權。"
+                            purchaseButton.isEnabled = true
+                            retryButton.isEnabled = true
+                        }
                     pollUntilComplete(session)
                 }
                 .onFailure { error ->
@@ -110,11 +126,19 @@ class DeviceActivationActivity : Activity() {
                         setBusy(false, installed.message)
                         return
                     }
-                    result.linkToken?.let(::sendVoiceLinkToken)
+                    result.linkTokens.forEach(::sendSuiteLinkToken)
                     progress.visibility = View.GONE
                     codeView.text = "✓"
-                    countdownView.text = "裝置綁定完成"
-                    statusView.text = "授權已安全寫入這台車機；之後離線也能使用。"
+                    countdownView.text = if (result.licenseExpiresAt > 0L) {
+                        "有效至 ${formatExpiry(result.licenseExpiresAt)}"
+                    } else {
+                        "裝置綁定完成"
+                    }
+                    statusView.text = if (result.entitlementKind == "trial") {
+                        "免費 7 天試用已安全寫入。每台車機僅能領取一次，重新安裝不會重置試用。"
+                    } else {
+                        "三合一授權已安全寫入；同車機的語音助手與影視會一併啟用。"
+                    }
                     retryButton.visibility = View.GONE
                     enterButton.visibility = View.VISIBLE
                     Toast.makeText(this, "SyMorphe 授權完成", Toast.LENGTH_LONG).show()
@@ -124,9 +148,22 @@ class DeviceActivationActivity : Activity() {
         }
     }
 
-    private fun sendVoiceLinkToken(token: String) {
-        val intent = Intent("tw.com.sylong.voicecore.action.LINK_DEVICE_LICENSE").apply {
-            setClassName("tw.com.sylong.voicecore", "tw.com.sylong.voicecore.LicenseLinkActivity")
+    private fun sendSuiteLinkToken(product: String, token: String) {
+        val target = when (product) {
+            "voice-assistant" -> Triple(
+                "tw.com.sylong.voicecore.action.LINK_DEVICE_LICENSE",
+                "tw.com.sylong.voicecore",
+                "tw.com.sylong.voicecore.LicenseLinkActivity",
+            )
+            "yingshi" -> Triple(
+                "tw.com.sylong.tvcar.action.LINK_DEVICE_LICENSE",
+                "tw.com.sylong.tvcar",
+                "tw.com.sylong.tvcar.LicenseLinkActivity",
+            )
+            else -> return
+        }
+        val intent = Intent(target.first).apply {
+            setClassName(target.second, target.third)
             putExtra("linkToken", token)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY)
         }
@@ -172,17 +209,28 @@ class DeviceActivationActivity : Activity() {
         }
         root.addView(statusView, LinearLayout.LayoutParams(-1, -2))
 
+        purchaseButton = button("購買三套 App 2 年 NT$1,000", Color.rgb(23, 145, 141)) {
+            val code = currentUserCode
+            if (code.length != 6) {
+                Toast.makeText(this, "請先取得 6 位授權碼", Toast.LENGTH_SHORT).show()
+            } else {
+                val url = "${BuildConfig.LICENSE_PURCHASE_URL}?code=$code"
+                runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                    .onFailure { Toast.makeText(this, "請在手機開啟 $url", Toast.LENGTH_LONG).show() }
+            }
+        }.apply { isEnabled = false }
+        root.addView(purchaseButton, LinearLayout.LayoutParams(-1, dp(58)))
         root.addView(button("手機授權完整教學", panelColor) {
-            runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://yingshi-license.pppp77088.chatgpt.site/guide"))) }
+            runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("${BuildConfig.LICENSE_API_BASE_URL}/guide"))) }
                 .onFailure { Toast.makeText(this, "請在手機開啟授權網站", Toast.LENGTH_SHORT).show() }
-        }, LinearLayout.LayoutParams(-1, dp(58)))
+        }, LinearLayout.LayoutParams(-1, dp(58)).apply { topMargin = dp(10) })
         retryButton = button("重新取得配對碼", panelColor) { beginActivation() }.apply { isEnabled = false }
         root.addView(retryButton, LinearLayout.LayoutParams(-1, dp(58)).apply { topMargin = dp(10) })
         enterButton = button("進入 SyMorphe", Color.rgb(23, 145, 141)) { enterApp() }.apply {
             visibility = View.GONE
         }
         root.addView(enterButton, LinearLayout.LayoutParams(-1, dp(58)).apply { topMargin = dp(10) })
-        root.addView(label("配對碼 10 分鐘後失效且只能使用一次。授權綁定 Android Keystore 安全金鑰，複製 APK 不會複製授權。", 12, mutedColor, Typeface.NORMAL).apply {
+        root.addView(label("首次安裝會自動嘗試開通 7 天；伺服器以雜湊後的穩定裝置識別防止重複領取。配對碼只能使用一次；開始付款後會保留 30 分鐘。", 12, mutedColor, Typeface.NORMAL).apply {
             setPadding(0, dp(24), 0, 0)
             gravity = Gravity.CENTER
         }, LinearLayout.LayoutParams(-1, -2))
@@ -196,9 +244,15 @@ class DeviceActivationActivity : Activity() {
     }
 
     private fun enterApp() {
+        (application as? ManagerApplication)?.onDeviceLicenseAvailable()
         startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         finish()
     }
+
+    private fun formatExpiry(epochSeconds: Long): String = SimpleDateFormat(
+        "yyyy/MM/dd HH:mm",
+        Locale.TAIWAN,
+    ).format(Date(epochSeconds * 1000L))
 
     private fun label(value: String, size: Int, color: Int, style: Int) = TextView(this).apply {
         text = value
