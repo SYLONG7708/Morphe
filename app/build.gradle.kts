@@ -445,7 +445,6 @@ ksp {
 }
 
 kotlin {
-    jvmToolchain(17)
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17
         freeCompilerArgs.addAll(

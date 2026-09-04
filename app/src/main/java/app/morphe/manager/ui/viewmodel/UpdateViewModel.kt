@@ -32,10 +32,12 @@ import java.io.File
 import java.io.IOException
 import kotlin.time.Duration.Companion.seconds
 
-class UpdateViewModel(
-    private val downloadOnScreenEntry: Boolean,
-    private val network: NetworkInfo,
-) : ViewModel(), KoinComponent {
+/**
+ * Drives the manager self-update, from the release lookup down to handing the APK to an
+ * installer. The download is staged at a fixed path, so this must live as a single instance
+ * shared by every screen that shows update or changelog UI.
+ */
+class UpdateViewModel : ViewModel(), KoinComponent {
     private val app: Application by inject()
     private val morpheAPI: MorpheAPI by inject()
     private val managerUpdateRepository: ManagerUpdateRepository by inject()
@@ -50,16 +52,19 @@ class UpdateViewModel(
 
     private var pendingExternalInstall: InstallerManager.InstallPlan.External? = null
     private var externalInstallTimeoutJob: Job? = null
-    private var currentDownloadVersion: String? = null
+
+    // Only an install handed to the system installer has to be inferred from the app returning
+    // to the foreground. Shizuku reports its own outcome, an external one has a pending plan
+    private var installHandedOff = false
 
     var downloadedSize by mutableLongStateOf(0L)
         private set
     var totalSize by mutableLongStateOf(0L)
         private set
     val downloadProgress by derivedStateOf {
-        if (downloadedSize == 0L || totalSize == 0L) return@derivedStateOf 0f
+        if (totalSize <= 0L) return@derivedStateOf 0f
 
-        downloadedSize.toFloat() / totalSize.toFloat()
+        (downloadedSize.toFloat() / totalSize).coerceIn(0f, 1f)
     }
     var showInternetCheckDialog by mutableStateOf(false)
     var state by mutableStateOf(State.CAN_DOWNLOAD)
@@ -98,9 +103,6 @@ class UpdateViewModel(
     // and the older-entries expander to avoid duplicate fetches inside one VM lifetime
     private val managerEntriesCache = mutableMapOf<Boolean, List<ChangelogEntry>>()
 
-    var canResumeDownload by mutableStateOf(false)
-        private set
-
     private val location = fs.tempDir.resolve("updater.apk")
     private var job = resolveUpdate()
 
@@ -125,11 +127,7 @@ class UpdateViewModel(
 
         loadMissedChangelog()
 
-        if (downloadOnScreenEntry) {
-            downloadUpdate()
-        } else {
-            state = State.CAN_DOWNLOAD
-        }
+        state = State.CAN_DOWNLOAD
     }
 
     /**
@@ -141,9 +139,6 @@ class UpdateViewModel(
         job = resolveUpdate()
     }
 
-    val isConnected: Boolean
-        get() = network.isConnected()
-
     fun downloadUpdate(ignoreInternetCheck: Boolean = false) = viewModelScope.launch {
         uiSafe(app, R.string.failed_to_download_update, "Failed to download update") {
             val release = releaseInfo ?: return@uiSafe
@@ -154,32 +149,19 @@ class UpdateViewModel(
                 return@uiSafe
             }
 
-            if (currentDownloadVersion != release.version) {
-                currentDownloadVersion = release.version
-                withContext(Dispatchers.IO) { location.delete() }
-                downloadedSize = 0L
-                totalSize = 0L
-                canResumeDownload = false
-            }
-
-            val resumeOffset = withContext(Dispatchers.IO) {
-                if (location.exists()) location.length() else 0L
-            }
-            downloadedSize = resumeOffset
-            // totalSize stays 0 until first progress callback - avoids false 100% on resume
+            downloadedSize = 0L
+            // Left at 0 until the first progress callback reports the release size, so the dialog
+            // shows an indeterminate bar rather than one pinned at zero while bytes are arriving
             totalSize = 0L
-            canResumeDownload = resumeOffset > 0L
-
             state = State.DOWNLOADING
 
             try {
                 withContext(Dispatchers.IO) {
                     // Routed through AssetDownloader so the manager update survives a blocked
-                    // github.com the same way patch bundles do
+                    // GitHub the same way patch bundles do
                     assetDownloader.downloadToFile(
                         downloadUrl = release.downloadUrl,
                         saveLocation = location,
-                        resumeFrom = resumeOffset,
                         onProgress = { bytesRead, contentLength ->
                             downloadedSize = bytesRead
                             totalSize = contentLength ?: totalSize
@@ -196,16 +178,9 @@ class UpdateViewModel(
                     }
                 }
                 requireApkArchive(location)
-                canResumeDownload = false
                 installUpdate().join()
             } catch (error: Exception) {
-                val downloaded = withContext(Dispatchers.IO) {
-                    location.takeIf { it.exists() }?.length() ?: 0L
-                }
-                downloadedSize = downloaded
-                if (totalSize < downloadedSize) totalSize = downloadedSize
-                canResumeDownload = downloadedSize > 0L
-                state = State.CAN_DOWNLOAD
+                resetToDownload()
                 throw error
             }
         }
@@ -213,8 +188,8 @@ class UpdateViewModel(
 
     /**
      * Rejects a download that transferred cleanly but is not an APK, so the installer is never
-     * handed an error page or an API response that arrived in the file's place. The partial file
-     * is dropped as well, otherwise the next attempt would resume on top of it.
+     * handed an error page or an API response that arrived in the file's place. The file is
+     * dropped as well, so nothing is left staged that a later install could pick up.
      */
     private suspend fun requireApkArchive(location: File) = withContext(Dispatchers.IO) {
         if (location.hasZipHeader()) return@withContext
@@ -229,7 +204,16 @@ class UpdateViewModel(
         pendingExternalInstall = null
         externalInstallTimeoutJob?.cancel()
         externalInstallTimeoutJob = null
+        installHandedOff = false
         installError = ""
+
+        // The download is staged in a directory that is wiped on every process start, so an
+        // install started from a dialog that outlived it has nothing left to hand over
+        if (!hasDownloadedApk()) {
+            resetToDownload()
+            app.toast(app.getString(R.string.update_download_missing))
+            return@launch
+        }
 
         val plan = installerManager.resolvePlan(
             InstallerManager.InstallTarget.MANAGER_UPDATE,
@@ -239,41 +223,18 @@ class UpdateViewModel(
         )
 
         when (plan) {
-            is InstallerManager.InstallPlan.Internal -> {
-                state = State.INSTALLING
-                sessionInstaller.launchIntentInstall(location)
-                // Completion handled by installBroadcastReceiver;
-                // cancellation handled by resetIfInstallCancelled() in the dialog
-            }
+            // Completion is handled by installBroadcastReceiver;
+            // cancellation by resetIfInstallCancelled() in the dialog
+            is InstallerManager.InstallPlan.Internal ->
+                launchSystemInstall { sessionInstaller.launchIntentInstall(location) }
 
-            is InstallerManager.InstallPlan.PlayStore -> {
-                state = State.INSTALLING
-                sessionInstaller.launchPlayStoreInstall(location)
-            }
+            is InstallerManager.InstallPlan.PlayStore ->
+                launchSystemInstall { sessionInstaller.launchPlayStoreInstall(location) }
 
-            is InstallerManager.InstallPlan.RootPlayStore -> {
-                val hint = app.getString(R.string.installer_status_not_supported)
-                app.toast(app.getString(R.string.install_app_fail, hint))
-                installError = hint
-                canResumeDownload = false
-                state = State.FAILED
-            }
-
-            is InstallerManager.InstallPlan.ShizukuPlayStore -> {
-                val hint = app.getString(R.string.installer_status_not_supported)
-                app.toast(app.getString(R.string.install_app_fail, hint))
-                installError = hint
-                canResumeDownload = false
-                state = State.FAILED
-            }
-
-            is InstallerManager.InstallPlan.Mount -> {
-                val hint = app.getString(R.string.installer_status_not_supported)
-                app.toast(app.getString(R.string.install_app_fail, hint))
-                installError = hint
-                canResumeDownload = false
-                state = State.FAILED
-            }
+            is InstallerManager.InstallPlan.RootPlayStore,
+            is InstallerManager.InstallPlan.ShizukuPlayStore,
+            is InstallerManager.InstallPlan.Mount ->
+                failInstall(app.getString(R.string.installer_status_not_supported))
 
             is InstallerManager.InstallPlan.Shizuku -> {
                 state = State.INSTALLING
@@ -281,18 +242,50 @@ class UpdateViewModel(
                     handleInstallResult(sessionInstaller.installShizuku(location, app.packageName))
                 } catch (_: InstallCancelledException) {
                     state = State.CAN_INSTALL
-                } catch (e: Exception) {
-                    val message = e.simpleMessage().orEmpty()
-                    installError = message
-                    canResumeDownload = false
-                    app.toast(app.getString(R.string.install_app_fail, message))
-                    state = State.FAILED
+                } catch (error: Exception) {
+                    failInstall(error.simpleMessage().orEmpty())
                 }
             }
 
             is InstallerManager.InstallPlan.External -> launchExternalInstaller(plan)
         }
     }
+
+    /**
+     * Hands the APK to an installer activity. Launching can still fail on devices where no
+     * activity claims the install intent, which must not take the app down with it.
+     */
+    private fun launchSystemInstall(startInstaller: () -> Unit) {
+        state = State.INSTALLING
+        try {
+            startInstaller()
+            installHandedOff = true
+        } catch (error: Exception) {
+            failInstall(error.simpleMessage().orEmpty())
+        }
+    }
+
+    /**
+     * Ends the attempt in [State.FAILED], showing [message] in the dialog and [toastMessage] as a toast.
+     */
+    private fun failInstall(
+        message: String,
+        toastMessage: String = app.getString(R.string.install_app_fail, message)
+    ) {
+        installError = message
+        app.toast(toastMessage)
+        state = State.FAILED
+    }
+
+    /** Clears the progress of a download that produced nothing and offers to start it over. */
+    private fun resetToDownload() {
+        downloadedSize = 0L
+        totalSize = 0L
+        state = State.CAN_DOWNLOAD
+    }
+
+    /** Whether the staged update is still on disk and holds anything worth installing. */
+    private fun hasDownloadedApk() = location.exists() && location.length() > 0
 
     private fun handleInstallResult(result: InstallResult) {
         when (result) {
@@ -302,18 +295,10 @@ class UpdateViewModel(
                 app.toast(app.getString(R.string.install_app_success))
             }
             is InstallResult.Conflict -> {
-                installError = app.getString(R.string.installer_hint_conflict)
-                canResumeDownload = false
-                app.toast(installError)
-                state = State.FAILED
+                val hint = app.getString(R.string.installer_hint_conflict)
+                failInstall(hint, toastMessage = hint)
             }
-            is InstallResult.Failure -> {
-                val message = result.message ?: "Unknown error"
-                installError = message
-                canResumeDownload = false
-                app.toast(app.getString(R.string.install_app_fail, message))
-                state = State.FAILED
-            }
+            is InstallResult.Failure -> failInstall(result.message ?: "Unknown error")
         }
     }
 
@@ -331,9 +316,7 @@ class UpdateViewModel(
         } catch (error: ActivityNotFoundException) {
             installerManager.cleanup(plan)
             pendingExternalInstall = null
-            installError = error.simpleMessage().orEmpty()
-            app.toast(app.getString(R.string.install_app_fail, error.simpleMessage()))
-            state = State.FAILED
+            failInstall(error.simpleMessage().orEmpty())
             return
         }
 
@@ -344,9 +327,8 @@ class UpdateViewModel(
             if (pendingExternalInstall == plan) {
                 installerManager.cleanup(plan)
                 pendingExternalInstall = null
-                installError = app.getString(R.string.installer_external_timeout, plan.installerLabel)
-                app.toast(installError)
-                state = State.FAILED
+                val timedOut = app.getString(R.string.installer_external_timeout, plan.installerLabel)
+                failInstall(timedOut, toastMessage = timedOut)
                 externalInstallTimeoutJob = null
             }
         }
@@ -397,8 +379,9 @@ class UpdateViewModel(
         externalInstallTimeoutJob?.cancel()
         externalInstallTimeoutJob = null
 
+        // The staged APK is deliberately left behind: an installer launched from here may still
+        // be reading it, and Filesystem clears the directory on the next process start anyway
         job.cancel()
-        location.delete()
     }
 
     /**
@@ -407,13 +390,9 @@ class UpdateViewModel(
     fun resetIfInstallCancelled() {
         // If we're in INSTALLING state but the pending installation was canceled,
         // reset to CAN_INSTALL so user can try again
-        if (state == State.INSTALLING && pendingExternalInstall == null) {
-            state = if (location.exists() && location.length() > 0) {
-                State.CAN_INSTALL
-            } else {
-                canResumeDownload = false
-                State.CAN_DOWNLOAD
-            }
+        if (state == State.INSTALLING && installHandedOff && pendingExternalInstall == null) {
+            installHandedOff = false
+            if (hasDownloadedApk()) state = State.CAN_INSTALL else resetToDownload()
         }
     }
 

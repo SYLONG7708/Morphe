@@ -179,7 +179,7 @@ jobs:
             --bundle "dist/patches-${{ steps.upstream.outputs.derived_patch_version }}.mpp" \
             --catalog gradle/libs.versions.toml
 
-      - name: Build signed manager
+      - name: Build both signed manager editions
         if: steps.gate.outputs.publish == 'true'
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -200,7 +200,11 @@ jobs:
           ./gradlew clean lintRelease assembleRelease --stacktrace
           apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
           test -f "$apk"
-          cp "$apk" "dist/SyMorphe-$version.apk"
+          cp "$apk" "dist/SyMorphe-$version-licensed.apk"
+          ./gradlew clean lintRelease assembleRelease -PnoDeviceLicense --stacktrace
+          no_license_apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
+          test -f "$no_license_apk"
+          cp "$no_license_apk" "dist/SyMorphe-$version-no-license.apk"
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Generate and sign release metadata
@@ -215,7 +219,8 @@ jobs:
           set -euo pipefail
           base="https://github.com/SYLONG7708/Morphe/releases/latest/download"
           python tools/generate_update_manifest.py \
-            --manager "dist/SyMorphe-$RELEASE_VERSION.apk" \
+            --manager "dist/SyMorphe-$RELEASE_VERSION-licensed.apk" \
+            --manager "dist/SyMorphe-$RELEASE_VERSION-no-license.apk" \
             --patches "dist/patches-$PATCH_VERSION.mpp" \
             --patch-version "$PATCH_VERSION" \
             --microg "dist/microg-$MICROG_VERSION.apk" \
@@ -223,7 +228,8 @@ jobs:
             --output-dir dist
           javac -d dist tools/SignFile.java tools/VerifyFile.java
           for file in \
-            "dist/SyMorphe-$RELEASE_VERSION.apk" \
+            "dist/SyMorphe-$RELEASE_VERSION-licensed.apk" \
+            "dist/SyMorphe-$RELEASE_VERSION-no-license.apk" \
             "dist/patches-$PATCH_VERSION.mpp" \
             "dist/microg-$MICROG_VERSION.apk" \
             "dist/update-manifest.json"; do
@@ -235,8 +241,10 @@ jobs:
           done
           bundle_dir="dist/SyMorphe-Ecosystem-$RELEASE_VERSION"
           mkdir -p "$bundle_dir"
-          cp "dist/SyMorphe-$RELEASE_VERSION.apk" \
-            "dist/SyMorphe-$RELEASE_VERSION.apk.sig" \
+          cp "dist/SyMorphe-$RELEASE_VERSION-licensed.apk" \
+            "dist/SyMorphe-$RELEASE_VERSION-licensed.apk.sig" \
+            "dist/SyMorphe-$RELEASE_VERSION-no-license.apk" \
+            "dist/SyMorphe-$RELEASE_VERSION-no-license.apk.sig" \
             "dist/microg-$MICROG_VERSION.apk" \
             "dist/microg-$MICROG_VERSION.apk.sig" \
             "dist/patches-$PATCH_VERSION.mpp" \
@@ -246,10 +254,11 @@ jobs:
           cat > "$bundle_dir/README.txt" <<EOF
           SyMorphe Ecosystem Bundle $RELEASE_VERSION
 
-          This single ZIP contains the signed SyMorphe manager, a UIS7870
+          This single ZIP contains both signed SyMorphe manager editions, a UIS7870
           coexistence build of MicroG-RE, a matching derived Morphe patch bundle,
           the signed manifest, and detached signatures.
-          Install SyMorphe first, then open its Security Update Center to install
+          Choose either the licensed or no-license manager edition, then open its
+          Security Update Center to install
           MicroG-RE and patch YouTube locally. The new packages use the stable
           com.sylong.autopatch vendor group and do not replace factory
           app.morphe packages. This private-use build can automatically
@@ -292,7 +301,8 @@ jobs:
         uses: actions/attest-build-provenance@v3
         with:
           subject-path: |
-            dist/SyMorphe-${{ env.RELEASE_VERSION }}.apk
+            dist/SyMorphe-${{ env.RELEASE_VERSION }}-licensed.apk
+            dist/SyMorphe-${{ env.RELEASE_VERSION }}-no-license.apk
             dist/microg-${{ steps.upstream.outputs.derived_microg_version }}.apk
             dist/patches-${{ steps.upstream.outputs.derived_patch_version }}.mpp
 

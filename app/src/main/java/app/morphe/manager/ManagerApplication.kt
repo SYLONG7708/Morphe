@@ -23,7 +23,6 @@ import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.update.BundledEcosystemProvisioner
 import app.morphe.manager.license.DeviceLicenseManager
 import app.morphe.manager.util.*
-import app.morphe.manager.worker.AutoPatchWorker
 import app.morphe.manager.worker.UpdateCheckWorker
 import coil.Coil
 import coil.ImageLoader
@@ -125,7 +124,6 @@ class ManagerApplication : Application() {
 
         if (!DeviceLicenseManager.isLicensed(this)) {
             UpdateCheckWorker.cancel(this)
-            AutoPatchWorker.cancel(this)
             Log.i(tag, "SyMorphe is waiting for device-bound owner authorization")
         } else {
             onDeviceLicenseAvailable()
@@ -143,6 +141,10 @@ class ManagerApplication : Application() {
         // Preload preferences and kick off background worker/FCM sync
         scope.launch {
             prefs.preload()
+
+            // A restored backup carries the token of the device it came from, and nothing here
+            // can tell whose it is, so this data starts without one and the user enters theirs
+            if (fs.isFirstRunForThisData) prefs.gitHubPat.update("")
 
             // Keep SharedPreferences in sync with DataStore so that attachBaseContext
             // (Application + Activity) can read the language without touching DataStore
@@ -166,18 +168,6 @@ class ManagerApplication : Application() {
                 useManagerPrereleases = useManagerPrereleases,
                 usePatchesPrereleases = usePatchesPrereleases,
             )
-
-            // Re-register automatic re-patching, so a manager update or a wiped WorkManager
-            // database does not silently stop the schedule
-            if (prefs.autoPatchEnabled.get()) {
-                AutoPatchWorker.schedule(
-                    this@ManagerApplication,
-                    prefs.autoPatchInterval.get(),
-                    prefs.autoPatchRequiresCharging.get()
-                )
-            } else {
-                AutoPatchWorker.cancel(this@ManagerApplication)
-            }
         }
 
         // First touch of the repository builds the Ktor client, which costs seconds on a cold

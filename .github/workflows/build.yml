@@ -46,8 +46,17 @@ jobs:
 
       - name: Lint and reproducible release build
         run: |
+          set -euo pipefail
           chmod +x gradlew
-          ./gradlew lintRelease assembleRelease -PsignAsDebug --stacktrace
+          mkdir -p verification
+          ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PsignAsDebug --stacktrace
+          licensed_apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
+          test -f "$licensed_apk"
+          cp "$licensed_apk" verification/SyMorphe-licensed-verification.apk
+          ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PsignAsDebug -PnoDeviceLicense --stacktrace
+          no_license_apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
+          test -f "$no_license_apk"
+          cp "$no_license_apk" verification/SyMorphe-no-license-verification.apk
 
       - name: Upload verification APK and reports
         if: always()
@@ -57,5 +66,5 @@ jobs:
           if-no-files-found: warn
           compression-level: 0
           path: |
-            app/build/outputs/apk/release/*.apk
+            verification/*.apk
             app/build/reports/**
