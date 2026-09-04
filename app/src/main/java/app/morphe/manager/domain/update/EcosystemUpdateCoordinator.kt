@@ -233,14 +233,15 @@ class EcosystemUpdateCoordinator(
                 detail = "No artifact matches SDK ${profile.sdk} / ${profile.abis.joinToString()}",
             )
         val remoteCode = artifact.versionCode ?: component.versionCode
+        val remoteVersion = artifact.versionName ?: component.version
         val updateAvailable = when {
             remoteCode != null -> remoteCode > BuildConfig.VERSION_CODE
-            else -> compareVersions(component.version, BuildConfig.VERSION_NAME) > 0
+            else -> compareVersions(remoteVersion, BuildConfig.VERSION_NAME) > 0
         }
         return ComponentUpdateState(
             status = if (updateAvailable) UpdateStatus.UPDATE_AVAILABLE else UpdateStatus.UP_TO_DATE,
             installedVersion = BuildConfig.VERSION_NAME,
-            availableVersion = component.version,
+            availableVersion = remoteVersion,
             artifact = artifact,
         )
     }

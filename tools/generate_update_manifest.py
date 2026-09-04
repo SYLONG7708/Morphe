@@ -108,9 +108,25 @@ def write_json(path: Path, value: object) -> None:
     )
 
 
+def manager_component(managers: list[dict]) -> dict:
+    if not managers:
+        raise ValueError("At least one manager artifact is required")
+    package_names = [manager.get("package_name") for manager in managers]
+    if any(not package_name for package_name in package_names):
+        raise ValueError("Every manager artifact must declare its package name")
+    if len(set(package_names)) != len(package_names):
+        raise ValueError("Manager artifacts must use distinct package names")
+    primary = managers[0]
+    return {
+        "version": primary["version_name"],
+        "version_code": primary["version_code"],
+        "artifacts": managers,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--manager", type=Path, required=True)
+    parser.add_argument("--manager", type=Path, action="append", required=True)
     parser.add_argument("--patches", type=Path, required=True)
     parser.add_argument("--patch-version", required=True)
     parser.add_argument("--microg", type=Path, required=True)
@@ -122,7 +138,8 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     published = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
     sequence = args.sequence or int(published.strftime("%Y%m%d%H%M"))
-    manager = artifact(args.manager, args.base_url, apk=True)
+    managers = [artifact(path, args.base_url, apk=True) for path in args.manager]
+    manager = managers[0]
     patches = artifact(args.patches, args.base_url)
     microg = artifact(args.microg, args.base_url, apk=True)
 
@@ -131,11 +148,7 @@ def main() -> None:
         "sequence": sequence,
         "channel": "stable",
         "published_at": published.isoformat().replace("+00:00", "Z"),
-        "manager": {
-            "version": manager["version_name"],
-            "version_code": manager["version_code"],
-            "artifacts": [manager],
-        },
+        "manager": manager_component(managers),
         "patches": {
             "version": args.patch_version,
             "artifacts": [patches],
