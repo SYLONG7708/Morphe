@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-09-07T07:43:37Z",
+  "created_at": "2026-09-10T07:42:06Z",
   "description": "Morphe patch bundle derived for the signed SyMorphe UIS7870 coexistence profile",
-  "download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.41.0.7870.1.mpp",
-  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.41.0.7870.1.mpp.sig",
-  "version": "1.41.0.7870.1"
+  "download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.42.0.7870.1.mpp",
+  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/latest/download/patches-1.42.0.7870.1.mpp.sig",
+  "version": "1.42.0.7870.1"
 }
