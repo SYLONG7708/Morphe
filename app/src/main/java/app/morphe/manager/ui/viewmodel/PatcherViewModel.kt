@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.ParcelUuid
 import android.os.PowerManager
@@ -597,6 +598,13 @@ class PatcherViewModel(
     /** The preflight checks themselves. False when one of them put a question on screen. */
     private suspend fun preflight(): Boolean {
         val scopedBundles = gatherScopedBundles()
+        appliedSelection = SafeIntegrationProfile.enforceYouTubePatches(
+            sourcePackage = packageName,
+            patches = appliedSelection,
+            availablePatches = scopedBundles.mapValues { (_, bundle) ->
+                bundle.patches.mapTo(mutableSetOf()) { it.name }
+            },
+        )
         val sanitizedSelection = sanitizeSelection(appliedSelection, scopedBundles)
         val missing = mutableListOf<String>()
         appliedSelection.forEach { (uid, patches) ->
@@ -609,6 +617,7 @@ class PatcherViewModel(
             )
             return false
         }
+        appliedSelection = sanitizedSelection
 
         patchSourcesForLog = collectSelectedBundleMetadata()
 
@@ -633,7 +642,7 @@ class PatcherViewModel(
             input.options
         } else {
             patchOptionsPrefs.exportPatchOptions(packageName)
-        }.restrictTo(input.selectedPatches)
+        }.restrictTo(appliedSelection)
 
         val pathFailures = withContext(Dispatchers.IO) { validateOptionPaths(optionsToValidate) }
         if (pathFailures.isNotEmpty()) {
@@ -882,6 +891,17 @@ class PatcherViewModel(
         }
     }
 
+    fun exportToDownloads() = viewModelScope.launch {
+        if (_isSaving.value || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@launch
+        _isSaving.value = true
+        try {
+            ensureExportMetadata()
+            finishExport(app.exportApkToDownloads(outputFile, exportFileName))
+        } finally {
+            _isSaving.value = false
+        }
+    }
+
     /**
      * Shared post-export logic: persists the patched app record, shows a toast,
      * and triggers the notification prompt on success.
@@ -1014,10 +1034,9 @@ class PatcherViewModel(
                 patchOptionsPrefs.exportPatchOptions(packageName)
             }
         }
-        val selectedPatches = SafeIntegrationProfile.enforceYouTubePatches(
-            sourcePackage = packageName,
-            patches = input.selectedPatches,
-        )
+        // Preflight resolved this selection against the actual bundle capabilities.
+        // Do not reinsert a removed legacy patch when handing the run to the worker.
+        val selectedPatches = appliedSelection
         val mergedOptions = SafeIntegrationProfile.enforceYouTubeOptions(
             sourcePackage = packageName,
             patches = selectedPatches,

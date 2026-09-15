@@ -663,6 +663,9 @@ Uninstalling will permanently erase all app data"</string>
     <string name="launch_app_unverified">Morphe could not verify that the installed app is the build it patched</string>
     <string name="uninstall_timeout">Uninstall timed out</string>
     <string name="save_apk_success">APK Saved</string>
+    <string name="save_apk_destination_title">Save APK</string>
+    <string name="save_apk_to_downloads">Save to Downloads/SyMorphe</string>
+    <string name="save_apk_choose_location">Choose a location</string>
     <string name="saved_app_export_failed">Failed to export patched app</string>
     <string name="saved_app_removed_toast">Removed saved patched app</string>
     <string name="saved_app_launch_unavailable">Install the app before opening it</string>

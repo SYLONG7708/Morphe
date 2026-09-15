@@ -71,37 +71,53 @@ object SafeIntegrationProfile {
             putAll(options)
             gmsCoreBundleUids.forEach { bundleUid ->
                 val bundleOptions = get(bundleUid).orEmpty().toMutableMap()
-                val packageOptions = bundleOptions[CHANGE_PACKAGE_NAME_PATCH]
-                    .orEmpty()
-                    .toMutableMap()
-                packageOptions[PACKAGE_NAME_OPTION] = patchedYouTubePackage
-                bundleOptions[CHANGE_PACKAGE_NAME_PATCH] = packageOptions
+                val packagePatch = patches.getValue(bundleUid).firstOrNull {
+                    it.equals(CHANGE_PACKAGE_NAME_PATCH, ignoreCase = true)
+                }
+                if (packagePatch == null) {
+                    // New bundles own the rename inside GmsCore support. Do not forward
+                    // an obsolete option for a patch the bundle no longer publishes.
+                    bundleOptions.keys.removeAll {
+                        it.equals(CHANGE_PACKAGE_NAME_PATCH, ignoreCase = true)
+                    }
+                } else {
+                    val packageOptions = bundleOptions[packagePatch].orEmpty().toMutableMap()
+                    packageOptions[PACKAGE_NAME_OPTION] = patchedYouTubePackage
+                    bundleOptions[packagePatch] = packageOptions
+                }
                 put(bundleUid, bundleOptions)
             }
         }
     }
 
     /**
-     * Makes the package-name patch explicit so its safe option is applied even when it would
-     * otherwise be loaded only as an implicit dependency of GmsCore support.
+     * Selects the legacy package-name patch only when the loaded bundle publishes it.
+     * New bundles rename through GmsCore support itself; their derived default and the
+     * worker's output-package check retain the same coexistence identity.
      */
     fun enforceYouTubePatches(
         sourcePackage: String,
         patches: PatchSelection,
+        availablePatches: Map<Int, Set<String>>,
     ): PatchSelection {
         if (sourcePackage != GOOGLE_YOUTUBE_PACKAGE) return patches
 
         var changed = false
-        val safePatches = patches.mapValues { (_, names) ->
-            if (
-                names.any { it.equals(GMS_CORE_SUPPORT_PATCH, ignoreCase = true) } &&
-                names.none { it.equals(CHANGE_PACKAGE_NAME_PATCH, ignoreCase = true) }
-            ) {
-                changed = true
-                names + CHANGE_PACKAGE_NAME_PATCH
-            } else {
-                names
+        val safePatches = patches.mapValues { (uid, names) ->
+            val available = availablePatches[uid] ?: return@mapValues names
+            if (names.none { it.equals(GMS_CORE_SUPPORT_PATCH, ignoreCase = true) } ||
+                available.none { it.equals(GMS_CORE_SUPPORT_PATCH, ignoreCase = true) }
+            ) return@mapValues names
+
+            val packagePatch = available.firstOrNull {
+                it.equals(CHANGE_PACKAGE_NAME_PATCH, ignoreCase = true)
             }
+            val retained = names.filterNotTo(linkedSetOf()) {
+                it.equals(CHANGE_PACKAGE_NAME_PATCH, ignoreCase = true)
+            }
+            packagePatch?.let(retained::add)
+            if (retained != names) changed = true
+            retained
         }
         return if (changed) safePatches else patches
     }
