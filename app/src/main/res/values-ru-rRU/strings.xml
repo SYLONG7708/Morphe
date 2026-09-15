@@ -13,11 +13,15 @@
     <string name="home_app_no_hidden">Нет скрытых приложений</string>
     <string name="home_app_hidden_apps_title">Скрытые приложения</string>
     <string name="home_app_hidden_apps_hint">Нажмите, чтобы показать</string>
+    <string name="home_app_patch_sources_description">Источники, оставленные без галочки, не предлагаются при патчинге этих приложений, и их патчи никогда не попадают в выбор самостоятельно. Каждый источник остаётся включённым для всех остальных приложений</string>
+    <string name="home_app_patch_sources_mixed">Предлагается для %1$s из %2$s</string>
+    <string name="home_app_patch_sources_covers">Имеет патчи для %1$s из %2$s</string>
+    <string name="home_app_patch_sources_last">Каждому приложению нужен хотя бы один оставшийся источник для патчей</string>
     <string name="android_11_bug_dialog_title">Ошибка Android 11</string>
     <string name="android_11_bug_dialog_description">Для нормальной работы приложения необходимо предварительно предоставить разрешение на установку, чтобы избежать ошибки в системе Android 11, которая может негативно сказаться на пользовательском опыте</string>
     <string name="deep_link_add_source_title">Добавить источник</string>
     <string name="deep_link_add_source_message">Вы хотите добавить этот источник патча в Morphe?</string>
-    <string name="deep_link_add_source_warning">Добавляйте источники, которым вы доверяете</string>
+    <string name="deep_link_add_source_warning">Добавляйте только те источники, которым вы доверяете</string>
     <!-- Home Screen - Update Notifications -->
     <string name="home_update_available">Доступно обновление Morphe</string>
     <string name="home_update_available_subtitle">Новая версия готова к установке.</string>
@@ -27,14 +31,19 @@
     <string name="home_metadata_errors_subtitle">Нажмите, чтобы посмотреть источники</string>
     <string name="home_outdated_manager_title">Morphe устарел</string>
     <string name="home_outdated_manager_subtitle">Некоторым источникам патчей требуется более новая версия</string>
+    <string name="home_held_back_title">Источник патчей вызвал сбой Morphe</string>
+    <string name="home_held_back_subtitle">Он был пропущен, чтобы приложение могло запуститься. Нажмите, чтобы просмотреть</string>
     <string name="home_metered_skipped_title">Обновления приостановлены при использовании мобильного трафика</string>
     <string name="home_metered_skipped_subtitle">Нажмите, чтобы разрешить обновления через мобильный интернет</string>
-    <string name="home_repatch_available_subtitle">Нажмите, чтобы поставить их в очередь</string>
+    <string name="home_repatch_available_subtitle">Нажмите, чтобы поставить их все в очередь</string>
     <string name="home_update_error">Обновление не удалось</string>
     <string name="home_update_error_subtitle">Произошла ошибка при обновлении источников</string>
     <string name="home_update_skipped_metered">Обновления пропущены</string>
     <string name="home_update_skipped_metered_subtitle">Мобильные данные активны</string>
     <string name="home_updating_sources">Обновление источников…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s МБ (%5$d%%)</string>
     <string name="home_update_success">Обновление источников завершено</string>
     <string name="home_update_success_subtitle">Ваши источники обновлены</string>
     <string name="home_sources_are_loading">Загрузка источников, пожалуйста, подождите…</string>
@@ -44,17 +53,17 @@
     <string name="home_app_filter_all_description">Все приложения на главном экране</string>
     <string name="home_app_filter_patched_description">Приложения, которые вы пропатчили или сохранили с помощью Morphe</string>
     <string name="home_app_filter_not_patched_description">Приложения, которые вы ещё не пропатчили в Morphe</string>
-    <string name="home_app_filter_installed_description">Приложения, установленные на этом устройстве</string>
+    <string name="home_app_filter_installed_description">Приложения, установленные в данный момент на этом устройстве</string>
     <string name="home_app_filter_uninstalled_description">Приложения, пропатченные с помощью Morphe, которых больше нет на этом устройстве</string>
     <string name="home_app_filter_clones">Клоны</string>
-    <string name="home_app_filter_clones_description">Приложения, собранные под собственным именем пакета, установленные вместе с оригиналом</string>
+    <string name="home_app_filter_clones_description">Приложения, созданные под собственным именем пакета, устанавливаются вместе с оригинальным</string>
     <string name="home_app_sort_manual_description">Нажмите и удерживайте значок приложения, затем нажмите кнопку изменения порядка</string>
     <string name="home_app_sort_recommended">Рекомендуемый порядок</string>
     <string name="home_app_sort_recommended_description">Сначала установленные и закреплённые приложения</string>
     <string name="home_app_sort_name_asc_description">По алфавиту, от А до Я</string>
     <string name="home_app_sort_name_desc_description">В обратном алфавитном порядке, от Я до А</string>
-    <string name="home_app_sort_updates_first">Сначала обновления патчей</string>
-    <string name="home_app_sort_updates_first_description">Сначала приложения с индикаторами обновлений, затем в рекомендуемом порядке</string>
+    <string name="home_app_sort_updates_first">Сначала обновите патчи</string>
+    <string name="home_app_sort_updates_first_description">Сначала приложения с более новыми патчами, затем рекомендуемый порядок</string>
     <string name="home_app_sort_recently_patched">Недавно пропатченные</string>
     <string name="home_app_sort_recently_patched_description">Сначала недавно пропатченные приложения</string>
     <string name="home_no_apps_title">Нет доступных приложений</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">Ночной и продуктивный</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Источники патчей</string>
-    <string name="sources_search">Поиск источников</string>
+    <string name="sources_search">Поиск источников и патчей</string>
     <string name="sources_sort_title">Сортировка источников патчей</string>
     <string name="sources_sort_manual">Ручная сортировка</string>
     <string name="sources_sort_manual_hint">Нажмите и удерживайте источник, чтобы изменить порядок</string>
@@ -127,9 +136,14 @@
     <string name="sources_sort_last_updated_description">Сначала новые обновления источников</string>
     <string name="sources_sort_enabled_first">Сначала включенные</string>
     <string name="sources_sort_enabled_first_description">Показывать активные источники перед отключенными источниками</string>
+    <string name="sources_patches_source_disabled_hint">Этот источник отключен. Его патчи указаны для справки и не применяются.</string>
     <string name="sources_management_open_in_browser">Открыть в браузере</string>
     <string name="sources_management_report_issue">Сообщить о проблеме</string>
     <string name="sources_management_failed_to_open_url">Не удалось открыть URL</string>
+    <string name="sources_hidden_apps">Скрыто для</string>
+    <string name="sources_hidden_apps_title">Приложения, скрытые от %1$s</string>
+    <string name="sources_hidden_apps_description">Этим приложениям этот источник не предлагается при патчинге. Сам источник остаётся включённым для всего остального</string>
+    <string name="sources_hidden_apps_hint">Нажмите, чтобы снова предложить этот источник</string>
     <string name="sources_management_prerelease_toggle">Предрелизные патчи</string>
     <string name="sources_management_prerelease_toggle_description">Получает ранний доступ к новым экспериментальным версиям патча</string>
     <string name="sources_prerelease_warning_title">Включить предварительные патчи?</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">Не удалось загрузить пакет патчей. URL-адрес источника может быть указан неверно или файл не существует</string>
     <string name="sources_management_outdated_manager_badge">Обновить Morphe</string>
     <string name="sources_management_outdated_manager_hint">Этот источник собран для патчера %1$s, но Morphe %2$s включает патчер %3$s. Обновите Morphe, чтобы использовать его</string>
+    <string name="sources_management_held_back_badge">Сбой</string>
+    <string name="sources_management_held_back_hint">Этот источник вызвал сбой Morphe во время загрузки, поэтому он пропускается. Обновите его или импортируйте заново, чтобы повторить попытку</string>
     <string name="sources_management_source_enabled">Источник включен</string>
     <string name="sources_management_source_disabled">Источник отключен</string>
     <string name="sources_management_source_updating">Обновление источника</string>
@@ -190,6 +206,7 @@
     <string name="home_apk_availability_recommended_label">Рекомендуемый</string>
     <string name="home_apk_availability_unpatched_label">Непатченый</string>
     <string name="home_apk_availability_incompatible_label">Несовместимый</string>
+    <string name="home_apk_availability_installed_version">Установлено на этом устройстве: %s</string>
     <string name="home_apk_availability_yes">Да, помогите мне найти APK</string>
     <string name="home_apk_availability_no">Нет, у меня уже есть APK</string>
     <string name="home_apk_helper_download">Использовать вспомогательное приложение</string>
@@ -317,9 +334,11 @@
     <string name="home_outdated_patches_dialog_warning">Патчинг устаревшими патчами может привести к неисправности программы</string>
     <string name="home_outdated_patches_dialog_update_and_patch">Обновить и патчить</string>
     <string name="home_low_disk_space_dialog_title">Недостаточно места на диске</string>
-    <string name="home_low_disk_space_dialog_message">Доступно только %1$.2f GB свободного хранилища. Для патчинга требуется как минимум %2$.2f GB свободного места для корректной работы</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Доступно только %1$s GB свободного хранилища. Для патчинга требуется как минимум %2$s GB свободного места для корректной работы</string>
     <string name="home_low_disk_space_dialog_warning">Дальнейшие действия могут привести к ошибке \"файл не найден\" или к повреждению выходного APK-файла</string>
     <string name="home_simple_bundle_select_title">Выберите источник патчей</string>
+    <string name="home_simple_bundle_select_remember">Всегда использовать этот источник для этого приложения</string>
     <!-- Color picker -->
     <string name="custom_color">Свой цвет</string>
     <string name="hex_color">Hex цвет</string>
@@ -434,6 +453,10 @@
     <string name="home_app_info_install_type_shizuku_play_store">Установить через Shizuku Play Store</string>
     <string name="home_app_info_patch_update_available">Доступно обновление патчей</string>
     <string name="home_app_info_patch_update_available_description">Доступна более новая версия патчей. Обновите приложение, чтобы получить последние улучшения и исправления.</string>
+    <string name="home_app_info_app_update_available">Доступно обновление приложения</string>
+    <string name="home_app_info_app_update_available_description">Источники патчей поддерживают более новую версию этого приложения. Примените патч снова, чтобы перейти на эту версию.</string>
+    <string name="home_app_info_newest_supported_version">Новейшая поддерживаемая версия</string>
+    <string name="home_app_info_version_move">Установлено %1$s, новейшая поддерживаемая версия %2$s</string>
     <string name="home_app_info_app_deleted_warning">Приложение было удалено.</string>
     <string name="home_app_info_app_deleted_description">Это приложение было удалено вне устройства Morphe. Переустановите его, чтобы восстановить работоспособность.</string>
     <string name="home_app_info_not_patched_description">Установлена непатченная версия этого приложения. Morphe по-прежнему имеет свою предыдущую запись о патче.</string>
@@ -458,6 +481,9 @@
     <string name="patcher_error_log">Журнал ошибок</string>
     <string name="patcher_error_technical">Технические детали</string>
     <string name="patcher_error_dialog_diagnostics">Диагностика</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Начато применение патча</string>
+    <string name="patcher_card_succeeded">Применение патча успешно</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">Приложение</string>
     <string name="patcher_field_package">Пакет</string>
@@ -473,6 +499,15 @@
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Память</string>
     <string name="patcher_field_storage">Хранилище</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Размер вывода</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Время</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Средний объем памяти</string>
+    <string name="patcher_field_memory_max">Максимальный объем памяти</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Пиковая скорость ввода-вывода</string>
     <string name="patcher_field_value_unknown">неизвестно</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">Удалены</string>
@@ -519,6 +554,13 @@
     <string name="patcher_storage_permission_open_settings">Открыть настройки хранилища</string>
     <string name="patcher_storage_badge_denied">Доступ запрещен</string>
     <string name="patcher_storage_badge_missing">Не найдено</string>
+    <string name="batch_patch_option_paths_skipped">Файлы параметров патча отсутствуют и будут пропущены: %1$s</string>
+    <string name="patcher_missing_patches_title">Некоторые патчи исчезли</string>
+    <string name="patcher_missing_patches_description">Сохранённый выбор для этого приложения перечисляет патчи, которые больше не предлагаются ни одним включённым источником. Если продолжить, приложение будет пропатчено без них</string>
+    <string name="patcher_missing_patches_label">Больше не предлагаются</string>
+    <string name="patcher_option_paths_gone_title">Файлы параметров патча отсутствуют</string>
+    <string name="patcher_option_paths_gone_description">Один или несколько параметров патча указывают на файлы, которых больше нет. Удалите пути, чтобы патчить без них, или верните файлы на место и попробуйте снова</string>
+    <string name="patcher_option_paths_clear">Удалить пути и продолжить</string>
     <string name="patcher_storage_permission_hint">Совет: переместите файлы в /Android/data/app.morphe.manager/files/ - дополнительные разрешения не требуются</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Подготовка</string>
@@ -564,7 +606,7 @@
     <string name="patcher_message_15">Все системы в норме… траектория патчинга стабильна… 🚀</string>
     <string name="patcher_message_16">Выжимаем дополнительную мощность, как сок из цифрового лимона… 🍋</string>
     <string name="patcher_message_17">Поощряем приложение принять свою новую, улучшенную версию… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Изменяем суперпозицию приложения с «не пропатчено» на «пропатчено»… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">У вашего приложения жар, и единственное лекарство — больше патчей… 🩺🔔</string>
@@ -572,6 +614,8 @@
     <!-- Expert patcher Screen -->
     <string name="patching_app">Патчинг приложения</string>
     <string name="memory_usage">Использование памяти</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s из %2$s МБ</string>
     <string name="cpu_usage">Использование ЦП</string>
     <string name="storage_io_usage">Ввод-вывод хранилища</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -611,6 +655,12 @@
     <string name="mini_game_snake_swipe_to_start">Смахните, чтобы начать</string>
     <string name="mini_game_dino_picker_subtitle">Касайтесь экрана, чтобы перепрыгивать кактусы</string>
     <string name="mini_game_dino_tap_to_start">Касайтесь экрана, чтобы бежать</string>
+    <string name="mini_game_blocks_picker_subtitle">Подгонка форм, четкие линии</string>
+    <string name="mini_game_blocks_tap_to_start">Коснитесь, чтобы повернуть, свайп, чтобы переместить, свайп вниз, чтобы опустить</string>
+    <string name="mini_game_bricks_picker_subtitle">Отбей мяч, расчисти стену</string>
+    <string name="mini_game_bricks_tap_to_start">Перетащите, чтобы прицелиться, коснитесь, чтобы запустить</string>
+    <string name="mini_game_miner_picker_subtitle">Нажмите, чтобы открыть, удерживайте для отметки</string>
+    <string name="mini_game_pairs_picker_subtitle">Переверните карты, найти соответствие</string>
     <!-- Settings -->
     <string name="appearance">Внешний вид</string>
     <string name="advanced">Дополнительно</string>
@@ -663,6 +713,9 @@
     <string name="settings_appearance_greeting_phrases_subtitle">Показывать приветственное сообщение на главном экране</string>
     <string name="settings_appearance_app_grouping">Группировка приложений</string>
     <string name="settings_appearance_app_grouping_description">Отображать переключатель на главном экране для группировки приложений по источнику или вашим категориям, сохраняя выбор при отключении</string>
+    <string name="settings_appearance_patch_list">Список патчей</string>
+    <string name="settings_appearance_patch_categories">Группировать по категориям</string>
+    <string name="settings_appearance_patch_categories_description">Разбивать списки патчей по категориям, указанным источником, а источники без категорий оставлять в виде простого списка</string>
     <string name="settings_appearance_repatch_notice">Уведомление о перепатчивании</string>
     <string name="settings_appearance_repatch_notice_description">Показывать баннер на главном экране, когда пропатченные приложения можно повторно пропатчить</string>
     <string name="settings_appearance_sort_button">Кнопка сортировки и фильтрации</string>
@@ -775,6 +828,10 @@
     <string name="settings_advanced_patch_options_custom_branding_description">Изменяет отображаемое имя приложения</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Имя приложения</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Введите своё имя</string>
+    <string name="settings_advanced_patch_options_path_gone">Эту папку больше нельзя прочитать. Выберите её снова или очистите её, иначе патчинг остановится и спросит о ней</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Иконка приложения</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">Значок, с которым патчится приложение. Он также используется там, где приложение не сможет изменить его позже, например, в Android Auto и в списке приложений в системных настройках</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">Для пользовательского значка приложения нужна папка с изображениями значков</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Своя иконка</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Папка с изображениями для использования в качестве пользовательского значка.
 
@@ -859,6 +916,8 @@ morphe_header_custom_dark.png
     <string name="installer_action_open_shizuku">Открыть Shizuku</string>
     <string name="installer_hint_generic">Установка не удалась. Повторите попытку или переключитесь на другой установщик</string>
     <string name="installer_hint_conflict">Другое приложение с таким же именем пакета уже установлено. Удалите его перед продолжением</string>
+    <string name="installer_confirm_notification_title">Подтвердите установку</string>
+    <string name="installer_confirm_notification_text">Нажмите, чтобы завершить установку пропатченного приложения</string>
     <string name="installer_external_launched">Открытие %s…</string>
     <string name="installer_external_timeout">%s не подтвердил установку. Проверьте другое приложение и попробуйте еще раз</string>
     <string name="installer_external_success">%s сообщил об успешной установке</string>
@@ -875,7 +934,7 @@ morphe_header_custom_dark.png
     <string name="settings_prompt_installer_on_install">Окно выбора установщика</string>
     <string name="settings_prompt_installer_on_install_description">Показывать диалоговое окно выбора установщика каждый раз, когда вы устанавливаете патченное приложение</string>
     <string name="settings_auto_install_with_shizuku">Автоматическая установка после патча</string>
-    <string name="settings_auto_install_with_shizuku_description">Бесшумно устанавливает пропатченный APK сразу после завершения патчинга</string>
+    <string name="settings_auto_install_with_shizuku_description">Устанавливает пропатченный APK сразу после завершения патчинга</string>
     <string name="settings_auto_uninstall_with_shizuku">Автоматически удалять при конфликте</string>
     <string name="settings_auto_uninstall_with_shizuku_description">При автоматической установке с помощью Shizuku сначала удалите существующее приложение, если Android сообщает о конфликте подписей. Это может удалить данные приложения.</string>
     <string name="settings_auto_uninstall_warning_title">Включить автоматическое удаление?</string>
@@ -913,6 +972,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime_enable">Включить время выполнения процесса</string>
     <string name="settings_system_memory_limit_subtitle">Доступная память для патчинга</string>
     <string name="settings_system_memory_limit_warning">Низкий лимит памяти может вызвать сбой при патчинге больших приложений</string>
+    <string name="settings_system_memory_limit_high_warning">Высокий лимит памяти может значительно замедлить патчинг на некоторых устройствах. Повышайте его, только если патчинг продолжает завершаться сбоем при более низких лимитах.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB лимит</string>
     <string name="settings_system_process_runtime_disabled_description">Нажмите, чтобы настроить</string>
     <string name="settings_system_process_runtime_description_not_available">Эта функция требует Android 11 или выше</string>
@@ -1023,8 +1083,8 @@ morphe_header_custom_dark.png
     <string name="settings_system_patch_selection_reset_package_confirm_title">Сбросить все выбранные исправления для пакета?</string>
     <string name="settings_system_patch_selection_reset_selected_confirm_title">Сбросить выбранные пакеты?</string>
     <string name="settings_system_patch_selection_reset_source_confirm_title">Удалить выбранное исправление?</string>
-    <string name="settings_system_patch_selection_total_summary_format">%1$d по %2$d</string>
-    <string name="settings_system_patch_selection_patches_in_sources_format">%1$d в %2$d</string>
+    <string name="settings_system_patch_selection_total_summary_format">%1$s по %2$s</string>
+    <string name="settings_system_patch_selection_patches_in_sources_format">%1$s в %2$s</string>
     <string name="settings_system_patch_selection_source_format">Источник #%s</string>
     <string name="settings_system_patch_selection_reset_all_warning">Это навсегда удалит все сохраненные выбранные исправления для всех пакетов и источников</string>
     <string name="settings_system_patch_selection_reset_package_warning">Это навсегда удалит все сохраненные выбранные патчи для &lt;b&gt;%s&lt;/b&gt; во всех источниках</string>
@@ -1072,7 +1132,7 @@ morphe_header_custom_dark.png
     <string name="credits_current_development">Текущая разработка</string>
     <string name="credits_prior_development">Предыдущая разработка</string>
     <string name="opensource_licenses">Лицензии открытого кода</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Выбор</string>
     <string name="easter_egg_pill_message">Прими синюю таблетку — и реклама останется на месте. Прими красную — и узнаешь, насколько глубоко уходит байткод.</string>
     <string name="easter_egg_pill_red">Красная таблетка</string>
@@ -1083,6 +1143,10 @@ morphe_header_custom_dark.png
     <string name="easter_egg_pill_red_toast_again">Обратно в дождь</string>
     <string name="easter_egg_pill_blue_toast_again">Отключено. Путь назад там, где он всегда был.</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s МБ / %2$s МБ (%3$s%%)</string>
     <string name="select_file">Выберите файл</string>
     <string name="select_folder">Выбрать папку</string>
     <string name="patches">Патчи</string>
@@ -1184,6 +1248,8 @@ morphe_header_custom_dark.png
     <string name="hidden">Скрыто</string>
     <string name="unhide">Показать</string>
     <string name="unhide_done">Показано</string>
+    <string name="ignore">Игнорировать</string>
+    <string name="stop_ignoring">Перестать игнорировать</string>
     <string name="logs">Журналы</string>
     <string name="sources">Источники</string>
     <string name="installing_ellipsis">Установка…</string>
@@ -1207,8 +1273,8 @@ morphe_header_custom_dark.png
     <string name="install_update_manager_failed">Не удалось установить обновление</string>
     <string name="installing_manager_update">Установка обновления…</string>
     <string name="downloading_manager_update">Загрузка обновления…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">Загружено %1$.1f МБ</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">Загружено %1$s МБ</string>
     <string name="manager_update_not_ready">Этот релиз еще публикуется. Попробуйте снова через несколько минут</string>
     <string name="update_download_missing">Загруженное обновление больше недоступно. Загрузите его снова</string>
     <string name="download_manager_failed">Не удалось загрузить обновление: %s</string>

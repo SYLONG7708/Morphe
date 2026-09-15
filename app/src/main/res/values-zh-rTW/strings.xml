@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">沒有隱藏的應用程式</string>
     <string name="home_app_hidden_apps_title">隱藏的應用程式</string>
     <string name="home_app_hidden_apps_hint">輕觸以取消隱藏</string>
+    <string name="home_app_patch_sources_description">當這些應用程式被修補時，未勾選的來源不會被提供，而且它們的修補程式永遠不會自行加入選取項目。每個來源在其他每個應用程式中都會保持啟用。</string>
+    <string name="home_app_patch_sources_mixed">已提供給 %2$s 個中的 %1$s 個</string>
+    <string name="home_app_patch_sources_covers">為 %2$s 個中的 %1$s 個提供修補程式</string>
+    <string name="home_app_patch_sources_last">每個應用程式都需要保留一個來源以供修補</string>
     <string name="android_11_bug_dialog_title">Android 11 相關問題</string>
     <string name="android_11_bug_dialog_description">請先授予應用程式安裝權限，避免 Android 11 系統的錯誤影響使用者體驗</string>
     <string name="deep_link_add_source_title">新增來源</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">點擊以檢視來源</string>
     <string name="home_outdated_manager_title">Morphe 要更新</string>
     <string name="home_outdated_manager_subtitle">有些修補來源需要較新的版本</string>
+    <string name="home_held_back_title">修補檔來源導致 Morphe 當機</string>
+    <string name="home_held_back_subtitle">該項目已略過，以便應用程式能啟動。點按以檢視</string>
     <string name="home_metered_skipped_title">已暫停行動數據上的更新</string>
     <string name="home_metered_skipped_subtitle">點擊以允許在行動數據上更新</string>
     <string name="home_repatch_available_subtitle">點擊以將其全部加入佇列</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">已略過更新</string>
     <string name="home_update_skipped_metered_subtitle">已啟用行動數據</string>
     <string name="home_updating_sources">正在更新來源…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s MB（%5$d%%）</string>
     <string name="home_update_success">更新來源完成</string>
     <string name="home_update_success_subtitle">來源已是最新狀態</string>
     <string name="home_sources_are_loading">正在載入來源，請稍候…</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">依字母順序，A 到 Z</string>
     <string name="home_app_sort_name_desc_description">反向字母順序，Z 到 A</string>
     <string name="home_app_sort_updates_first">先更新修補程式</string>
-    <string name="home_app_sort_updates_first_description">優先顯示有更新標記的應用程式，然後依照建議順序</string>
+    <string name="home_app_sort_updates_first_description">具有較新修補程式的應用程式優先，然後是建議順序。</string>
     <string name="home_app_sort_recently_patched">最近修補</string>
     <string name="home_app_sort_recently_patched_description">最近修補的應用程式優先</string>
     <string name="home_no_apps_title">沒有可用的應用程式</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">晝伏夜出且高效</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">修補來源</string>
-    <string name="sources_search">搜尋來源</string>
+    <string name="sources_search">搜尋來源與修補程式</string>
     <string name="sources_sort_title">排序修補來源</string>
     <string name="sources_sort_manual">手動排序</string>
     <string name="sources_sort_manual_hint">長按來源以重新排序</string>
@@ -127,15 +136,21 @@
     <string name="sources_sort_last_updated_description">先顯示最新的來源更新</string>
     <string name="sources_sort_enabled_first">優先顯示已啟用</string>
     <string name="sources_sort_enabled_first_description">在已停用的來源之前顯示已啟用來源</string>
+    <string name="sources_patches_source_disabled_hint">此來源已停用。其修補程式僅供參考，不會套用。</string>
     <string name="sources_management_open_in_browser">在瀏覽器中開啟</string>
     <string name="sources_management_report_issue">回報問題</string>
     <string name="sources_management_failed_to_open_url">無法開啟網址</string>
+    <string name="sources_hidden_apps">已隱藏</string>
+    <string name="sources_hidden_apps_title">已從 %1$s 隱藏的應用程式</string>
+    <string name="sources_hidden_apps_description">當這些應用程式被修補時，不會向它們提供此來源。此來源本身對其他所有項目仍會保持開啟</string>
+    <string name="sources_hidden_apps_hint">輕觸以再次提供此來源</string>
     <string name="sources_management_prerelease_toggle">預先發布版修補程式</string>
     <string name="sources_management_prerelease_toggle_description">搶先取得新實驗性修補程式版本</string>
     <string name="sources_prerelease_warning_title">啟用預發佈修補程式？</string>
     <string name="sources_prerelease_warning_message">預發佈版本仍在開發中。修補程式可能失敗或導致應用程式損壞，功能也可能在未經警告的情況下變更</string>
     <string name="expert_mode_prerelease_notice">此來源使用預發佈修補程式。修補可能失敗或產生非預期行為</string>
     <string name="sources_management_experimental_versions_toggle">實驗性應用程式版本</string>
+    <string name="sources_management_experimental_versions_toggle_description">顯示和修補實驗性應用程式目標</string>
     <string name="sources_management_already_exists">已新增此來源</string>
     <string name="sources_management_invalid_url">來源 URL 無效。請檢查位址並重試</string>
     <string name="sources_management_blocked">此修補程式來源已封鎖，無法新增</string>
@@ -144,7 +159,9 @@
     <string name="sources_management_metadata_unavailable_hint">遠端中繼資料檔案無法使用。您仍可使用已安裝的套件進行修補，但此來源的自動更新已停用</string>
     <string name="sources_management_metadata_unavailable_hint_missing">無法下載修補套件。來源 URL 可能不正確，或檔案不存在</string>
     <string name="sources_management_outdated_manager_badge">更新 Morphe</string>
-    <string name="sources_management_outdated_manager_hint">这个源来股如踪户 %1$s。例如 Morphe %2$s包含踪户 %3$s。更新 Morphe對可使用</string>
+    <string name="sources_management_outdated_manager_hint">此來源是為修補程式 %1$s 建置的，但 Morphe %2$s 包含修補程式 %3$s。更新 Morphe 以使用它。</string>
+    <string name="sources_management_held_back_badge">已當機</string>
+    <string name="sources_management_held_back_hint">此來源在載入時導致 Morphe 當機，因此已被略過。請更新或重新匯入再試一次。</string>
     <string name="sources_management_source_enabled">來源已啟用</string>
     <string name="sources_management_source_disabled">來源已停用</string>
     <string name="sources_management_source_updating">正在更新來源…</string>
@@ -189,6 +206,7 @@
     <string name="home_apk_availability_recommended_label">推薦</string>
     <string name="home_apk_availability_unpatched_label">未修補</string>
     <string name="home_apk_availability_incompatible_label">不相容</string>
+    <string name="home_apk_availability_installed_version">已安裝於此裝置：%s</string>
     <string name="home_apk_availability_yes">是，協助我尋找 APK</string>
     <string name="home_apk_availability_no">否，我已經有 APK 了</string>
     <string name="home_apk_helper_download">使用輔助應用程式</string>
@@ -316,9 +334,11 @@
     <string name="home_outdated_patches_dialog_warning">使用過時的修補程式進行修補可能會導致應用程式損壞</string>
     <string name="home_outdated_patches_dialog_update_and_patch">更新並修補</string>
     <string name="home_low_disk_space_dialog_title">磁碟空間不足</string>
-    <string name="home_low_disk_space_dialog_message">僅有 %1$.2f GB 的可用儲存空間。修補需要至少 %2$.2f GB 的可用空間才能正常運作</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">僅有 %1$s GB 的可用儲存空間。修補需要至少 %2$s GB 的可用空間才能正常運作</string>
     <string name="home_low_disk_space_dialog_warning">繼續操作可能會導致「找不到檔案」錯誤或損壞的輸出 APK</string>
     <string name="home_simple_bundle_select_title">選取修補來源</string>
+    <string name="home_simple_bundle_select_remember">一律對這個應用程式使用此來源</string>
     <!-- Color picker -->
     <string name="custom_color">自訂顏色</string>
     <string name="hex_color">十六進位顏色</string>
@@ -433,6 +453,10 @@
     <string name="home_app_info_install_type_shizuku_play_store">Shizuku Play商店安裝</string>
     <string name="home_app_info_patch_update_available">有可用的修補程式更新</string>
     <string name="home_app_info_patch_update_available_description">有較新版本的修補程式可用。重新修補您的應用程式以獲得最新的改進和修復</string>
+    <string name="home_app_info_app_update_available">有可用的應用程式更新</string>
+    <string name="home_app_info_app_update_available_description">修補程式來源支援此應用程式的較新版本。再次修補以移至該版本。</string>
+    <string name="home_app_info_newest_supported_version">最新支援的版本</string>
+    <string name="home_app_info_version_move">已安裝 %1$s，最新支援版本 %2$s</string>
     <string name="home_app_info_app_deleted_warning">應用程式已解除安裝</string>
     <string name="home_app_info_app_deleted_description">此應用程式已在 Morphe 外部被解除安裝。重新修補以還原功能</string>
     <string name="home_app_info_not_patched_description">已安裝此應用程式的未修補版本。Morphe 仍保留其先前的修補記錄。</string>
@@ -457,6 +481,9 @@
     <string name="patcher_error_log">錯誤記錄檔</string>
     <string name="patcher_error_technical">技術細節</string>
     <string name="patcher_error_dialog_diagnostics">診斷</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">已開始修補</string>
+    <string name="patcher_card_succeeded">已成功修補</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">應用程式</string>
     <string name="patcher_field_package">套件</string>
@@ -472,6 +499,15 @@
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">記憶體</string>
     <string name="patcher_field_storage">儲存空間</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">輸出大小</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">時間</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">平均記憶體使用量</string>
+    <string name="patcher_field_memory_max">最大記憶體使用量</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">儲存 I/O 尖峰</string>
     <string name="patcher_field_value_unknown">未知</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">已移除</string>
@@ -518,6 +554,13 @@
     <string name="patcher_storage_permission_open_settings">開啟儲存空間設定</string>
     <string name="patcher_storage_badge_denied">存取權限不足</string>
     <string name="patcher_storage_badge_missing">找不到</string>
+    <string name="batch_patch_option_paths_skipped">缺少修補選項檔案，將予以略過：%1$s</string>
+    <string name="patcher_missing_patches_title">部分修補程式已不存在</string>
+    <string name="patcher_missing_patches_description">此應用程式的已儲存選取項目所列出的修補程式，已不再由任何已啟用的來源提供。若繼續，將在沒有這些修補程式的情況下修補此應用程式</string>
+    <string name="patcher_missing_patches_label">不再提供</string>
+    <string name="patcher_option_paths_gone_title">缺少修補選項檔案</string>
+    <string name="patcher_option_paths_gone_description">一個或多個修補選項指向已不存在的檔案。請移除路徑以在沒有這些檔案的情況下修補，或將檔案放回後再試一次</string>
+    <string name="patcher_option_paths_clear">移除路徑並繼續</string>
     <string name="patcher_storage_permission_hint">提示：將檔案移至 /Android/data/app.morphe.manager/files/ - 不需要額外權限</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">正在準備</string>
@@ -563,7 +606,7 @@
     <string name="patcher_message_15">所有系統正常……修補軌跡穩定…… 🚀</string>
     <string name="patcher_message_16">榨出額外的力量，就像從數位檸檬中擠出汁一樣… 🍋</string>
     <string name="patcher_message_17">正在引導應用程式擁抱全新、更好的自己…… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">將應用程式的疊加狀態從未修補變更為已修補… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">您的應用程式發燒了，唯一的處方是更多修補程式… 🩺🔔</string>
@@ -571,6 +614,8 @@
     <!-- Expert patcher Screen -->
     <string name="patching_app">正在修補應用程式</string>
     <string name="memory_usage">記憶體使用量</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s / %2$s MB</string>
     <string name="cpu_usage">CPU 使用率</string>
     <string name="storage_io_usage">儲存體 I/O</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -610,6 +655,12 @@
     <string name="mini_game_snake_swipe_to_start">滑動開始</string>
     <string name="mini_game_dino_picker_subtitle">點擊跳過仙人掌</string>
     <string name="mini_game_dino_tap_to_start">點擊跑步</string>
+    <string name="mini_game_blocks_picker_subtitle">拼合形狀，消除線條</string>
+    <string name="mini_game_blocks_tap_to_start">點擊旋轉，滑動移動，向下滑動落下</string>
+    <string name="mini_game_bricks_picker_subtitle">彈跳球，消除牆壁</string>
+    <string name="mini_game_bricks_tap_to_start">拖動瞄準，點擊發射</string>
+    <string name="mini_game_miner_picker_subtitle">點擊開啟，長按標記旗幟</string>
+    <string name="mini_game_pairs_picker_subtitle">翻開卡片，找出配對</string>
     <!-- Settings -->
     <string name="appearance">外觀</string>
     <string name="advanced">進階</string>
@@ -662,6 +713,9 @@
     <string name="settings_appearance_greeting_phrases_subtitle">在主螢幕上顯示問候訊息</string>
     <string name="settings_appearance_app_grouping">應用程式分組</string>
     <string name="settings_appearance_app_grouping_description">顯示主畫面切換器，以依來源或您自己的類別分組應用程式，並在關閉時保留選取內容</string>
+    <string name="settings_appearance_patch_list">修補程式清單</string>
+    <string name="settings_appearance_patch_categories">依類別分組</string>
+    <string name="settings_appearance_patch_categories_description">將修補程式清單按照來源宣告的類別分區，未宣告任何類別的來源則保留為一般清單。</string>
     <string name="settings_appearance_repatch_notice">重新修補通知</string>
     <string name="settings_appearance_repatch_notice_description">當已修補的應用程式可重新修補時，在主畫面上顯示橫幅</string>
     <string name="settings_appearance_sort_button">排序與篩選按鈕</string>
@@ -775,6 +829,10 @@
     <string name="settings_advanced_patch_options_custom_branding_description">變更應用程式顯示名稱</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">應用程式名稱</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">輸入自訂名稱</string>
+    <string name="settings_advanced_patch_options_path_gone">此資料夾已無法再讀取。請重新選取或將其清除，否則修補會停止並就此詢問</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">應用程式圖示</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">應用程式在修補時使用的圖示。此圖示也會用於應用程式日後無法自行變更的地方，例如 Android Auto 和系統設定中的應用程式清單</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">自訂應用程式圖示需要一個包含圖示圖片的資料夾</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">自訂圖示</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"\"包含要作為自訂圖示使用的影像的資料夾。
 
@@ -859,6 +917,8 @@ morphe_header_custom_dark.png
     <string name="installer_action_open_shizuku">開啟 Shizuku</string>
     <string name="installer_hint_generic">安裝失敗。請重試或切換至其他安裝程式</string>
     <string name="installer_hint_conflict">已安裝另一個具有此套件名稱的應用程式。繼續之前請先將其解除安裝</string>
+    <string name="installer_confirm_notification_title">確認安裝</string>
+    <string name="installer_confirm_notification_text">輕觸以完成安裝已修補的應用程式</string>
     <string name="installer_external_launched">正在開啟 %s…</string>
     <string name="installer_external_timeout">%s 未確認安裝。請檢查另一個應用程式並重試</string>
     <string name="installer_external_success">%s 報告安裝成功</string>
@@ -875,7 +935,7 @@ morphe_header_custom_dark.png
     <string name="settings_prompt_installer_on_install">安裝程式選擇提示</string>
     <string name="settings_prompt_installer_on_install_description">每次安裝修補後的應用程式時顯示安裝程式選取對話方塊</string>
     <string name="settings_auto_install_with_shizuku">修補完成後自動安裝</string>
-    <string name="settings_auto_install_with_shizuku_description">修補完成後會立即自動安裝 APK</string>
+    <string name="settings_auto_install_with_shizuku_description">修補完成後立即安裝已修補的 APK</string>
     <string name="settings_auto_uninstall_with_shizuku">衝突時自動解除安裝</string>
     <string name="settings_auto_uninstall_with_shizuku_description">使用 Shizuku 自動安裝時，若 Android 回報簽名衝突，則先解除安裝現有的應用程式。這可能會刪除應用程式資料</string>
     <string name="settings_auto_uninstall_warning_title">要啟用自動解除安裝嗎？</string>
@@ -911,6 +971,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime_enable">啟用程序執行階段</string>
     <string name="settings_system_memory_limit_subtitle">可用於修補的記憶體</string>
     <string name="settings_system_memory_limit_warning">記憶體限制過低可能會導致修補較大型應用程式時失敗</string>
+    <string name="settings_system_memory_limit_high_warning">記憶體限制設得過高，可能會使某些裝置上的修補作業變慢許多。只有在較低限制下修補持續失敗時，才應調高限制。</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB 限制</string>
     <string name="settings_system_process_runtime_disabled_description">點擊以設定</string>
     <string name="settings_system_process_runtime_description_not_available">此功能需要 Android 11 或以上版本</string>
@@ -1070,7 +1131,7 @@ morphe_header_custom_dark.png
     <string name="credits_current_development">目前開發</string>
     <string name="credits_prior_development">先前開發</string>
     <string name="opensource_licenses">開源授權</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">選擇</string>
     <string name="easter_egg_pill_message">吃下藍色藥丸，廣告留在原來的地方。吃下紅色藥丸，看看位元組碼能深入到什麼程度。</string>
     <string name="easter_egg_pill_red">紅色藥丸</string>
@@ -1081,6 +1142,10 @@ morphe_header_custom_dark.png
     <string name="easter_egg_pill_red_toast_again">回到雨中</string>
     <string name="easter_egg_pill_blue_toast_again">已拔除。回去的路一直在原處。</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s MB / %2$s MB（%3$s%%）</string>
     <string name="select_file">選擇檔案</string>
     <string name="select_folder">選取資料夾</string>
     <string name="patches">修補</string>
@@ -1182,6 +1247,8 @@ morphe_header_custom_dark.png
     <string name="hidden">已隱藏</string>
     <string name="unhide">取消隱藏</string>
     <string name="unhide_done">已顯示</string>
+    <string name="ignore">忽略</string>
+    <string name="stop_ignoring">停止忽略</string>
     <string name="logs">記錄</string>
     <string name="sources">來源</string>
     <string name="installing_ellipsis">安裝中……</string>
@@ -1205,8 +1272,8 @@ morphe_header_custom_dark.png
     <string name="install_update_manager_failed">無法安裝更新</string>
     <string name="installing_manager_update">正在安裝更新……</string>
     <string name="downloading_manager_update">正在下載更新……</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">已下載 %1$.1f MB</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">%1$s MB 已下載</string>
     <string name="manager_update_not_ready">此版本仍在發布中。請幾分鐘後再試</string>
     <string name="update_download_missing">下載的更新已不再可用。請重新下載</string>
     <string name="download_manager_failed">無法下載更新：%s</string>

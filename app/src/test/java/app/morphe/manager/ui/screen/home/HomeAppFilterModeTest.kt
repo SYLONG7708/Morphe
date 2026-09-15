@@ -7,6 +7,7 @@ package app.morphe.manager.ui.screen.home
 
 import app.morphe.manager.data.room.apps.installed.InstallType
 import app.morphe.manager.data.room.apps.installed.InstalledApp
+import app.morphe.manager.domain.bundles.AppVersionStatus
 import app.morphe.manager.ui.model.HomeAppItem
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -35,6 +36,7 @@ class HomeAppFilterModeTest {
             isInstallStatePending = false,
             savedApkFile = null,
             hasUpdate = false,
+            versionStatus = null,
             patchCount = 0,
             isClone = false
         )
@@ -67,6 +69,7 @@ class HomeAppFilterModeTest {
             isInstallStatePending = true,
             savedApkFile = null,
             hasUpdate = true,
+            versionStatus = null,
             patchCount = 0,
             isClone = false
         )
@@ -86,6 +89,29 @@ class HomeAppFilterModeTest {
         // The two share a package name, so the filter has to read the card rather than the app
         assertTrue(HomeAppFilterMode.PATCHED.matches(clone))
         assertTrue(HomeAppFilterMode.PATCHED.matches(app))
+    }
+
+    @Test
+    fun `a newer supported version badges the card without queueing a repatch`() {
+        val item = item(id = "app.example", isClone = false).copy(
+            versionStatus = AppVersionStatus("9.12.51", "9.13.50", isBehind = true)
+        )
+
+        assertTrue(item.showsVersionBadge)
+        assertTrue(item.showsRebuildBadge)
+        // Patching at a version the sources still cover returns the install unchanged, so the
+        // repatch count and the update sort are left out of it
+        assertFalse(item.showsUpdateBadge)
+    }
+
+    @Test
+    fun `an install past what the sources cover is left to the state it is in`() {
+        val item = item(id = "app.example", isClone = false).copy(
+            versionStatus = AppVersionStatus("9.14.10", "9.13.50", isBehind = false)
+        )
+
+        assertFalse(item.showsVersionBadge)
+        assertFalse(item.showsRebuildBadge)
     }
 
     private fun item(id: String, isClone: Boolean) = HomeAppItem(
@@ -108,6 +134,7 @@ class HomeAppFilterModeTest {
         isInstallStatePending = false,
         savedApkFile = null,
         hasUpdate = false,
+        versionStatus = null,
         patchCount = 0,
         isClone = isClone
     )

@@ -6,6 +6,15 @@
     <plurals name="option_count">
         <item quantity="other">%s tùy chỉnh bản vá</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="other">Nguồn vá cho %s ứng dụng</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="other">%s nguồn bị ẩn. Nhấn để hiển thị</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="other">%s bản vá phù hợp</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="other">%s nguồn</item>
     </plurals>
@@ -56,5 +65,8 @@
     </plurals>
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="other">Đã sao chép %s bản vá từ gói được chọn</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="other">%s lõi</item>
     </plurals>
 </resources>

@@ -1,0 +1,165 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "app.morphe",
+    "module": "morphe-patcher",
+    "version": "1.14.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.7.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "morphe-patcher-1.14.0.jar",
+          "url": "morphe-patcher-1.14.0.jar",
+          "size": 612859,
+          "sha512": "cb8d7134e80228f3e2b66f0c4f40679b8fc61098013a571ac742ab5c198fd2a5f4b5385ffd7f562f492c0456e87962f49e8009e2fe0f9721bad280145d0482fc",
+          "sha256": "3944ed3bb29f629a2bc7b011fc8587d2f4e1f0e8023f1a2bf949c420b106fa7b",
+          "sha1": "e1f582de6145efdfc582509eb5a824e8b499a886",
+          "md5": "f35d4dd7bbce72260eee95f017e617cc"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.bouncycastle",
+          "module": "bcpkix-jdk18on",
+          "version": {
+            "requires": "1.77"
+          }
+        },
+        {
+          "group": "com.android.tools.build",
+          "module": "apksig",
+          "version": {
+            "requires": "9.1.1"
+          }
+        },
+        {
+          "group": "com.android.tools.build",
+          "module": "apkzlib",
+          "version": {
+            "requires": "9.1.1"
+          }
+        },
+        {
+          "group": "com.github.REAndroid",
+          "module": "arsclib",
+          "version": {
+            "requires": "a28c6fb2a7"
+          }
+        },
+        {
+          "group": "com.google.guava",
+          "module": "guava",
+          "version": {
+            "requires": "33.5.0-jre"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.7.1"
+          }
+        },
+        {
+          "group": "com.github.MorpheApp.smali",
+          "module": "smali",
+          "version": {
+            "requires": "d856bad65f"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "morphe-patcher-1.14.0.jar",
+          "url": "morphe-patcher-1.14.0.jar",
+          "size": 612859,
+          "sha512": "cb8d7134e80228f3e2b66f0c4f40679b8fc61098013a571ac742ab5c198fd2a5f4b5385ffd7f562f492c0456e87962f49e8009e2fe0f9721bad280145d0482fc",
+          "sha256": "3944ed3bb29f629a2bc7b011fc8587d2f4e1f0e8023f1a2bf949c420b106fa7b",
+          "sha1": "e1f582de6145efdfc582509eb5a824e8b499a886",
+          "md5": "f35d4dd7bbce72260eee95f017e617cc"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "morphe-patcher-1.14.0-sources.jar",
+          "url": "morphe-patcher-1.14.0-sources.jar",
+          "size": 163608,
+          "sha512": "2a3588c012ac49e10d471595ea114e39c8f4ffa4b24fd0db5dd4ca8423e3aa941147a8c46a9b8a258d7a0c953c353858f8f90bab07773336e992b6292a1177d9",
+          "sha256": "c7f5ba199f66f897b2acc0a85da37be59f45b37ad1dbf7f4390da3212b3cc675",
+          "sha1": "e1ff733fe14a57a6ff29b88eaa79d839ba84ec41",
+          "md5": "2b56af787d409079232b75397fd66e37"
+        }
+      ]
+    }
+  ]
+}

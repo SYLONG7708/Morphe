@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.morphe.manager.R
 import app.morphe.manager.domain.installer.InstallerManager
-import app.morphe.manager.domain.manager.InstallerPreferenceTokens
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.patcher.patch.installerTypeFor
 import app.morphe.manager.ui.model.RenameWarning
@@ -169,9 +168,8 @@ fun PatcherScreen(
     // Get output file from viewModel
     val outputFile = patcherViewModel.outputFile
 
-    val autoInstallWithShizuku by prefs.autoInstallWithShizuku.getAsState()
+    val autoInstallAfterPatching by prefs.autoInstallAfterPatching.getAsState()
     val autoUninstallWithShizuku by prefs.autoUninstallWithShizuku.getAsState()
-    val primaryInstallerPref by prefs.installerPrimary.getAsState()
     val promptInstallerOnInstall by prefs.promptInstallerOnInstall.getAsState()
 
     val installAppsPermissionLauncher = rememberLauncherForActivityResult(
@@ -218,6 +216,9 @@ fun PatcherScreen(
                     autoUninstallOnConflict = true
                 )
             }
+            // The installer owns the state from here, and an attempt that ends in nothing must
+            // not leave the screen claiming an install forever
+            patcherViewModel.autoInstallHandedOff()
         }
     }
 
@@ -469,12 +470,27 @@ fun PatcherScreen(
         )
     }
 
-    // Storage permission pre-flight dialog.
-    // Shown when a patch option points to an external path the app cannot read
+    // Missing patches pre-flight dialog
+    // Shown when the saved selection names patches the sources no longer offer
+    patcherViewModel.missingPatchWarning?.let { warning ->
+        MissingPatchesDialog(
+            patchNames = warning.patchNames,
+            onContinue = patcherViewModel::continueWithoutMissingPatches,
+            onDismiss = {
+                patcherViewModel.dismissMissingPatchWarning()
+                onBackClick()
+            }
+        )
+    }
+
+    // Option path pre-flight dialog
+    // Shown when a patch option points at a path that is gone or cannot be read
     patcherViewModel.inaccessibleOptionPaths?.let { errorState ->
-        StoragePermissionDialog(
+        UnusableOptionPathsDialog(
             failures = errorState.failures,
             onRetryAfterPermission = patcherViewModel::retryAfterPermission,
+            canClearPaths = errorState.canClear,
+            onClearPaths = patcherViewModel::clearInaccessibleOptionPaths,
             onDismiss = {
                 patcherViewModel.dismissInaccessibleOptionPathsError()
                 onBackClick()
@@ -607,9 +623,9 @@ fun PatcherScreen(
                 installerManager.shizukuStatus(InstallerManager.InstallTarget.PATCHER)
             },
             onRequestShizukuPermission = installerManager::requestShizukuPermission,
-            autoInstallEnabled = autoInstallWithShizuku,
+            autoInstallEnabled = autoInstallAfterPatching,
             onAutoInstallToggle = { enabled ->
-                scope.launch { prefs.autoInstallWithShizuku.update(enabled) }
+                scope.launch { prefs.autoInstallAfterPatching.update(enabled) }
             },
             autoUninstallEnabled = autoUninstallWithShizuku,
             onAutoUninstallToggle = { enabled ->
@@ -667,15 +683,12 @@ fun PatcherScreen(
 
                 PatcherState.SUCCESS -> {
                     val effectiveIsInstalling = isInstalling || (
-                            autoInstallWithShizuku &&
-                                    (primaryInstallerPref == InstallerPreferenceTokens.SHIZUKU ||
-                                            primaryInstallerPref == InstallerPreferenceTokens.SHIZUKU_PLAY_STORE) &&
+                            patcherViewModel.autoInstallPending &&
                                     patcherSucceeded == true &&
                                     !usingMountInstall &&
-                                    !promptInstallerOnInstall &&
                                     installState is InstallViewModel.InstallState.Ready &&
                                     // Auto-install stops at the rename warning, so the screen must
-                                    // not go on claiming an install the user has yet to allow
+                                    // not go on claiming install the user has yet to allow
                                     heldInstall == null && !renameDeclined
                             )
                     // The state the screen is drawn from answers two things the installer's own

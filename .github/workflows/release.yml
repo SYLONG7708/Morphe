@@ -3,7 +3,7 @@ name: Signed ecosystem release
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 2 * * *"
+    - cron: "17 2,8,14,20 * * *"
   push:
     branches: [main]
     paths-ignore:
@@ -21,10 +21,13 @@ concurrency:
   group: signed-ecosystem-release
   cancel-in-progress: false
 
+env:
+  GH_REPO: ${{ github.repository }}
+
 jobs:
   release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 75
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -42,20 +45,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
-
-      - name: Install pinned Android toolchain
-        run: |
-          yes | sdkmanager --licenses >/dev/null
-          sdkmanager \
-            "platforms;android-36" \
-            "platforms;android-37.0" \
-            "build-tools;36.0.0" \
-            "build-tools;37.0.0" \
-            "cmake;3.22.1" \
-            "ndk;28.2.13676358"
 
       - name: Test release metadata generator
         run: python -m unittest discover -s tools -p 'test_*.py'
@@ -95,10 +84,15 @@ jobs:
       - name: Skip unchanged scheduled release
         id: gate
         env:
+          GH_TOKEN: ${{ github.token }}
           PATCH_VERSION: ${{ steps.upstream.outputs.derived_patch_version }}
           MICROG_VERSION: ${{ steps.upstream.outputs.derived_microg_version }}
         run: |
           publish=true
+          already_published="$(gh release view "symorphe-v1.1.$GITHUB_RUN_NUMBER" --json isDraft --jq .isDraft 2>/dev/null || true)"
+          if [ "$already_published" = false ]; then
+            publish=false
+          fi
           if [ "${{ github.event_name }}" = "schedule" ]; then
             current="$(curl --fail --silent --location \
               https://github.com/SYLONG7708/Morphe/releases/latest/download/update-manifest.json || true)"
@@ -109,6 +103,33 @@ jobs:
             fi
           fi
           echo "publish=$publish" >> "$GITHUB_OUTPUT"
+
+      - name: Repair signed discovery after a completed or unchanged release
+        if: steps.gate.outputs.publish == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 tools/ci_retry.py -- python3 tools/repair_discovery.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- app-release.json patches-bundle.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: repair verified release discovery [skip ci]'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Set up Android SDK
+        if: steps.gate.outputs.publish == 'true'
+        uses: ./.github/actions/setup-toolchain
+
+      - name: Verify or restore official Maven dependencies
+        if: steps.gate.outputs.publish == 'true'
+        run: python3 tools/ci_retry.py -- python3 tools/prepare_morphe_dependencies.py
+
+      - name: Verify official bundle compatibility before signing
+        if: steps.gate.outputs.publish == 'true'
+        run: python3 tools/check_patch_bundle_compat.py --bundle "upstream/patches-${{ steps.upstream.outputs.patch_version }}.mpp" --catalog gradle/libs.versions.toml
 
       - name: Restore signing material
         if: steps.gate.outputs.publish == 'true'
@@ -157,7 +178,7 @@ jobs:
           chmod +x upstream/microg-re/gradlew
           (
             cd upstream/microg-re
-            ./gradlew clean :play-services-core:assembleDefaultRelease --no-daemon --stacktrace
+            python "$GITHUB_WORKSPACE/tools/ci_retry.py" -- ./gradlew clean :play-services-core:assembleDefaultRelease --no-daemon --stacktrace
           )
           unsigned_microg="$(find upstream/microg-re/play-services-core/build/outputs/apk/default/release \
             -name '*.apk' -type f | head -n1)"
@@ -197,11 +218,11 @@ jobs:
           test "${#expected_signer}" -eq 64
           export SYMORPHE_EXPECTED_SIGNING_CERT_SHA256="$expected_signer"
           chmod +x gradlew
-          ./gradlew clean lintRelease assembleRelease --stacktrace
+          python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease --stacktrace
           apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
           test -f "$apk"
           cp "$apk" "dist/SyMorphe-$version-licensed.apk"
-          ./gradlew clean lintRelease assembleRelease -PnoDeviceLicense --stacktrace
+          python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PnoDeviceLicense --stacktrace
           no_license_apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
           test -f "$no_license_apk"
           cp "$no_license_apk" "dist/SyMorphe-$version-no-license.apk"
@@ -217,7 +238,7 @@ jobs:
           MICROG_VERSION: ${{ steps.upstream.outputs.derived_microg_version }}
         run: |
           set -euo pipefail
-          base="https://github.com/SYLONG7708/Morphe/releases/latest/download"
+          base="https://github.com/SYLONG7708/Morphe/releases/download/symorphe-v$RELEASE_VERSION"
           python tools/generate_update_manifest.py \
             --manager "dist/SyMorphe-$RELEASE_VERSION-licensed.apk" \
             --manager "dist/SyMorphe-$RELEASE_VERSION-no-license.apk" \
@@ -278,7 +299,7 @@ jobs:
           java -cp dist VerifyFile app/src/main/res/raw/update_signing_cert.der \
             "$bundle" "$bundle.sig"
 
-      - name: Create GitHub Release
+      - name: Stage complete GitHub Release
         if: steps.gate.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -287,9 +308,11 @@ jobs:
           tag="symorphe-v$RELEASE_VERSION"
           assets=(dist/*.apk dist/*.mpp dist/*.sig dist/*.zip dist/update-manifest.json)
           if gh release view "$tag" >/dev/null 2>&1; then
+            test "$(gh release view "$tag" --json isDraft --jq .isDraft)" = true
             gh release upload "$tag" "${assets[@]}" --clobber
           else
             gh release create "$tag" \
+              --draft \
               --target "$GITHUB_SHA" \
               --title "SyMorphe v$RELEASE_VERSION" \
               --notes "Signed zero-configuration update channel. The private-use manager can retrieve and verify an exact compatible original YouTube APK, then patches it locally; no Google or prepatched YouTube APK is included in this release." \
@@ -306,6 +329,12 @@ jobs:
             dist/microg-${{ steps.upstream.outputs.derived_microg_version }}.apk
             dist/patches-${{ steps.upstream.outputs.derived_patch_version }}.mpp
 
+      - name: Publish verified release atomically
+        if: steps.gate.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "symorphe-v$RELEASE_VERSION" --draft=false --latest
+
       - name: Publish static discovery metadata
         if: steps.gate.outputs.publish == 'true'
         env:
@@ -317,7 +346,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app-release.json patches-bundle.json
-          git commit -m "chore: update signed release discovery metadata [skip ci]"
+          git diff --cached --quiet || git commit -m "chore: update signed release discovery metadata [skip ci]"
           git restore app/gradle.properties
           git pull --rebase origin main
           git push origin HEAD:main
+
+      - name: Save diagnostic reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: ignore
+          path: |
+            app/build/reports/**
+            upstream/microg-re/play-services-core/build/reports/**
+            config/upstream-manager.json
+            config/dependency-provenance.json

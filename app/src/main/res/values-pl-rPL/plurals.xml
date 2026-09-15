@@ -12,6 +12,24 @@
         <item quantity="many">%s opcji modyfikacji</item>
         <item quantity="other">%s opcji modyfikacji</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Źródła modyfikacji dla %s aplikacji</item>
+        <item quantity="few">Źródła modyfikacji dla %s aplikacji</item>
+        <item quantity="many">Źródła modyfikacji dla %s aplikacji</item>
+        <item quantity="other">Źródła modyfikacji dla %s aplikacji</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">Ukryto %s źródło. Dotknij, aby pokazać</item>
+        <item quantity="few">Ukryto %s źródła. Dotknij, aby pokazać</item>
+        <item quantity="many">Ukryto %s źródła. Dotknij, aby pokazać</item>
+        <item quantity="other">Ukryto %s źródła. Dotknij, aby pokazać</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s pasująca modyfikacja</item>
+        <item quantity="few">%s pasujące modyfikacje</item>
+        <item quantity="many">%s pasujących modyfikacji</item>
+        <item quantity="other">%s pasujących modyfikacji</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s źródło</item>
         <item quantity="few">%s źródła</item>
@@ -113,5 +131,11 @@
         <item quantity="few">Skopiowano %s modyfikacje z wybranego pakietu</item>
         <item quantity="many">Skopiowano %s modyfikacji z wybranego pakietu</item>
         <item quantity="other">Skopiowano %s modyfikacji z wybranego pakietu</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s rdzeń</item>
+        <item quantity="few">%s rdzenie</item>
+        <item quantity="many">%s rdzeni</item>
+        <item quantity="other">%s rdzeni</item>
     </plurals>
 </resources>

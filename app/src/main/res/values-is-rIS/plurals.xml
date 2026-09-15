@@ -8,6 +8,18 @@
         <item quantity="one">%s fláka valmöguleiki</item>
         <item quantity="other">%s fláka valmöguleikar</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Plástrauppsprettur fyrir %s app</item>
+        <item quantity="other">Plástrauppsprettur fyrir %s öpp</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s uppspretta falin. Ýttu til að sýna</item>
+        <item quantity="other">%s uppsprettur faldar. Ýttu til að sýna</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s samsvarandi plástur</item>
+        <item quantity="other">%s samsvarandi plástrar</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s uppspretta</item>
         <item quantity="other">%s uppsprettur</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Afritað %s breytingu úr völdum pakka</item>
         <item quantity="other">Afritaðar %s breytingar úr völdum pakka</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s kjarni</item>
+        <item quantity="other">%s kjarnar</item>
     </plurals>
 </resources>

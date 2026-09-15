@@ -6,6 +6,7 @@
 package app.morphe.manager.ui.screen.shared
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -77,5 +78,60 @@ fun PickerButtonRow(
                 )
             }
         }
+    }
+}
+
+/**
+ * Dropdown for an option that declares a fixed set of values, shown with the option title and
+ * description above it. Used both while patching and by the simple mode option dialogs, so an
+ * option is offered the same way wherever it is edited.
+ *
+ * A value the option declares as null stands for "let the patch decide", so picking it clears
+ * the stored value instead of writing a blank the patch would reject as invalid.
+ */
+@Composable
+fun DropdownOptionItem(
+    title: String,
+    description: String,
+    value: String,
+    presets: Map<String, Any?>,
+    onValueChange: (Any?) -> Unit
+) {
+    // Convert presets to String map for dropdown: display name -> value as string
+    val dropdownItems = presets.mapValues { it.value?.toString().orEmpty() }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = LocalDialogTextColor.current
+            )
+            if (description.isNotBlank()) {
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = LocalDialogSecondaryTextColor.current
+                )
+            }
+        }
+
+        AppDialogDropdownTextField(
+            value = value,
+            onValueChange = { newValue ->
+                // The dropdown hands back what is rendered, so the declared value is matched
+                // the same way. Anything else is text the user typed in the field
+                val declared = presets.entries.find { it.value?.toString().orEmpty() == newValue }
+
+                onValueChange(
+                    if (declared != null) declared.value else newValue.takeIf { it.isNotBlank() }
+                )
+            },
+            dropdownItems = dropdownItems
+        )
     }
 }

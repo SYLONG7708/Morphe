@@ -34,6 +34,8 @@ import app.morphe.manager.util.PatchSelection
 import app.morphe.manager.util.PatchSelectionUtils.applyAvailability
 import app.morphe.manager.util.PatchSelectionUtils.validatePatchOptions
 import app.morphe.manager.util.PatchSelectionUtils.validatePatchSelection
+import app.morphe.manager.util.validateOptionPaths
+import app.morphe.manager.util.withoutFailingPaths
 import app.morphe.patcher.patch.ApkArchitecture
 import app.morphe.patcher.patch.InstallerType
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +89,36 @@ internal fun newlyAddedDefaults(
         .filter { it.name !in known && it.defaultSelected(installerType, apkArchitecture) }
         .mapTo(mutableSetOf()) { it.name }
 }
+
+/**
+ * A saved selection brought up to date with the patches added since it was made.
+ *
+ * [validated] is that selection with patches the sources no longer carry already removed. Every
+ * bundle in [bundles] then contributes what [newlyAddedDefaults] asks for, measured against the
+ * names [known] recalls for it.
+ *
+ * A bundle outside [bundles] keeps whatever [validated] holds for it. That is how a source the app
+ * is kept from keeps the selection made from it while taking no part in the run.
+ */
+internal fun mergeNewlyAdded(
+    bundles: List<PatchBundleInfo.Scoped>,
+    validated: PatchSelection,
+    known: (bundleUid: Int) -> Set<String>?,
+    installerType: InstallerType,
+    apkArchitecture: ApkArchitecture
+): PatchSelection = buildMap {
+    putAll(validated)
+
+    bundles.forEach { bundle ->
+        val added = newlyAddedDefaults(
+            patches = bundle.patches,
+            known = known(bundle.uid),
+            installerType = installerType,
+            apkArchitecture = apkArchitecture
+        )
+        if (added.isNotEmpty()) put(bundle.uid, getOrDefault(bundle.uid, emptySet()) + added)
+    }
+}.filterValues { it.isNotEmpty() }
 
 /** Architecture of the APK an item is patched from, see [ApkArchitectureResolver]. */
 internal suspend fun BatchApkSource.apkArchitecture() = when (this) {
@@ -326,7 +358,7 @@ class BatchPlanResolver(
     ): BatchPatchItem {
         val packageName = target.packageName
         val bundles = patchBundleRepository
-            .scopedBundleInfoFlow(packageName, source.version, source.versionCode)
+            .offeredBundleInfoFlow(packageName, source.version, source.versionCode)
             .first()
             .filter { it.enabled }
 
@@ -377,7 +409,12 @@ class BatchPlanResolver(
 
         if (selection.values.sumOf { it.size } == 0) return blocked(contributing)
 
-        val options = resolveOptions(target, configurationKey, contributing)
+        val savedOptions = resolveOptions(target, configurationKey, contributing)
+
+        // A queue must not stop to ask about one app, so a path that leads nowhere is dropped
+        // here and reported on the preflight screen instead of failing inside the patcher
+        val unreadablePaths = validateOptionPaths(savedOptions)
+        val options = savedOptions.withoutFailingPaths(unreadablePaths)
 
         return BatchPatchItem(
             target = target,
@@ -388,6 +425,7 @@ class BatchPlanResolver(
             bundles = contributing.map { it.toRef() },
             experimentalVersion = experimental,
             suggestedVersion = suggested,
+            unreadableOptionPaths = unreadablePaths,
             state = if (versionMismatch) BatchItemState.VERSION_MISMATCH else BatchItemState.READY
         )
     }
@@ -422,21 +460,19 @@ class BatchPlanResolver(
 
         if (saved.isNotEmpty()) {
             val validated = validatePatchSelection(saved, patchesByName)
+            val seenByBundle = bundles.associate {
+                it.uid to patchSelectionRepository.getSeenPatches(configurationKey, it.uid)
+            }
 
-            val merged = bundles.associate { bundle ->
-                val seen = patchSelectionRepository.getSeenPatches(configurationKey, bundle.uid)
-
-                // Patches added to the bundle since the last run follow their own default,
-                // the same rule the expert dialog applies when it merges new patches in
-                val newDefaults = newlyAddedDefaults(
-                    patches = bundle.patches,
-                    known = seen ?: saved[bundle.uid],
-                    installerType = installerType,
-                    apkArchitecture = apkArchitecture
-                )
-
-                bundle.uid to (validated[bundle.uid].orEmpty() + newDefaults)
-            }.filterValues { it.isNotEmpty() }
+            // Patches added to a bundle since the last run follow their own default, the same
+            // rule the expert dialog applies when it merges new patches in
+            val merged = mergeNewlyAdded(
+                bundles = bundles,
+                validated = validated,
+                known = { uid -> seenByBundle[uid] ?: saved[uid] },
+                installerType = installerType,
+                apkArchitecture = apkArchitecture
+            )
 
             if (merged.isNotEmpty()) {
                 return merged.applyAvailability(installerType, apkArchitecture, patchesByName)

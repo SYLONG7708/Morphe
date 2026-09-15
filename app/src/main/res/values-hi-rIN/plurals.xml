@@ -8,6 +8,18 @@
         <item quantity="one">%s पट्टी विकल्प</item>
         <item quantity="other">%s पट्टियाँ विकल्प</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">%s ऐप के लिए पैच स्रोत</item>
+        <item quantity="other">%s ऐप्स के लिए पैच स्रोत</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s स्रोत छिपा हुआ है। दिखाने के लिए टैप करें</item>
+        <item quantity="other">%s स्रोत छिपे हुए हैं। दिखाने के लिए टैप करें</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s मेल खाता पैच</item>
+        <item quantity="other">%s मेल खाते पैच</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s स्रोत</item>
         <item quantity="other">%s स्रोत</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">चयनित बंडल से %s पैच कॉपी किया गया</item>
         <item quantity="other">चयनित बंडल से %s पैच कॉपी किए गए</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s कोर</item>
+        <item quantity="other">%s कोर</item>
     </plurals>
 </resources>

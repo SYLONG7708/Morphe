@@ -226,6 +226,7 @@ fun BatchPatcherScreen(
             isExpertMode = useExpertMode,
             savedApkInfo = choice.saved,
             installedApkInfo = choice.installed,
+            installedAppVersion = choice.installedVersion,
             onDismiss = viewModel::cancelApkChoice,
             onHaveApk = {
                 viewModel.cancelApkChoice()
@@ -290,7 +291,9 @@ fun BatchPatcherScreen(
                         patchCount = offered[bundle.uid]?.size ?: 0
                     )
                 },
-            onSelect = viewModel::pickSource,
+            // The queue picks a source for the one item it is resolving; what an app is
+            // patched from for good is settled where that question is asked of the app itself
+            onSelect = { uid, _ -> viewModel.pickSource(uid) },
             onDismiss = viewModel::cancelSourcePick
         )
     }
@@ -774,6 +777,21 @@ private fun BatchItemCard(
                         maxLines = if (installFailure != null) Int.MAX_VALUE else 3,
                         overflow = TextOverflow.Ellipsis
                     )
+
+                    // Paths planning left out. The app is patched either way, so this is said
+                    // here rather than held against the item as a state that blocks the run
+                    if (editable && item.unreadableOptionPaths.isNotEmpty()) {
+                        Text(
+                            text = stringResource(
+                                R.string.batch_patch_option_paths_skipped,
+                                item.unreadableOptionPaths.joinToString { it.path }
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
 

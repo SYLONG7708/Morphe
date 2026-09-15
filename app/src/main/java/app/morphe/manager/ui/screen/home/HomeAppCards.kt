@@ -55,6 +55,10 @@ import kotlin.time.Duration.Companion.milliseconds
 // A verdict answered from cache lands within a frame, so the badge waits rather than flashing
 private const val INSTALL_VERIFICATION_BADGE_DELAY_MS = 400L
 
+// Apps whose version strings carry a build stamp run far past this, and printing one in a badge
+// would leave no room for the version the card already shows, so those are badged by word instead
+private const val MAX_BADGE_VERSION_LENGTH = 10
+
 private data class HomeAppCardStyle(
     val monochrome: Boolean,
     val colorResolver: AppCardColorResolver?,
@@ -198,7 +202,10 @@ internal fun RowScope.AppCardContent(
                     .wrapContentHeight(Alignment.CenterVertically),
                 text = subtitle,
                 style = cardStyle.subtitleStyle,
-                color = cardStyle.subtitleColor
+                color = cardStyle.subtitleColor,
+                // The row is one badge tall, so a subtitle that wraps would be cut in half
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -258,7 +265,9 @@ private fun InstalledAppCard(
     val versionLabel = stringResource(R.string.version)
     val cloneLabel = stringResource(R.string.clone)
     val installedLabel = stringResource(R.string.installed)
+    val updateLabel = stringResource(R.string.update)
     val updateAvailableLabel = stringResource(R.string.update_available)
+    val supportedVersionLabel = stringResource(R.string.home_app_info_newest_supported_version)
     val deletedLabel = stringResource(R.string.uninstalled)
     val replacementLabel = stringResource(R.string.home_unpatched_version_installed)
     val replacementBadgeLabel = stringResource(R.string.home_unpatched_badge)
@@ -275,9 +284,16 @@ private fun InstalledAppCard(
         showsPendingBadge.value = true
     }
 
-    val version = remember(item.packageInfo, installedApp) {
-        val raw = item.packageInfo?.versionName ?: installedApp.version
-        raw.withVersionPrefix()
+    val version = remember(item) { item.version.withVersionPrefix() }
+
+    // The version worth badging, out of the one the sources support: only when it is short enough
+    // to leave the row its width, with the long build-stamped kind left to the app's dialog, which
+    // can print both versions in full
+    val supportedVersionBadge = remember(item) {
+        item.versionStatus
+            ?.takeIf { item.showsVersionBadge && it.supportedVersion.length <= MAX_BADGE_VERSION_LENGTH }
+            ?.supportedVersion
+            ?.withVersionPrefix()
     }
 
     // The states the badges stand for are read out whether the badges themselves are showing or
@@ -289,6 +305,7 @@ private fun InstalledAppCard(
         cloneLabel,
         installedLabel,
         updateAvailableLabel,
+        supportedVersionLabel,
         deletedLabel,
         replacementLabel,
         unverifiedLabel,
@@ -312,6 +329,10 @@ private fun InstalledAppCard(
                 }
             )
             if (item.showsUpdateBadge) append(", $updateAvailableLabel")
+            // Read out in full even when the badge had no room to print it
+            item.versionStatus?.takeIf { item.showsVersionBadge }?.let {
+                append(", $supportedVersionLabel ${it.supportedVersion}")
+            }
         }
     }
 
@@ -425,13 +446,16 @@ private fun InstalledAppCard(
                         )
                     }
 
+                    // Newer patches and a newer supported app version are both answered by
+                    // rebuilding the app, so one badge stands for either rather than two of
+                    // them stacking into a row that already carries the installed version
                     AnimatedVisibility(
-                        visible = item.showsUpdateBadge,
+                        visible = item.showsRebuildBadge,
                         enter = Animations.expandHorizFadeIn,
                         exit = Animations.shrinkHorizFadeOut
                     ) {
                         StatusBadge(
-                            text = stringResource(R.string.update),
+                            text = supportedVersionBadge ?: updateLabel,
                             icon = Icons.Outlined.ArrowUpward,
                             containerColor = cardStyle.chipContainerColor,
                             contentColor = cardStyle.chipContentColor
@@ -455,8 +479,15 @@ private fun NotPatchedAppCard(
 ) {
     val notPatchedText = stringResource(R.string.home_not_patched_yet)
 
-    val contentDesc = remember(item.displayName, notPatchedText) {
-        "${item.displayName}, $notPatchedText"
+    // Only for an app the device actually has: other cards are described by an APK Morphe kept
+    // rather than by an install, and that version answers a different question
+    val subtitle = remember(item, notPatchedText) {
+        val version = item.version.takeIf { item.isInstalledOnDevice && it.isNotEmpty() }
+        version?.let { "${it.withVersionPrefix()} • $notPatchedText" } ?: notPatchedText
+    }
+
+    val contentDesc = remember(item.displayName, subtitle) {
+        "${item.displayName}, $subtitle"
     }
 
     AppCardLayout(
@@ -472,7 +503,7 @@ private fun NotPatchedAppCard(
             packageName = item.packageName,
             packageInfo = item.packageInfo,
             displayName = item.displayName,
-            subtitle = notPatchedText,
+            subtitle = subtitle,
             gradientColors = item.gradientColors,
         )
     }

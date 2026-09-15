@@ -52,6 +52,7 @@ import app.morphe.manager.domain.bundles.PatchBundleSource
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.usesPrerelease
 import app.morphe.manager.domain.bundles.RemotePatchBundle
 import app.morphe.manager.domain.repository.PatchBundleRepository
+import app.morphe.manager.domain.repository.SourceMuteRepository
 import app.morphe.manager.patcher.patch.PatchInfo
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.util.*
@@ -63,6 +64,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Locale
 import org.koin.compose.koinInject
 import com.mikepenz.markdown.model.State as MarkdownRenderState
 
@@ -483,19 +485,24 @@ fun RenameBundleDialog(
 
 /**
  * Dialog displaying patches from a bundle with search field and chips.
+ *
+ * @param initialQuery Query to open filtered by, carried over from the search that found the source.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BundlePatchesDialog(
     onDismissRequest: () -> Unit,
-    src: PatchBundleSource
+    src: PatchBundleSource,
+    initialQuery: String = ""
 ) {
     val patchBundleRepository: PatchBundleRepository = koinInject()
+    // Read across every source rather than the enabled ones alone: a disabled source is one the
+    // user is still deciding about, and what it holds is what that decision is made on
     val patches by remember(src.uid) {
-        patchBundleRepository.bundleInfoFlow.mapNotNull { it[src.uid]?.patches }
+        patchBundleRepository.allBundlesInfoFlow.mapNotNull { it[src.uid]?.patches }
     }.collectAsStateWithLifecycle(emptyList())
 
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf(initialQuery) }
     var selectedPackages by remember { mutableStateOf(emptySet<String>()) }
     val showFilterSheet = remember { mutableStateOf(false) }
 
@@ -523,10 +530,7 @@ fun BundlePatchesDialog(
                 val packageMatch = selectedPackages.isEmpty() ||
                         patch.compatiblePackages
                             ?.any { it.packageName in selectedPackages } == true
-                val queryMatch = searchQuery.isBlank() ||
-                        patch.displayName.contains(searchQuery, ignoreCase = true) ||
-                        patch.description?.contains(searchQuery, ignoreCase = true) == true
-                packageMatch && queryMatch
+                packageMatch && patch.matchesQuery(searchQuery)
             }
             .sortedBy { (_, patch) -> patch.displayName }
     }
@@ -542,6 +546,13 @@ fun BundlePatchesDialog(
     }
 
     val isFiltering = searchQuery.isNotBlank() || selectedPackages.isNotEmpty()
+
+    val patchSections = rememberPatchSectionState()
+    val patchFolds = patchSections.folds
+    val patchGroups = rememberPatchGroups(
+        patches = filteredPatches,
+        infoOf = { (_, patch) -> patch }
+    )
 
     AppDialog(
         onDismissRequest = {
@@ -640,6 +651,19 @@ fun BundlePatchesDialog(
                             )
                         }
 
+                        // The list is reachable while the source is off, so it says so up front
+                        // rather than reading as patches that are ready to be applied
+                        if (!src.enabled) {
+                            item(key = "disabled_hint") {
+                                Notice(
+                                    text = stringResource(R.string.sources_patches_source_disabled_hint),
+                                    icon = Icons.Outlined.VisibilityOff,
+                                    tone = SemanticTone.Warning,
+                                    density = NoticeDensity.Compact
+                                )
+                            }
+                        }
+
                         if (filteredPatches.isEmpty()) {
                             item(key = "empty_state") {
                                 PatchesListEmptyState(
@@ -649,9 +673,13 @@ fun BundlePatchesDialog(
                         }
 
                         // Filtered patches list
-                        items(
-                            filteredPatches,
-                            key = { (index, _) -> index }
+                        patchGroupRows(
+                            sectionKey = src.uid,
+                            groups = patchGroups,
+                            key = { (index, _): IndexedValue<PatchInfo> -> index },
+                            isFiltering = isFiltering,
+                            folds = patchFolds,
+                            onToggle = { group -> patchSections.toggle(src.uid, group) }
                         ) { (_, patch) ->
                             val context = LocalContext.current
                             val expertBadgeTooltip = stringResource(R.string.sources_patch_expert_badge_tooltip)
@@ -980,8 +1008,9 @@ fun BundleChangelogHost(
     val bundle = sources.filterIsInstance<RemotePatchBundle>()
         .find { it.uid == request.bundleUid } ?: return
 
-    // A different request, source version or channel has to start the fetch over
-    key(request, bundle.installedVersionSignature, bundle.usesPrerelease) {
+    // The notes are read against the version installed when the dialog opened, so only another
+    // request starts the fetch over: an update landing underneath must not reset it
+    key(request) {
         BundleChangelogDialog(
             src = bundle,
             onDismissRequest = onDismissRequest,
@@ -1338,5 +1367,100 @@ private fun normalizeUrl(url: String): String {
 
         // Add https:// by default
         else -> "https://$trimmed"
+    }
+}
+
+/**
+ * The apps kept from one source, and the way back for each of them.
+ *
+ * An app is kept from a source from wherever that app is being patched, which is a place only one
+ * of the two modes reaches. This is the other end of the same decision: it belongs to the source
+ * and reads the same in either mode. It is also where an exclusion made in simple mode can be
+ * lifted, without resetting everything else the app was configured with.
+ */
+@Composable
+fun BundleHiddenAppsDialog(
+    onDismissRequest: () -> Unit,
+    src: PatchBundleSource
+) {
+    val patchBundleRepository: PatchBundleRepository = koinInject()
+    val sourceMuteRepository: SourceMuteRepository = koinInject()
+    val scope = rememberCoroutineScope()
+
+    val mutedApps by sourceMuteRepository.mutedApps.collectAsStateWithLifecycle(emptyMap())
+    val appMetadata by patchBundleRepository.allAppMetadata.collectAsStateWithLifecycle()
+
+    // Sorted by what the user reads rather than by package name, and resolved against every
+    // source's metadata: the app is kept from this one, so its name is known to the others
+    val hiddenApps = remember(mutedApps, appMetadata, src.uid) {
+        mutedApps[src.uid].orEmpty()
+            .map { packageName -> packageName to (appMetadata[packageName]?.displayName ?: packageName) }
+            .sortedBy { (_, label) -> label.lowercase(Locale.ROOT) }
+    }
+
+    // The last one taken back closes this, since a source nothing is kept from has nothing to
+    // list. Armed only once the list has actually arrived: the flow starts empty, and an empty
+    // first frame is what loading looks like rather than what an emptied list looks like
+    var listArrived by remember { mutableStateOf(false) }
+    LaunchedEffect(hiddenApps.isEmpty()) {
+        if (hiddenApps.isNotEmpty()) {
+            listArrived = true
+        } else if (listArrived) {
+            onDismissRequest()
+        }
+    }
+
+    AppDialog(
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.sources_hidden_apps_title, src.displayTitle),
+        footer = {
+            AppDialogOutlinedButton(
+                text = stringResource(R.string.close),
+                onClick = onDismissRequest,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        padding = DialogPadding.Compact,
+        scrollable = false
+    ) {
+        Text(
+            text = stringResource(R.string.sources_hidden_apps_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = LocalDialogSecondaryTextColor.current,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = Defaults.ContentPaddingSmall)
+        )
+
+        val listState = rememberLazyListState()
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall)
+        ) {
+            items(items = hiddenApps, key = { (packageName, _) -> packageName }) { (packageName, label) ->
+                val gradientColors = appMetadata[packageName]?.gradientColors
+                    ?: AppCardColorDefaults.defaultGradientColors
+
+                AppCardLayout(
+                    gradientColors = gradientColors,
+                    onClick = {
+                        scope.launch { sourceMuteRepository.unmute(packageName, src.uid) }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animatedListItem(this)
+                ) {
+                    AppCardContent(
+                        packageName = packageName,
+                        packageInfo = null,
+                        displayName = label,
+                        subtitle = stringResource(R.string.sources_hidden_apps_hint),
+                        gradientColors = gradientColors
+                    )
+                }
+            }
+        }
     }
 }

@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">Nema skrivених aplikacija</string>
     <string name="home_app_hidden_apps_title">Skrivene aplikacije</string>
     <string name="home_app_hidden_apps_hint">Dотраните за приказивање</string>
+    <string name="home_app_patch_sources_description">Извори који су остали неозначени не нуде се када се ове апликације закрпе, а њихове закрпе се никада саме не придружују избору. Сваки извор остаје укључен за све остале апликације</string>
+    <string name="home_app_patch_sources_mixed">Понуђено за %1$s од %2$s</string>
+    <string name="home_app_patch_sources_covers">Има закрпе за %1$s од %2$s</string>
+    <string name="home_app_patch_sources_last">Свакој апликацији је потребан један преостали извор за закрпе</string>
     <string name="android_11_bug_dialog_title">Грешка на Android 11</string>
     <string name="android_11_bug_dialog_description">Dozvola za instalaciju aplikacije mora biti data unapred kako bi se izbjegao greška u sistemu Android 11 koja može negativno utjecati na korisničko iskustvo</string>
     <string name="deep_link_add_source_title">Додај извор</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">Додирните да прегледате изворе</string>
     <string name="home_outdated_manager_title">Morphe je zastareo</string>
     <string name="home_outdated_manager_subtitle">Неки извори закрпа захтевају новију верзију</string>
+    <string name="home_held_back_title">Закрпљени извор је срушио Morphe</string>
+    <string name="home_held_back_subtitle">Прескочено је да би апликација могла да се покрене. Додирните да бисте прегледали.</string>
     <string name="home_metered_skipped_title">Ажурирања су паузирана на мобилним подацима</string>
     <string name="home_metered_skipped_subtitle">Додирните да бисте дозволили ажурирања преко мобилних података</string>
     <string name="home_repatch_available_subtitle">Додирните да их све ставите у ред чекања</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">Пропуштено ажурирања</string>
     <string name="home_update_skipped_metered_subtitle">Мобилни подаци су активни</string>
     <string name="home_updating_sources">Ажурирање извора…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s MB (%5$d%%)</string>
     <string name="home_update_success">Ажурирање извора завршено</string>
     <string name="home_update_success_subtitle">Ваши извори су ажурни</string>
     <string name="home_sources_are_loading">Извори се учитавају, молимо сачекајте…</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">Абецедно, од А до Ш</string>
     <string name="home_app_sort_name_desc_description">Упадна абецеда, од З до А</string>
     <string name="home_app_sort_updates_first">Прво ажурирања закрпа</string>
-    <string name="home_app_sort_updates_first_description">Апликације са ознакама за ажурирање прво, затим препоручени редослед</string>
+    <string name="home_app_sort_updates_first_description">Апликације са новијим закрпама прво, затим препоручени редослед</string>
     <string name="home_app_sort_recently_patched">Недавно закрпљене</string>
     <string name="home_app_sort_recently_patched_description">Најновије закрпљене апликације прво</string>
     <string name="home_no_apps_title">Нисe доступни апликације</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">Ноћни и продуктивни</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Извор печовања</string>
-    <string name="sources_search">Претражите изворе</string>
+    <string name="sources_search">Претражите изворе и закрпе</string>
     <string name="sources_sort_title">Сортирај изворе закрпа</string>
     <string name="sources_sort_manual">Ручно поређање</string>
     <string name="sources_sort_manual_hint">Притисните и задржите извор да бисте променили редослед</string>
@@ -127,9 +136,11 @@
     <string name="sources_sort_last_updated_description">Прво најновија ажурирања извора</string>
     <string name="sources_sort_enabled_first">Омогућени први</string>
     <string name="sources_sort_enabled_first_description">Прикажи активне изворе пре онемогућених извора</string>
+    <string name="sources_patches_source_disabled_hint">Овај извор је онемогућен. Његове закрпе су наведене ради увида и не примењују се.</string>
     <string name="sources_management_open_in_browser">Отвори у прегледачу</string>
     <string name="sources_management_report_issue">Пријави проблем</string>
     <string name="sources_management_failed_to_open_url">Неуспешно отварање URL адресе</string>
+    <string name="sources_hidden_apps">Скривено за</string>
     <string name="sources_management_prerelease_toggle">Предвершајуће закрпе</string>
     <string name="sources_management_prerelease_toggle_description">Примање ране приступности новим експерименталним верзијама пача</string>
     <string name="sources_prerelease_warning_title">Омогући пре-издање закрпе?</string>
@@ -146,6 +157,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">Пакест за поправку није могао да се преузме. УРЛ адреса извора може бити неисправна или датотека не постоји</string>
     <string name="sources_management_outdated_manager_badge">Ажурирај Морфе</string>
     <string name="sources_management_outdated_manager_hint">Овај извор је направљен за закрпљивач %1$s, али Морфе %2$s укључује закрпљивач %3$s. Ажурирај Морфе да би га користио</string>
+    <string name="sources_management_held_back_badge">Пао</string>
+    <string name="sources_management_held_back_hint">Овај извор је срушио Morphe током учитавања, па се прескаче. Ажурирајте га или поново увезите да бисте покушали поново</string>
     <string name="sources_management_source_enabled">Извор омогућен</string>
     <string name="sources_management_source_disabled">Извор онемогућен</string>
     <string name="sources_management_source_updating">Ажурирање извора</string>
@@ -190,6 +203,7 @@
     <string name="home_apk_availability_recommended_label">Preporučeno</string>
     <string name="home_apk_availability_unpatched_label">Необрађен</string>
     <string name="home_apk_availability_incompatible_label">Некомпатибилан</string>
+    <string name="home_apk_availability_installed_version">Инсталирано на овом уређају: %s</string>
     <string name="home_apk_availability_yes">Да, помози ми да нађем АПК</string>
     <string name="home_apk_availability_no">Ne, već imam APK</string>
     <string name="home_apk_helper_download">Користи помоћну апликацију</string>
@@ -317,7 +331,8 @@
     <string name="home_outdated_patches_dialog_warning">Patching sa zastarelima ispravkama može rezultirati slomljenim aplikacijama</string>
     <string name="home_outdated_patches_dialog_update_and_patch">Ažuriraj &amp; patchiraj</string>
     <string name="home_low_disk_space_dialog_title">Мало дисковног простора</string>
-    <string name="home_low_disk_space_dialog_message">Samo %1$.2f GB слободне меморије је доступно. Пачинг захтева најмање %2$.2f GB слободне меморије да би исправно функционисао</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Доступно је само %1$s GB слободног простора. Патчирање захтева најмање %2$s GB слободног простора да би исправно функционисало.</string>
     <string name="home_low_disk_space_dialog_warning">Настављање може довести до грешке \"фајл није пронађен\" или до неисправног APK излаза</string>
     <string name="home_simple_bundle_select_title">Изаберите извор закрпе</string>
     <!-- Color picker -->
@@ -434,6 +449,10 @@
     <string name="home_app_info_install_type_shizuku_play_store">Инсталирај из Play Store-а преко Shizuku-а</string>
     <string name="home_app_info_patch_update_available">Доступно ажурирање патчева</string>
     <string name="home_app_info_patch_update_available_description">Доступна је нова верзија патчева. Репатујте своју апликацију да добијете најновије побољшања и исправке</string>
+    <string name="home_app_info_app_update_available">Доступно ажурирање апликације</string>
+    <string name="home_app_info_app_update_available_description">Извори закрпа подржавају новију верзију ове апликације. Поново закрпите апликацију да бисте прешли на ту верзију</string>
+    <string name="home_app_info_newest_supported_version">Најновија подржана</string>
+    <string name="home_app_info_version_move">Инсталирана %1$s, најновија подржана %2$s</string>
     <string name="home_app_info_app_deleted_warning">Aplikacija je deinstalirana</string>
     <string name="home_app_info_app_deleted_description">Ova aplikacija je deinstalirana izvan Morphe. Ponovo je instalirajte da bi obnovili funkcionalnost</string>
     <string name="home_app_info_not_patched_description">Инсталирана је незакрпљена верзија ове апликације. Morphe и даље има свој претходни запис о закрпама</string>
@@ -458,6 +477,9 @@
     <string name="patcher_error_log">Лог грешaka</string>
     <string name="patcher_error_technical">Техничке информације</string>
     <string name="patcher_error_dialog_diagnostics">Дијагностика</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Почетак примене закрпе</string>
+    <string name="patcher_card_succeeded">Успех примене закрпе</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">Апликација</string>
     <string name="patcher_field_package">Пакет</string>
@@ -473,6 +495,15 @@
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Меморија</string>
     <string name="patcher_field_storage">Складиште</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Величина излаза</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Трајање</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Просек меморије</string>
+    <string name="patcher_field_memory_max">Максимум меморије</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Вршни улаз/излаз складишта</string>
     <string name="patcher_field_value_unknown">непознато</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">уклоњене</string>
@@ -564,7 +595,7 @@
     <string name="patcher_message_15">Сви системи су у нормали… путања печовања је стабилна… 🚀</string>
     <string name="patcher_message_16">Истискавање додатне снаге, попут сока из дигиталног лимуна… 🍋</string>
     <string name="patcher_message_17">Подстицање апликације да прихвати своје ново, боље ја… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Промена суперпозиције апликације из непечоване у печовану… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">Ваша апликација има повишену температуру, а једини лек су додатни печеви… 🩺🔔</string>
@@ -572,6 +603,8 @@
     <!-- Expert patcher Screen -->
     <string name="patching_app">Пешање апликације</string>
     <string name="memory_usage">Коришћење меморије</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s од %2$s MB</string>
     <string name="cpu_usage">Искоришћење процесора</string>
     <string name="storage_io_usage">I/O складишта</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -611,6 +644,12 @@
     <string name="mini_game_snake_swipe_to_start">Превуците прстом да почнете</string>
     <string name="mini_game_dino_picker_subtitle">Додирните да прескочите кактусе</string>
     <string name="mini_game_dino_tap_to_start">Додирните да трчите</string>
+    <string name="mini_game_blocks_picker_subtitle">Уклопи облике, очисти линије</string>
+    <string name="mini_game_blocks_tap_to_start">Тапни да ротираш, превуци да помериш, превуци надоле да спустиш</string>
+    <string name="mini_game_bricks_picker_subtitle">Одбиј лопту, обори зид</string>
+    <string name="mini_game_bricks_tap_to_start">Превуци да нишаниш, тапни да лансираш</string>
+    <string name="mini_game_miner_picker_subtitle">Тапни да отвориш, држи да означиш</string>
+    <string name="mini_game_pairs_picker_subtitle">Окрени карте, пронађи пар</string>
     <!-- Settings -->
     <string name="appearance">Изглед</string>
     <string name="advanced">Напредно</string>
@@ -664,6 +703,9 @@
     <string name="settings_appearance_greeting_phrases_subtitle">Прикажи поруку на почетном екрану</string>
     <string name="settings_appearance_app_grouping">Груписање апликација</string>
     <string name="settings_appearance_app_grouping_description">Прикажи прекидач почетног екрана за груписање апликација по извору или властитим категоријама, задржавајући селекцију када је искључено</string>
+    <string name="settings_appearance_patch_list">Листа закрпа</string>
+    <string name="settings_appearance_patch_categories">Групиши по категорији</string>
+    <string name="settings_appearance_patch_categories_description">Разврстај листе закрпа по категоријама које извор декларише, остављајући изворе који не декларишу ниједну као обичну листу.</string>
     <string name="settings_appearance_repatch_notice">Обавештење о поновном закрпавању</string>
     <string name="settings_appearance_repatch_notice_description">Прикажи банер на почетном екрану када закрпане апликације могу бити поново закрпане</string>
     <string name="settings_appearance_sort_button">Дугме за сортирање и филтрирање</string>
@@ -777,6 +819,7 @@ Patches are not affected: enable pre-release patches for each source in the patc
     <string name="settings_advanced_patch_options_custom_branding_description">Мења назив апликације</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Назив апликације</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Унесите прилагођени назив</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Иконица апликације</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Прилагођени икон</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Фајл са сликама које ће се користити као прилагођена икона.
 
@@ -861,6 +904,8 @@ morphe_header_custom_dark.png
     <string name="installer_action_open_shizuku">Отвори Схизуку</string>
     <string name="installer_hint_generic">Инсталација је неуспела. Покушајте поново или пребаците на други инсталатор.</string>
     <string name="installer_hint_conflict">Друга апликација са истим именом пакета је већ инсталирана. Деинсталирајте је пре наставка.</string>
+    <string name="installer_confirm_notification_title">Потврдите инсталацију</string>
+    <string name="installer_confirm_notification_text">Додирните да бисте довршили инсталацију закрпљене апликације</string>
     <string name="installer_external_launched">Отварање %s…</string>
     <string name="installer_external_timeout">%s није потврдио инсталацију. Проверите другу апликацију и покушајте поново</string>
     <string name="installer_external_success">%s је пријавио успешну инсталацију</string>
@@ -877,7 +922,7 @@ morphe_header_custom_dark.png
     <string name="settings_prompt_installer_on_install">Упит за избор инсталатера</string>
     <string name="settings_prompt_installer_on_install_description">Приказује дијалог за избор инсталатера сваки пут када се инсталира закрпљена апликација</string>
     <string name="settings_auto_install_with_shizuku">Аутоматска инсталација након закрпе</string>
-    <string name="settings_auto_install_with_shizuku_description">Тихо инсталира закрпљени APK чим је закрпљивање завршено</string>
+    <string name="settings_auto_install_with_shizuku_description">Инсталира закрпљени APK чим се закрпљивање заврши</string>
     <string name="settings_auto_uninstall_with_shizuku">Аутоматско деинсталирање у случају конфликта</string>
     <string name="settings_auto_uninstall_with_shizuku_description">Када се аутоматски инсталира преко Shizuku-а, прво деинсталирајте постојећу апликацију ако Android извештава о конфликту потписа. Ово може уклонити податке апликације.</string>
     <string name="settings_auto_uninstall_warning_title">Омогућите аутоматско деинсталирање?</string>
@@ -915,6 +960,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime_enable">Омогући меморије</string>
     <string name="settings_system_memory_limit_subtitle">Кликните да конфигуришете</string>
     <string name="settings_system_memory_limit_warning">Mala ograniÄena memorija može uzrokovati greške pri nadogradnji veÄih aplikacija</string>
+    <string name="settings_system_memory_limit_high_warning">Високо ограничење меморије може учинити закрпање много споријим на неким уређајима. Подигните га само ако закрпање стално не успева при нижим ограничењима.</string>
     <string name="settings_system_process_runtime_enabled_description">%s МБ лимит</string>
     <string name="settings_system_process_runtime_disabled_description">Упозорење: ниско ограничење меморије може довести до греша при патчирању веће апликације</string>
     <string name="settings_system_process_runtime_description_not_available">Ова карактеристика захтева Android 11 или новији</string>
@@ -1074,7 +1120,7 @@ morphe_header_custom_dark.png
     <string name="credits_current_development">Тренутни развој</string>
     <string name="credits_prior_development">Претходни развој</string>
     <string name="opensource_licenses">Лиценце отвореног кода</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Избор</string>
     <string name="easter_egg_pill_message">Узми плаву пилулу и рекламе остају тачно где јесу. Узми црвену и види колико дубоко иде бајткод.</string>
     <string name="easter_egg_pill_red">Црвена пилула</string>
@@ -1085,6 +1131,10 @@ morphe_header_custom_dark.png
     <string name="easter_egg_pill_red_toast_again">Поново у киши</string>
     <string name="easter_egg_pill_blue_toast_again">Искључен. Пут назад је тамо где је одувек био.</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">Изаберите датотеку</string>
     <string name="select_folder">Изаберите фолдер</string>
     <string name="patches">Флатери</string>
@@ -1186,6 +1236,8 @@ morphe_header_custom_dark.png
     <string name="hidden">Сакривено</string>
     <string name="unhide">Покажи</string>
     <string name="unhide_done">Приказано</string>
+    <string name="ignore">Игноришите</string>
+    <string name="stop_ignoring">Престани да игноришеш</string>
     <string name="logs">Дневници</string>
     <string name="sources">Извори</string>
     <string name="installing_ellipsis">Инсталирање…</string>
@@ -1209,8 +1261,8 @@ morphe_header_custom_dark.png
     <string name="install_update_manager_failed">Неуспешно инсталирање ажурирања</string>
     <string name="installing_manager_update">Инсталирање ажурирања…</string>
     <string name="downloading_manager_update">Преузимање ажурирања…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">Преузето %1$.1f MB</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">Преузето %1$s MB</string>
     <string name="manager_update_not_ready">Овај издање је и даље у процесу објављивања. Покушајте поново за неколико минута</string>
     <string name="update_download_missing">Преузето ажурирање више није доступно. Преузмите га поново.</string>
     <string name="download_manager_failed">Није успело преузимање ажурирања: %s</string>

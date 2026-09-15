@@ -2,7 +2,7 @@
 <resources>
     <!-- Home Screen -->
     <string name="home_other_apps">แอปอื่น ๆ</string>
-    <string name="home_other_apps_action">เลือกแอปอื่น</string>
+    <string name="home_other_apps_action">Select other apps</string>
     <string name="home_not_patched_yet">ยังไม่ได้รับการแพตช์</string>
     <string name="home_unpatched_version_installed">ติดตั้งเวอร์ชันที่ไม่ได้รับการแพตช์แล้ว</string>
     <string name="home_unpatched_badge">ไม่ได้รับการแพตช์</string>
@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">ไม่มีแอปที่ซ่อนอยู่</string>
     <string name="home_app_hidden_apps_title">แอปที่ซ่อนอยู่</string>
     <string name="home_app_hidden_apps_hint">แตะเพื่อแสดง</string>
+    <string name="home_app_patch_sources_description">แหล่งที่มาที่ไม่ได้เลือกไว้จะไม่ถูกเสนอเมื่อแอปเหล่านี้ถูกแพตช์ และแพตช์ของแหล่งที่มาเหล่านั้นจะไม่เข้าร่วมการเลือกด้วยตัวเอง แต่ละแหล่งที่มาจะยังคงเปิดใช้สำหรับแอปอื่นทุกแอป</string>
+    <string name="home_app_patch_sources_mixed">เสนอให้ %1$s จากทั้งหมด %2$s</string>
+    <string name="home_app_patch_sources_covers">มีแพตช์สำหรับ %1$s จากทั้งหมด %2$s</string>
+    <string name="home_app_patch_sources_last">ทุกแอปต้องมีแหล่งที่มาเหลืออยู่อย่างน้อยหนึ่งแหล่งเพื่อใช้แพตช์</string>
     <string name="android_11_bug_dialog_title">บัก Android 11</string>
     <string name="android_11_bug_dialog_description">ต้องอนุญาตเปิดสิทธิเข้าถึงการติดตั้งแอปพลิเคชันก่อน เพื่อหลีกเลี่ยงปัญหาจากระบบปฏิบัติการ Android 11 ที่มีผลกระทบต่อการใช้งานแอปพลิเคชันนี้</string>
     <string name="deep_link_add_source_title">เพิ่มแหล่งที่มา</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">แตะเพื่อตรวจสอบแหล่งที่มา</string>
     <string name="home_outdated_manager_title">Morphe ล้าสมัย</string>
     <string name="home_outdated_manager_subtitle">แหล่งแพตช์บางแหล่งจำเป็นต้องใช้เวอร์ชันที่ใหม่กว่า</string>
+    <string name="home_held_back_title">แหล่งแพตช์หนึ่งทำให้ Morphe เกิดข้อขัดข้อง</string>
+    <string name="home_held_back_subtitle">แหล่งนี้ถูกข้ามไปเพื่อให้แอปเริ่มทำงานได้ แตะเพื่อตรวจสอบ</string>
     <string name="home_metered_skipped_title">การอัปเดตถูกหยุดเมื่อใช้ข้อมูลมือถือ</string>
     <string name="home_metered_skipped_subtitle">แตะเพื่ออนุญาตการอัปเดตผ่านข้อมูลมือถือ</string>
     <string name="home_repatch_available_subtitle">แตะเพื่อจัดคิวทั้งหมด</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">การอัปเดตถูกข้าม</string>
     <string name="home_update_skipped_metered_subtitle">กำลังใช้งานข้อมูลมือถือ</string>
     <string name="home_updating_sources">กำลังอัปเดตแหล่งที่มา…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s MB (%5$d%%)</string>
     <string name="home_update_success">อัปเดตแหล่งที่มาเสร็จสมบูรณ์</string>
     <string name="home_update_success_subtitle">แหล่งทีมาของคุณเป็นเวอร์ชันล่าสุดแล้ว</string>
     <string name="home_sources_are_loading">กำลังโหลดแหล่งที่มา กรุณารอสักครู่…</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">ตามลำดับตัวอักษร A ถึง Z</string>
     <string name="home_app_sort_name_desc_description">เรียงตามลำดับตัวอักษรย้อนกลับ Z ถึง A</string>
     <string name="home_app_sort_updates_first">อัปเดตแพตช์ก่อน</string>
-    <string name="home_app_sort_updates_first_description">แอปที่มีแบตจ์อัปเดตก่อน จากนั้นตามลำดับที่แนะนำ</string>
+    <string name="home_app_sort_updates_first_description">แอปที่มีแพตช์ใหม่กว่าก่อน จากนั้นเรียงตามลำดับที่แนะนำ</string>
     <string name="home_app_sort_recently_patched">เพิ่งแพตช์ล่าสุด</string>
     <string name="home_app_sort_recently_patched_description">แอปที่เพิ่งแพตช์ล่าสุดแสดงก่อน</string>
     <string name="home_no_apps_title">ไม่มีแอปที่ใช้ได้</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">ตื่นตอนกลางคืนและยังทำงานได้</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">จัดการแหล่งที่มา</string>
-    <string name="sources_search">ค้นหาแหล่งที่มา</string>
+    <string name="sources_search">ค้นหาแหล่งที่มาและแพตช์</string>
     <string name="sources_sort_title">เรียงลำดับแหล่งที่มาของแพตช์</string>
     <string name="sources_sort_manual">จัดเรียงด้วยตนเอง</string>
     <string name="sources_sort_manual_hint">แตะค้างที่แหล่งข้อมูลเพื่อจัดเรียงใหม่</string>
@@ -127,16 +136,21 @@
     <string name="sources_sort_last_updated_description">อัปเดตแหล่งที่มาล่าสุดก่อน</string>
     <string name="sources_sort_enabled_first">เปิดใช้งานก่อน</string>
     <string name="sources_sort_enabled_first_description">แสดงแหล่งที่มาที่ใช้งานอยู่ก่อนแหล่งที่มาที่ปิดใช้งาน</string>
+    <string name="sources_patches_source_disabled_hint">แหล่งที่มานี้ถูกปิดใช้งาน แพตช์ของมันถูกแสดงเพื่อการอ้างอิงและจะไม่ถูกนำไปใช้</string>
     <string name="sources_management_open_in_browser">เปิดในเบราว์เซอร์</string>
     <string name="sources_management_report_issue">รายงานปัญหา</string>
     <string name="sources_management_failed_to_open_url">ไม่สามารถเปิด URL ได้</string>
+    <string name="sources_hidden_apps">ซ่อนไว้สำหรับ</string>
+    <string name="sources_hidden_apps_title">แอปที่ถูกซ่อนจาก %1$s</string>
+    <string name="sources_hidden_apps_description">แอปเหล่านี้จะไม่ได้รับแหล่งที่มานี้เมื่อถูกแพตช์ แต่ตัวแหล่งที่มาเองยังคงเปิดใช้สำหรับสิ่งอื่นทั้งหมด</string>
+    <string name="sources_hidden_apps_hint">แตะเพื่อเสนอแหล่งที่มานี้อีกครั้ง</string>
     <string name="sources_management_prerelease_toggle">แพตช์ก่อนเปิดตัว</string>
     <string name="sources_management_prerelease_toggle_description">รับสิทธิ์เข้าถึงแพทช์ใหม่เวอร์ชันทดลองแต่เนิ่นๆ</string>
     <string name="sources_prerelease_warning_title">เปิดใช้แพตช์ก่อนเผยแพร่หรือไม่?</string>
     <string name="sources_prerelease_warning_message">บิลด์ก่อนเผยแพร่ยังอยู่ระหว่างการพัฒนา แพตช์อาจล้มเหลวหรือทำให้แอปเสียหาย และฟีเจอร์อาจเปลี่ยนแปลงได้โดยไม่มีการแจ้งเตือน</string>
     <string name="expert_mode_prerelease_notice">แหล่งที่มานี้อยู่ในแพตช์ก่อนเผยแพร่ การแพตช์อาจล้มเหลวหรือทำงานผิดปกติ</string>
     <string name="sources_management_experimental_versions_toggle">ใช้แอปเวอร์ชันทดลอง</string>
-    <string name="sources_management_experimental_versions_toggle_description">แสดงและแก้ไขเป้าหมายแอปทดลอง</string>
+    <string name="sources_management_experimental_versions_toggle_description">แสดงและแพตช์เป้าหมายแอปทดลอง</string>
     <string name="sources_management_already_exists">แหล่งที่มานี้ได้ถูกเพิ่มไปแล้ว</string>
     <string name="sources_management_invalid_url">URL ต้นทางไม่ถูกต้อง โปรดตรวจสอบที่อยู่และลองอีกครั้ง</string>
     <string name="sources_management_blocked">แหล่งแพตช์นี้ถูกบล็อกและไม่สามารถเพิ่มได้</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">ไม่สามารถดาวน์โหลดชุดแพตช์ได้ URL แหล่งที่มาอาจไม่ถูกต้อง หรือไฟล์ไม่มีอยู่</string>
     <string name="sources_management_outdated_manager_badge">อัปเดต Morphe</string>
     <string name="sources_management_outdated_manager_hint">แหล่งที่มานี้สร้างขึ้นสำหรับตัวแพตช์ %1$s แต่ Morphe %2$s มีตัวแพตช์ %3$s อัปเดต Morphe เพื่อใช้งาน</string>
+    <string name="sources_management_held_back_badge">ขัดข้อง</string>
+    <string name="sources_management_held_back_hint">แหล่งนี้ทำให้ Morphe เกิดข้อขัดข้องระหว่างการโหลด จึงถูกข้ามไป อัปเดตหรือนำเข้าแหล่งนี้ใหม่เพื่อลองอีกครั้ง</string>
     <string name="sources_management_source_enabled">แหล่งที่มาเปิดใช้งานแล้ว</string>
     <string name="sources_management_source_disabled">แหล่งที่มาปิดใช้งานแล้ว</string>
     <string name="sources_management_source_updating">กำลังอัปเดตแหล่งที่มา</string>
@@ -190,6 +206,7 @@
     <string name="home_apk_availability_recommended_label">แนะนำ</string>
     <string name="home_apk_availability_unpatched_label">ไม่ได้แพตช์</string>
     <string name="home_apk_availability_incompatible_label">ไม่รองรับ</string>
+    <string name="home_apk_availability_installed_version">ติดตั้งบนอุปกรณ์นี้แล้ว: %s</string>
     <string name="home_apk_availability_yes">ใช่, ช่วยฉันค้นหา APK</string>
     <string name="home_apk_availability_no">ไม่, ฉันมี APK แล้ว</string>
     <string name="home_apk_helper_download">ใช้แอปตัวช่วย</string>
@@ -317,9 +334,11 @@
     <string name="home_outdated_patches_dialog_warning">อาจมีปัญหาในแอปพลิเคชันถ้าใช้ปรับปรุงที่เลิกใช้แล้ว</string>
     <string name="home_outdated_patches_dialog_update_and_patch">อัปเดต &amp; แพตช์</string>
     <string name="home_low_disk_space_dialog_title">พื้นที่ดิสก์เหลือน้อย</string>
-    <string name="home_low_disk_space_dialog_message">มีพื้นที่ว่างเหลือเพียง %1$.2f GB โปรแกรม Patching ต้องการพื้นที่ว่างอย่างน้อย %2$.2f GB จึงจะทำงานได้อย่างถูกต้อง</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">มีพื้นที่ว่างเพียง %1$s GB เท่านั้น การแพตช์ต้องใช้พื้นที่ว่างอย่างน้อย %2$s GB เพื่อให้ทำงานได้อย่างถูกต้อง</string>
     <string name="home_low_disk_space_dialog_warning">การดำเนินการนี้อาจส่งผลให้เกิดข้อผิดพลาด \"ไม่พบไฟล์\" หรือ APK ที่สร้างขึ้นอาจเสียหาย</string>
     <string name="home_simple_bundle_select_title">เลือกไฟล์แหล่งที่มา</string>
+    <string name="home_simple_bundle_select_remember">ใช้แหล่งที่มานี้สำหรับแอปนี้เสมอ</string>
     <!-- Color picker -->
     <string name="custom_color">สีแบบกำหนดเอง</string>
     <string name="hex_color">สี Hex</string>
@@ -434,6 +453,10 @@
     <string name="home_app_info_install_type_shizuku_play_store">ติดตั้งจาก Play Store ด้วย Shizuku</string>
     <string name="home_app_info_patch_update_available">มีอัพเดทแพตช์ใหม่ให้ใช้งานแล้ว</string>
     <string name="home_app_info_patch_update_available_description">มีแพตช์เวอร์ชันใหม่พร้อมใช้งานแล้ว ให้แพตช์อีกครั้งเพื่อรับการปรับปรุงและการแก้ไขสำหรับเวอร์ชันล่าสุด</string>
+    <string name="home_app_info_app_update_available">มีอัปเดตแอป</string>
+    <string name="home_app_info_app_update_available_description">แหล่งแพตช์รองรับแอปเวอร์ชันที่ใหม่กว่า แพตช์อีกครั้งเพื่อย้ายไปยังเวอร์ชันนั้น</string>
+    <string name="home_app_info_newest_supported_version">เวอร์ชันใหม่ล่าสุดที่รองรับ</string>
+    <string name="home_app_info_version_move">ติดตั้ง %1$s แล้ว เวอร์ชันใหม่ล่าสุดที่รองรับคือ %2$s</string>
     <string name="home_app_info_app_deleted_warning">แอปถูกถอนการติดตั้ง</string>
     <string name="home_app_info_app_deleted_description">แอปนี้ถูกลบออกนอก Morphe. แพตช์อีกครั้งเพื่อฟื้นฟูฟังก์ชัน</string>
     <string name="home_app_info_not_patched_description">แอปเวอร์ชันที่ไม่ได้รับการแพตช์ถูกติดตั้งไว้ Morphe ยังคงมีบันทึกแพตช์ก่อนหน้า</string>
@@ -457,11 +480,14 @@
     <string name="patcher_error_copied">คัดลอกข้อผิดพลาดไปยังคลิปบอร์ดแล้ว</string>
     <string name="patcher_error_log">บันทึกข้อผิดพลาด</string>
     <string name="patcher_error_technical">รายละเอียดทางเทคนิค</string>
-    <string name="patcher_error_dialog_diagnostics">การวินิจฉัย</string>
+    <string name="patcher_error_dialog_diagnostics">Diagnostics</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Patching started</string>
+    <string name="patcher_card_succeeded">Patching succeeded</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
-    <string name="patcher_field_app">แอป</string>
-    <string name="patcher_field_package">แพ็กเกจ</string>
-    <string name="patcher_field_source">แหล่งที่มา</string>
+    <string name="patcher_field_app">App</string>
+    <string name="patcher_field_package">Package</string>
+    <string name="patcher_field_source">Source</string>
     <string name="patcher_field_split">แยก APK</string>
     <string name="patcher_field_manager">ผู้จัดการ</string>
     <string name="patcher_field_patcher">ตัวแพตช์</string>
@@ -473,6 +499,15 @@
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">หน่วยความจำ</string>
     <string name="patcher_field_storage">พื้นที่เก็บข้อมูล</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">ขนาดผลลัพธ์</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">เวลา</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">หน่วยความจำเฉลี่ย</string>
+    <string name="patcher_field_memory_max">หน่วยความจำสูงสุด</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">จุดสูงสุดของ I/O พื้นที่จัดเก็บข้อมูล</string>
     <string name="patcher_field_value_unknown">ไม่ทราบ</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">ถูกตัดออก</string>
@@ -519,6 +554,13 @@
     <string name="patcher_storage_permission_open_settings">เปิดการตั้งค่าเก็บถาวร</string>
     <string name="patcher_storage_badge_denied">การอนุญาตถูกปฏิเสธ</string>
     <string name="patcher_storage_badge_missing">ไม่พบ</string>
+    <string name="batch_patch_option_paths_skipped">ไฟล์ตัวเลือกแพตช์หายไปและจะถูกข้ามไป: %1$s</string>
+    <string name="patcher_missing_patches_title">แพตช์บางส่วนหายไป</string>
+    <string name="patcher_missing_patches_description">การเลือกที่บันทึกไว้สำหรับแอปนี้ระบุชื่อแพตช์ที่ไม่มีแหล่งที่มาที่เปิดใช้อยู่ใดเสนออีกต่อไป การดำเนินการต่อจะแพตช์แอปโดยไม่มีแพตช์เหล่านั้น</string>
+    <string name="patcher_missing_patches_label">ไม่ได้เสนออีกต่อไป</string>
+    <string name="patcher_option_paths_gone_title">ไฟล์ตัวเลือกแพตช์หายไป</string>
+    <string name="patcher_option_paths_gone_description">ตัวเลือกแพตช์หนึ่งรายการขึ้นไปชี้ไปยังไฟล์ที่ไม่มีอยู่แล้ว นำพาธออกเพื่อแพตช์โดยไม่ใช้ไฟล์เหล่านั้น หรือนำไฟล์กลับมาแล้วลองอีกครั้ง</string>
+    <string name="patcher_option_paths_clear">นำพาธออกแล้วดำเนินการต่อ</string>
     <string name="patcher_storage_permission_hint">คำแนะนำ: ย้ายไฟล์ไปยัง /Android/data/app.morphe.manager/files/ - ไม่จำเป็นต้องมีสิทธิ์พิเศษอื่น</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">กำลังเตรียม</string>
@@ -564,7 +606,7 @@
     <string name="patcher_message_15">ระบบทั้งหมดทำงานปกติ... เส้นทางการแพตช์เสถียร... 🚀</string>
     <string name="patcher_message_16">รีดพลังงานพิเศษออกมา เหมือนคั้นน้ำจากมะนาวดิจิทัล... 🍋</string>
     <string name="patcher_message_17">ส่งเสริมให้แอปยอมรับตัวเองในเวอร์ชันใหม่ที่ดีกว่า... 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">เปลี่ยนสถานะซ้อนทับของแอปจากที่ยังไม่ได้แพตช์เป็นแพตช์แล้ว... 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">แอปของคุณมีไข้ และวิธีรักษาเดียวคือต้องใช้แพตช์เพิ่ม... 🩺🔔</string>
@@ -572,6 +614,8 @@
     <!-- Expert patcher Screen -->
     <string name="patching_app">กำลังแพตช์แอป</string>
     <string name="memory_usage">การใช้พื้นที่ความจำ</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s จาก %2$s MB</string>
     <string name="cpu_usage">การใช้งาน CPU</string>
     <string name="storage_io_usage">I/O ของพื้นที่เก็บข้อมูล</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -611,6 +655,12 @@
     <string name="mini_game_snake_swipe_to_start">ปัดเพื่อเริ่มเกม</string>
     <string name="mini_game_dino_picker_subtitle">แตะเพื่อกระโดดข้ามกระบองเพชร</string>
     <string name="mini_game_dino_tap_to_start">แตะเพื่อวิ่ง</string>
+    <string name="mini_game_blocks_picker_subtitle">วางชิ้นส่วนให้พอดี ลบเส้น</string>
+    <string name="mini_game_blocks_tap_to_start">แตะเพื่อหมุน ปัดเพื่อเลื่อน ปัดลงเพื่อวาง</string>
+    <string name="mini_game_bricks_picker_subtitle">ตีลูกบอลให้เด้ง ทำลายกำแพง</string>
+    <string name="mini_game_bricks_tap_to_start">ลากเพื่อเล็ง แตะเพื่อยิง</string>
+    <string name="mini_game_miner_picker_subtitle">แตะเพื่อเปิด กดค้างเพื่อวางธง</string>
+    <string name="mini_game_pairs_picker_subtitle">พลิกไพ่ หาคู่ที่ตรงกัน</string>
     <!-- Settings -->
     <string name="appearance">หน้าตา</string>
     <string name="advanced">ขั้นสูง</string>
@@ -664,6 +714,9 @@
     <string name="settings_appearance_greeting_phrases_subtitle">แสดงข้อความทักทายบนหน้าจอหลัก</string>
     <string name="settings_appearance_app_grouping">การจัดกลุ่มแอป</string>
     <string name="settings_appearance_app_grouping_description">แสดงตัวสลับหน้าจอหลักเพื่อจัดกลุ่มแอปตามแหล่งที่มาหรือตามหมวดหมู่ของคุณเอง โดยจะเก็บการเลือกไว้เมื่อปิด</string>
+    <string name="settings_appearance_patch_list">รายการแพตช์</string>
+    <string name="settings_appearance_patch_categories">จัดกลุ่มตามหมวดหมู่</string>
+    <string name="settings_appearance_patch_categories_description">แบ่งรายการแพตช์ตามหมวดหมู่ที่แหล่งข้อมูลประกาศไว้ โดยแหล่งข้อมูลที่ไม่ประกาศหมวดหมู่จะแสดงเป็นรายการธรรมดา</string>
     <string name="settings_appearance_repatch_notice">ประกาศการแพตช์ซ้ำ</string>
     <string name="settings_appearance_repatch_notice_description">แสดงแบนเนอร์บนหน้าจอหลักเมื่อแอปที่แพตช์แล้วสามารถแพตช์ซ้ำได้</string>
     <string name="settings_appearance_sort_button">ปุ่มเรียงลำดับและกรอง</string>
@@ -777,6 +830,10 @@
     <string name="settings_advanced_patch_options_custom_branding_description">เปลี่ยนชื่อแอปพลิเคชันที่แสดงผล</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">ชื่อแอป</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">ป้อนชื่อแบบกำหนดเอง</string>
+    <string name="settings_advanced_patch_options_path_gone">ไม่สามารถอ่านโฟลเดอร์นี้ได้อีกต่อไป เลือกอีกครั้งหรือล้างออก ไม่เช่นนั้นการแพตช์จะหยุดและถามถึงโฟลเดอร์นี้</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">ไอคอนแอป</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">ไอคอนที่ใช้แพตช์แอป ไอคอนนี้ยังใช้ในตำแหน่งที่แอปไม่สามารถเปลี่ยนได้ในภายหลัง เช่น Android Auto และรายการแอปในการตั้งค่าระบบ</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">ไอคอนแอปที่กำหนดเองต้องมีโฟลเดอร์ที่มีรูปภาพไอคอน</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">ไอคอนแบบกำหนดเอง</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"โฟลเดอร์ที่มีรูปภาพสำหรับใช้เป็นไอคอนแบบกำหนดเอง
 
@@ -861,6 +918,8 @@ morphe_header_custom_dark.png
     <string name="installer_action_open_shizuku">เปิด Shizuku</string>
     <string name="installer_hint_generic">การติดตั้งล้มเหลว ลองอีกครั้งหรือเปลี่ยนไปใช้ตัวติดตั้งอื่น</string>
     <string name="installer_hint_conflict">มีแอปที่มีชื่อแพ็คเกจเดียวกันติดตั้งอยู่แล้ว. ลบแอปนั้นก่อนดำเนินการต่อไป</string>
+    <string name="installer_confirm_notification_title">ยืนยันการติดตั้ง</string>
+    <string name="installer_confirm_notification_text">แตะเพื่อเสร็จสิ้นการติดตั้งแอปที่ผ่านการแพตช์</string>
     <string name="installer_external_launched">กำลังเปิด %s…</string>
     <string name="installer_external_timeout">%s ไม่ได้ยืนยันการติดตั้ง โปรดตรวจสอบแอปอื่นและลองอีกครั้ง</string>
     <string name="installer_external_success">%s รายงานว่าการติดตั้งสำเร็จ</string>
@@ -877,7 +936,7 @@ morphe_header_custom_dark.png
     <string name="settings_prompt_installer_on_install">แจ้งเตือนการเลือกตัวติดตั้ง</string>
     <string name="settings_prompt_installer_on_install_description">แสดงกล่องโต้ตอบการเลือกตัวติดตั้งทุกครั้งที่มีการติดตั้งแอปที่แพตช์แล้ว</string>
     <string name="settings_auto_install_with_shizuku">ติดตั้งอัตโนมัติหลังจากการแพตช์</string>
-    <string name="settings_auto_install_with_shizuku_description">ติดตั้ง APK ที่ผ่านการแพตช์โดยอัตโนมัติเมื่อการแพตช์เสร็จสิ้น</string>
+    <string name="settings_auto_install_with_shizuku_description">ติดตั้ง APK ที่ผ่านการแพตช์ทันทีที่การแพตช์เสร็จสิ้น</string>
     <string name="settings_auto_uninstall_with_shizuku">ถอนการติดตั้งอัตโนมัติเมื่อเกิดข้อขัดแย้ง</string>
     <string name="settings_auto_uninstall_with_shizuku_description">เมื่อติดตั้งอัตโนมัติด้วย Shizuku ให้ถอนการติดตั้งแอปที่มีอยู่ก่อนหาก Android รายงานว่ามีข้อขัดแย้งของลายเซ็น ซึ่งอาจลบข้อมูลแอปได้</string>
     <string name="settings_auto_uninstall_warning_title">เปิดใช้งานการถอนการติดตั้งอัตโนมัติหรือไม่</string>
@@ -915,6 +974,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime_enable">เปิดใช้การทำงานของโปรเซส</string>
     <string name="settings_system_memory_limit_subtitle">ขนาดความจำที่ใช้สำหรับการแพตช์</string>
     <string name="settings_system_memory_limit_warning">ขนาดความจำต่ำหรืออาจทำให้การนำพัท์ล้ม</string>
+    <string name="settings_system_memory_limit_high_warning">ขีดจำกัดหน่วยความจำที่สูงอาจทำให้การแพตช์ช้าลงมากบนอุปกรณ์บางเครื่อง ให้เพิ่มเฉพาะเมื่อการแพตช์ล้มเหลวที่ขีดจำกัดต่ำกว่า</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB จำกัด</string>
     <string name="settings_system_process_runtime_disabled_description">คลิกเพื่อตั้งค่า</string>
     <string name="settings_system_process_runtime_description_not_available">คุณสมบัติขั้นตอนนี้ต้องการ Android 11 หรือเวอร์ชันที่สูงกว่า</string>
@@ -1074,7 +1134,7 @@ morphe_header_custom_dark.png
     <string name="credits_current_development">การพัฒนาปัจจุบัน</string>
     <string name="credits_prior_development">การพัฒนาที่ผ่านมา</string>
     <string name="opensource_licenses">สัญญาอนุญาตโอเพนซอร์ส</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">ทางเลือก</string>
     <string name="easter_egg_pill_message">กินยาเม็ดสีฟ้า โฆษณาก็จะยังคงอยู่ที่เดิม กินยาเม็ดสีแดง แล้วจะได้เห็นว่าไบต์โค้ดลึกแค่ไหน</string>
     <string name="easter_egg_pill_red">ยาเม็ดสีแดง</string>
@@ -1085,6 +1145,10 @@ morphe_header_custom_dark.png
     <string name="easter_egg_pill_red_toast_again">กลับไปในสายฝน</string>
     <string name="easter_egg_pill_blue_toast_again">ถอดปลั๊กแล้ว. ทางกลับคือที่เดิม</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">เลือกไฟล์</string>
     <string name="select_folder">เลือกโฟลเดอร์</string>
     <string name="patches">แพตช์</string>
@@ -1186,6 +1250,8 @@ morphe_header_custom_dark.png
     <string name="hidden">ซ่อนแล้ว</string>
     <string name="unhide">แสดง</string>
     <string name="unhide_done">แสดงแล้ว</string>
+    <string name="ignore">ไม่สนใจ</string>
+    <string name="stop_ignoring">หยุดเพิกเฉย</string>
     <string name="logs">บันทึก</string>
     <string name="sources">แหล่งที่มา</string>
     <string name="installing_ellipsis">กำลังติดตั้ง…</string>
@@ -1209,8 +1275,8 @@ morphe_header_custom_dark.png
     <string name="install_update_manager_failed">ไม่สามารถติดตั้งอัปเดตได้</string>
     <string name="installing_manager_update">กำลังติดตั้งอัปเดต…</string>
     <string name="downloading_manager_update">กำลังดาวน์โหลดอัปเดต…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">ดาวน์โหลดแล้ว %1$.1f MB</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">ดาวน์โหลดแล้ว %1$s MB</string>
     <string name="manager_update_not_ready">รุ่นนี้ยังอยู่ในระหว่างการเผยแพร่ ลองอีกครั้งในไม่กี่นาที</string>
     <string name="update_download_missing">อัปเดตที่ดาวน์โหลดมาไม่พร้อมใช้งานอีกต่อไป ดาวน์โหลดอีกครั้ง</string>
     <string name="download_manager_failed">ไม่สามารถดาวน์โหลดอัปเดตได้: %s</string>

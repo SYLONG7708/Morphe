@@ -20,8 +20,8 @@ import app.morphe.manager.ManagerApplication
 import app.morphe.manager.R
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.data.room.apps.installed.InstallType
+import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
-import app.morphe.manager.domain.manager.InstallerPreferenceTokens
 import app.morphe.manager.domain.manager.KeystoreManager
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.InstalledAppRepository
@@ -33,6 +33,7 @@ import app.morphe.manager.patcher.patch.ApkArchitectureResolver
 import app.morphe.manager.patcher.patch.PatchSourceRef
 import app.morphe.manager.patcher.runtime.CoroutineRuntime
 import app.morphe.manager.patcher.runtime.ProcessRuntime
+import app.morphe.manager.patcher.runtime.coerceMemoryLimit
 import app.morphe.manager.patcher.split.SplitApkPreparer
 import app.morphe.manager.patcher.util.NativeLibStripper
 import app.morphe.manager.ui.model.SelectedApp
@@ -40,6 +41,7 @@ import app.morphe.manager.domain.update.SafeIntegrationProfile
 import app.morphe.manager.license.DeviceLicenseManager
 import app.morphe.manager.ui.model.State
 import app.morphe.manager.util.*
+import app.morphe.manager.util.PatchSelectionUtils.restrictTo
 import com.topjohnwu.superuser.Shell
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -59,6 +61,7 @@ class PatcherWorker(
     private val installedAppRepository: InstalledAppRepository by inject()
     private val originalApkRepository: OriginalApkRepository by inject()
     private val rootInstaller: RootInstaller by inject()
+    private val installerManager: InstallerManager by inject()
 
     class Args(
         val input: SelectedApp,
@@ -165,7 +168,8 @@ class PatcherWorker(
             successSoundUri,
             errorSoundUri
         )
-        // Don't show "patching complete" when Shizuku auto-install will immediately follow
+        // Don't show "patching complete" when an auto-install will immediately follow: it
+        // either needs nothing from the user or asks for it in a notification of its own
         if (succeeded && autoInstallPending) return
         // Don't notify when the app is in the foreground - user sees the result on screen
         if (ManagerApplication.isInForeground) return
@@ -326,7 +330,8 @@ class PatcherWorker(
             }
 
             val useProcessRuntime = prefs.useProcessRuntime.get()
-            val stripNativeLibs = prefs.stripUnusedNativeLibs.get()
+            val autoYouTubeArchitecture = args.packageName == SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE
+            val stripNativeLibs = autoYouTubeArchitecture || prefs.stripUnusedNativeLibs.get()
             val inputIsSplitArchive = SplitApkPreparer.isSplitArchive(inputFile)
             // The architecture the patches were selected against, worth a line of its own now
             // that a patch can declare itself unavailable for the one the input carries. Read
@@ -352,18 +357,23 @@ class PatcherWorker(
                 "$LOG_WORKER_PREFIX_DEVICE " +
                         "$LOG_WORKER_FIELD_ANDROID=${Build.VERSION.RELEASE} " +
                         "$LOG_WORKER_FIELD_API=${Build.VERSION.SDK_INT} " +
-                        "$LOG_WORKER_FIELD_RAM_AVAIL=\"${formatBytes(deviceStats?.ramAvailable ?: 0L)}\" " +
-                        "$LOG_WORKER_FIELD_RAM_TOTAL=\"${formatBytes(deviceStats?.ramTotal ?: 0L)}\" " +
-                        "$LOG_WORKER_FIELD_STORAGE_AVAIL=\"${formatBytes(deviceStats?.storageAvailable ?: 0L)}\" " +
-                        "$LOG_WORKER_FIELD_STORAGE_TOTAL=\"${formatBytes(deviceStats?.storageTotal ?: 0L)}\""
+                        "$LOG_WORKER_FIELD_RAM_AVAIL=\"${formatBytesForReport(deviceStats?.ramAvailable ?: 0L)}\" " +
+                        "$LOG_WORKER_FIELD_RAM_TOTAL=\"${formatBytesForReport(deviceStats?.ramTotal ?: 0L)}\" " +
+                        "$LOG_WORKER_FIELD_STORAGE_AVAIL=\"${formatBytesForReport(deviceStats?.storageAvailable ?: 0L)}\" " +
+                        "$LOG_WORKER_FIELD_STORAGE_TOTAL=\"${formatBytesForReport(deviceStats?.storageTotal ?: 0L)}\""
             )
 
             args.logger.info(
-                "Patching started at ${System.currentTimeMillis()} " +
-                        "pkg=${args.packageName} version=${args.input.version} " +
-                        "input=${inputFile.absolutePath} size=${inputFile.length()} " +
-                        "split=$inputIsSplitArchive arch=$apkArchitecture patches=$selectedCount " +
-                        "device=${Build.MANUFACTURER} model=${Build.MODEL}"
+                "$LOG_WORKER_PREFIX_STARTED ${System.currentTimeMillis()} " +
+                        "$LOG_WORKER_FIELD_PACKAGE=${args.packageName} " +
+                        "$LOG_WORKER_FIELD_VERSION=${args.input.version} " +
+                        "$LOG_WORKER_FIELD_INPUT=${inputFile.absolutePath} " +
+                        "$LOG_WORKER_FIELD_SIZE=${inputFile.length()} " +
+                        "$LOG_WORKER_FIELD_SPLIT=$inputIsSplitArchive " +
+                        "$LOG_WORKER_FIELD_ARCH=$apkArchitecture " +
+                        "$LOG_WORKER_FIELD_PATCHES=$selectedCount " +
+                        "$LOG_WORKER_FIELD_DEVICE=${Build.MANUFACTURER} " +
+                        "$LOG_WORKER_FIELD_MODEL=${Build.MODEL}"
             )
 
             // One line per source rather than a joined list, so a name and its version stay
@@ -377,11 +387,12 @@ class PatcherWorker(
 
             // Log runtime mode info
             if (useProcessRuntime) {
-                val memLimit = prefs.patcherProcessMemoryLimit.get()
+                // The limit the runtime will actually start with, not the raw setting
+                val memLimit = coerceMemoryLimit(applicationContext, prefs.patcherProcessMemoryLimit.get())
                 args.logger.info("$LOG_WORKER_PREFIX_RUNTIME process $LOG_WORKER_FIELD_MEMORY_LIMIT=$memLimit")
             } else {
                 // CoroutineRuntime starts memory polling internally; only log the heap size here
-                args.logger.info("$LOG_PROCESS_PREFIX_COROUTINE_HEAP ${Runtime.getRuntime().maxMemory() / (1024 * 1024)}MB")
+                args.logger.info("$LOG_PROCESS_PREFIX_COROUTINE_HEAP ${bytesToMebibytes(Runtime.getRuntime().maxMemory())}MB")
                 args.logger.info("$LOG_WORKER_PREFIX_RUNTIME coroutine")
             }
 
@@ -392,6 +403,8 @@ class PatcherWorker(
             } else {
                 CoroutineRuntime(applicationContext)
             }
+
+            val options = args.options.restrictTo(args.selectedPatches)
 
             // After merging a split archive (in either runtime), save the resulting mono-APK
             // directly to originalApksDir so it is used for repatching instead of the archive
@@ -414,7 +427,7 @@ class PatcherWorker(
                     patchedApk.absolutePath,
                     args.packageName,
                     args.selectedPatches,
-                    args.options,
+                    options,
                     args.logger,
                     onPatchCompleted,
                     ::updateProgress,
@@ -423,11 +436,15 @@ class PatcherWorker(
                     onRestart
                 )
             } catch (e: Exception) {
-                if (!useProcessRuntime || Build.VERSION.SDK_INT > Build.VERSION_CODES.Q || !isOomRelated(e)) {
-                    throw e
-                }
+                val fallbackReason = when {
+                    !useProcessRuntime -> null
+                    isBlockedSyscall(e) -> "Patcher process was killed for a system call the device forbids"
+                    isOomRelated(e) && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q ->
+                        "Process runtime OOM on Android ${Build.VERSION.RELEASE}"
+                    else -> null
+                } ?: throw e
 
-                args.logger.warn("Process runtime OOM on Android ${Build.VERSION.RELEASE}, falling back to coroutine runtime")
+                args.logger.warn("$fallbackReason, falling back to coroutine runtime")
 
                 // The fallback is a fresh run of the whole pipeline, same as a memory retry
                 onRestart()
@@ -437,7 +454,7 @@ class PatcherWorker(
                     patchedApk.absolutePath,
                     args.packageName,
                     args.selectedPatches,
-                    args.options,
+                    options,
                     args.logger,
                     onPatchCompleted,
                     ::updateProgress,
@@ -449,6 +466,16 @@ class PatcherWorker(
 
             if (stripNativeLibs && !inputIsSplitArchive) {
                 NativeLibStripper.strip(patchedApk, args.logger)
+            }
+
+            if (autoYouTubeArchitecture) {
+                val outputAbis = NativeLibStripper.extractAbisFromApk(patchedApk)
+                val preferred = NativeLibStripper.preferredAbi(outputAbis.toSet(), Build.SUPPORTED_ABIS.toList())
+                check(outputAbis.isEmpty() || (preferred != null && outputAbis.all { it == preferred })) {
+                    "YouTube output architecture ${outputAbis.joinToString()} does not match " +
+                        "this Android system: ${Build.SUPPORTED_ABIS.joinToString()}"
+                }
+                args.logger.info("Automatic YouTube architecture: ${preferred ?: "universal"}")
             }
 
             updatePatcherNotification(stepName = signingApkLabel, patchProgress = null)
@@ -481,17 +508,14 @@ class PatcherWorker(
             val elapsed = System.currentTimeMillis() - startTime
 
             args.logger.info(
-                "$LOG_WORKER_PREFIX_SUCCEEDED output=${args.output} " +
+                "$LOG_WORKER_PREFIX_SUCCEEDED $LOG_WORKER_FIELD_OUTPUT=${args.output} " +
                         "$LOG_WORKER_FIELD_SIZE=${File(args.output).length()} " +
                         "$LOG_WORKER_FIELD_ELAPSED=${elapsed}ms"
             )
 
             Log.i(tag, "Patching succeeded".logFmt())
-            val installerPrimary = prefs.installerPrimary.get()
-            autoInstallPending = prefs.autoInstallWithShizuku.get() &&
-                    (installerPrimary == InstallerPreferenceTokens.SHIZUKU ||
-                            installerPrimary == InstallerPreferenceTokens.SHIZUKU_PLAY_STORE) &&
-                    !prefs.promptInstallerOnInstall.get()
+            val outputPackageName = pm.getPackageInfo(File(args.output))?.packageName ?: args.packageName
+            autoInstallPending = installerManager.autoInstallAllowed(outputPackageName)
             succeeded = true
             Result.success()
         } catch (e: ProcessRuntime.ProcessExitException) {
@@ -556,6 +580,14 @@ class PatcherWorker(
         }
     }
 
+    /**
+     * Whether seccomp killed the patcher process. Firmware can load a vendor library from a
+     * framework class initializer, which only runs where the zygote did not get there first,
+     * so the same run survives in the app's own process.
+     */
+    private fun isBlockedSyscall(e: Exception) =
+        e is ProcessRuntime.ProcessExitException && e.exitCode == ProcessRuntime.SIGSYS_EXIT_CODE
+
     private fun isOomRelated(e: Exception) = when (e) {
         is ProcessRuntime.ProcessExitException ->
             e.exitCode == ProcessRuntime.OOM_EXIT_CODE || e.exitCode == ProcessRuntime.SIGKILL_EXIT_CODE
@@ -579,12 +611,21 @@ class PatcherWorker(
         const val PROCESS_PREVIOUS_LIMIT_KEY = "process_previous_limit"
         const val PROCESS_FAILURE_MESSAGE_KEY = "process_failure_message"
 
+        const val LOG_WORKER_PREFIX_STARTED = "Patching started at"
         const val LOG_WORKER_PREFIX_SUCCEEDED = "Patching succeeded:"
         const val LOG_WORKER_PREFIX_DEVICE = "Device:"
         const val LOG_WORKER_PREFIX_RUNTIME = "Runtime:"
         const val LOG_WORKER_PREFIX_SOURCE = "Source:"
         const val LOG_WORKER_PREFIX_BUILD = "Build:"
 
+        const val LOG_WORKER_FIELD_PACKAGE = "pkg"
+        const val LOG_WORKER_FIELD_INPUT = "input"
+        const val LOG_WORKER_FIELD_SPLIT = "split"
+        const val LOG_WORKER_FIELD_ARCH = "arch"
+        const val LOG_WORKER_FIELD_PATCHES = "patches"
+        const val LOG_WORKER_FIELD_DEVICE = "device"
+        const val LOG_WORKER_FIELD_MODEL = "model"
+        const val LOG_WORKER_FIELD_OUTPUT = "output"
         const val LOG_WORKER_FIELD_NAME = "name"
         const val LOG_WORKER_FIELD_VERSION = "version"
         const val LOG_WORKER_FIELD_MANAGER = "manager"

@@ -19,24 +19,39 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
+import androidx.compose.foundation.selection.triStateToggleable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.morphe.manager.R
+import app.morphe.manager.domain.repository.PatchBundleRepository
+import app.morphe.manager.domain.repository.SourceMuteRepository
+import app.morphe.manager.domain.repository.appsToKeepFrom
 import app.morphe.manager.patcher.patch.PatchInfo
 import app.morphe.manager.ui.model.HomeAppItem
 import app.morphe.manager.ui.screen.shared.*
+import app.morphe.manager.util.toast
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import java.util.Locale
 
 /**
  * Dialog that shows available patches for a specific app.
@@ -87,15 +102,13 @@ fun AppPatchesDialog(
     val selectedBundle = remember { mutableStateOf<Int?>(null) }
     val showFilterSheet = remember { mutableStateOf(false) }
     val collapsedBundles = remember { mutableStateOf(emptySet<Int>()) }
-    val expandedUniversal = rememberUniversalSectionState()
+    val patchSections = rememberPatchSectionState()
+    val patchFolds = patchSections.folds
 
     val filteredPatches = remember(allPatches, searchQuery.value, selectedBundle.value) {
         allPatches.filter { (uid, patch) ->
             val bundleMatch = selectedBundle.value == null || uid == selectedBundle.value
-            val queryMatch = searchQuery.value.isBlank() ||
-                    patch.displayName.contains(searchQuery.value, ignoreCase = true) ||
-                    patch.description?.contains(searchQuery.value, ignoreCase = true) == true
-            bundleMatch && queryMatch
+            bundleMatch && patch.matchesQuery(searchQuery.value)
         }
     }
 
@@ -116,6 +129,20 @@ fun AppPatchesDialog(
         }
         result.map { it.first to it.second.toList() }
     }
+
+    // Every bundle's rows are grouped up front, so the list builder below stays free of the
+    // preference read and the resource lookup that grouping needs
+    val groupingOptions = rememberPatchGroupingOptions()
+    val bundleGroups: List<Pair<Int, List<PatchGroup<PatchInfo>>>> =
+        remember(groupedFilteredPatches, groupingOptions) {
+            groupedFilteredPatches.map { (uid, bundlePatches) ->
+                uid to buildPatchGroups(
+                    patches = bundlePatches,
+                    options = groupingOptions,
+                    infoOf = { patch -> patch }
+                )
+            }
+        }
 
     AppDialog(
         onDismissRequest = onDismiss,
@@ -220,58 +247,39 @@ fun AppPatchesDialog(
                         }
 
                         // Patch cards grouped by bundle
-                        groupedFilteredPatches.forEach { (uid, bundlePatches) ->
+                        bundleGroups.forEach { (uid, groups) ->
                             // Bundle section header (collapsible) - only for multi-bundle
                             if (isMultiBundle) {
                                 item(key = "header_$uid") {
                                     val isCollapsed = uid in collapsedBundles.value
-                                    val expandLabel = stringResource(R.string.expand)
-                                    val collapseLabel = stringResource(R.string.collapse)
-                                    HomeGlassCategoryRow(
+                                    PatchGroupHeader(
                                         title = bundleNames[uid] ?: uid.toString(),
-                                        leading = {
-                                            Icon(
-                                                imageVector = Icons.Outlined.Layers,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(24.dp),
-                                                tint = MaterialTheme.colorScheme.primary
-                                            )
-                                        },
-                                        color = rememberAccentCardColor(bundleAccentColors[uid]),
-                                        trailing = {
-                                            Icon(
-                                                imageVector = if (isCollapsed) Icons.Outlined.ExpandMore else Icons.Outlined.ExpandLess,
-                                                contentDescription = if (isCollapsed) expandLabel else collapseLabel,
-                                                modifier = Modifier.size(24.dp),
-                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        },
-                                        onClick = {
+                                        count = groups.sumOf { it.items.size },
+                                        isExpanded = !isCollapsed,
+                                        onToggle = {
                                             collapsedBundles.value = if (isCollapsed) {
                                                 collapsedBundles.value - uid
                                             } else {
                                                 collapsedBundles.value + uid
                                             }
                                         },
-                                        cornerRadius = Defaults.SettingsCornerRadius,
+                                        icon = Icons.Outlined.Layers,
+                                        accentColor = bundleAccentColors[uid],
                                         modifier = Modifier.animatedListItem(this)
                                     )
                                 }
                             }
 
                             if (uid !in collapsedBundles.value) {
-                                val (specificPatches, universalPatches) = bundlePatches.partition { !it.isUniversal }
-
-                                patchSectionRows(
+                                patchGroupRows(
                                     sectionKey = uid,
-                                    specific = specificPatches,
-                                    universal = universalPatches,
+                                    groups = groups,
                                     key = { patch: PatchInfo ->
                                         "$uid:${patch.name}:${patch.compatiblePackages?.joinToString { it.packageName.orEmpty() }.orEmpty()}"
                                     },
                                     isFiltering = isFiltering,
-                                    isUniversalExpanded = uid in expandedUniversal,
-                                    onUniversalExpandedChange = { expandedUniversal.setExpanded(uid, it) },
+                                    folds = patchFolds,
+                                    onToggle = { group -> patchSections.toggle(uid, group) },
                                     accentColor = bundleAccentColors[uid]
                                 ) { patch ->
                                     PatchItemCard(
@@ -599,6 +607,147 @@ internal fun HiddenAppsDialog(
                 ScrollToTopButton(
                     listState = listState,
                     modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Which sources the selected apps are patched from.
+ *
+ * Asked of the apps rather than of the sources, which is the way round the question comes up: the
+ * user is looking at apps, and several of them usually want the same answer. A source stays on
+ * everywhere else - this only decides whether these apps are offered it.
+ */
+@Composable
+fun AppPatchSourcesDialog(
+    packages: Set<String>,
+    onDismiss: () -> Unit
+) {
+    val patchBundleRepository: PatchBundleRepository = koinInject()
+    val sourceMuteRepository: SourceMuteRepository = koinInject()
+    val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+    val lastSourceMessage = stringResource(R.string.home_app_patch_sources_last)
+
+    val bundleInfo by patchBundleRepository.bundleInfoFlow.collectAsStateWithLifecycle(emptyMap())
+    val sources by patchBundleRepository.sources.collectAsStateWithLifecycle()
+    // Keyed by app, the way every rule below asks the question
+    val keptFrom by sourceMuteRepository.mutedSources.collectAsStateWithLifecycle(emptyMap())
+
+    // Which sources have anything to offer each app. A universal patch names no app, so the source
+    // carrying it reaches every one of them
+    val coveredBy: Map<String, Set<Int>> = remember(bundleInfo, packages) {
+        packages.associateWith { packageName ->
+            bundleInfo.entries.mapNotNullTo(mutableSetOf()) { (uid, info) ->
+                uid.takeIf {
+                    info.patches.any { patch ->
+                        patch.isUniversal ||
+                                patch.compatiblePackages?.any { it.packageName == packageName } == true
+                    }
+                }
+            }
+        }
+    }
+
+    // Read the other way round for the list, and named the way the source list names them
+    val titles = remember(sources) { sources.associate { it.uid to it.displayTitle } }
+    val rows = remember(coveredBy, keptFrom, titles, packages) {
+        coveredBy.values.flatten().distinct()
+            .map { uid ->
+                val reaches = packages.filter { uid in coveredBy[it].orEmpty() }
+                val held = reaches.count { uid in keptFrom[it].orEmpty() }
+                Triple(uid, titles[uid] ?: uid.toString(), held to reaches.size)
+            }
+            .sortedBy { (_, title, _) -> title.lowercase(Locale.ROOT) }
+    }
+
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = pluralStringResource(
+            R.plurals.home_app_patch_sources_title,
+            packages.size,
+            packages.size.toString()
+        ),
+        footer = {
+            AppDialogOutlinedButton(
+                text = stringResource(R.string.close),
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        padding = DialogPadding.Compact,
+        scrollable = false
+    ) {
+        Text(
+            text = stringResource(R.string.home_app_patch_sources_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = LocalDialogSecondaryTextColor.current,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = Defaults.ContentPaddingSmall)
+        )
+
+        val listState = rememberLazyListState()
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall)
+        ) {
+            items(items = rows, key = { (uid, _, _) -> uid }) { (uid, title, counts) ->
+                val (held, reaches) = counts
+                val state = when (held) {
+                    0 -> ToggleableState.On
+                    reaches -> ToggleableState.Off
+                    else -> ToggleableState.Indeterminate
+                }
+
+                RadioSelectionCard(
+                    selected = state == ToggleableState.On,
+                    onSelect = {
+                        scope.launch {
+                            // Anything but "offered to all of them" is answered by offering it to
+                            // all of them, so one tap always has a result the row can show
+                            if (state == ToggleableState.On) {
+                                val reached = appsToKeepFrom(uid, packages, coveredBy, keptFrom)
+                                // Refusing to leave an app with nothing to patch from would
+                                // otherwise read as a checkbox that does nothing
+                                if (reached.isEmpty()) {
+                                    context.toast(lastSourceMessage)
+                                }
+                                reached.forEach { sourceMuteRepository.mute(it, uid) }
+                            } else {
+                                packages.forEach { sourceMuteRepository.unmute(it, uid) }
+                            }
+                        }
+                    },
+                    title = title,
+                    // Two things the box alone cannot say: that the selected apps disagree, and
+                    // that a source only has patches for some of them, which is what decides how
+                    // far a tap on it reaches
+                    description = when {
+                        state == ToggleableState.Indeterminate -> stringResource(
+                            R.string.home_app_patch_sources_mixed,
+                            (reaches - held).toString(),
+                            reaches.toString()
+                        )
+
+                        reaches < packages.size -> stringResource(
+                            R.string.home_app_patch_sources_covers,
+                            reaches.toString(),
+                            packages.size.toString()
+                        )
+
+                        else -> null
+                    },
+                    role = Role.Checkbox,
+                    leadingContent = { SelectionCheckIndicator(state) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animatedListItem(this)
                 )
             }
         }

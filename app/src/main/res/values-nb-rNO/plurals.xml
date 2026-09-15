@@ -8,6 +8,18 @@
         <item quantity="one">%s patch-alternativ</item>
         <item quantity="other">%s patch-alternativer</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Patchkilder for %s app</item>
+        <item quantity="other">Patchkilder for %s apper</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s kilde er skjult. Trykk for å vise</item>
+        <item quantity="other">%s kilder er skjult. Trykk for å vise</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s matchende patch</item>
+        <item quantity="other">%s matchende patcher</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s kilde</item>
         <item quantity="other">%s kilder</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Kopierte %s patch fra valgt pakke</item>
         <item quantity="other">Kopierte %s patcher fra valgt pakke</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s kjerne</item>
+        <item quantity="other">%s kjerner</item>
     </plurals>
 </resources>

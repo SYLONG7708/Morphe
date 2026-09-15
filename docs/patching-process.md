@@ -54,15 +54,20 @@ Morphe disables it there.
 
 The slider sets how much memory the patcher process may use, in steps of 128 MB:
 
-- The **minimum is 512 MB**, and the maximum is **1280 MB**.
-- The upper end of the slider adapts to your device, roughly a quarter of its total RAM,
-  so a phone with less memory offers a lower ceiling.
-- Morphe picks a sensible starting value on first launch, no need to touch it unless
-  something goes wrong.
+- The **minimum is 512 MB**, and **1280 MB** is as high as the slider goes on most devices.
+- The upper end adapts to your device, roughly a quarter of its total RAM, so a phone with
+  less memory offers a lower ceiling.
+- 64-bit devices on Android 11 and newer can go **past 1280 MB, up to 2048 MB**, in steps of
+  256 MB. Morphe warns you there: some devices slow to a crawl with a heap that size, and the
+  range exists for apps that carry tens of thousands of classes and will not patch otherwise.
+- Morphe picks a sensible starting value on first launch, below the safe maximum whatever
+  your RAM, no need to touch it unless something goes wrong.
 
 **Higher limits speed up patching on capable devices.** Below 640 MB Morphe warns you that
 larger apps may fail to patch. If a run dies with an out-of-memory error, raise the limit
-first, and if it is already at the top, switch the bytecode mode to Fast.
+first, and if it is already at the top, switch the bytecode mode to Fast. A run the system
+kills is retried with a lower limit, twice at most, since each retry patches the app from
+scratch.
 
 ## Bytecode processing mode
 

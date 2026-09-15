@@ -148,6 +148,7 @@ internal fun HomeAppsFooterBars(
             appActions.onPatchMultiple(selectedAppItems)
             state.exitMultiSelect()
         },
+        onPatchSources = { state.showPatchSourcesDialog = true },
         onCancel = { state.exitMultiSelect() },
         onEnterReorder = {
             groupedSelectionPackages?.let { pkgs ->

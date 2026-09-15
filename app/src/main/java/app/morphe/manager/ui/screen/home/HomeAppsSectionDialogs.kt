@@ -72,6 +72,18 @@ internal fun HomeAppsSectionDialogs(
         }
     }
 
+    if (state.showPatchSourcesDialog) {
+        AppPatchSourcesDialog(
+            packages = state.selectedPackages.keys.toSet(),
+            // Every tap inside has already been applied, so closing is the end of the task rather
+            // than a step back into picking apps for it
+            onDismiss = {
+                state.showPatchSourcesDialog = false
+                state.exitMultiSelect()
+            }
+        )
+    }
+
     if (state.showMoveCategoryDialog) {
         MoveToCategoryDialog(
             categories = apps.categoryState.categories,

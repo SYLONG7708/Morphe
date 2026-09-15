@@ -8,6 +8,18 @@
         <item quantity="one">%s verandering opsie</item>
         <item quantity="other">%s verandering opsies</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Patch-bronne vir %s toep</item>
+        <item quantity="other">Patch-bronne vir %s toeps</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s bron is versteek. Tik om te wys</item>
+        <item quantity="other">%s bronne is versteek. Tik om te wys</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s ooreenstemmende patch</item>
+        <item quantity="other">%s ooreenstemmende patches</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s oorsprong</item>
         <item quantity="other">%s oorspronge</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">%s patch van geselekteerde bundel gekopieer</item>
         <item quantity="other">%s patches van geselekteerde bundel gekopieer</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s kern</item>
+        <item quantity="other">%s kerne</item>
     </plurals>
 </resources>

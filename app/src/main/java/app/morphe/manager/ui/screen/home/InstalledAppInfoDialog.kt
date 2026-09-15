@@ -31,18 +31,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.morphe.manager.R
 import app.morphe.manager.data.room.apps.installed.*
+import app.morphe.manager.domain.bundles.AppVersionStatus
 import app.morphe.manager.domain.bundles.RemotePatchBundle
+import app.morphe.manager.domain.bundles.versionStatus
 import app.morphe.manager.patcher.patch.PatchInfo
 import app.morphe.manager.patcher.util.NativeLibStripper
 import app.morphe.manager.ui.screen.settings.system.InstallerSelectionDialog
@@ -122,10 +131,43 @@ fun InstalledAppInfoDialog(
     val appUpdates by homeViewModel.appUpdatesAvailable.collectAsStateWithLifecycle()
     val appUpdate = appUpdates[packageName]
     val hasUpdate = appUpdate != null
-    val showsUpdateBanner = hasUpdate &&
-            !viewModel.isAppDeleted &&
+    // What the install itself is in speaks louder than what is pending for it, so a record in one
+    // of those states is described by that rather than by the work waiting on it
+    val isSettledInstall = !viewModel.isAppDeleted &&
             !viewModel.isInstallStateNotPatched &&
             !viewModel.isInstallStateUnknown
+    val patchUpdatePending = hasUpdate && isSettledInstall
+
+    // Where the install stands against the newest version the enabled sources cover. Keyed by the
+    // package the sources know it as, which is the original one for a build that was renamed.
+    val catalogPackageName = installedApp?.originalPackageName ?: packageName
+    val supportedVersions by homeViewModel.recommendedVersionsFlow.collectAsStateWithLifecycle()
+    val ignoredVersions by homeViewModel.ignoredAppVersions.collectAsStateWithLifecycle()
+    val supportedVersion = supportedVersions[catalogPackageName]
+    val ignoredVersion = ignoredVersions[catalogPackageName]
+    val installedVersionStatus = remember(supportedVersion, ignoredVersion, appInfo, installedApp) {
+        versionStatus(
+            installedVersion = appInfo?.versionName ?: installedApp?.version,
+            supported = supportedVersion,
+            ignoredVersion = ignoredVersion
+        )
+    }
+    val versionBehind = installedVersionStatus?.takeIf { it.isBehind && isSettledInstall }
+    // An install past everything the sources cover is regularly one the app updated itself out
+    // from under, which is the record the unpatched banner is already about
+    val versionAhead = installedVersionStatus?.takeIf { !it.isBehind && !viewModel.isAppDeleted }
+    // Both reasons to rebuild are answered by one banner, which then carries the patch button
+    // the actions below would otherwise repeat
+    val showsRebuildBanner = patchUpdatePending || versionBehind != null
+    // Spent on the version it names, so the banner comes back for whatever the sources support next
+    val onIgnoreVersion = versionBehind?.let { status ->
+        { homeViewModel.ignoreSupportedVersion(catalogPackageName, status.supportedVersion) }
+    }
+    // Offered only while the turned-down version is still the one on offer, since a newer one
+    // brings the banner back on its own and leaves nothing to undo
+    val onStopIgnoringVersion = ignoredVersion
+        ?.takeIf { it == supportedVersion?.version }
+        ?.let { { homeViewModel.stopIgnoringSupportedVersion(catalogPackageName) } }
 
     // Accent color resolution order: bundle metadata (appIconColor) -> KnownApps.brandColor -> default.
     // originalPackageName needed because metadata is keyed by original pkg, not patched.
@@ -454,10 +496,10 @@ fun InstalledAppInfoDialog(
                                         availablePatches = availablePatches,
                                         isInstalling = isInstalling,
                                         mountOperation = mountOperation,
-                                        showsUpdateBanner = showsUpdateBanner,
+                                        patchOfferedAbove = showsRebuildBanner,
                                         accentColor = infoAccentColor,
                                         onPatchClick = { handlePatchClick() },
-                                            onUninstall = { showUninstallConfirm.value = true },
+                                        onUninstall = { showUninstallConfirm.value = true },
                                         onDelete = { showDeleteDialog.value = true },
                                         onExport = { exportSavedLauncher.launch(exportFileName) },
                                         onShowMountWarning = { action ->
@@ -515,12 +557,15 @@ fun InstalledAppInfoDialog(
                         item(key = "banners") {
                             InstalledAppBanners(
                                 viewModel = viewModel,
-                                showsUpdateBanner = showsUpdateBanner,
+                                showsRebuildBanner = showsRebuildBanner,
+                                versionBehind = versionBehind,
+                                versionAhead = versionAhead,
                                 entered = entered.value,
                                 staggerIndex = 2,
                                 accentColor = infoAccentColor,
                                 onPatch = { onTriggerPatchFlow(installedApp.originalPackageName, installedApp.trackingKey) },
                                 onShowUpdateChangelog = onShowUpdateChangelog,
+                                onIgnoreVersion = onIgnoreVersion,
                                 modifier = Modifier.padding(horizontal = Defaults.ContentPadding)
                             )
                         }
@@ -528,6 +573,8 @@ fun InstalledAppInfoDialog(
                             StaggeredItem(entered = entered.value, index = 4) {
                                 InfoSection(
                                     installedApp = installedApp,
+                                    supportedVersion = supportedVersion?.version,
+                                    onStopIgnoringVersion = onStopIgnoringVersion,
                                     appliedPatches = appliedPatches,
                                     bundlesUsedSummary = bundlesUsedSummary,
                                     onShowPatches = { showAppliedPatchesDialog.value = true },
@@ -567,12 +614,15 @@ fun InstalledAppInfoDialog(
                         item(key = "banner") {
                             InstalledAppBanners(
                                 viewModel = viewModel,
-                                showsUpdateBanner = showsUpdateBanner,
+                                showsRebuildBanner = showsRebuildBanner,
+                                versionBehind = versionBehind,
+                                versionAhead = versionAhead,
                                 entered = entered.value,
                                 staggerIndex = 1,
                                 accentColor = infoAccentColor,
                                 onPatch = { onTriggerPatchFlow(installedApp.originalPackageName, installedApp.trackingKey) },
                                 onShowUpdateChangelog = onShowUpdateChangelog,
+                                onIgnoreVersion = onIgnoreVersion,
                                 bannerModifier = Modifier.padding(horizontal = Defaults.ContentPadding),
                                 spaceAboveEachBanner = true
                             )
@@ -585,6 +635,8 @@ fun InstalledAppInfoDialog(
                                 StaggeredItem(entered = entered.value, index = infoIdx) {
                                     InfoSection(
                                         installedApp = installedApp,
+                                        supportedVersion = supportedVersion?.version,
+                                        onStopIgnoringVersion = onStopIgnoringVersion,
                                         appliedPatches = appliedPatches,
                                         bundlesUsedSummary = bundlesUsedSummary,
                                         onShowPatches = { showAppliedPatchesDialog.value = true },
@@ -606,7 +658,7 @@ fun InstalledAppInfoDialog(
                                     availablePatches = availablePatches,
                                     isInstalling = isInstalling,
                                     mountOperation = mountOperation,
-                                    showsUpdateBanner = showsUpdateBanner,
+                                    patchOfferedAbove = showsRebuildBanner,
                                     accentColor = infoAccentColor,
                                     onPatchClick = { handlePatchClick() },
                                     onUninstall = { showUninstallConfirm.value = true },
@@ -671,12 +723,15 @@ private fun Color.accentContentColor(alpha: Float): Color =
 @Composable
 private fun InstalledAppBanners(
     viewModel: InstalledAppInfoViewModel,
-    showsUpdateBanner: Boolean,
+    showsRebuildBanner: Boolean,
+    versionBehind: AppVersionStatus?,
+    versionAhead: AppVersionStatus?,
     entered: Boolean,
     staggerIndex: Int,
     accentColor: Color,
     onPatch: () -> Unit,
     onShowUpdateChangelog: (() -> Unit)?,
+    onIgnoreVersion: (() -> Unit)?,
     modifier: Modifier = Modifier,
     bannerModifier: Modifier = Modifier,
     spaceAboveEachBanner: Boolean = false
@@ -718,6 +773,9 @@ private fun InstalledAppBanners(
                 buttonIcon = Icons.Outlined.AutoFixHigh,
                 onClick = onPatch,
                 accentColor = accentColor,
+                // The version the app moved to and the one it can be rebuilt at, which is what
+                // patching this record again turns on
+                versions = versionAhead?.versions,
                 modifier = bannerModifier
             )
         }
@@ -734,28 +792,46 @@ private fun InstalledAppBanners(
                 modifier = bannerModifier
             )
         }
+        // Newer patches and a newer supported app version are both answered by rebuilding the
+        // app, so they share a banner rather than stacking two with the same button
         BannerSlot(
-            visible = showsUpdateBanner,
+            visible = showsRebuildBanner,
             entered = entered,
             staggerIndex = staggerIndex,
             spaceAbove = spaceAboveEachBanner
         ) {
             WarningBanner(
                 icon = Icons.Outlined.Update,
-                title = stringResource(R.string.home_app_info_patch_update_available),
-                description = stringResource(R.string.home_app_info_patch_update_available_description),
+                title = stringResource(
+                    if (versionBehind != null) R.string.home_app_info_app_update_available
+                    else R.string.home_app_info_patch_update_available
+                ),
+                description = stringResource(
+                    if (versionBehind != null) R.string.home_app_info_app_update_available_description
+                    else R.string.home_app_info_patch_update_available_description
+                ),
+                versions = versionBehind?.versions,
                 buttonText = stringResource(R.string.patch),
                 buttonIcon = Icons.Outlined.AutoFixHigh,
                 onClick = onPatch,
                 accentColor = accentColor,
                 isError = false,
-                secondaryAction = onShowUpdateChangelog?.let {
-                    ActionItem(
-                        text = stringResource(R.string.whats_new),
-                        icon = Icons.Outlined.History,
-                        onClick = it
-                    )
-                },
+                secondaryActions = listOfNotNull(
+                    onShowUpdateChangelog?.let {
+                        ActionItem(
+                            text = stringResource(R.string.whats_new),
+                            icon = Icons.Outlined.History,
+                            onClick = it
+                        )
+                    },
+                    onIgnoreVersion?.let {
+                        ActionItem(
+                            text = stringResource(R.string.ignore),
+                            icon = Icons.Outlined.VisibilityOff,
+                            onClick = it
+                        )
+                    }
+                ),
                 modifier = bannerModifier
             )
         }
@@ -783,8 +859,42 @@ private fun BannerSlot(
     }
 }
 
+/** The two versions a status stands between, in the order a banner prints them. */
+private val AppVersionStatus.versions: Pair<String, String>
+    get() = installedVersion.withVersionPrefix() to supportedVersion.withVersionPrefix()
+
+/**
+ * The move a banner is offering, from the version installed to the one it would end up on. The
+ * banner's own wording says which is which, so the line is unlabeled and read out labeled instead.
+ */
+@Composable
+private fun VersionTransition(
+    versions: Pair<String, String>,
+    contentColor: Color,
+    modifier: Modifier = Modifier
+) {
+    val (from, to) = versions
+    // Points the way the language runs, so the move reads forwards in Arabic and Hebrew too
+    val arrow = if (LocalLayoutDirection.current == LayoutDirection.Rtl) "←" else "→"
+    val readOut = stringResource(R.string.home_app_info_version_move, from, to)
+
+    Text(
+        text = buildAnnotatedString {
+            withStyle(SpanStyle(color = contentColor.copy(alpha = 0.75f))) { append(from) }
+            withStyle(SpanStyle(color = contentColor.copy(alpha = 0.5f))) { append("  $arrow  ") }
+            withStyle(SpanStyle(color = contentColor, fontWeight = FontWeight.Medium)) { append(to) }
+        },
+        style = MaterialTheme.typography.bodySmall,
+        textAlign = TextAlign.Center,
+        modifier = modifier.semantics { contentDescription = readOut }
+    )
+}
+
 /**
  * Unified banner component for warnings and updates.
+ *
+ * [versions] is the move being offered, from the version installed to the one it would end up on,
+ * printed under the description as one line.
  */
 @Composable
 private fun WarningBanner(
@@ -797,7 +907,8 @@ private fun WarningBanner(
     accentColor: Color,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
-    secondaryAction: ActionItem? = null
+    versions: Pair<String, String>? = null,
+    secondaryActions: List<ActionItem> = emptyList()
 ) {
     val baseColor = if (isError) MaterialTheme.colorScheme.error else accentColor
     val containerColor = if (baseColor.isExtremeAccent()) MaterialTheme.colorScheme.surfaceVariant else baseColor.copy(alpha = 0.15f)
@@ -846,6 +957,8 @@ private fun WarningBanner(
             textAlign = TextAlign.Center
         )
 
+        versions?.let { VersionTransition(versions = it, contentColor = contentColor) }
+
         // Action button
         PrimaryActionButton(
             action = ActionItem(text = buttonText, icon = buttonIcon, onClick = onClick),
@@ -854,12 +967,21 @@ private fun WarningBanner(
             modifier = Modifier.fillMaxWidth()
         )
 
-        secondaryAction?.let {
-            TileActionButton(
-                action = it,
-                horizontal = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+        // Side by side, because the banner's own button is the one meant to stand out and a
+        // column of full-width buttons under it reads as three offers of equal weight
+        if (secondaryActions.isNotEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall)
+            ) {
+                secondaryActions.forEach { action ->
+                    TileActionButton(
+                        action = action,
+                        horizontal = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
         }
     }
 }
@@ -1101,6 +1223,8 @@ private fun StaggeredItem(
 @Composable
 private fun InfoSection(
     installedApp: InstalledApp,
+    supportedVersion: String?,
+    onStopIgnoringVersion: (() -> Unit)?,
     appliedPatches: Map<Int, Set<String>>?,
     bundlesUsedSummary: String,
     onShowPatches: () -> Unit,
@@ -1120,7 +1244,7 @@ private fun InfoSection(
                 info.applicationInfo?.sourceDir ?: return@remember null
             ).length()
 
-            formatBytes(bytes)
+            context.formatBytes(bytes)
         } catch (_: Exception) { null }
     }
 
@@ -1152,6 +1276,31 @@ private fun InfoSection(
                     label = stringResource(R.string.home_app_info_original_package_name),
                     value = installedApp.originalPackageName
                 )
+            }
+
+            // Kept in place even while a banner above says the same thing, so the version the
+            // sources cover can be looked up rather than only met as a warning. A version that
+            // was turned down is where the offer is taken back up again
+            if (supportedVersion != null) {
+                SettingsDivider()
+                val supportedVersionLabel = stringResource(R.string.home_app_info_newest_supported_version)
+                if (onStopIgnoringVersion != null) {
+                    InfoRowWithAction(
+                        icon = Icons.Outlined.VisibilityOff,
+                        label = supportedVersionLabel,
+                        value = supportedVersion.withVersionPrefix(),
+                        accentColor = accentColor,
+                        onAction = onStopIgnoringVersion,
+                        actionIcon = Icons.Outlined.Visibility,
+                        actionContentDescription = stringResource(R.string.stop_ignoring)
+                    )
+                } else {
+                    InfoRow(
+                        icon = Icons.Outlined.Update,
+                        label = supportedVersionLabel,
+                        value = supportedVersion.withVersionPrefix()
+                    )
+                }
             }
 
             if (apkSize != null) {
@@ -1240,6 +1389,8 @@ private fun InfoRowWithAction(
     value: String,
     accentColor: Color,
     onAction: () -> Unit,
+    actionIcon: ImageVector = Icons.AutoMirrored.Outlined.List,
+    actionContentDescription: String = stringResource(R.string.view),
 ) {
     Row(
         modifier = Modifier
@@ -1272,8 +1423,8 @@ private fun InfoRowWithAction(
         }
         ActionPillButton(
             onClick = onAction,
-            icon = Icons.AutoMirrored.Outlined.List,
-            contentDescription = stringResource(R.string.view),
+            icon = actionIcon,
+            contentDescription = actionContentDescription,
             colors = IconButtonDefaults.filledTonalIconButtonColors(
                 containerColor = accentColor.copy(alpha = 0.18f),
                 contentColor = accentColor.accentContentColor(0.18f)
@@ -1290,7 +1441,7 @@ private fun ActionsSection(
     availablePatches: Int,
     isInstalling: Boolean,
     mountOperation: InstallViewModel.MountOperation?,
-    showsUpdateBanner: Boolean,
+    patchOfferedAbove: Boolean,
     accentColor: Color,
     onPatchClick: () -> Unit,
     onUninstall: () -> Unit,
@@ -1307,7 +1458,7 @@ private fun ActionsSection(
 
     // Primary actions - Single Patch button that triggers APK selection dialog
     // The dialog will show "Use saved APK" option if original APK exists
-    if (!showsUpdateBanner && !viewModel.isAppDeleted) {
+    if (!patchOfferedAbove && !viewModel.isAppDeleted) {
         primaryActions.add(
             ActionItem(
                 text = stringResource(R.string.patch),
@@ -1688,7 +1839,9 @@ private fun MountWarningDialog(
         Text(
             text = stringResource(R.string.installer_mount_warning_install),
             style = MaterialTheme.typography.bodyLarge,
-            color = LocalDialogSecondaryTextColor.current
+            color = LocalDialogSecondaryTextColor.current,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

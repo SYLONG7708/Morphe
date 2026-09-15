@@ -8,6 +8,18 @@
         <item quantity="one">%s tilläggsalternativ</item>
         <item quantity="other">%s tilläggsalternativ</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Patchkällor för %s app</item>
+        <item quantity="other">Patchkällor för %s appar</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s källa dold. Tryck för att visa</item>
+        <item quantity="other">%s källor dolda. Tryck för att visa</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s matchande tillägg</item>
+        <item quantity="other">%s matchande tillägg</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s källa</item>
         <item quantity="other">%s källor</item>
@@ -41,12 +53,12 @@
         <item quantity="other">Avinstallera %s appar?</item>
     </plurals>
     <plurals name="batch_patch_ready_count">
-        <item quantity="one">%s app redo att modifieras</item>
-        <item quantity="other">%s appar redo att modifieras</item>
+        <item quantity="one">%s app är redo att modifieras</item>
+        <item quantity="other">%s appar är redo att modifieras</item>
     </plurals>
     <plurals name="repatch_available_count">
-        <item quantity="one">%s app kan lappas om</item>
-        <item quantity="other">%s appar kan lappas om</item>
+        <item quantity="one">%s app kan modifieras igen</item>
+        <item quantity="other">%s appar kan modifieras igen</item>
     </plurals>
     <plurals name="batch_skipped_summary">
         <item quantity="one">Hoppade över %s app</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Kopierade %s tillägg från det valda paketet</item>
         <item quantity="other">Kopierade %s tillägg från det valda paketet</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s kärna</item>
+        <item quantity="other">%s kärnor</item>
     </plurals>
 </resources>

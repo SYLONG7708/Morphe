@@ -126,6 +126,14 @@ class HomeAppButtonPreferences(context: Context) {
     private val _expandedSourceGroups = MutableStateFlow(loadExpandedSourceGroups())
     val expandedSourceGroups: StateFlow<Set<Int>> = _expandedSourceGroups.asStateFlow()
 
+    /**
+     * The supported version each app was told to stop offering, keyed by the package the sources
+     * know it as. Only the one version is held, so a user staying on an older build is left alone
+     * until the sources move past what was turned down.
+     */
+    private val _ignoredVersions = MutableStateFlow(loadIgnoredVersions())
+    val ignoredVersions: StateFlow<Map<String, String>> = _ignoredVersions.asStateFlow()
+
     private fun loadHiddenPackages(): Set<String> {
         return prefs.getStringSet(KEY_HIDDEN, null) ?: emptySet()
     }
@@ -145,6 +153,18 @@ class HomeAppButtonPreferences(context: Context) {
                     .filter { it.isNotBlank() }
                     .distinct()
                 if (packageNames.isEmpty()) null else uid to packageNames
+            }
+            .toMap()
+    }
+
+    private fun loadIgnoredVersions(): Map<String, String> {
+        val raw = prefs.getString(KEY_IGNORED_VERSIONS, null) ?: return emptyMap()
+        return raw.lineSequence()
+            .mapNotNull { line ->
+                val parts = line.split(CATEGORY_SEPARATOR)
+                val packageName = parts.getOrNull(0)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                val version = parts.getOrNull(1)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                packageName to version
             }
             .toMap()
     }
@@ -169,6 +189,30 @@ class HomeAppButtonPreferences(context: Context) {
         val current = _hiddenPackages.value.toMutableSet()
         current.remove(packageName)
         saveHiddenPackages(current)
+    }
+
+    /** Stops [packageName] being offered at [version]. A later version is offered as usual. */
+    fun ignoreVersion(packageName: String, version: String) {
+        saveIgnoredVersions(
+            _ignoredVersions.value + (packageName.sanitizePersistedField() to version.sanitizePersistedField())
+        )
+    }
+
+    /** Takes [packageName] off the ignore list, so whatever the sources support is offered again. */
+    fun stopIgnoringVersion(packageName: String) {
+        saveIgnoredVersions(_ignoredVersions.value - packageName)
+    }
+
+    private fun saveIgnoredVersions(versions: Map<String, String>) {
+        prefs.edit {
+            putString(
+                KEY_IGNORED_VERSIONS,
+                versions.entries.joinToString("\n") { (packageName, version) ->
+                    "$packageName$CATEGORY_SEPARATOR$version"
+                }
+            )
+        }
+        _ignoredVersions.value = versions
     }
 
     fun saveOrder(packageNames: List<String>) {
@@ -521,6 +565,7 @@ class HomeAppButtonPreferences(context: Context) {
         private const val KEY_SHOW_SORT_BUTTON = "show_sort_button"
         private const val KEY_EXPANDED_SOURCE_GROUPS = "expanded_source_groups"
         private const val KEY_UNCATEGORIZED_COLLAPSED = "uncategorized_collapsed"
+        private const val KEY_IGNORED_VERSIONS = "ignored_versions"
         private const val CATEGORY_SEPARATOR = "\t"
     }
 }

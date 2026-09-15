@@ -1,8 +1,13 @@
 package app.morphe.manager.network.api
 
 import android.util.Log
+import android.os.Build
 import app.morphe.manager.BuildConfig
 import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.domain.update.SignedUpdateManifestRepository
+import app.morphe.manager.domain.update.DeviceProfile
+import app.morphe.manager.domain.update.resolveManagerArtifact
+import kotlinx.coroutines.CancellationException
 import app.morphe.manager.network.dto.*
 import app.morphe.manager.network.service.HttpService
 import app.morphe.manager.network.utils.APIFailure
@@ -74,7 +79,8 @@ internal fun parseReleaseAssetUrl(downloadUrl: String): ReleaseAssetRef? {
  */
 class MorpheAPI(
     private val client: HttpService,
-    private val prefs: PreferencesManager
+    private val prefs: PreferencesManager,
+    private val signedManifest: SignedUpdateManifestRepository,
 ) {
     /**
      * Parsed GitHub repository coordinates, derived from a github.com or api.github.com URL.
@@ -401,32 +407,28 @@ class MorpheAPI(
      * already announced but still uploading is treated as if it did not exist yet.
      */
     suspend fun getAppUpdate(): MorpheAsset? {
-        val usePrereleases = prefs.useManagerPrereleases.get()
-        val currentWeight = versionWeight(BuildConfig.VERSION_NAME.removePrefix("v"))
-        val branch = if (usePrereleases) "dev" else "main"
-
-        val candidate = if (USE_MANAGER_DIRECT_JSON) {
-            getManagerFromJson(branch).fallbackTo {
-                Log.w(tag, "Manager JSON unavailable, falling back to GitHub API")
-                getManagerFromGitHub()
-            }
-        } else {
-            getManagerFromGitHub()
-        }.getOrNull()
-
-        // Return only if the remote version is strictly newer than what's installed.
-        val update = candidate?.takeIf {
-            versionWeight(it.version.removePrefix("v")) > currentWeight
-        } ?: return null
-
-        // Only a definitive "not there" hides the update: a check that could not run at all
-        // must not keep a real release from being offered
-        if (client.isReachable(update.downloadUrl) == false) {
-            Log.d(tag, "Manager update ${update.version} is announced but its APK is not downloadable yet")
-            return null
+        return try {
+            val manifest = signedManifest.fetch()
+            val artifact = resolveManagerArtifact(
+                manifest.manager.artifacts,
+                DeviceProfile(Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS.toList()),
+                BuildConfig.APPLICATION_ID,
+            ) ?: return null
+            if ((artifact.versionCode ?: return null) <= BuildConfig.VERSION_CODE) return null
+            MorpheAsset(
+                downloadUrl = artifact.url,
+                signatureDownloadUrl = artifact.signatureUrl,
+                pageUrl = "https://github.com/SYLONG7708/Morphe/releases",
+                createdAt = Instant.parse(manifest.publishedAt).toLocalDateTime(TimeZone.UTC),
+                description = "SyMorphe verified update",
+                version = artifact.versionName ?: manifest.manager.version,
+            )
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Log.w(tag, "Signed manager update unavailable; keeping the installed edition", error)
+            null
         }
-
-        return update
     }
 
     /**

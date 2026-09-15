@@ -10,6 +10,21 @@
         <item quantity="few">%s opțiuni de patch</item>
         <item quantity="other">%s de opțiuni de patch</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Surse de patch pentru %s aplicație</item>
+        <item quantity="few">Surse de patch pentru %s aplicații</item>
+        <item quantity="other">Surse de patch pentru %s de aplicații</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s sursă ascunsă. Atingeți pentru a afișa</item>
+        <item quantity="few">%s surse ascunse. Atingeți pentru a afișa</item>
+        <item quantity="other">%s de surse ascunse. Atingeți pentru a afișa</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s patch potrivit</item>
+        <item quantity="few">%s patch-uri potrivite</item>
+        <item quantity="other">%s de patch-uri potrivite</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s sursă</item>
         <item quantity="few">%s surse</item>
@@ -94,5 +109,10 @@
         <item quantity="one">Patch %s copiat din pachetul selectat</item>
         <item quantity="few">Patch-uri %s copiate din pachetul selectat</item>
         <item quantity="other">Patch-uri %s copiate din pachetul selectat</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s nucleu</item>
+        <item quantity="few">%s nuclee</item>
+        <item quantity="other">%s de nuclee</item>
     </plurals>
 </resources>

@@ -168,7 +168,54 @@ fun RenameWarningDialog(
 }
 
 /**
- * Pre-flight dialog shown when one or more patch option paths cannot be read.
+ * Pre-flight dialog shown when the saved selection names patches that no enabled source offers
+ * anymore, such as a patch dropped by an update of its source.
+ *
+ * The run is held rather than quietly narrowed, because which patches an app was built with is
+ * the whole point of a saved selection.
+ */
+@Composable
+fun MissingPatchesDialog(
+    patchNames: List<String>,
+    onContinue: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = stringResource(R.string.patcher_missing_patches_title),
+        padding = DialogPadding.Compact,
+        footer = {
+            AppDialogButtonRow(
+                primaryText = stringResource(R.string.continue_),
+                onPrimaryClick = onContinue,
+                secondaryText = stringResource(android.R.string.cancel),
+                onSecondaryClick = onDismiss
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.patcher_missing_patches_description),
+                style = MaterialTheme.typography.bodyLarge,
+                color = LocalDialogSecondaryTextColor.current,
+                textAlign = TextAlign.Center
+            )
+
+            MonospaceValuePanel(
+                value = patchNames.joinToString("\n"),
+                label = stringResource(R.string.patcher_missing_patches_label),
+                tone = SemanticTone.Warning
+            )
+        }
+    }
+}
+
+/**
+ * Pre-flight dialog shown when one or more patch option paths cannot be used for the run.
  *
  * Android permission models:
  *
@@ -181,15 +228,27 @@ fun RenameWarningDialog(
  *    permission, requested via the system "Allow / Deny" prompt directly from
  *    within the app. If granted, [onRetryAfterPermission] re-runs validation
  *    immediately. If denied, a warning badge is shown and only Cancel is available.
+ *
+ * Storage access is not always what is missing: a folder the user picked earlier can simply be
+ * gone, which [PathValidationResult.Reason] tells apart. Then there is no permission worth asking
+ * for, and [onClearPaths] drops the saved paths instead, where [canClearPaths] allows it.
  */
 @Composable
-fun StoragePermissionDialog(
+fun UnusableOptionPathsDialog(
     failures: List<PathValidationResult>,
     onRetryAfterPermission: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    canClearPaths: Boolean = false,
+    onClearPaths: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val isApi30Plus = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+    // Storage access is worth asking for only while something is actually being kept from the
+    // app. Paths that are merely gone stay gone no matter what the user grants
+    val storageAccessCanHelp = failures.any {
+        it.reason == PathValidationResult.Reason.NotReadable
+    }
 
     // Only used on Android 10 and below where READ_EXTERNAL_STORAGE is a
     // standard runtime permission that can be requested inline
@@ -206,13 +265,29 @@ fun StoragePermissionDialog(
 
     AppDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.patcher_storage_permission_dialog_title),
+        title = stringResource(
+            if (storageAccessCanHelp) {
+                R.string.patcher_storage_permission_dialog_title
+            } else {
+                R.string.patcher_option_paths_gone_title
+            }
+        ),
         footer = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (isApi30Plus) {
+                if (!storageAccessCanHelp) {
+                    // Nothing left to grant, so dropping the paths is the way to go on
+                    if (canClearPaths) {
+                        AppDialogButton(
+                            text = stringResource(R.string.patcher_option_paths_clear),
+                            onClick = onClearPaths,
+                            icon = Icons.Outlined.FolderOff,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                } else if (isApi30Plus) {
                     // Android 11+ open the dedicated all-files-access settings screen
                     AppDialogButton(
                         text = stringResource(R.string.patcher_storage_permission_open_settings),
@@ -244,6 +319,17 @@ fun StoragePermissionDialog(
                     )
                 }
 
+                // A path can be gone while storage access is missing as well, so the way out
+                // is offered below the permission button rather than instead of it
+                if (canClearPaths && storageAccessCanHelp) {
+                    AppDialogOutlinedButton(
+                        text = stringResource(R.string.patcher_option_paths_clear),
+                        onClick = onClearPaths,
+                        icon = Icons.Outlined.FolderOff,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
                 AppDialogOutlinedButton(
                     text = stringResource(android.R.string.cancel),
                     onClick = onDismiss,
@@ -260,10 +346,10 @@ fun StoragePermissionDialog(
         ) {
             Text(
                 text = stringResource(
-                    if (isApi30Plus) {
-                        R.string.patcher_storage_permission_description_api30
-                    } else {
-                        R.string.patcher_storage_permission_description_legacy
+                    when {
+                        !storageAccessCanHelp -> R.string.patcher_option_paths_gone_description
+                        isApi30Plus -> R.string.patcher_storage_permission_description_api30
+                        else -> R.string.patcher_storage_permission_description_legacy
                     }
                 ),
                 style = MaterialTheme.typography.bodyLarge,
@@ -289,17 +375,10 @@ fun StoragePermissionDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 failures.forEach { failure ->
-                    val (patchName, path, isPermissionError) = when (failure) {
-                        is PathValidationResult.Missing ->
-                            Triple(failure.patchName, failure.path, false)
-                        is PathValidationResult.NotReadable ->
-                            Triple(failure.patchName, failure.path, true)
-                    }
-
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         // Patch name label
                         Text(
-                            text = patchName,
+                            text = failure.patchName,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = secondaryColor
@@ -318,7 +397,7 @@ fun StoragePermissionDialog(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
                                 Text(
-                                    text = path,
+                                    text = failure.path,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontFamily = FontFamily.Monospace,
                                     color = MaterialTheme.colorScheme.error,
@@ -329,10 +408,11 @@ fun StoragePermissionDialog(
 
                                 StatusBadge(
                                     text = stringResource(
-                                        if (isPermissionError) {
-                                            R.string.patcher_storage_badge_denied
-                                        } else {
-                                            R.string.patcher_storage_badge_missing
+                                        when (failure.reason) {
+                                            PathValidationResult.Reason.NotReadable ->
+                                                R.string.patcher_storage_badge_denied
+                                            PathValidationResult.Reason.Missing ->
+                                                R.string.patcher_storage_badge_missing
                                         }
                                     ),
                                     tone = SemanticTone.Error
@@ -344,11 +424,13 @@ fun StoragePermissionDialog(
             }
 
             // Show hint so user knows the workaround even if they dismiss
-            Notice(
-                text = stringResource(R.string.patcher_storage_permission_hint),
-                tone = SemanticTone.Warning,
-                icon = Icons.Outlined.FolderOff
-            )
+            if (storageAccessCanHelp) {
+                Notice(
+                    text = stringResource(R.string.patcher_storage_permission_hint),
+                    tone = SemanticTone.Warning,
+                    icon = Icons.Outlined.FolderOff
+                )
+            }
         }
     }
 }

@@ -8,6 +8,18 @@
         <item quantity="one">%s пач опция</item>
         <item quantity="other">%s пач опции</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Източници на кръпки за %s приложение</item>
+        <item quantity="other">Източници на кръпки за %s приложения</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s източник е скрит. Докоснете, за да се покаже</item>
+        <item quantity="other">%s източника са скрити. Докоснете, за да се покажат</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s съвпадаща кръпка</item>
+        <item quantity="other">%s съвпадащи кръпки</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s източник</item>
         <item quantity="other">%s източници</item>
@@ -73,7 +85,11 @@
         <item quantity="other">%s избран</item>
     </plurals>
     <plurals name="expert_mode_copy_from_bundle_done">
-        <item quantity="one">Копиран е %s кръпен файл от избрания пакет</item>
-        <item quantity="other">Копирани са %s кръпени файла от избрания пакет</item>
+        <item quantity="one">Копиран е %s пач от избрания пакет</item>
+        <item quantity="other">Копирани са %s пачове от избрания пакет</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s ядро</item>
+        <item quantity="other">%s ядра</item>
     </plurals>
 </resources>
