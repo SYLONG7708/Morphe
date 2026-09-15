@@ -2510,20 +2510,21 @@ class HomeViewModel(
      * currently loaded patch bundle. Returns false so callers can expose the manual fallback.
      */
     private suspend fun downloadAndProcessAutomaticYouTubeSource(): Boolean {
-        val candidates = YouTubeSourceResolver.resolveWithPinnedFallback(
+        val sourceTargets = pendingCompatibleVersions.map { entry ->
+            YouTubeVersionBuild(
+                version = entry.target.version,
+                bundleUid = entry.bundleUid,
+                versionCodes = entry.buildCodes,
+                codesByAbi = entry.target.versionCodes.orEmpty().mapKeys {
+                    YouTubeSourceResolver.abiName(it.key.name)
+                },
+            )
+        }
+        var candidates = YouTubeSourceResolver.resolveWithPinnedFallback(
             deviceAbis = Build.SUPPORTED_ABIS.toList(),
             recommendedVersion = pendingRecommendedVersion?.version,
             selectedBundleUid = pendingSelectedBundleUid,
-            compatibleVersions = pendingCompatibleVersions.map { entry ->
-                YouTubeVersionBuild(
-                    version = entry.target.version,
-                    bundleUid = entry.bundleUid,
-                    versionCodes = entry.buildCodes,
-                    codesByAbi = entry.target.versionCodes.orEmpty().mapKeys {
-                        YouTubeSourceResolver.abiName(it.key.name)
-                    },
-                )
-            },
+            compatibleVersions = sourceTargets,
             allowPinnedFallback = isInstalledVersionCompatible(
                 BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION,
                 BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE.toLong(),
@@ -2532,6 +2533,19 @@ class HomeViewModel(
             pinnedVersionCode = BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE,
             pinnedSha256 = BuildConfig.BUNDLED_YOUTUBE_SOURCE_SHA256,
         )
+        if (candidates.isEmpty() && YouTubeSourceResolver.mayDiscoverBuildCodes(
+                pendingRecommendedVersion?.version, pendingSelectedBundleUid, sourceTargets,
+            )) {
+            try {
+                candidates = verifiedYouTubeSourceDownloader.discoverCandidates(
+                    requireNotNull(pendingRecommendedVersion?.version),
+                )
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                Log.w(tag, "AutoPatch: compatible source discovery unavailable", error)
+            }
+        }
         val bundleExpectedSignatures =
             bundleAppMetadataFlow.value[EcosystemUpdateCoordinator.YOUTUBE_PACKAGE]?.signatures
                 .orEmpty()

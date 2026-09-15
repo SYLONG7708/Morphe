@@ -9,14 +9,17 @@ import android.util.Log
 import app.morphe.manager.BuildConfig
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.network.service.HttpService
+import app.morphe.manager.network.utils.getOrThrow
 import app.morphe.manager.patcher.util.NativeLibStripper
 import app.morphe.manager.util.PM
 import app.morphe.manager.util.sha256OrNull
 import com.android.apksig.ApkVerifier
 import io.ktor.client.request.header
 import io.ktor.client.request.url
+import io.ktor.client.plugins.timeout
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.security.MessageDigest
@@ -48,6 +51,15 @@ class VerifiedYouTubeSourceDownloader(
     private val filesystem: Filesystem,
     private val pm: PM,
 ) {
+    suspend fun discoverCandidates(version: String): List<YouTubeDownloadCandidate> {
+        val page = httpService.request<String> {
+            url(YouTubeSourceResolver.discoveryUrl(version))
+            timeout { requestTimeoutMillis = 30_000L }
+            header(HttpHeaders.UserAgent, "SyMorphe/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.SDK_INT})")
+        }.getOrThrow()
+        return YouTubeSourceResolver.candidatesFromPage(version, page)
+    }
+
     suspend fun download(
         candidate: YouTubeDownloadCandidate,
         expectedSignerSha256: Set<String>,
@@ -107,6 +119,7 @@ class VerifiedYouTubeSourceDownloader(
                 }
             }
         } catch (error: Throwable) {
+            if (error is CancellationException) throw error
             Log.e(TAG, "YouTube source download failed", error)
             YouTubeSourceDownloadResult.Failure(
                 reason = error.message ?: error::class.java.simpleName,

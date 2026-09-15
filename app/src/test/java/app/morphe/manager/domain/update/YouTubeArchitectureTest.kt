@@ -76,4 +76,29 @@ class YouTubeArchitectureTest {
             "21.07.247", 0, candidates, listOf("arm64-v8a"),
         ).map { it.versionCode })
     }
+
+    @Test fun `new official versions without build codes can discover a candidate`() {
+        assertTrue(YouTubeSourceResolver.mayDiscoverBuildCodes(
+            "21.13.164", 0, listOf(YouTubeVersionBuild("21.13.164", 0, null)),
+        ))
+        assertFalse(YouTubeSourceResolver.mayDiscoverBuildCodes("21.13.164", 0, listOf(target)))
+        assertFalse(YouTubeSourceResolver.mayDiscoverBuildCodes("21.07.247", 0, listOf(target)))
+        assertFalse(YouTubeSourceResolver.mayDiscoverBuildCodes("21.13.164", 1,
+            listOf(YouTubeVersionBuild("21.13.164", 0, null))))
+    }
+
+    @Test fun `mirror discovery binds the version and APK link before independent signature verification`() {
+        val page = """
+            <a href="https://d.apkpure.net/b/APK/com.google.android.youtube?versionCode=1561063732"
+               title="Download YouTube v21.13.164 for android" class="download" data-dt-version="21.13.164">Download</a>
+            <a href="https://d.apkpure.net/b/APK/com.google.android.youtube?versionCode=999" data-dt-version="21.37.42">Newer</a>
+            <a href="https://d.apkpure.net/b/XAPK/com.google.android.youtube?versionCode=100" data-dt-version="21.13.164">Split</a>
+            <a href="https://evil.example/b/APK/com.google.android.youtube?versionCode=100" data-dt-version="21.13.164">Foreign</a>
+            <a href="https://d.apkpure.net/b/APK/com.other.app?versionCode=100" data-dt-version="21.13.164">Other</a>
+        """.trimIndent()
+        val candidates = YouTubeSourceResolver.candidatesFromPage("21.13.164", page)
+        assertEquals(listOf(1561063732), candidates.map { it.versionCode })
+        assertEquals("21.13.164", candidates.single().version)
+        assertEquals(YouTubeSourceResolver.YOUTUBE_PACKAGE, candidates.single().packageName)
+    }
 }
