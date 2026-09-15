@@ -8,3 +8,7 @@ app/src/main/assets/root/*.sh text eol=lf
 
 # Keep Windows batch wrappers with CRLF endings
 *.bat text eol=crlf
+
+# Public Maven metadata is hashed and must have identical bytes on every runner.
+vendor/m2/**/*.pom text eol=lf
+vendor/m2/**/*.module text eol=lf

@@ -60,8 +60,8 @@ def restore(root: Path = ROOT) -> None:
                 shutil.copyfile(source / "build/libs" / f"{name}-{version}{suffix}",
                                 target / f"{name}-{version}{suffix}")
             for original, suffix in (("pom-default.xml", ".pom"), ("module.json", ".module")):
-                shutil.copyfile(source / "build/publications" / publication / original,
-                                target / f"{name}-{version}{suffix}")
+                metadata = (source / "build/publications" / publication / original).read_bytes()
+                (target / f"{name}-{version}{suffix}").write_bytes(metadata.replace(b"\r\n", b"\n"))
             if not jar.is_file():
                 raise RuntimeError(f"Official {name} build did not publish {jar.name}")
             records[f"{name}:{version}"] = {
