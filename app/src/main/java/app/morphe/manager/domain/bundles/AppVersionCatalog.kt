@@ -154,7 +154,7 @@ class AppVersionCatalog(
         sourceMuteRepository.mutedSources
     ) { bundleInfo, sources, experimentalEnabledUids, mutedSources ->
         val enabledSources = sources.filter { it.enabled }
-        extract(
+        extractAppTargets(
             bundleInfo = bundleInfo,
             bundleNames = enabledSources.associate { it.uid to it.displayTitle },
             enabledBundleUids = enabledSources.map { it.uid }.toSet(),
@@ -183,71 +183,73 @@ class AppVersionCatalog(
     suspend fun recommendedVersion(packageName: String): String? =
         recommendedVersions.first()[packageName]?.version
 
-    private fun extract(
-        bundleInfo: Map<Int, PatchBundleInfo>,
-        bundleNames: Map<Int, String>,
-        enabledBundleUids: Set<Int> = emptySet(),
-        experimentalEnabledUids: Set<String> = emptySet(),
-    ): Map<String, List<BundledAppTarget>> {
-        // packageName → bundleUid → version → AppTarget
-        val targetsByPackage = mutableMapOf<String, MutableMap<Int, MutableMap<String, AppTarget>>>()
-        // packageName → bundleUid → version → build codes (parallel to targetsByPackage)
-        val codesByPackage = mutableMapOf<String, MutableMap<Int, MutableMap<String, Set<Int>>>>()
+}
 
-        bundleInfo.forEach { (bundleUid, info) ->
-            if (enabledBundleUids.isNotEmpty() && bundleUid !in enabledBundleUids) return@forEach
+internal fun extractAppTargets(
+    bundleInfo: Map<Int, PatchBundleInfo>,
+    bundleNames: Map<Int, String>,
+    enabledBundleUids: Set<Int> = emptySet(),
+    experimentalEnabledUids: Set<String> = emptySet(),
+): Map<String, List<BundledAppTarget>> {
+    // packageName → bundleUid → version → AppTarget
+    val targetsByPackage = mutableMapOf<String, MutableMap<Int, MutableMap<String, AppTarget>>>()
+    // packageName → bundleUid → version → build codes (parallel to targetsByPackage)
+    val codesByPackage = mutableMapOf<String, MutableMap<Int, MutableMap<String, Set<Int>>>>()
 
-            info.patches.forEach { patch ->
-                patch.compatiblePackages?.forEach { pkg ->
-                    val packageName = pkg.packageName ?: return@forEach
-                    val bundleMap = targetsByPackage
-                        .getOrPut(packageName) { mutableMapOf() }
-                        .getOrPut(bundleUid) { mutableMapOf() }
-                    val codesMap = codesByPackage
-                        .getOrPut(packageName) { mutableMapOf() }
-                        .getOrPut(bundleUid) { mutableMapOf() }
+    bundleInfo.forEach { (bundleUid, info) ->
+        if (enabledBundleUids.isNotEmpty() && bundleUid !in enabledBundleUids) return@forEach
 
-                    pkg.versions?.forEach { version ->
-                        val isExperimental = pkg.experimentalVersions?.contains(version) == true
-                        // If a version appears in multiple patches of the same bundle, prefer stable
-                        if (version !in bundleMap || !isExperimental) {
-                            bundleMap[version] = AppTarget(
-                                version = version,
-                                isExperimental = isExperimental,
-                                description = pkg.versionDescriptions?.get(version),
-                                minSdk = pkg.versionMinSdks?.get(version),
-                            )
-                            pkg.versionCodes?.get(version)?.takeIf { it.isNotEmpty() }?.let {
-                                codesMap[version] = it.toSet()
-                            }
+        info.patches.forEach { patch ->
+            patch.compatiblePackages?.forEach { pkg ->
+                val packageName = pkg.packageName ?: return@forEach
+                val bundleMap = targetsByPackage
+                    .getOrPut(packageName) { mutableMapOf() }
+                    .getOrPut(bundleUid) { mutableMapOf() }
+                val codesMap = codesByPackage
+                    .getOrPut(packageName) { mutableMapOf() }
+                    .getOrPut(bundleUid) { mutableMapOf() }
+
+                pkg.versions?.forEach { version ->
+                    val isExperimental = pkg.experimentalVersions?.contains(version) == true
+                    // If a version appears in multiple patches of the same bundle, prefer stable
+                    if (version !in bundleMap || !isExperimental) {
+                        bundleMap[version] = AppTarget(
+                            version = version,
+                            versionCodes = pkg.versionCodesByAbi?.get(version),
+                            isExperimental = isExperimental,
+                            description = pkg.versionDescriptions?.get(version),
+                            minSdk = pkg.versionMinSdks?.get(version),
+                        )
+                        pkg.versionCodes?.get(version)?.takeIf { it.isNotEmpty() }?.let {
+                            codesMap[version] = it.toSet()
                         }
                     }
                 }
             }
         }
-
-        // Flatten: bundles ordered by display name, versions newest→oldest within each bundle
-        return targetsByPackage
-            .mapValues { (packageName, byBundle) ->
-                byBundle.entries
-                    .sortedWith(compareBy({ it.key != DEFAULT_SOURCE_UID }, { bundleNames[it.key] ?: "" }))
-                    .flatMap { (uid, versionMap) ->
-                        val codesForBundle = codesByPackage[packageName]?.get(uid)
-                        versionMap.values
-                            .sortedDescending()
-                            .map { target ->
-                                BundledAppTarget(
-                                    target = target,
-                                    bundleUid = uid,
-                                    bundleName = bundleNames[uid] ?: "Bundle $uid",
-                                    buildCodes = target.version?.let { codesForBundle?.get(it) },
-                                    experimentalEnabled = uid.toString() in experimentalEnabledUids
-                                )
-                            }
-                    }
-            }
-            // A package whose patches declare no versions has nothing to offer, and every
-            // consumer below assumes a non-empty list
-            .filterValues { it.isNotEmpty() }
     }
+
+    // Flatten: bundles ordered by display name, versions newest→oldest within each bundle
+    return targetsByPackage
+        .mapValues { (packageName, byBundle) ->
+            byBundle.entries
+                .sortedWith(compareBy({ it.key != DEFAULT_SOURCE_UID }, { bundleNames[it.key] ?: "" }))
+                .flatMap { (uid, versionMap) ->
+                    val codesForBundle = codesByPackage[packageName]?.get(uid)
+                    versionMap.values
+                        .sortedDescending()
+                        .map { target ->
+                            BundledAppTarget(
+                                target = target,
+                                bundleUid = uid,
+                                bundleName = bundleNames[uid] ?: "Bundle $uid",
+                                buildCodes = target.version?.let { codesForBundle?.get(it) },
+                                experimentalEnabled = uid.toString() in experimentalEnabledUids
+                            )
+                        }
+                }
+        }
+        // A package whose patches declare no versions has nothing to offer, and every
+        // consumer below assumes a non-empty list
+        .filterValues { it.isNotEmpty() }
 }

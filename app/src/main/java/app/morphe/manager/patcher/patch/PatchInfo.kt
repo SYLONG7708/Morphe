@@ -83,6 +83,16 @@ data class PatchInfo(
                         .toMap()
                         .toImmutableMap()
                         .takeIf { it.isNotEmpty() },
+                    versionCodesByAbi = compatibility.targets
+                        .mapNotNull { target ->
+                            val version = target.version ?: return@mapNotNull null
+                            val codes = target.versionCodes?.takeIf { it.isNotEmpty() }
+                                ?: return@mapNotNull null
+                            version to codes.toImmutableMap()
+                        }
+                        .toMap()
+                        .toImmutableMap()
+                        .takeIf { it.isNotEmpty() },
                 )
             }
             ?.toImmutableList()
@@ -246,6 +256,8 @@ data class CompatiblePackage(
     val versionMinSdks: ImmutableMap<String, Int>? = null,
     /** Per-version allowed version codes (union of all declared ABI codes). Null means no constraint. */
     val versionCodes: ImmutableMap<String, ImmutableSet<Int>>? = null,
+    /** Original ABI mapping, retained separately from the union used for compatibility checks. */
+    val versionCodesByAbi: ImmutableMap<String, ImmutableMap<SupportedAbi, Int>>? = null,
 )
 
 /** Returns the union of all ABI-specific version codes, or null if none are declared. */

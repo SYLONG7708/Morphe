@@ -1,5 +1,12 @@
 package app.morphe.manager.domain.update
 
+import app.morphe.manager.domain.bundles.extractAppTargets
+import app.morphe.manager.patcher.patch.PatchBundleInfo
+import app.morphe.manager.patcher.patch.PatchInfo
+import app.morphe.patcher.patch.AppTarget
+import app.morphe.patcher.patch.Compatibility
+import app.morphe.patcher.patch.SupportedAbi
+import app.morphe.patcher.patch.bytecodePatch
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -42,5 +49,31 @@ class YouTubeArchitectureTest {
 
     @Test fun `x86 64 name stays compatible with Android spelling`() {
         assertEquals("x86_64", YouTubeSourceResolver.abiName("X86_64"))
+    }
+
+    @Test fun `bundle metadata retains ABI mapping through the catalog and download selection`() {
+        val patch = bytecodePatch(name = "Architecture fixture") {
+            compatibleWith(Compatibility(
+                packageName = YouTubeSourceResolver.YOUTUBE_PACKAGE,
+                name = "YouTube",
+                targets = listOf(AppTarget(
+                    version = "21.07.247",
+                    versionCodes = mapOf(SupportedAbi.ARMEABI_V7A to 101, SupportedAbi.ARM64_V8A to 102),
+                )),
+            ))
+        }
+        val bundle = PatchBundleInfo.Global("Fixture", "1.0", 0, true, listOf(PatchInfo(patch)))
+        val entries = extractAppTargets(mapOf(0 to bundle), mapOf(0 to "Fixture"))
+            .getValue(YouTubeSourceResolver.YOUTUBE_PACKAGE)
+        val candidates = entries.map { entry ->
+            YouTubeVersionBuild(entry.target.version, entry.bundleUid, entry.buildCodes,
+                entry.target.versionCodes.orEmpty().mapKeys { YouTubeSourceResolver.abiName(it.key.name) })
+        }
+        assertEquals(listOf(101), YouTubeSourceResolver.resolve(
+            "21.07.247", 0, candidates, listOf("armeabi-v7a", "armeabi"),
+        ).map { it.versionCode })
+        assertEquals(listOf(102), YouTubeSourceResolver.resolve(
+            "21.07.247", 0, candidates, listOf("arm64-v8a"),
+        ).map { it.versionCode })
     }
 }
