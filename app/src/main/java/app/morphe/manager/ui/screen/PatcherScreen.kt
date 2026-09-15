@@ -6,6 +6,7 @@
 package app.morphe.manager.ui.screen
 
 import android.app.Activity
+import android.os.Build
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.WindowManager
@@ -315,6 +316,39 @@ fun PatcherScreen(
         ActivityResultContracts.CreateDocument(APK_MIMETYPE)
     ) { uri ->
         uri?.let { patcherViewModel.export(it) }
+    }
+    var showExportDestination by rememberSaveable { mutableStateOf(false) }
+    if (showExportDestination) {
+        AppDialog(
+            title = stringResource(R.string.save_apk_destination_title),
+            onDismissRequest = { showExportDestination = false },
+            footer = {
+                TextButton(onClick = { showExportDestination = false }) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        ) {
+            Column {
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        showExportDestination = false
+                        patcherViewModel.exportToDownloads()
+                    },
+                ) {
+                    Text(stringResource(R.string.save_apk_to_downloads))
+                }
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        showExportDestination = false
+                        exportApkLauncher.launch(patcherViewModel.exportFileName)
+                    },
+                ) {
+                    Text(stringResource(R.string.save_apk_choose_location))
+                }
+            }
+        }
     }
 
     // Trigger notification prompt after first successful install
@@ -752,7 +786,11 @@ fun PatcherScreen(
                         onHomeClick = onBackClick,
                         onSaveClick = {
                             if (!isSaving) {
-                                exportApkLauncher.launch(patcherViewModel.exportFileName)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    showExportDestination = true
+                                } else {
+                                    exportApkLauncher.launch(patcherViewModel.exportFileName)
+                                }
                             }
                         },
                         isSaving = isSaving

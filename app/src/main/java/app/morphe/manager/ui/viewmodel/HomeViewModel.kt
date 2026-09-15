@@ -3516,23 +3516,6 @@ class HomeViewModel(
         // This ensures there is never a gap between the info dialog closing and the next screen appearing
         dismissInstalledAppInfo()
 
-        val safePatches = SafeIntegrationProfile.enforceYouTubePatches(
-            sourcePackage = selectedApp.packageName,
-            patches = patches,
-        )
-        val safeOptions = SafeIntegrationProfile.enforceYouTubeOptions(
-            sourcePackage = selectedApp.packageName,
-            patches = safePatches,
-            options = options,
-        )
-        if (safePatches != patches || safeOptions != options) {
-            Log.i(
-                tag,
-                "UIS7870 safe profile: targeting " +
-                    SafeIntegrationProfile.patchedYouTubePackage,
-            )
-        }
-
         showOneTapYouTubeDialog = false
         oneTapHubUiState = oneTapHubUiState.copy(working = false, errorMessage = null)
         automaticYouTubeSourceSelection = false
@@ -3541,8 +3524,8 @@ class HomeViewModel(
         onStartQuickPatch?.invoke(
             QuickPatchParams(
                 selectedApp = selectedApp,
-                patches = safePatches,
-                options = safeOptions,
+                patches = patches,
+                options = options,
                 // Handed over before the state below is cleared, since the run has no other way
                 // to learn which install it was started for
                 targetPackageName = pendingRepatchPackageName

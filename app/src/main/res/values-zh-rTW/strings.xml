@@ -634,6 +634,9 @@
     <string name="launch_app_unverified">Morphe 無法驗證安裝的應用程式是它所修補的版本。</string>
     <string name="uninstall_timeout">解除安裝逾時</string>
     <string name="save_apk_success">APK 已儲存</string>
+    <string name="save_apk_destination_title">儲存 APK</string>
+    <string name="save_apk_to_downloads">儲存至下載資料夾（SyMorphe）</string>
+    <string name="save_apk_choose_location">選擇儲存位置</string>
     <string name="saved_app_export_failed">無法匯出已修補的應用程式</string>
     <string name="saved_app_removed_toast">已移除儲存的已修補應用程式</string>
     <string name="saved_app_launch_unavailable">請先安裝應用程式再開啟</string>

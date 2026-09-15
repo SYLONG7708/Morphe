@@ -45,7 +45,7 @@ class SafeIntegrationProfileTest {
         val result = SafeIntegrationProfile.enforceYouTubeOptions(
             sourcePackage = SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE,
             patches = mapOf(
-                7 to setOf("GmsCore support", "Hide ads"),
+                7 to setOf("GmsCore support", "Hide ads", "Change package name"),
                 9 to setOf("Some patch"),
             ),
             options = options,
@@ -97,9 +97,11 @@ class SafeIntegrationProfileTest {
     @Test
     fun makesPackageNamePatchExplicitForGmsCore() {
         val patches = mapOf(7 to setOf("GmsCore support", "Hide ads"))
+        val available = mapOf(7 to setOf("GmsCore support", "Hide ads", "Change package name"))
         val result = SafeIntegrationProfile.enforceYouTubePatches(
             sourcePackage = SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE,
             patches = patches,
+            availablePatches = available,
         )
 
         assertEquals(
@@ -111,6 +113,7 @@ class SafeIntegrationProfileTest {
             SafeIntegrationProfile.enforceYouTubePatches(
                 sourcePackage = SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE,
                 patches = result,
+                availablePatches = available,
             ),
         )
         assertSame(
@@ -118,6 +121,56 @@ class SafeIntegrationProfileTest {
             SafeIntegrationProfile.enforceYouTubePatches(
                 sourcePackage = "com.example.other",
                 patches = patches,
+                availablePatches = available,
+            ),
+        )
+    }
+
+    @Test
+    fun currentBundleDoesNotInventRemovedPackagePatch() {
+        // Morphe patches 1.43 publishes GmsCore support without the old standalone rename patch.
+        val patches = mapOf(7 to setOf("GmsCore support", "Hide ads"))
+        val result = SafeIntegrationProfile.enforceYouTubePatches(
+            SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE, patches, patches,
+        )
+        assertSame(patches, result)
+        assertEquals(
+            SafeIntegrationProfile.patchedYouTubePackage,
+            SafeIntegrationProfile.expectedPatchedPackage(SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE, result),
+        )
+    }
+
+    @Test
+    fun removesOnlyObsoleteProfileSelectionAndOption() {
+        val result = SafeIntegrationProfile.enforceYouTubePatches(
+            SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE,
+            mapOf(7 to setOf("GmsCore support", "Change package name", "Missing user patch")),
+            mapOf(7 to setOf("GmsCore support")),
+        )
+        assertEquals(setOf("GmsCore support", "Missing user patch"), result.getValue(7))
+        val unrelated = mapOf("User patch" to mapOf("enabled" to true))
+        val options = SafeIntegrationProfile.enforceYouTubeOptions(
+            SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE,
+            result,
+            mapOf(
+                7 to mapOf(
+                    "Change package name" to mapOf("packageName" to "legacy.package"),
+                    "GmsCore support" to mapOf("checkGmsCore" to true),
+                ),
+                9 to unrelated,
+            ),
+        )
+        assertEquals(mapOf("GmsCore support" to mapOf("checkGmsCore" to true)), options.getValue(7))
+        assertEquals(unrelated, options.getValue(9))
+    }
+
+    @Test
+    fun missingBundleMetadataDoesNotSilentlyDropUserSelection() {
+        val patches = mapOf(7 to setOf("GmsCore support", "Change package name"))
+        assertSame(
+            patches,
+            SafeIntegrationProfile.enforceYouTubePatches(
+                SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE, patches, emptyMap(),
             ),
         )
     }
