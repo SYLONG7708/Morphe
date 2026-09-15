@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">لا تطبيقات مخفية</string>
     <string name="home_app_hidden_apps_title">التطبيقات المخفية</string>
     <string name="home_app_hidden_apps_hint">انقر لإظهارها</string>
+    <string name="home_app_patch_sources_description">المصادر التي تُركت غير محددة لا تُقدَّم عند تعديل هذه التطبيقات، وتعديلاتها لا تنضم أبدًا إلى أي تحديد من تلقاء نفسها. يبقى كل مصدر مفعَّلًا لكل تطبيق آخر</string>
+    <string name="home_app_patch_sources_mixed">مقدَّمة إلى %1$s من %2$s</string>
+    <string name="home_app_patch_sources_covers">لديه تعديلات لـ %1$s من %2$s</string>
+    <string name="home_app_patch_sources_last">يحتاج كل تطبيق إلى مصدر واحد متبقٍّ للتعديل منه</string>
     <string name="android_11_bug_dialog_title">خطأ Android 11</string>
     <string name="android_11_bug_dialog_description">يجب منح إذن تثبيت التطبيق مسبقًا لتجنب خطأ في نظام Android 11 سيؤثر سلبًا على تجربة المستخدم</string>
     <string name="deep_link_add_source_title">إضافة مصدر</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">انقر لمراجعة المصادر</string>
     <string name="home_outdated_manager_title">Morphe غير محدّث</string>
     <string name="home_outdated_manager_subtitle">بعض مصادر التعديل تتطلب إصدارًا أحدث</string>
+    <string name="home_held_back_title">مصدر التعديل تسبب في تعطّل Morpe</string>
+    <string name="home_held_back_subtitle">تم تخطيه حتى يتمكن التطبيق من البدء. انقر للمراجعة</string>
     <string name="home_metered_skipped_title">التحديثات متوقفة على بيانات الجوّال</string>
     <string name="home_metered_skipped_subtitle">انقر للسماح بالتحديثات على بيانات الجوّال</string>
     <string name="home_repatch_available_subtitle">انقر لإدراجهم جميعًا في القائمة</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">التحديثات تم تخطيها</string>
     <string name="home_update_skipped_metered_subtitle">بيانات الجوّال نشطة</string>
     <string name="home_updating_sources">جارٍ تحديث المصادر…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s م.ب (%5$d%%)</string>
     <string name="home_update_success">اكتمل تحديث المصادر</string>
     <string name="home_update_success_subtitle">مصادرك محدثة</string>
     <string name="home_sources_are_loading">جارٍ تحميل المصادر، يرجى الانتظار…</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">أبجديًا، من A إلى Z</string>
     <string name="home_app_sort_name_desc_description">عكس أبجدي، من Z إلى A</string>
     <string name="home_app_sort_updates_first">تحديثات التعديل أولًا</string>
-    <string name="home_app_sort_updates_first_description">التطبيقات التي تحتوي على شارات التحديث أولًا، ثم الترتيب الموصى به</string>
+    <string name="home_app_sort_updates_first_description">التطبيقات ذات التعديلات الأحدث أولًا، ثم الترتيب الموصى به</string>
     <string name="home_app_sort_recently_patched">تم تعديلها مؤخرًا</string>
     <string name="home_app_sort_recently_patched_description">التطبيقات التي تم تعديلها مؤخرًا أولًا</string>
     <string name="home_no_apps_title">لا توجد تطبيقات متاحة</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">ليلي ومنتج</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">مصادر التعديل</string>
-    <string name="sources_search">بحث عن المصادر</string>
+    <string name="sources_search">البحث في المصادر والتعديلات</string>
     <string name="sources_sort_title">فرز مصادر التعديل</string>
     <string name="sources_sort_manual">ترتيب يدوي</string>
     <string name="sources_sort_manual_hint">اضغط مطولًا على مصدر لإعادة الترتيب</string>
@@ -127,9 +136,14 @@
     <string name="sources_sort_last_updated_description">آخر تحديثات المصادر أولًا</string>
     <string name="sources_sort_enabled_first">المفعّلة أولًا</string>
     <string name="sources_sort_enabled_first_description">عرض المصادر النشطة قبل المصادر المعطلة</string>
+    <string name="sources_patches_source_disabled_hint">هذا المصدر معطل. تُدرج تعديلاته كمرجع فقط ولا يتم تطبيقها</string>
     <string name="sources_management_open_in_browser">فتح في المتصفح</string>
     <string name="sources_management_report_issue">الإبلاغ عن مشكلة</string>
     <string name="sources_management_failed_to_open_url">فشل في فتح الرابط</string>
+    <string name="sources_hidden_apps">مخفي لـ</string>
+    <string name="sources_hidden_apps_title">تطبيقات مخفية من %1$s</string>
+    <string name="sources_hidden_apps_description">هذه التطبيقات لا تُقدّم هذا المصدر عند تعديلها. يبقى المصدر نفسه مفعلًا لكل شيء آخر</string>
+    <string name="sources_hidden_apps_hint">انقر لتقديم هذا المصدر مرة أخرى</string>
     <string name="sources_management_prerelease_toggle">إصدارات ما قبل الإطلاق</string>
     <string name="sources_management_prerelease_toggle_description">احصل على وصول مبكر إلى إصدارات التعديل التجريبية الجديدة</string>
     <string name="sources_prerelease_warning_title">تمكين إصدارات تعديلات ما قبل الإطلاق؟</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">تعذر تنزيل حزمة التعديل. قد يكون عنوان URL المصدر غير صحيح أو أن الملف غير موجود.</string>
     <string name="sources_management_outdated_manager_badge">تحديث Morphe</string>
     <string name="sources_management_outdated_manager_hint">تم إنشاء هذا المصدر لأداة التعديل %1$s، لكن Morphe %2$s يتضمن أداة التعديل %3$s. قم بتحديث Morphe لاستخدامها</string>
+    <string name="sources_management_held_back_badge">تعطّل</string>
+    <string name="sources_management_held_back_hint">تسبب هذا المصدر في تعطّل Morphe أثناء التحميل، لذا يتم تخطيه. يرجى تحديثه أو إعادة استيراده للمحاولة مرة أخرى</string>
     <string name="sources_management_source_enabled">تم تمكين المصدر</string>
     <string name="sources_management_source_disabled">تم تعطيل المصدر</string>
     <string name="sources_management_source_updating">جارٍ تحديث المصدر</string>
@@ -190,6 +206,7 @@
     <string name="home_apk_availability_recommended_label">موصى به</string>
     <string name="home_apk_availability_unpatched_label">غير معدل</string>
     <string name="home_apk_availability_incompatible_label">غير متوافق</string>
+    <string name="home_apk_availability_installed_version">المثبَّت على هذا الجهاز: %s</string>
     <string name="home_apk_availability_yes">نعم، ساعدني في العثور على ملف APK</string>
     <string name="home_apk_availability_no">لا، لدي ملف APK بالفعل</string>
     <string name="home_apk_helper_download">استخدام تطبيق مساعد</string>
@@ -317,9 +334,11 @@
     <string name="home_outdated_patches_dialog_warning">قد يؤدي التعديل باستخدام تعديلات قديمة إلى حدوث عطل في التطبيق</string>
     <string name="home_outdated_patches_dialog_update_and_patch">تحديث &amp; تعديل</string>
     <string name="home_low_disk_space_dialog_title">مساحة تخزين منخفضة</string>
-    <string name="home_low_disk_space_dialog_message">يتوفر فقط %1$.2f جيجابايت من مساحة التخزين الخالية. تتطلب عملية التعديل مساحة فارغة لا تقل عن %2$.2f جيجابايت لتعمل بشكل صحيح</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">يتوفر فقط %1$s ج.ب من مساحة التخزين الخالية. تتطلب عملية التعديل مساحة فارغة لا تقل عن %2$s ج.ب لتعمل بشكل صحيح</string>
     <string name="home_low_disk_space_dialog_warning">قد تؤدي المتابعة إلى حدوث خطأ \"ملف غير موجود\" أو ملف APK تالف</string>
     <string name="home_simple_bundle_select_title">تحديد مصدر التعديل</string>
+    <string name="home_simple_bundle_select_remember">استخدم هذا المصدر دائمًا لهذا التطبيق</string>
     <!-- Color picker -->
     <string name="custom_color">اللون المخصص</string>
     <string name="hex_color">صيغة اللون</string>
@@ -434,6 +453,10 @@
     <string name="home_app_info_install_type_shizuku_play_store">تثبيت من متجر Play عبر Shizuku</string>
     <string name="home_app_info_patch_update_available">تحديث تعديل متاح</string>
     <string name="home_app_info_patch_update_available_description">إصدار أحدث من التعديلات متاح. اعد تعديل التطبيق للحصول على آخر التحسينات و الإصلاحات</string>
+    <string name="home_app_info_app_update_available">يتوفر تحديث للتطبيق</string>
+    <string name="home_app_info_app_update_available_description">مصادر التعديل تدعم إصدارًا أحدث من هذا التطبيق. قم بتعديله مرة أخرى للانتقال إلى هذا الإصدار</string>
+    <string name="home_app_info_newest_supported_version">أحدث إصدار مدعوم</string>
+    <string name="home_app_info_version_move">المثبَّت %1$s، أحدث إصدار مدعوم %2$s</string>
     <string name="home_app_info_app_deleted_warning">التطبيق غير مثبت</string>
     <string name="home_app_info_app_deleted_description">تم إلغاء تثبيت هذا التطبيق من خارج Morphe. اعد تعديله لاستعادة الوظائف</string>
     <string name="home_app_info_not_patched_description">تم تثبيت إصدار غير معدل من هذا التطبيق. لا يزال Morphe يحتفظ بسجل التعديل السابق</string>
@@ -458,6 +481,9 @@
     <string name="patcher_error_log">سجل الأخطاء</string>
     <string name="patcher_error_technical">التفاصيل التقنية</string>
     <string name="patcher_error_dialog_diagnostics">التشخيص</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">بدأَ التعديل</string>
+    <string name="patcher_card_succeeded">نجح التعديل</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">التطبيق</string>
     <string name="patcher_field_package">الحزمة</string>
@@ -473,6 +499,15 @@
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">الذاكرة</string>
     <string name="patcher_field_storage">التخزين</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">حجم الناتج</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">الوقت</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">متوسط الذاكرة</string>
+    <string name="patcher_field_memory_max">أقصى ذاكرة</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">ذروة التخزين</string>
     <string name="patcher_field_value_unknown">غير معروف</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">مستبعدة</string>
@@ -519,6 +554,13 @@
     <string name="patcher_storage_permission_open_settings">فتح إعدادات التخزين</string>
     <string name="patcher_storage_badge_denied">تم رفض الإذن</string>
     <string name="patcher_storage_badge_missing">غير موجود</string>
+    <string name="batch_patch_option_paths_skipped">ملفات خيارات التعديل مفقودة وسيتم تخطيها: %1$s</string>
+    <string name="patcher_missing_patches_title">بعض التعديلات لم تعد متوفرة</string>
+    <string name="patcher_missing_patches_description">الاختيار المحفوظ لهذا التطبيق يسمّي تعديلات لم يعد أي مصدر مفعّل يوفّرها. سيؤدي الاستمرار إلى تعديل التطبيق بدونها</string>
+    <string name="patcher_missing_patches_label">لم تعد متوفرة</string>
+    <string name="patcher_option_paths_gone_title">ملفات خيارات التعديل مفقودة</string>
+    <string name="patcher_option_paths_gone_description">يشير واحد أو أكثر من خيارات التعديل إلى ملفات لم تعد موجودة. أزل المسارات للتعديل بدونها، أو أعد الملفات إلى مكانها وحاول مرة أخرى</string>
+    <string name="patcher_option_paths_clear">أزل المسارات وتابع</string>
     <string name="patcher_storage_permission_hint">تلميح: نقل الملفات إلى /Android/data/app.morphe.manager/files/ - لا تحتاج إلى أي إذن إضافي</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">جارٍ الإعداد</string>
@@ -566,7 +608,7 @@
     <string name="patcher_message_15">جميع الأنظمة تعمل بشكل طبيعي… مسار التعديل مستقر… 🚀</string>
     <string name="patcher_message_16">استخلاص طاقة إضافية، مثل العصير من ليمونة رقمية… 🍋</string>
     <string name="patcher_message_17">تشجيع التطبيق على قبول ذاته الجديدة والأفضل… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">تغيير وضع التطبيق من غير معدل إلى معدل… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">تطبيقك يعاني من الحمى، والوصفة الطبية الوحيدة هي المزيد من التعديل… 🩺🔔</string>
@@ -574,6 +616,8 @@
     <!-- Expert patcher Screen -->
     <string name="patching_app">تعديل التطبيق</string>
     <string name="memory_usage">استخدام الذاكرة</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s من %2$s م.ب</string>
     <string name="cpu_usage">استخدام المعالج</string>
     <string name="storage_io_usage">قراءة/كتابة التخزين</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -615,6 +659,12 @@
     <string name="mini_game_snake_swipe_to_start">اسحب للبدء</string>
     <string name="mini_game_dino_picker_subtitle">انقر للقفز فوق الصبار</string>
     <string name="mini_game_dino_tap_to_start">انقر للركض</string>
+    <string name="mini_game_blocks_picker_subtitle">طابق الأشكال، امسح الخطوط</string>
+    <string name="mini_game_blocks_tap_to_start">انقر للتدوير، اسحب للتحريك، اسحب لأسفل للإسقاط</string>
+    <string name="mini_game_bricks_picker_subtitle">اجعل الكرة ترتد، امسح الجدار</string>
+    <string name="mini_game_bricks_tap_to_start">اسحب للتصويب، انقر للإطلاق</string>
+    <string name="mini_game_miner_picker_subtitle">انقر للفتح، اضغط مطولًا لوضع علامة</string>
+    <string name="mini_game_pairs_picker_subtitle">اقلب البطاقات، وابحث عن التطابق</string>
     <!-- Settings -->
     <string name="appearance">المظهر</string>
     <string name="advanced">الإعدادات المتقدمة</string>
@@ -668,6 +718,9 @@
     <string name="settings_appearance_greeting_phrases_subtitle">عرض رسالة ترحيب على الشاشة الرئيسية</string>
     <string name="settings_appearance_app_grouping">تجميع التطبيقات</string>
     <string name="settings_appearance_app_grouping_description">عرض مُبدِّل الشاشة الرئيسية لتجميع التطبيقات حسب المصدر أو فئاتك الخاصة، مع الاحتفاظ بالتحديد عند إيقاف تشغيلها</string>
+    <string name="settings_appearance_patch_list">قائمة التعديل</string>
+    <string name="settings_appearance_patch_categories">تجميع حسب الفئة</string>
+    <string name="settings_appearance_patch_categories_description">تصنيف قوائم التعديلات حسب الفئات التي يعلن عنها المصدر، وترك المصادر التي لا تعلن عن أي فئة على شكل قائمة بسيطة</string>
     <string name="settings_appearance_repatch_notice">إشعار إعادة التعديل</string>
     <string name="settings_appearance_repatch_notice_description">عرض لافتة على الشاشة الرئيسية عندما يمكن إعادة تعديل التطبيقات المعدلة</string>
     <string name="settings_appearance_sort_button">زر الفرز والتصفية</string>
@@ -782,6 +835,10 @@
     <string name="settings_advanced_patch_options_custom_branding_description">يغيّر الاسم المعروض للتطبيق</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">اسم التطبيق</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">أدخل اسمًا مخصصًا</string>
+    <string name="settings_advanced_patch_options_path_gone">لم يعد بالإمكان قراءة هذا المجلد. اختره مرة أخرى أو امسحه، وإلا فسيتوقف التعديل ويسألك عنه</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">أيقونة التطبيق</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">الأيقونة التي يُعدل بها التطبيق. وتُستخدم أيضًا في الأماكن التي لا يمكن للتطبيق فيها تغييرها لاحقًا، مثل Android Auto وقائمة التطبيقات في إعدادات النظام</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">تحتاج أيقونة التطبيق المخصصة إلى مجلد يحتوي على صور الأيقونة</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">أيقونة مخصصة</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"مجلد يحتوي على صور لاستخدامها كأيقونة مخصصة.
 
@@ -866,6 +923,8 @@ morphe_adaptive_monochrome_custom.xml
     <string name="installer_action_open_shizuku">فتح Shizuku</string>
     <string name="installer_hint_generic">فشل التثبيت. حاول مرة أخرى أو قم بالتبديل إلى أداة تثبيت أخرى</string>
     <string name="installer_hint_conflict">يوجد تطبيق آخر بنفس اسم الحزمة مثبت بالفعل. قم بإلغاء تثبيته قبل المتابعة</string>
+    <string name="installer_confirm_notification_title">تأكيد التثبيت</string>
+    <string name="installer_confirm_notification_text">انقر لإنهاء تثبيت التطبيق المعدّل</string>
     <string name="installer_external_launched">جارٍ فتح %s…</string>
     <string name="installer_external_timeout">لم يؤكد %s التثبيت. تحقق من التطبيق الآخر وحاول مرة أخرى</string>
     <string name="installer_external_success">أفاد %s عن نجاح التثبيت</string>
@@ -921,6 +980,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_process_runtime_enable">تمكين وقت تشغيل العملية</string>
     <string name="settings_system_memory_limit_subtitle">الذاكرة المتاحة للتعديل</string>
     <string name="settings_system_memory_limit_warning">الحد الأدنى للذاكرة قد يتسبب في فشل عند تعديل التطبيقات الأكبر حجمًا</string>
+    <string name="settings_system_memory_limit_high_warning">قد يؤدي حد الذاكرة المرتفع إلى جعل عملية التعديل أبطأ بكثير على بعض الأجهزة. ارفعه فقط إذا استمرت عملية التعديل في الفشل عند الحدود الأقل.</string>
     <string name="settings_system_process_runtime_enabled_description">حد %s ميجابايت</string>
     <string name="settings_system_process_runtime_disabled_description">انقر هنا للتهيئة</string>
     <string name="settings_system_process_runtime_description_not_available">تتطلب هذه الميزة Android 11 أو أحدث</string>
@@ -1080,7 +1140,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="credits_current_development">التطوير الحالي</string>
     <string name="credits_prior_development">التطوير المسبق</string>
     <string name="opensource_licenses">تراخيص مفتوحة المصدر</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">خيار واحد</string>
     <string name="easter_egg_pill_message">تناول الحبة الزرقاء وستبقى الإعلانات في مكانها تمامًا. تناول الحبة الحمراء وشاهد مدى عمق الكود</string>
     <string name="easter_egg_pill_red">الحبة الحمراء</string>
@@ -1091,6 +1151,10 @@ morphe_adaptive_monochrome_custom.xml
     <string name="easter_egg_pill_red_toast_again">العودة إلى المطر</string>
     <string name="easter_egg_pill_blue_toast_again">غير متصل. الطريق للعودة هو حيث كان دائمًا</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s م.ب / %2$s م.ب (%3$s%%)</string>
     <string name="select_file">اختر ملف</string>
     <string name="select_folder">اختر مجلد</string>
     <string name="patches">التعديلات</string>
@@ -1192,6 +1256,8 @@ morphe_adaptive_monochrome_custom.xml
     <string name="hidden">مخفي</string>
     <string name="unhide">إظهار</string>
     <string name="unhide_done">تمّ العرض</string>
+    <string name="ignore">تجاهل</string>
+    <string name="stop_ignoring">توقف عن التجاهل</string>
     <string name="logs">السجلات</string>
     <string name="sources">المصادر</string>
     <string name="installing_ellipsis">جارٍ التثبيت…</string>
@@ -1215,8 +1281,8 @@ morphe_adaptive_monochrome_custom.xml
     <string name="install_update_manager_failed">فشل تثبيت التحديث</string>
     <string name="installing_manager_update">جارٍ تثبيت التحديث...</string>
     <string name="downloading_manager_update">جارٍ تنزيل التحديث...</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">%1$.1f م.ب تم تنزيلها</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">%1$s م.ب تم تنزيلها</string>
     <string name="manager_update_not_ready">هذا الإصدار لا يزال قيد النشر. حاول مرة أخرى بعد بضع دقائق</string>
     <string name="update_download_missing">التحديث الذي تم تنزيله لم يعد متاحًا. يرجى تنزيله مرة أخرى</string>
     <string name="download_manager_failed">فشل تنزيل التحديث: %s</string>

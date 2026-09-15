@@ -23,6 +23,7 @@ import app.morphe.manager.R
 import app.morphe.manager.data.room.apps.installed.supportsMount
 import app.morphe.manager.data.room.apps.installed.trackingKey
 import app.morphe.manager.domain.batch.BatchTarget
+import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.isHeldBack
 import app.morphe.manager.domain.manager.*
 import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.update.SafeIntegrationProfile
@@ -199,7 +200,8 @@ fun HomeScreen(
         startInstallQueue(requests)
     }
 
-    // Same predicate the cards use for their update badge, so the count and the badges agree
+    // Only the apps a rebuild actually moves on: one the sources still cover at its installed
+    // version comes back from patching exactly as it went in, however its card is badged
     val repatchableApps = remember(homeAppItems) { homeAppItems.filter { it.showsUpdateBadge } }
 
     val batchInProgressText = stringResource(R.string.batch_patch_in_progress)
@@ -248,6 +250,10 @@ fun HomeScreen(
     // with until the app is updated, so surface it instead of leaving the source silently broken
     val bundleSources by homeViewModel.patchBundleRepository.sources.collectAsStateWithLifecycle(emptyList())
     val hasOutdatedManagerSources = bundleSources.any { it.requiresManagerUpdate }
+
+    // Reading these took the process down, so they are skipped until the file changes. Nothing
+    // else on this screen would explain why their patches are suddenly gone
+    val hasHeldBackSources = bundleSources.any { it.isHeldBack }
 
     // Manager update details dialog
     if (showUpdateDetailsDialog.value) {
@@ -306,6 +312,7 @@ fun HomeScreen(
                 notifications = HomeNotificationsUi(
                     managerUpdate = AlertState(hasManagerUpdate) { showUpdateDetailsDialog.value = true },
                     outdatedManager = AlertState(hasOutdatedManagerSources) { homeViewModel.showBundleManagementSheet = true },
+                    heldBackSources = AlertState(hasHeldBackSources) { homeViewModel.showBundleManagementSheet = true },
                     blockedSources = AlertState(hasBlockedSources) { homeViewModel.showBundleManagementSheet = true },
                     metadataErrors = AlertState(hasMetadataErrors) { homeViewModel.showBundleManagementSheet = true },
                     meteredSkipped = AlertState(homeViewModel.updatesSkippedDueToMetered) { onSettingsClick() },

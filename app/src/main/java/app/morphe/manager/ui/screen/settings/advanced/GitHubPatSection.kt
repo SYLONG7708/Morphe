@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.*
 import kotlinx.coroutines.launch
@@ -199,6 +200,7 @@ private fun GitHubPatDialog(
                 text = stringResource(R.string.settings_advanced_github_pat_export_warning),
                 style = MaterialTheme.typography.bodyLarge,
                 color = LocalDialogSecondaryTextColor.current,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
         }

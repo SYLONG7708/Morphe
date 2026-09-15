@@ -20,6 +20,7 @@ import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
 import app.morphe.manager.domain.repository.PatchOptionsRepository
 import app.morphe.manager.domain.repository.PatchSelectionRepository
+import app.morphe.manager.domain.repository.SourceMuteRepository
 import app.morphe.manager.patcher.patch.PatchInfo
 import app.morphe.manager.ui.screen.settings.system.CopyTarget
 import app.morphe.manager.ui.screen.shared.CopySelectionCandidate
@@ -40,6 +41,7 @@ class SettingsViewModel(
     private val installerManager: InstallerManager,
     private val rootInstaller: RootInstaller,
     private val selectionRepository: PatchSelectionRepository,
+    private val sourceMuteRepository: SourceMuteRepository,
     private val optionsRepository: PatchOptionsRepository,
     private val patchBundleRepository: PatchBundleRepository,
     private val appDataResolver: AppDataResolver,
@@ -212,8 +214,8 @@ class SettingsViewModel(
         prefs.promptInstallerOnInstall.update(enabled)
     }
 
-    fun setAutoInstallWithShizuku(enabled: Boolean) = viewModelScope.launch {
-        prefs.autoInstallWithShizuku.update(enabled)
+    fun setAutoInstallAfterPatching(enabled: Boolean) = viewModelScope.launch {
+        prefs.autoInstallAfterPatching.update(enabled)
     }
 
     fun setAutoUninstallWithShizuku(enabled: Boolean) = viewModelScope.launch {
@@ -293,20 +295,26 @@ class SettingsViewModel(
             .map { bundles -> bundles.associate { it.uid to it.name } }
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
+    // Which sources an app is kept from is part of how it is configured, so a reset that clears
+    // its selection and options clears that too. Otherwise an app reset back to the defaults keeps
+    // a narrowing nothing on screen still explains
     fun resetAllSelections() = viewModelScope.launch(Dispatchers.IO) {
         selectionRepository.reset()
         optionsRepository.reset()
+        sourceMuteRepository.reset()
     }
 
     fun resetSelectionsForPackage(packageName: String) = viewModelScope.launch(Dispatchers.IO) {
         selectionRepository.resetSelectionForPackage(packageName)
         optionsRepository.resetOptionsForPackage(packageName)
+        sourceMuteRepository.unmuteAll(packageName)
     }
 
     fun resetSelectionsForPackageBundle(packageName: String, bundleUid: Int) =
         viewModelScope.launch(Dispatchers.IO) {
             selectionRepository.resetSelectionForPackageAndBundle(packageName, bundleUid)
             optionsRepository.resetOptionsForPackageAndBundle(packageName, bundleUid)
+            sourceMuteRepository.unmute(packageName, bundleUid)
         }
 
     /** Counts total options across all packages (used by the "reset all" confirmation dialog). */

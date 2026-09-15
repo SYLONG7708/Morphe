@@ -7,6 +7,7 @@ package app.morphe.manager.ui.screen.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material.icons.outlined.Source
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -84,8 +87,11 @@ fun ExpertModeDialog(
     proceedText: String = stringResource(R.string.expert_mode_proceed),
     /** Off where mixing sources is the norm rather than something the user just did. */
     warnOnMultipleBundles: Boolean = true,
-    /** Bundle uids currently receiving pre-release patch versions, shown as a warning header. */
+    /** Bundle UIDs currently receiving pre-release patch versions, shown as a warning header. */
     prereleaseBundleUids: Set<Int> = emptySet(),
+    /** Sources this app is being kept from, which the notice above the list offers back. */
+    hiddenSourceCount: Int = 0,
+    onShowHiddenSources: () -> Unit = {},
     onDismiss: () -> Unit,
     onProceed: () -> Unit
 ) {
@@ -108,7 +114,7 @@ fun ExpertModeDialog(
         }
     }
 
-    val expandedUniversal = rememberUniversalSectionState()
+    val patchSections = rememberPatchSectionState()
 
     // The pre-release warning is worth a glance, not a permanent strip on top of the list. It
     // retires per source, so a source the user has not opened yet still gets its turn, and the
@@ -130,23 +136,25 @@ fun ExpertModeDialog(
         }
     }
 
-    // The two filters stack: either can narrow what the other left
-    val filteredPatchesInfo = remember(allPatchesInfo, search.query, selectedOnly.value) {
-        val query = search.query.takeIf { it.isNotBlank() }
-        val onlySelected = selectedOnly.value
-        if (query == null && onlySelected == null) return@remember allPatchesInfo
-
-        allPatchesInfo.mapNotNull { (bundle, patches) ->
-            val kept = onlySelected?.get(bundle.uid).orEmpty()
-            val filtered = patches.filter { (patch, _) ->
-                val matchesQuery = query == null ||
-                        patch.displayName.contains(query, ignoreCase = true) ||
-                        patch.description?.contains(query, ignoreCase = true) == true
-                matchesQuery && (onlySelected == null || patch.name in kept)
+    // The two filters stack: either can narrow what the other left. Keyed by bundle and in bundle
+    // order, since every reader below already holds a bundle and asks only what it kept
+    val filteredPatchesByUid: Map<Int, List<Pair<PatchInfo, Boolean>>> =
+        remember(allPatchesInfo, search.query, selectedOnly.value) {
+            val query = search.query.takeIf { it.isNotBlank() }
+            val onlySelected = selectedOnly.value
+            if (query == null && onlySelected == null) {
+                return@remember allPatchesInfo.associate { (bundle, patches) -> bundle.uid to patches }
             }
-            if (filtered.isEmpty()) null else bundle to filtered
+
+            allPatchesInfo.mapNotNull { (bundle, patches) ->
+                val kept = onlySelected?.get(bundle.uid).orEmpty()
+                val filtered = patches.filter { (patch, _) ->
+                    val matchesQuery = query == null || patch.matchesQuery(query)
+                    matchesQuery && (onlySelected == null || patch.name in kept)
+                }
+                if (filtered.isEmpty()) null else bundle.uid to filtered
+            }.toMap()
         }
-    }
 
     // Both narrow the list far enough that a folded universal section would only hide results
     val isFiltering = search.isFiltering || isSelectedOnly
@@ -250,12 +258,28 @@ fun ExpertModeDialog(
                 )
             }
 
+            // Above the list rather than inside one source's page: what it counts is the sources
+            // that have no page here at all
+            if (hiddenSourceCount > 0) {
+                Notice(
+                    text = pluralStringResource(
+                        R.plurals.expert_mode_hidden_sources_notice,
+                        hiddenSourceCount,
+                        hiddenSourceCount.toString()
+                    ),
+                    icon = Icons.Outlined.VisibilityOff,
+                    tone = SemanticTone.Neutral,
+                    density = NoticeDensity.Compact,
+                    modifier = Modifier.clickable(onClick = onShowHiddenSources)
+                )
+            }
+
             // Layout mode is determined by total bundle count
             val hasMultipleBundleLayout = allPatchesInfo.size > 1
 
             if (!hasMultipleBundleLayout) {
                 val (bundle, _) = allPatchesInfo.firstOrNull() ?: return@Column
-                val filteredPatches = filteredPatchesInfo.firstOrNull { it.first.uid == bundle.uid }?.second
+                val filteredPatches = filteredPatchesByUid[bundle.uid]
                 val displayPatches = filteredPatches ?: emptyList()
 
                 // Bundle name header
@@ -286,7 +310,7 @@ fun ExpertModeDialog(
                     savedPatches = savedPatches,
                     lockStateOf = lockStateOf,
                     holdsUniversalPatches = holdsUniversalPatches,
-                    onExpandUniversal = { expandedUniversal.setExpanded(it, true) }
+                    onExpandUniversal = { patchSections.setExpanded(it, UNIVERSAL_GROUP_KEY, true) }
                 )
 
                 RetirePrereleaseNotice(
@@ -308,8 +332,7 @@ fun ExpertModeDialog(
                         listState = singleBundleList,
                         markers = markers,
                         isFiltering = isFiltering,
-                        isUniversalExpanded = bundle.uid in expandedUniversal,
-                        onUniversalExpandedChange = { expandedUniversal.setExpanded(bundle.uid, it) },
+                        sectionState = patchSections,
                         lockStateOf = lockStateOf,
                         patchActions = patchActions,
                         onConfigureOptions = { selectedPatchForOptions.value = bundle.uid to it }
@@ -321,13 +344,32 @@ fun ExpertModeDialog(
                             modifier = Modifier.offset(x = LocalDialogHorizontalInset.current)
                         )
                     }
-
-                    PatchesListEmptyOverlay(visible = filteredPatches == null)
                 }
             } else {
                 // Multiple bundles tab layout
                 val pagerState = rememberPagerState { allPatchesInfo.size }
                 val coroutineScope = rememberCoroutineScope()
+
+                // A filter that empties the open bundle has narrowed every list but the one on
+                // screen, so the pager follows it to a bundle that kept rows. Only the filter is
+                // watched, which leaves a bundle opened by hand alone. One collector outlives
+                // every change too: an effect keyed on the filter would be torn down by the next
+                // keystroke, leaving the pager halfway between two bundles
+                val currentBundles = rememberUpdatedState(allPatchesInfo)
+                val currentFilter = rememberUpdatedState(filteredPatchesByUid)
+                LaunchedEffect(pagerState) {
+                    snapshotFlow { currentFilter.value }.collect { filter ->
+                        val bundles = currentBundles.value
+                        val openBundle = bundles.getOrNull(pagerState.currentPage)?.first ?: return@collect
+                        if (openBundle.uid in filter) return@collect
+
+                        val firstWithResults = filter.keys.firstOrNull() ?: return@collect
+                        bundles.indexOfFirst { it.first.uid == firstWithResults }
+                            .takeIf { it >= 0 }
+                            ?.let { pagerState.animateScrollToPage(it) }
+                    }
+                }
+
                 // Created up front, outside the pager, so the scrollbar overlay below can track
                 // whichever page is current. HorizontalPager clips each page to its own bounds, so
                 // a scrollbar drawn inside a page can never bleed out to the true dialog edge.
@@ -360,7 +402,7 @@ fun ExpertModeDialog(
                         contentColor = MaterialTheme.colorScheme.primary
                     ) {
                         allPatchesInfo.forEachIndexed { index, (bundle, patches) ->
-                            val hasResults = filteredPatchesInfo.any { it.first.uid == bundle.uid }
+                            val hasResults = bundle.uid in filteredPatchesByUid
                             val enabledCount = patches.count { it.second }
                             val totalCount = patches.size
                             val isSelected = pagerState.currentPage == index
@@ -406,7 +448,7 @@ fun ExpertModeDialog(
                     // Controls fixed below the tab row
                     val currentIndex = pagerState.currentPage
                     val (currentBundle, _) = allPatchesInfo.getOrNull(currentIndex) ?: return@Column
-                    val currentFiltered = filteredPatchesInfo.firstOrNull { it.first.uid == currentBundle.uid }?.second
+                    val currentFiltered = filteredPatchesByUid[currentBundle.uid]
 
                     RetirePrereleaseNotice(
                         bundleUid = currentBundle.uid.takeIf { it in prereleaseBundleUids },
@@ -414,7 +456,7 @@ fun ExpertModeDialog(
                     )
 
                     // Kept in place on a tab the filters emptied, so the pager height holds and
-                    // the bulk actions grey out instead of the whole row snapping away
+                    // the bulk actions gray out instead of the whole row snapping away
                     BundleControls(
                         bundle = currentBundle,
                         patches = currentFiltered.orEmpty(),
@@ -422,7 +464,7 @@ fun ExpertModeDialog(
                         savedPatches = savedPatches,
                         lockStateOf = lockStateOf,
                         holdsUniversalPatches = holdsUniversalPatches,
-                        onExpandUniversal = { expandedUniversal.setExpanded(it, true) },
+                        onExpandUniversal = { patchSections.setExpanded(it, UNIVERSAL_GROUP_KEY, true) },
                         modifier = Modifier.padding(vertical = Defaults.ContentPaddingSmall)
                     )
 
@@ -437,24 +479,19 @@ fun ExpertModeDialog(
                             modifier = Modifier.fillMaxSize()
                         ) { pageIndex ->
                             val (bundle, _) = allPatchesInfo.getOrNull(pageIndex) ?: return@HorizontalPager
-                            val patches = filteredPatchesInfo.firstOrNull { it.first.uid == bundle.uid }?.second
+                            val patches = filteredPatchesByUid[bundle.uid]
 
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                BundlePatchList(
-                                    bundle = bundle,
-                                    patches = patches.orEmpty(),
-                                    listState = pageListStates[pageIndex],
-                                    markers = markers,
-                                    isFiltering = isFiltering,
-                                    isUniversalExpanded = bundle.uid in expandedUniversal,
-                                    onUniversalExpandedChange = { expandedUniversal.setExpanded(bundle.uid, it) },
-                                    lockStateOf = lockStateOf,
-                                    patchActions = patchActions,
-                                    onConfigureOptions = { selectedPatchForOptions.value = bundle.uid to it }
-                                )
-
-                                PatchesListEmptyOverlay(visible = patches == null)
-                            }
+                            BundlePatchList(
+                                bundle = bundle,
+                                patches = patches.orEmpty(),
+                                listState = pageListStates[pageIndex],
+                                markers = markers,
+                                isFiltering = isFiltering,
+                                sectionState = patchSections,
+                                lockStateOf = lockStateOf,
+                                patchActions = patchActions,
+                                onConfigureOptions = { selectedPatchForOptions.value = bundle.uid to it }
+                            )
                         }
 
                         // Single overlay for the whole pager, tracking whichever page is current,
@@ -462,7 +499,7 @@ fun ExpertModeDialog(
                         // pager before it could reach the true dialog edge. Pages filtered down to
                         // an empty state have nothing to scroll, so they get no overlay
                         val currentPageList = allPatchesInfo.getOrNull(pagerState.currentPage)
-                            ?.takeIf { (bundle, _) -> filteredPatchesInfo.any { it.first.uid == bundle.uid } }
+                            ?.takeIf { (bundle, _) -> bundle.uid in filteredPatchesByUid }
                             ?.let { pageListStates.getOrNull(pagerState.currentPage) }
                         if (currentPageList != null) {
                             ListScrollbar(
@@ -533,31 +570,6 @@ fun ExpertModeDialog(
     }
 }
 
-/**
- * Empty state fading in over the list it stands in for, so a filter that clears a page settles
- * instead of swapping the two in one frame.
- */
-@Composable
-private fun PatchesListEmptyOverlay(visible: Boolean) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = Animations.fadeIn,
-        exit = Animations.fadeOut
-    ) {
-        PatchesListEmptyState()
-    }
-}
-
-/** One bundle's patches, split into the ones written for this app and the universal ones. */
-@Immutable
-private data class PatchSections(
-    val specific: List<Pair<PatchInfo, Boolean>>,
-    val universal: List<Pair<PatchInfo, Boolean>>
-) {
-    /** Enabled universal patches, the ones a folded section would otherwise hide. */
-    val selectedUniversalCount = universal.count { (_, isEnabled) -> isEnabled }
-}
-
 /** Everything the rows of a bundle badge or warn about, all keyed by bundle uid. */
 @Immutable
 private data class PatchMarkers(
@@ -566,26 +578,6 @@ private data class PatchMarkers(
     val customOptions: Map<Int, Set<String>>,
     val prereleaseNotices: Set<Int>
 )
-
-/**
- * Splits and orders one bundle's patches for display. New patches float to the top of each
- * group; within a group the order is alphabetical.
- */
-@Composable
-private fun rememberPatchSections(
-    patches: List<Pair<PatchInfo, Boolean>>,
-    newPatchNames: Set<String>
-): PatchSections = remember(patches, newPatchNames) {
-    val displayOrder = compareByDescending<Pair<PatchInfo, Boolean>> { (patch, _) ->
-        patch.name in newPatchNames
-    }.thenBy { (patch, _) -> patch.name }
-
-    val (universal, specific) = patches.partition { (patch, _) -> patch.isUniversal }
-    PatchSections(
-        specific = specific.sortedWith(displayOrder),
-        universal = universal.sortedWith(displayOrder)
-    )
-}
 
 /** How long a pre-release warning holds its place, long enough to read it once. */
 private val PrereleaseNoticeDuration = 8.seconds
@@ -675,9 +667,9 @@ private fun BundleControls(
 }
 
 /**
- * One bundle's scrolling list: its pre-release warning, the patches written for this app, then
- * the universal ones behind a collapsible header. Every row animates its own placement, so
- * search results and the fold settle instead of jumping.
+ * One bundle's scrolling list: its pre-release warning, then the patches block by block, each
+ * behind a collapsible header of its own. Every row animates its own placement, so search
+ * results and the fold settle instead of jumping.
  *
  * The scrollbar stays with the caller, since the tabbed layout draws a single overlay for the
  * whole pager rather than one per page.
@@ -689,8 +681,7 @@ private fun BundlePatchList(
     listState: LazyListState,
     markers: PatchMarkers,
     isFiltering: Boolean,
-    isUniversalExpanded: Boolean,
-    onUniversalExpandedChange: (Boolean) -> Unit,
+    sectionState: PatchSectionState,
     lockStateOf: (PatchInfo) -> PatchLockState,
     patchActions: ExpertPatchActions,
     onConfigureOptions: (PatchInfo) -> Unit,
@@ -699,7 +690,19 @@ private fun BundlePatchList(
     val newPatchNames = markers.newPatches[bundle.uid].orEmpty()
     val missingRequiredOptions = markers.missingRequiredOptions[bundle.uid].orEmpty()
     val customOptions = markers.customOptions[bundle.uid].orEmpty()
-    val sections = rememberPatchSections(patches = patches, newPatchNames = newPatchNames)
+    // New patches float to the top of each block; within a block the order is alphabetical
+    val ordered = remember(patches, newPatchNames) {
+        val displayOrder = compareByDescending<Pair<PatchInfo, Boolean>> { (patch, _) ->
+            patch.name in newPatchNames
+        }.thenBy { (patch, _) -> patch.name }
+        patches.sortedWith(displayOrder)
+    }
+    val groups = rememberPatchGroups(
+        patches = ordered,
+        infoOf = { (patch, _) -> patch },
+        isEnabled = { (_, isEnabled) -> isEnabled }
+    )
+    val folds = sectionState.folds
 
     LazyColumn(
         state = listState,
@@ -708,17 +711,23 @@ private fun BundlePatchList(
     ) {
         if (bundle.uid in markers.prereleaseNotices) prereleaseNotice()
 
+        // Kept in the list rather than laid over it, so the message holds its place under a notice
+        // and an opening keyboard shortens the surrounding page instead of moving it
+        if (ordered.isEmpty()) {
+            item(key = "empty_state") {
+                PatchesListEmptyState(modifier = Modifier.animateItem())
+            }
+        }
+
         // Availability is resolved per patch, so a universal patch the installer requires or
         // rules out carries the same lock as an app-specific one
-        patchSectionRows(
+        patchGroupRows(
             sectionKey = bundle.uid,
-            specific = sections.specific,
-            universal = sections.universal,
+            groups = groups,
             key = { (patch, _): Pair<PatchInfo, Boolean> -> "${bundle.uid}:${patch.name}" },
             isFiltering = isFiltering,
-            isUniversalExpanded = isUniversalExpanded,
-            onUniversalExpandedChange = onUniversalExpandedChange,
-            universalSelectedCount = sections.selectedUniversalCount
+            folds = folds,
+            onToggle = { group -> sectionState.toggle(bundle.uid, group) }
         ) { (patch, isEnabled) ->
             PatchCard(
                 patch = patch,

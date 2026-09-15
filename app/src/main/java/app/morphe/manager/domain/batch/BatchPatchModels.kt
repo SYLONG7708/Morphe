@@ -10,6 +10,7 @@ import app.morphe.manager.ui.model.PatchRunProgress
 import app.morphe.manager.ui.model.producesClone
 import app.morphe.manager.util.Options
 import app.morphe.manager.util.PatchSelection
+import app.morphe.manager.util.PathValidationResult
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
@@ -132,6 +133,8 @@ data class BatchBundleRef(
  * @param forceVersionMismatch Set when the user chose to patch despite an unsupported version.
  * @param forceUnverifiedSignature Set when the user chose to patch an APK whose signing certificate
  *   none of the bundles vouch for. Carried along so re-resolving the item does not ask again.
+ * @param unreadableOptionPaths Path options planning left out because nothing can be read at
+ *   them anymore. The app is still patched without them, so one queued app cannot hold up the run.
  * @param restoreState State to return to when the user un-excludes the item.
  * @param patchedFile Populated after a successful run with the retained patched APK.
  * @param installOutcome Set once the user installs from the summary, so a failure is visible
@@ -154,6 +157,7 @@ data class BatchPatchItem(
     val forceUnverifiedSignature: Boolean = false,
     /** Selection before the user narrowed it to one source, so another can still be chosen. */
     val resolvedSelection: PatchSelection? = null,
+    val unreadableOptionPaths: List<PathValidationResult> = emptyList(),
     val restoreState: BatchItemState? = null,
     val patchedFile: File? = null,
     val installOutcome: BatchInstallOutcome? = null,

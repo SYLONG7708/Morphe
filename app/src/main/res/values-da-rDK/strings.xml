@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">Ingen skjulte apps</string>
     <string name="home_app_hidden_apps_title">Skjulte apps</string>
     <string name="home_app_hidden_apps_hint">Tryk for at vise</string>
+    <string name="home_app_patch_sources_description">Kilder, der ikke er afkrydsede, tilbydes ikke, når disse apps bliver patchet, og deres patches kommer aldrig af sig selv med i en markering. Hver kilde forbliver slået til for alle andre apps.</string>
+    <string name="home_app_patch_sources_mixed">Tilbydes til %1$s af %2$s</string>
+    <string name="home_app_patch_sources_covers">Har patches til %1$s ud af %2$s</string>
+    <string name="home_app_patch_sources_last">Hver app skal have én kilde tilbage at patche fra.</string>
     <string name="android_11_bug_dialog_title">Android 11-fejl</string>
     <string name="android_11_bug_dialog_description">App-installationsrettighed skal gives i forvejen for at undgå en fejl i Android 11-systemet, der vil have en negativ indflydelse på brugeroplevelsen</string>
     <string name="deep_link_add_source_title">Tilføj kilde</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">Tryk for at gennemgå kilder</string>
     <string name="home_outdated_manager_title">Morphe er forældet</string>
     <string name="home_outdated_manager_subtitle">Nogle kilde-feeds kræver en nyere version</string>
+    <string name="home_held_back_title">En patchkilde fik Morphe til at crashe</string>
+    <string name="home_held_back_subtitle">Den blev sprunget over, så appen kunne starte. Tryk for at se nærmere</string>
     <string name="home_metered_skipped_title">Opdateringer pauset på mobildata</string>
     <string name="home_metered_skipped_subtitle">Tryk for at tillade opdateringer over mobildata</string>
     <string name="home_repatch_available_subtitle">Tryk for at kø dem alle</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">Opdateringer oversprunget</string>
     <string name="home_update_skipped_metered_subtitle">Mobildata er aktiv</string>
     <string name="home_updating_sources">Opdaterer kilder…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s (%5$d%%)</string>
     <string name="home_update_success">Opdatering af kilder fuldført</string>
     <string name="home_update_success_subtitle">Dine kilder er opdaterede</string>
     <string name="home_sources_are_loading">Kilder hentes, vent venligst…</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">Alfabetisk, A til Z</string>
     <string name="home_app_sort_name_desc_description">Omvendt alfabetisk, fra Z til A</string>
     <string name="home_app_sort_updates_first">Patch-opdateringer først</string>
-    <string name="home_app_sort_updates_first_description">Apps med opdateringsmærker først, derefter i anbefalet rækkefølge</string>
+    <string name="home_app_sort_updates_first_description">Apps med nyere patches først, derefter anbefalet rækkefølge</string>
     <string name="home_app_sort_recently_patched">Senest patchet</string>
     <string name="home_app_sort_recently_patched_description">Senest patchede apps først</string>
     <string name="home_no_apps_title">Ingen apps tilgængelige</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">Natlig og produktiv</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Patchkilder</string>
-    <string name="sources_search">Søg kilder</string>
+    <string name="sources_search">Søg i kilder og patches</string>
     <string name="sources_sort_title">Sortér patch-kilder</string>
     <string name="sources_sort_manual">Manuel orden</string>
     <string name="sources_sort_manual_hint">Tryk og hold på en kilde for at ændre rækkefølgen</string>
@@ -127,9 +136,14 @@
     <string name="sources_sort_last_updated_description">Seneste kildeopdateringer først</string>
     <string name="sources_sort_enabled_first">Aktiveret først</string>
     <string name="sources_sort_enabled_first_description">Vis aktive kilder før deaktiverede kilder</string>
+    <string name="sources_patches_source_disabled_hint">Denne kilde er deaktiveret. Dens patches er opført til reference og anvendes ikke.</string>
     <string name="sources_management_open_in_browser">Åbn links i browser</string>
     <string name="sources_management_report_issue">Rapportér et problem</string>
     <string name="sources_management_failed_to_open_url">Kunne ikke åbne URL</string>
+    <string name="sources_hidden_apps">Skjult for</string>
+    <string name="sources_hidden_apps_title">Apps skjult for %1$s</string>
+    <string name="sources_hidden_apps_description">Disse apps får ikke tilbudt denne kilde, når de bliver patchet. Selve kilden forbliver aktiveret for alt andet</string>
+    <string name="sources_hidden_apps_hint">Tryk for at tilbyde denne kilde igen</string>
     <string name="sources_management_prerelease_toggle">Pre-release patches</string>
     <string name="sources_management_prerelease_toggle_description">Få tidlig adgang til nye eksperimentelle patch versioner</string>
     <string name="sources_prerelease_warning_title">Aktivér præ-release-patcher?</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">Opdateringspakken kunne ikke hentes. Kilde-URL\'en kan være forkert, eller filen findes ikke</string>
     <string name="sources_management_outdated_manager_badge">Opdater Morphe</string>
     <string name="sources_management_outdated_manager_hint">Denne kilde er bygget til patcher %1$s, men Morphe %2$s indeholder patcher %3$s. Opdater Morphe for at bruge den</string>
+    <string name="sources_management_held_back_badge">Crashet</string>
+    <string name="sources_management_held_back_hint">Denne kilde fik Morphe til at crashe under indlæsningen, så den bliver sprunget over. Opdater den, eller importer den igen for at prøve igen</string>
     <string name="sources_management_source_enabled">Kilde aktiveret</string>
     <string name="sources_management_source_disabled">Kilde deaktiveret</string>
     <string name="sources_management_source_updating">Opdaterer kilde</string>
@@ -190,6 +206,7 @@ Alt, hvad du tilføjer fra denne hjemmeside, bruges på egen risiko."</string>
     <string name="home_apk_availability_recommended_label">Anbefalet</string>
     <string name="home_apk_availability_unpatched_label">Upatchet</string>
     <string name="home_apk_availability_incompatible_label">Inkompatibel</string>
+    <string name="home_apk_availability_installed_version">Installeret på denne enhed: %s</string>
     <string name="home_apk_availability_yes">Ja, hjælp med at finde en APK</string>
     <string name="home_apk_availability_no">Nej, jeg har allerede en APK</string>
     <string name="home_apk_helper_download">Brug en hjælpeapp</string>
@@ -317,9 +334,11 @@ For de bedste resultater anbefaler denne app at patche en &lt;b&gt;fuld APK&lt;/
     <string name="home_outdated_patches_dialog_warning">At patche med forældede patches kan resultere i en defekt app</string>
     <string name="home_outdated_patches_dialog_update_and_patch">Opdater &amp; patch</string>
     <string name="home_low_disk_space_dialog_title">Lav diskplads</string>
-    <string name="home_low_disk_space_dialog_message">Kun %1$.2f GB ledig lagerplads. Patching kræver mindst %2$.2f GB ledig plads for at fungere korrekt</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Kun %1$s GB ledig lagerplads. Patchning kræver mindst %2$s GB fri plads for at fungere korrekt.</string>
     <string name="home_low_disk_space_dialog_warning">Fortsættelse kan resultere i en \"fil ikke fundet\"-fejl eller en korrupt output APK</string>
     <string name="home_simple_bundle_select_title">Vælg patch kildefil</string>
+    <string name="home_simple_bundle_select_remember">Brug altid denne kilde til denne app</string>
     <!-- Color picker -->
     <string name="custom_color">Brugerdefineret farve</string>
     <string name="hex_color">Hex farve</string>
@@ -434,6 +453,10 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
     <string name="home_app_info_install_type_shizuku_play_store">Shizuku Play Butik-installation</string>
     <string name="home_app_info_patch_update_available">Patchopdatering tilgængelig</string>
     <string name="home_app_info_patch_update_available_description">En nyere version af patches er tilgængelig. Repatch din app for at få de seneste forbedringer og rettelser</string>
+    <string name="home_app_info_app_update_available">App-opdatering tilgængelig</string>
+    <string name="home_app_info_app_update_available_description">Patchkilderne understøtter en nyere version af denne app. Patch den igen for at skifte til den version.</string>
+    <string name="home_app_info_newest_supported_version">Nyeste understøttede</string>
+    <string name="home_app_info_version_move">Installeret %1$s, nyeste understøttede %2$s</string>
     <string name="home_app_info_app_deleted_warning">Appen blev fjernet</string>
     <string name="home_app_info_app_deleted_description">Denne app blev fjernet udenfor Morphe. Repatch den for at gendanne funktionalitet</string>
     <string name="home_app_info_not_patched_description">En upatchet version af denne app er installeret. Morphe har stadig sin tidligere patch-registrering</string>
@@ -458,6 +481,9 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
     <string name="patcher_error_log">Fejllog</string>
     <string name="patcher_error_technical">Tekniske oplysninger</string>
     <string name="patcher_error_dialog_diagnostics">Diagnostik</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Patchning startet</string>
+    <string name="patcher_card_succeeded">Patchning lykkedes</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">App</string>
     <string name="patcher_field_package">Pakke</string>
@@ -473,6 +499,15 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Hukommelse</string>
     <string name="patcher_field_storage">Lagring</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Outputstørrelse</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Tid</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Gennemsnitligt hukommelsesforbrug</string>
+    <string name="patcher_field_memory_max">Maksimalt hukommelsesforbrug</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Lager-I/O-spidsværdi</string>
     <string name="patcher_field_value_unknown">ukendt</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">strippet</string>
@@ -519,6 +554,13 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="patcher_storage_permission_open_settings">Åbn lagerindstillinger </string>
     <string name="patcher_storage_badge_denied">Tilladelse afvist</string>
     <string name="patcher_storage_badge_missing">Ikke fundet</string>
+    <string name="batch_patch_option_paths_skipped">Patch-indstillingsfiler mangler og vil blive sprunget over: %1$s</string>
+    <string name="patcher_missing_patches_title">Nogle patches er væk</string>
+    <string name="patcher_missing_patches_description">Det gemte valg for denne app nævner patches, som ingen aktiveret kilde længere tilbyder. Fortsætter du, bliver appen patchet uden dem</string>
+    <string name="patcher_missing_patches_label">Tilbydes ikke længere</string>
+    <string name="patcher_option_paths_gone_title">Patch-indstillingsfiler mangler</string>
+    <string name="patcher_option_paths_gone_description">En eller flere patch-indstillinger peger på filer, der ikke længere findes. Fjern stierne for at patche uden dem, eller læg filerne tilbage og prøv igen</string>
+    <string name="patcher_option_paths_clear">Fjern stierne og fortsæt</string>
     <string name="patcher_storage_permission_hint">Tip: Flyt filer til /Android/data/app.morphe.manager/files/ - ingen ekstra tilladelser nødvendige</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Forbereder</string>
@@ -564,7 +606,7 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="patcher_message_15">Alle systemer er nominelle… patche-bane er stabil… 🚀</string>
     <string name="patcher_message_16">Presser ekstra kraft ud som saft af en digital citron… 🍋</string>
     <string name="patcher_message_17">Opfordrer appen til at acceptere sit nye, bedre jeg… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Ændrer appens superposition fra upatchet til patchet… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">Din app har feber, og den eneste recept er flere patches… 🩺🔔</string>
@@ -572,6 +614,8 @@ Afinstallation sletter permanent alle appdata."</string>
     <!-- Expert patcher Screen -->
     <string name="patching_app">Patcher app</string>
     <string name="memory_usage">Hukommelsesforbrug</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s af %2$s MB</string>
     <string name="cpu_usage">CPU-forbrug</string>
     <string name="storage_io_usage">Lagring I/O</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -611,6 +655,12 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="mini_game_snake_swipe_to_start">Stryk for at starte</string>
     <string name="mini_game_dino_picker_subtitle">Tryk for at hoppe over kaktusser</string>
     <string name="mini_game_dino_tap_to_start">Tryk for at løbe</string>
+    <string name="mini_game_blocks_picker_subtitle">Tilpas formerne, klare linjer</string>
+    <string name="mini_game_blocks_tap_to_start">Tryk for at rotere, stryg for at flytte, stryg ned for at slippe</string>
+    <string name="mini_game_bricks_picker_subtitle">Få bolden til at hoppe, fjern muren</string>
+    <string name="mini_game_bricks_tap_to_start">Træk for at sigte, tryk for at affyre</string>
+    <string name="mini_game_miner_picker_subtitle">Tryk for at åbne, hold for at markere</string>
+    <string name="mini_game_pairs_picker_subtitle">Vend kortene, find parret</string>
     <!-- Settings -->
     <string name="appearance">Udseende</string>
     <string name="advanced">Avanceret</string>
@@ -663,6 +713,9 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Vis en hilsenbesked på startskærmen</string>
     <string name="settings_appearance_app_grouping">App-gruppering</string>
     <string name="settings_appearance_app_grouping_description">Vis en hjemmeskærms-skifter til at gruppere apps efter kilde eller dine egne kategorier, og bevar udvælgelsen, når den er slået fra</string>
+    <string name="settings_appearance_patch_list">Patchliste</string>
+    <string name="settings_appearance_patch_categories">Gruppér efter kategori</string>
+    <string name="settings_appearance_patch_categories_description">Inddel patchlister efter de kategorier, som en kilde angiver, og lad kilder uden angivne kategorier fremstå som en almindelig liste.</string>
     <string name="settings_appearance_repatch_notice">Meddelelse om gen-patch</string>
     <string name="settings_appearance_repatch_notice_description">Vis et banner på startskærmen, når patchede apps kan gen-patches</string>
     <string name="settings_appearance_sort_button">Sorterings- og filterknap</string>
@@ -775,6 +828,10 @@ Patcher er ikke påvirket: aktivér præ-release-patcher for hver kilde i patch-
     <string name="settings_advanced_patch_options_custom_branding_description">Ændre hvordan appnavn vises</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Appnavn</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Angiv brugerdefineret navn</string>
+    <string name="settings_advanced_patch_options_path_gone">Denne mappe kan ikke længere læses. Vælg den igen, eller fjern den, ellers stopper patching og spørger om den</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Appikon</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">Ikonet, som appen bliver patchet med. Det bruges også, hvor appen ikke kan ændre det senere, f.eks. Android Auto og app-listen i systemindstillingerne</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">Det brugerdefinerede app-ikon kræver en mappe med ikonbilleder</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Brugerdefineret ikon</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Mappe med billeder, der kan bruges som et brugerdefineret ikon.
 
@@ -859,6 +916,8 @@ Størrelsesformatet skal være som følger:
     <string name="installer_action_open_shizuku">Åbn Shizuku</string>
     <string name="installer_hint_generic">Installationen mislykkedes. Prøv igen eller skift til en anden installer</string>
     <string name="installer_hint_conflict">En anden app med dette pakkenavn er allerede installeret. Fjern den før du fortsætter</string>
+    <string name="installer_confirm_notification_title">Bekræft installationen</string>
+    <string name="installer_confirm_notification_text">Tryk for at afslutte installationen af den patchede app</string>
     <string name="installer_external_launched">Åbner %s…</string>
     <string name="installer_external_timeout">%s bekræftede ikke installationen. Tjek den anden app og prøv igen</string>
     <string name="installer_external_success">%s meldte om en succesfuld installation</string>
@@ -875,7 +934,7 @@ Størrelsesformatet skal være som følger:
     <string name="settings_prompt_installer_on_install">Installatørvalgsmeddelelse</string>
     <string name="settings_prompt_installer_on_install_description">Vis installer-valgdialog hver gang du installerer en patchet app</string>
     <string name="settings_auto_install_with_shizuku">Automatisk installation efter patching</string>
-    <string name="settings_auto_install_with_shizuku_description">Installerer automatisk den patched APK, så snart patching er fuldført</string>
+    <string name="settings_auto_install_with_shizuku_description">Installerer den patchede APK, så snart patching er færdig</string>
     <string name="settings_auto_uninstall_with_shizuku">Automatisk afinstallation ved konflikt</string>
     <string name="settings_auto_uninstall_with_shizuku_description">Når du automatisk installerer med Shizuku, skal du først afinstallere den eksisterende app, hvis Android rapporterer en signaturkonflikt. Dette kan fjerne app-data</string>
     <string name="settings_auto_uninstall_warning_title">Aktiver automatisk afinstallation?</string>
@@ -913,6 +972,7 @@ Detaljer: %2$s"</string>
     <string name="settings_system_process_runtime_enable">Aktiver proces runtime</string>
     <string name="settings_system_memory_limit_subtitle">Hukommelse tilgængelig til patching</string>
     <string name="settings_system_memory_limit_warning">En lav hukommelsesbegrænsning kan medføre at patching af store apps fejler</string>
+    <string name="settings_system_memory_limit_high_warning">En høj hukommelsesgrænse kan gøre patching meget langsommere på nogle enheder. Hæv den kun, hvis patching fortsat fejler ved lavere grænser.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB grænse</string>
     <string name="settings_system_process_runtime_disabled_description">Tryk for at konfigurere</string>
     <string name="settings_system_process_runtime_description_not_available">Denne funktion kræver Android 11 eller nyere</string>
@@ -1072,7 +1132,7 @@ Detaljer: %2$s"</string>
     <string name="credits_current_development">Current development</string>
     <string name="credits_prior_development">Prior development</string>
     <string name="opensource_licenses">Open-source licenser</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Et valg</string>
     <string name="easter_egg_pill_message">Tag den blå pille, og reklamerne forbliver præcis, hvor de er. Tag den røde, og se, hvor dybt bytekoden går.</string>
     <string name="easter_egg_pill_red">Rød pille</string>
@@ -1083,6 +1143,10 @@ Detaljer: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">Tilbage i regnen</string>
     <string name="easter_egg_pill_blue_toast_again">Frakoblet. Vejen tilbage er, hvor den altid var</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">Vælg fil</string>
     <string name="select_folder">Vælg mappe</string>
     <string name="patches">Patches</string>
@@ -1184,6 +1248,8 @@ Detaljer: %2$s"</string>
     <string name="hidden">Skjult</string>
     <string name="unhide">Vis</string>
     <string name="unhide_done">Vist</string>
+    <string name="ignore">Ignorer</string>
+    <string name="stop_ignoring">Stop med at ignorere</string>
     <string name="logs">Logge</string>
     <string name="sources">Kilder</string>
     <string name="installing_ellipsis">Installerer…</string>
@@ -1207,8 +1273,8 @@ Detaljer: %2$s"</string>
     <string name="install_update_manager_failed">Kunne ikke installere opdatering</string>
     <string name="installing_manager_update">Installerer opdatering…</string>
     <string name="downloading_manager_update">Downloader opdatering…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">%1$.1f MB downloadet</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">%1$s MB downloadet</string>
     <string name="manager_update_not_ready">Denne udgivelse er stadig ved at blive publiceret. Prøv igen om et par minutter</string>
     <string name="update_download_missing">Den downloadede opdatering er ikke længere tilgængelig. Download den igen</string>
     <string name="download_manager_failed">Kunne ikke downloade opdatering: %s</string>

@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">Няма скрити приложения</string>
     <string name="home_app_hidden_apps_title">Скрити приложения</string>
     <string name="home_app_hidden_apps_hint">̅̅Натиснете, за да покажете</string>
+    <string name="home_app_patch_sources_description">Източниците, останали без отметка, не се предлагат, когато тези приложения се кърпят, и кръпките им никога не се включват сами в селекция. Всеки източник остава включен за всяко друго приложение.</string>
+    <string name="home_app_patch_sources_mixed">Предлага се на %1$s от %2$s</string>
+    <string name="home_app_patch_sources_covers">Има кръпки за %1$s от %2$s</string>
+    <string name="home_app_patch_sources_last">Всяко приложение има нужда от поне един останал източник, от който да се кърпи.</string>
     <string name="android_11_bug_dialog_title">Грешка на Android 11</string>
     <string name="android_11_bug_dialog_description">Предварително трябва да се предостави право за инсталиране на приложението, за да се избегне грешка в системата Android 11, която ще повлияе негативно на потребителския опит</string>
     <string name="deep_link_add_source_title">Добавяне на източник</string>
@@ -27,14 +31,19 @@
     <string name="home_metadata_errors_subtitle">Докоснете, за да прегледате източниците</string>
     <string name="home_outdated_manager_title">Morphe е остарял</string>
     <string name="home_outdated_manager_subtitle">Някои източници на пачове изискват по-нова версия</string>
+    <string name="home_held_back_title">Един източник на пачове предизвика срив на Morphe</string>
+    <string name="home_held_back_subtitle">Срив</string>
     <string name="home_metered_skipped_title">Актуализациите са спрени при използване на мобилни данни</string>
     <string name="home_metered_skipped_subtitle">Докоснете, за да разрешите актуализации през мобилни данни</string>
     <string name="home_repatch_available_subtitle">Докоснете, за да ги добавите всички в опашката</string>
     <string name="home_update_error">Неуспешно актуализиране</string>
     <string name="home_update_error_subtitle">Възникна грешка при обновяването на източниците</string>
     <string name="home_update_skipped_metered">Пропуснати актуализации</string>
-    <string name="home_update_skipped_metered_subtitle">Мобилен дан е активен</string>
+    <string name="home_update_skipped_metered_subtitle">Мобилни данни активни</string>
     <string name="home_updating_sources">Обновяне на източници…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s МБ (%5$d%%)</string>
     <string name="home_update_success">Обновяне на източниците завършено</string>
     <string name="home_update_success_subtitle">Вашите източници са актуални</string>
     <string name="home_sources_are_loading">Зареждане на източниците, моля изчакайте…</string>
@@ -54,11 +63,11 @@
     <string name="home_app_sort_name_asc_description">Азбучен ред, от А до Я</string>
     <string name="home_app_sort_name_desc_description">Обратно по азбучен ред, от Я до А</string>
     <string name="home_app_sort_updates_first">Първо актуализации за поправки</string>
-    <string name="home_app_sort_updates_first_description">Приложения с икони за актуализация първо, след това в препоръчителен ред</string>
+    <string name="home_app_sort_updates_first_description">Приложения с по-нови пачове първо, след това препоръчан ред</string>
     <string name="home_app_sort_recently_patched">Наскоро пачвани</string>
-    <string name="home_app_sort_recently_patched_description">Приложения, пачвани най-скоро, първо</string>
+    <string name="home_app_sort_recently_patched_description">Най-скоро пачваните приложения първо</string>
     <string name="home_no_apps_title">Няма налични приложения</string>
-    <string name="home_no_apps_subtitle">Добавете източник на корекция или активирайте съществуващ в %s</string>
+    <string name="home_no_apps_subtitle">Добавете източник на пачове или активирайте съществуващ в %s</string>
     <string name="home_no_apps_search_subtitle">Няма приложения, които отговарят на \"%s\"</string>
     <string name="home_all_apps_hidden_title">Всички приложения са скрити</string>
     <string name="home_all_apps_hidden_subtitle">Скрили сте всички приложения от началния екран</string>
@@ -120,7 +129,7 @@
     <string name="home_greeting_super_late_5">Нощни птици и продуктивни</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Източници за поправки</string>
-    <string name="sources_search">Търсене на източници</string>
+    <string name="sources_search">Търсене на източници и кръпки</string>
     <string name="sources_sort_title">Сортиране на източници на поправки</string>
     <string name="sources_sort_manual">Ръчна подредба</string>
     <string name="sources_sort_manual_hint">Натиснете и задръжте източник, за да го пренаредите</string>
@@ -128,9 +137,14 @@
     <string name="sources_sort_last_updated_description">Най-новите актуализации на източници първо</string>
     <string name="sources_sort_enabled_first">Първо включените</string>
     <string name="sources_sort_enabled_first_description">Показване на активни източници преди деактивирани източници</string>
+    <string name="sources_patches_source_disabled_hint">Този източник е деактивиран. Кръпките му са изброени за справка и не се прилагат.</string>
     <string name="sources_management_open_in_browser">Отваряне в браузър</string>
     <string name="sources_management_report_issue">Докладвай за проблем</string>
     <string name="sources_management_failed_to_open_url">Неуспешно отваряне на URL</string>
+    <string name="sources_hidden_apps">Скрит за</string>
+    <string name="sources_hidden_apps_title">Приложения, скрити от %1$s</string>
+    <string name="sources_hidden_apps_description">На тези приложения не се предлага този източник, когато върху тях се прилагат кръпки. Самият източник остава включен за всичко останало</string>
+    <string name="sources_hidden_apps_hint">Докоснете, за да предложите отново този източник</string>
     <string name="sources_management_prerelease_toggle">Предварителни пачове</string>
     <string name="sources_management_prerelease_toggle_description">Получава ранен достъп до нови експериментални версии на пачове</string>
     <string name="sources_prerelease_warning_title">Активиране на предварителни пачове ли?</string>
@@ -147,6 +161,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">Пакетът за корекции не може да бъде свален. URL адресът на източника може да е неверен или файлът не съществува</string>
     <string name="sources_management_outdated_manager_badge">Актуализиране на Morphe</string>
     <string name="sources_management_outdated_manager_hint">Този източник е създаден за пачър %1$s, но Morphe %2$s включва пачър %3$s. Актуализирайте Morphe, за да го използвате.</string>
+    <string name="sources_management_held_back_badge">Срив</string>
+    <string name="sources_management_held_back_hint">Този източник предизвика срив на Morphe по време на зареждане, затова той се пропуска. Обновете го или го импортирайте отново, за да опитате отново.</string>
     <string name="sources_management_source_enabled">Източникът е активиран</string>
     <string name="sources_management_source_disabled">Източникът е деактивиран</string>
     <string name="sources_management_source_updating">Актуализиране на източник</string>
@@ -190,6 +206,7 @@
     <string name="home_apk_availability_recommended_label">Рекомендовано</string>
     <string name="home_apk_availability_unpatched_label">Необновен</string>
     <string name="home_apk_availability_incompatible_label">Несъвместим</string>
+    <string name="home_apk_availability_installed_version">Инсталирано на това устройство: %s</string>
     <string name="home_apk_availability_yes">Да, помогнете ми да намира APK</string>
     <string name="home_apk_availability_no">Не, вече имам APK</string>
     <string name="home_apk_helper_download">Използвайте помощно приложение</string>
@@ -317,9 +334,11 @@
     <string name="home_outdated_patches_dialog_warning">Патчване с остарели патчове може да доведе до счупване на приложението</string>
     <string name="home_outdated_patches_dialog_update_and_patch">Обновяване и патчване</string>
     <string name="home_low_disk_space_dialog_title">Малко място на диска</string>
-    <string name="home_low_disk_space_dialog_message">Само %1$.2f GB свободно място за съхранение. За да работи правилно, обновяването изисква поне %2$.2f GB свободно място</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Налично е само %1$s ГБ свободно място. Прилагането на кръпката изисква поне %2$s ГБ свободно място, за да работи правилно</string>
     <string name="home_low_disk_space_dialog_warning">Продължаването може да доведе до грешка \"файлът не е намерен\" или повреден изходен APK</string>
     <string name="home_simple_bundle_select_title">Изберете източник на пач</string>
+    <string name="home_simple_bundle_select_remember">Винаги използвайте този източник за това приложение</string>
     <!-- Color picker -->
     <string name="custom_color">Навикнат цвят</string>
     <string name="hex_color">Хекс цвят</string>
@@ -434,6 +453,10 @@
     <string name="home_app_info_install_type_shizuku_play_store">Инсталиране от Play Store чрез Shizuku</string>
     <string name="home_app_info_patch_update_available">Достъпно е ново издание на замести</string>
     <string name="home_app_info_patch_update_available_description">Достъпна е по-нова версия на поправките. Поправете отново приложението си, за да получите последното подобрение и поправки</string>
+    <string name="home_app_info_app_update_available">Налична е актуализация на приложението</string>
+    <string name="home_app_info_app_update_available_description">Източниците на кръпката поддържат по-нова версия на това приложение. Приложете отново кръпката, за да преминете към тази версия</string>
+    <string name="home_app_info_newest_supported_version">Най-нова поддържана</string>
+    <string name="home_app_info_version_move">Инсталирана %1$s, най-нова поддържана %2$s</string>
     <string name="home_app_info_app_deleted_warning">Приложението беше деинсталирано</string>
     <string name="home_app_info_app_deleted_description">Това приложение беше деинсталирано извън Morphe. Поправете го отново, за да възстановите функционалността</string>
     <string name="home_app_info_not_patched_description">Инсталирана е версия без пачове на това приложение. Morphe все още има своя предишен запис за пач</string>
@@ -457,17 +480,34 @@
     <string name="patcher_error_copied">Грешка е копирана в клипборда</string>
     <string name="patcher_error_log">Дневник на грешки</string>
     <string name="patcher_error_technical">Технически детайли</string>
+    <string name="patcher_error_dialog_diagnostics">Диагностика</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Прилагането на кръпката започна</string>
+    <string name="patcher_card_succeeded">Прилагането на кръпката завърши успешно</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
+    <string name="patcher_field_app">Приложение</string>
+    <string name="patcher_field_package">Пакет</string>
+    <string name="patcher_field_source">Източник</string>
     <string name="patcher_field_split">Разделяне на APK</string>
     <string name="patcher_field_manager">Мениджър</string>
     <string name="patcher_field_patcher">Пачър</string>
     <string name="patcher_field_runtime">Среда за изпълнение</string>
     <!-- Native code libraries (.so files) packed inside the APK -->
+    <string name="patcher_field_libraries">Библиотеки</string>
     <string name="patcher_field_android">Android</string>
     <string name="patcher_field_device">Устройство</string>
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Памет</string>
     <string name="patcher_field_storage">Съхранение</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Размер на изхода</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Време</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Средна памет</string>
+    <string name="patcher_field_memory_max">Максимална памет</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Пиково I/O на хранилището</string>
     <string name="patcher_field_value_unknown">неизвестен</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">премахнати</string>
@@ -514,6 +554,13 @@
     <string name="patcher_storage_permission_open_settings">Отвори настройки за съхранение</string>
     <string name="patcher_storage_badge_denied">Разрешение отказано</string>
     <string name="patcher_storage_badge_missing">Не е намерено</string>
+    <string name="batch_patch_option_paths_skipped">Файловете с опции за кръпки липсват и ще бъдат пропуснати: %1$s</string>
+    <string name="patcher_missing_patches_title">Някои кръпки липсват</string>
+    <string name="patcher_missing_patches_description">Запазеният избор за това приложение изброява кръпки, които вече не се предлагат от нито един активиран източник. Продължаването прилага кръпки върху приложението без тях</string>
+    <string name="patcher_missing_patches_label">Вече не се предлага</string>
+    <string name="patcher_option_paths_gone_title">Файловете с опции за кръпки липсват</string>
+    <string name="patcher_option_paths_gone_description">Една или повече опции за кръпки сочат към файлове, които вече не съществуват. Премахнете пътищата, за да приложите кръпки без тях, или върнете файловете обратно и опитайте отново</string>
+    <string name="patcher_option_paths_clear">Премахнете пътищата и продължете</string>
     <string name="patcher_storage_permission_hint">Съвет: Преместете файловете в /Android/data/app.morphe.manager/files/ - не са нужни допълнителни разрешения</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Not selected</string>
@@ -559,7 +606,7 @@
     <string name="patcher_message_15">Всички системи номинални… траекторията на пачване е стабилна… 🚀</string>
     <string name="patcher_message_16">Изстисквам допълнителна мощност, като сок от дигитален лимон… 🍋</string>
     <string name="patcher_message_17">Убеждавам приложението да приеме новото си, по-добро аз… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Променям суперпозицията на приложението от непачнато към пачнато… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">Вашият апарат има температура, а единствената рецепта е повече патчи… 🩺🔔</string>
@@ -567,6 +614,8 @@
     <!-- Expert patcher Screen -->
     <string name="patching_app">Патчване на приложението</string>
     <string name="memory_usage">Използване на памет</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s от %2$s MB</string>
     <string name="cpu_usage">Използване на процесора</string>
     <string name="storage_io_usage">Дисков I/O</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -606,6 +655,12 @@
     <string name="mini_game_snake_swipe_to_start">Плъзнете, за да започнете</string>
     <string name="mini_game_dino_picker_subtitle">Докоснете, за да прескочите кактусите</string>
     <string name="mini_game_dino_tap_to_start">Докоснете, за да бягате</string>
+    <string name="mini_game_blocks_picker_subtitle">Съчетайте формите, изчистете редовете</string>
+    <string name="mini_game_blocks_tap_to_start">Докоснете, за да завъртите, плъзнете, за да преместите, плъзнете надолу, за да пуснете</string>
+    <string name="mini_game_bricks_picker_subtitle">Отскачайте топката, изчистете стената</string>
+    <string name="mini_game_bricks_tap_to_start">Плъзнете, за да прицелите, докоснете, за да изстреляте</string>
+    <string name="mini_game_miner_picker_subtitle">Докоснете, за да отворите, задръжте, за да поставите флаг</string>
+    <string name="mini_game_pairs_picker_subtitle">Обърнете картите, намерете съвпадението</string>
     <!-- Settings -->
     <string name="appearance">Външен вид</string>
     <string name="advanced">Разширено</string>
@@ -659,6 +714,9 @@
     <string name="settings_appearance_greeting_phrases_subtitle">Показване на поздравително съобщение на началния екран</string>
     <string name="settings_appearance_app_grouping">Групиране на приложения</string>
     <string name="settings_appearance_app_grouping_description">Покажи превключвател на началния екран за групиране на приложения по източник или по твои категории, запазвайки селекцията, когато е изключено</string>
+    <string name="settings_appearance_patch_list">Списък с пачове</string>
+    <string name="settings_appearance_patch_categories">Групиране по категория</string>
+    <string name="settings_appearance_patch_categories_description">Разделя списъците с пачове по категориите, които даден източник декларира, като оставя източниците без декларирани категории като обикновен списък.</string>
     <string name="settings_appearance_repatch_notice">Известие за повторно кръпване</string>
     <string name="settings_appearance_repatch_notice_description">Показване на банер на началния екран, когато приложенията с кръпки могат да бъдат кръпнати отново</string>
     <string name="settings_appearance_sort_button">Бутон за сортиране и филтриране</string>
@@ -772,6 +830,10 @@
     <string name="settings_advanced_patch_options_custom_branding_description">Променя името на приложението</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Име на приложението</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Въведете име</string>
+    <string name="settings_advanced_patch_options_path_gone">Тази папка вече не може да се чете. Изберете я отново или я изчистете, в противен случай прилагането на кръпки ще спре и ще попита за нея</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Икона на приложението</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">Иконата, с която се прилагат кръпки върху приложението. Тя се използва и там, където приложението не може да я промени по-късно, като например Android Auto и списъка с приложения в системните настройки</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">Персонализираната икона на приложението изисква папка с изображения на икони</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Настройки за брандиране</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Папка с изображения, които да използвате като персонализирана икона.
 
@@ -856,6 +918,8 @@ morphe_header_custom_dark.png
     <string name="installer_action_open_shizuku">Not selected</string>
     <string name="installer_hint_generic">Инсталирането провалило. Опитайте отново или превключете на различен инсталатор.</string>
     <string name="installer_hint_conflict">Друго приложение с това име вече е инсталирано. Деинсталирайте го преди да продължите.</string>
+    <string name="installer_confirm_notification_title">Потвърдете инсталацията</string>
+    <string name="installer_confirm_notification_text">Докоснете, за да завършите инсталирането на патчваното приложение.اگر فیلڈ غلط ہو تو صارف کو اطلاع دیں۔</string>
     <string name="installer_external_launched">Отваряне на %s…</string>
     <string name="installer_external_timeout">%s не потвърди инсталацията. Проверете другата приложение и опитайте отново</string>
     <string name="installer_external_success">%s докладва за успешно инсталиране</string>
@@ -872,7 +936,7 @@ morphe_header_custom_dark.png
     <string name="settings_prompt_installer_on_install">Показва се прозорец за избор на инсталатор</string>
     <string name="settings_prompt_installer_on_install_description">Показва диалогов прозорец за избор на инсталатор всеки път, когато се инсталира приложение с пач.</string>
     <string name="settings_auto_install_with_shizuku">Автоматична инсталация след поправяне</string>
-    <string name="settings_auto_install_with_shizuku_description">Инсталира поправения APK тихо веднага след завършване на поправянето</string>
+    <string name="settings_auto_install_with_shizuku_description">Инсталира коригирания APK веднага щом корекцията приключи</string>
     <string name="settings_auto_uninstall_with_shizuku">Автоматично деинсталиране при конфликт</string>
     <string name="settings_auto_uninstall_with_shizuku_description">При автоматично инсталиране със Shizuku, първо деинсталирайте съществуващото приложение, ако Android съобщи за конфликт в подписите. Това може да премахне данните на приложението.</string>
     <string name="settings_auto_uninstall_warning_title">Активиране на автоматично деинсталиране?</string>
@@ -910,6 +974,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime_enable">Включване на изпълнение на различни процеси</string>
     <string name="settings_system_memory_limit_subtitle">Памет, достъпен за заместителния процес</string>
     <string name="settings_system_memory_limit_warning">Нисък памет може да доведе до неуспехи при заместителния на по-големи приложения</string>
+    <string name="settings_system_memory_limit_high_warning">Високата граница на паметта може да направи кърпенето много по-бавно на някои устройства. Увеличете я само ако кърпенето продължава да се проваля при по-ниски граници.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB лимит</string>
     <string name="settings_system_process_runtime_disabled_description">Натиснете за конфигуриране</string>
     <string name="settings_system_process_runtime_description_not_available">Това функционално възможност изисква Android 11 или по-нова версия.</string>
@@ -1069,7 +1134,7 @@ morphe_header_custom_dark.png
     <string name="credits_current_development">Текущо развитие</string>
     <string name="credits_prior_development">Предишно развитие</string>
     <string name="opensource_licenses">Лицензи с отворен код</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Избор</string>
     <string name="easter_egg_pill_message">Вземи синьото хапче и рекламите си остават точно където са. Вземи червеното и виж колко дълбоко отива байткодът.</string>
     <string name="easter_egg_pill_red">Червено хапче</string>
@@ -1080,6 +1145,10 @@ morphe_header_custom_dark.png
     <string name="easter_egg_pill_red_toast_again">Обратно в дъжда</string>
     <string name="easter_egg_pill_blue_toast_again">Изключен. Пътят назад е там, където винаги е бил.</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s МБ / %2$s МБ (%3$s%%)</string>
     <string name="select_file">Избери файл</string>
     <string name="select_folder">Избери папка</string>
     <string name="patches">Пачове</string>
@@ -1181,6 +1250,8 @@ morphe_header_custom_dark.png
     <string name="hidden">Скрито</string>
     <string name="unhide">Покажи</string>
     <string name="unhide_done">Показано</string>
+    <string name="ignore">Игнорирай</string>
+    <string name="stop_ignoring">Спри да игнорираш</string>
     <string name="logs">Дневници</string>
     <string name="sources">Източници</string>
     <string name="installing_ellipsis">Инсталиране…</string>
@@ -1204,8 +1275,8 @@ morphe_header_custom_dark.png
     <string name="install_update_manager_failed">Неуспешно инсталиране на актуализиране</string>
     <string name="installing_manager_update">Инсталиране на актуализиране…</string>
     <string name="downloading_manager_update">Сваляне на актуализиране…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">%1$.1f MB изтеглени</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">Изтеглено: %1$s MB</string>
     <string name="manager_update_not_ready">Този релиз все още се публикува. Опитайте отново след няколко минути</string>
     <string name="update_download_missing">Изтеглената актуализация вече не е налична. Изтеглете я отново.</string>
     <string name="download_manager_failed">Неуспешно сваляне на актуализиране: %s</string>

@@ -10,6 +10,21 @@
         <item quantity="few">%s opcije patchanja</item>
         <item quantity="other">%s opcija patchanja</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Izvori zakrpa za %s aplikaciju</item>
+        <item quantity="few">Izvori zakrpa za %s aplikacije</item>
+        <item quantity="other">Izvori zakrpa za %s aplikacija</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s izvor skriven. Dodirnite za prikaz</item>
+        <item quantity="few">%s izvora skrivena. Dodirnite za prikaz</item>
+        <item quantity="other">%s izvora skriveno. Dodirnite za prikaz</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s odgovarajuća zakrpa</item>
+        <item quantity="few">%s odgovarajuće zakrpe</item>
+        <item quantity="other">%s odgovarajućih zakrpa</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s izvor</item>
         <item quantity="few">%s izvori patcheva</item>
@@ -52,12 +67,12 @@
     </plurals>
     <plurals name="batch_patch_ready_count">
         <item quantity="one">%s aplikacija spremna za patchanje</item>
-        <item quantity="few">%s aplikacija spremno za patchanje</item>
+        <item quantity="few">%s aplikacije spremne za patchanje</item>
         <item quantity="other">%s aplikacija spremno za patchanje</item>
     </plurals>
     <plurals name="repatch_available_count">
         <item quantity="one">%s aplikacija može biti  ponovno patchana</item>
-        <item quantity="few">%s aplikacija može biti  ponovno patchano</item>
+        <item quantity="few">%s aplikacije mogu biti  ponovno patchana</item>
         <item quantity="other">%s aplikacija može biti  ponovno patchano</item>
     </plurals>
     <plurals name="batch_skipped_summary">
@@ -86,13 +101,18 @@
         <item quantity="other">%s aplikacija</item>
     </plurals>
     <plurals name="expert_mode_selected_count">
-        <item quantity="one">%s odabrano</item>
-        <item quantity="few">%s odabrano</item>
+        <item quantity="one">%s odabrana</item>
+        <item quantity="few">%s odabrane</item>
         <item quantity="other">%s odabrano</item>
     </plurals>
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Kopiran je %s patch iz odabranog paketa</item>
-        <item quantity="few">Kopirano je %s patcheva iz odabranog paketa</item>
+        <item quantity="few">Kopirana su %s patcha iz odabranog paketa</item>
         <item quantity="other">Kopirano je %s patcheva iz odabranog paketa</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s jezgra</item>
+        <item quantity="few">%s jezgre</item>
+        <item quantity="other">%s jezgri</item>
     </plurals>
 </resources>

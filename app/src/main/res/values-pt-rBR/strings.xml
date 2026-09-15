@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">Nenhum aplicativo oculto</string>
     <string name="home_app_hidden_apps_title">Aplicativos ocultos</string>
     <string name="home_app_hidden_apps_hint">Toque para reexibir</string>
+    <string name="home_app_patch_sources_description">Fontes não selecionadas não são oferecidas quando esses apps são patcheados, e seus patches nunca são incluídos em uma seleção. Cada fonte permanece ativa para os demais aplicativos.</string>
+    <string name="home_app_patch_sources_mixed">Oferecido a %1$s de %2$s</string>
+    <string name="home_app_patch_sources_covers">Possui patches para %1$s de %2$s</string>
+    <string name="home_app_patch_sources_last">Cada app precisa de pelo menos uma fonte para aplicar os patches</string>
     <string name="android_11_bug_dialog_title">Bug do Android 11</string>
     <string name="android_11_bug_dialog_description">A permissão de instalação do aplicativo deve ser concedida antecipadamente para evitar um bug no sistema Android 11 que afetará negativamente a experiência do usuário.</string>
     <string name="deep_link_add_source_title">Adicionar fonte</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">Toque para revisar as fontes</string>
     <string name="home_outdated_manager_title">O Morphe está desatualizado</string>
     <string name="home_outdated_manager_subtitle">Algumas fontes de patches precisam de uma nova versão</string>
+    <string name="home_held_back_title">Uma fonte de patches causou a falha do Morphe</string>
+    <string name="home_held_back_subtitle">Ela foi ignorada para que o aplicativo pudesse iniciar. Toque para revisar</string>
     <string name="home_metered_skipped_title">Atualizações pausadas em dados móveis</string>
     <string name="home_metered_skipped_subtitle">Toque para permitir atualizações usando dados móveis</string>
     <string name="home_repatch_available_subtitle">Toque para colocar todos na fila</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">Atualizações ignoradas</string>
     <string name="home_update_skipped_metered_subtitle">Dados móveis estão ativos</string>
     <string name="home_updating_sources">Atualizando fontes…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s MB (%5$d%%)</string>
     <string name="home_update_success">Atualização de fontes concluída</string>
     <string name="home_update_success_subtitle">Suas fontes estão atualizadas</string>
     <string name="home_sources_are_loading">Carregando fontes, por favor aguarde…</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">Ordem alfabética, de A a Z</string>
     <string name="home_app_sort_name_desc_description">Ordem alfabética inversa, de Z a A</string>
     <string name="home_app_sort_updates_first">Atualizações de patches primeiro</string>
-    <string name="home_app_sort_updates_first_description">Aplicativos com selos de atualização primeiro, depois por ordem recomendada</string>
+    <string name="home_app_sort_updates_first_description">Aplicativos com patches mais recentes primeiro, depois ordem recomendada</string>
     <string name="home_app_sort_recently_patched">Recentemente patcheados</string>
     <string name="home_app_sort_recently_patched_description">Aplicativos patcheados mais recentemente primeiro</string>
     <string name="home_no_apps_title">Nenhum aplicativo disponível</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">Noturno e produtivo</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Fontes de patches</string>
-    <string name="sources_search">Buscar fontes</string>
+    <string name="sources_search">Pesquisar fontes e patches</string>
     <string name="sources_sort_title">Ordenar fontes de patch</string>
     <string name="sources_sort_manual">Ordem manual</string>
     <string name="sources_sort_manual_hint">Pressione e segure uma fonte para reordenar</string>
@@ -127,9 +136,14 @@
     <string name="sources_sort_last_updated_description">Atualizações da fonte mais recente primeiro</string>
     <string name="sources_sort_enabled_first">Habilitados primeiro</string>
     <string name="sources_sort_enabled_first_description">Mostrar fontes ativas antes das desabilitadas</string>
+    <string name="sources_patches_source_disabled_hint">Esta fonte está desativada. Seus patches estão listados para referência e não são aplicados</string>
     <string name="sources_management_open_in_browser">Abrir links no navegador</string>
     <string name="sources_management_report_issue">Relatar um problema</string>
     <string name="sources_management_failed_to_open_url">Falha ao abrir URL</string>
+    <string name="sources_hidden_apps">Oculto para</string>
+    <string name="sources_hidden_apps_title">Apps ocultos de %1$s</string>
+    <string name="sources_hidden_apps_description">Esses apps não recebem essa fonte quando são patcheados. A fonte em si permanece ativa para todo o restante</string>
+    <string name="sources_hidden_apps_hint">Toque para oferecer esta fonte novamente</string>
     <string name="sources_management_prerelease_toggle">Patches de pré-lançamento</string>
     <string name="sources_management_prerelease_toggle_description">Recebe acesso antecipado a novas versões experimentais de patches</string>
     <string name="sources_prerelease_warning_title">Ativar patches de pré-lançamento?</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">O pacote de patches não pôde ser baixado. A URL de origem pode estar incorreta ou o arquivo não existir.</string>
     <string name="sources_management_outdated_manager_badge">Atualize o Morphe</string>
     <string name="sources_management_outdated_manager_hint">Esta fonte foi criada para o patcher %1$s, mas o Morphe %2$s já inclui o patcher %3$s. Atualize o Morphe para usá-la</string>
+    <string name="sources_management_held_back_badge">Falhou</string>
+    <string name="sources_management_held_back_hint">Esta fonte causou a falha do Morphe durante o carregamento, por isso está sendo ignorada. Atualize ou reimporte para tentar novamente</string>
     <string name="sources_management_source_enabled">Fonte ativada</string>
     <string name="sources_management_source_disabled">Fonte desativada</string>
     <string name="sources_management_source_updating">Atualizando fonte</string>
@@ -190,6 +206,7 @@ Tudo o que você adicionar a partir deste site é por sua conta e risco"</string
     <string name="home_apk_availability_recommended_label">Recomendado</string>
     <string name="home_apk_availability_unpatched_label">Original</string>
     <string name="home_apk_availability_incompatible_label">Incompatível</string>
+    <string name="home_apk_availability_installed_version">Instalado neste dispositivo: %s</string>
     <string name="home_apk_availability_yes">Sim, me ajude a encontrar um APK</string>
     <string name="home_apk_availability_no">Não, eu já tenho um APK</string>
     <string name="home_apk_helper_download">Usar um aplicativo auxiliar</string>
@@ -317,9 +334,11 @@ Para obter os melhores resultados, este aplicativo recomenda corrigir um(a) &lt;
     <string name="home_outdated_patches_dialog_warning">Usar patches desatualizados pode resultar em um app quebrado</string>
     <string name="home_outdated_patches_dialog_update_and_patch">Atualizar &amp; patch</string>
     <string name="home_low_disk_space_dialog_title">Pouco espaço em disco</string>
-    <string name="home_low_disk_space_dialog_message">Apenas %1$.2f GB de espaço de armazenamento livre disponível. A aplicação de patches requer pelo menos %2$.2f GB de espaço livre para funcionar corretamente.</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Apenas %1$s GB de espaço de armazenamento livre disponível. A aplicação de patches requer pelo menos %2$s GB de espaço livre para funcionar corretamente.</string>
     <string name="home_low_disk_space_dialog_warning">Prosseguir pode resultar em um erro de \"arquivo não encontrado\" ou um APK de saída corrompido</string>
     <string name="home_simple_bundle_select_title">Selecionar fonte de patches</string>
+    <string name="home_simple_bundle_select_remember">Sempre use esta fonte para este aplicativo</string>
     <!-- Color picker -->
     <string name="custom_color">Cor Personalizada</string>
     <string name="hex_color">Cor HEX</string>
@@ -434,6 +453,10 @@ Zona externa (tracejada): pode ser recortada pela máscara do launcher - mantenh
     <string name="home_app_info_install_type_shizuku_play_store">Instalação via Shizuku como Play Store</string>
     <string name="home_app_info_patch_update_available">Nova versão de patches disponível</string>
     <string name="home_app_info_patch_update_available_description">Uma versão mais nova dos patches está disponível. Refaça os patches no seu aplicativo para obter as últimas melhorias e correções</string>
+    <string name="home_app_info_app_update_available">Atualização do app disponível</string>
+    <string name="home_app_info_app_update_available_description">As fontes do patch suportam uma versão mais recente deste app. Aplique o patch novamente para mudar para essa versão.</string>
+    <string name="home_app_info_newest_supported_version">Mais recente suportado</string>
+    <string name="home_app_info_version_move">Instalado %1$s, mais recente suportado %2$s</string>
     <string name="home_app_info_app_deleted_warning">Aplicaitvo desinstalado</string>
     <string name="home_app_info_app_deleted_description">Esse aplicativo foi desinstalado fora do Morphe. Refaça os patches para restaurar a funcionalidade</string>
     <string name="home_app_info_not_patched_description">Uma versão não patcheada deste aplicativo está instalada. O Morphe ainda tem seu registro de patch anterior</string>
@@ -458,6 +481,9 @@ Zona externa (tracejada): pode ser recortada pela máscara do launcher - mantenh
     <string name="patcher_error_log">Log de erros</string>
     <string name="patcher_error_technical">Detalhes técnicos</string>
     <string name="patcher_error_dialog_diagnostics">Diagnósticos</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Aplicação de patches iniciado</string>
+    <string name="patcher_card_succeeded">Aplicação de patches bem sucedido</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">Aplicativo</string>
     <string name="patcher_field_package">Pacote</string>
@@ -473,6 +499,15 @@ Zona externa (tracejada): pode ser recortada pela máscara do launcher - mantenh
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Memória</string>
     <string name="patcher_field_storage">Armazenamento</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Tamanho de saída</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Duração</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Memória média</string>
+    <string name="patcher_field_memory_max">Memória máxima</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Pico de E/S de armazenamento</string>
     <string name="patcher_field_value_unknown">desconhecido</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">Removidas</string>
@@ -520,6 +555,13 @@ A desinstalação apagará permanentemente todos os dados do aplicativo"</string
     <string name="patcher_storage_permission_open_settings">Abrir configurações de armazenamento</string>
     <string name="patcher_storage_badge_denied">Permissão negada</string>
     <string name="patcher_storage_badge_missing">Não encontrado</string>
+    <string name="batch_patch_option_paths_skipped">Arquivos de opção do patch estão ausentes e serão ignorados: %1$s</string>
+    <string name="patcher_missing_patches_title">Alguns patches desapareceram</string>
+    <string name="patcher_missing_patches_description">A seleção salva para este app faz referência a patches que nenhuma fonte ativa oferece mais. O aplicativo continua utilizando os patches, mesmo sem elas</string>
+    <string name="patcher_missing_patches_label">Não é mais oferecido</string>
+    <string name="patcher_option_paths_gone_title">Arquivos de opção do patch estão faltando</string>
+    <string name="patcher_option_paths_gone_description">Uma ou mais opções de patch apontam para arquivos que não estão mais lá. Remova os caminhos para aplicar o patch sem eles, ou restaure os arquivos e tente novamente</string>
+    <string name="patcher_option_paths_clear">Remova os caminhos e continue</string>
     <string name="patcher_storage_permission_hint">Dica: Mova os arquivos para /Android/data/app.morphe.manager/files/ - sem permissão extra necessária</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Preparando</string>
@@ -565,7 +607,7 @@ A desinstalação apagará permanentemente todos os dados do aplicativo"</string
     <string name="patcher_message_15">Todos os sistemas nominais… trajetória de patch estável… 🚀</string>
     <string name="patcher_message_16">Extraindo energia extra, como suco de um limão digital… 🍋</string>
     <string name="patcher_message_17">Incentivando o aplicativo a aceitar seu novo e melhor eu… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Mudando a superposição do aplicativo de não patcheado para patcheado… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">Seu aplicativo está com febre e a única prescrição são mais patches… 🩺🔔</string>
@@ -573,6 +615,8 @@ A desinstalação apagará permanentemente todos os dados do aplicativo"</string
     <!-- Expert patcher Screen -->
     <string name="patching_app">Patcheando aplicativo</string>
     <string name="memory_usage">Uso de memória</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s de %2$s MB</string>
     <string name="cpu_usage">Uso da CPU</string>
     <string name="storage_io_usage">E/S de armazenamento</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -612,6 +656,12 @@ A desinstalação apagará permanentemente todos os dados do aplicativo"</string
     <string name="mini_game_snake_swipe_to_start">Deslize para começar</string>
     <string name="mini_game_dino_picker_subtitle">Toque para pular sobre os cactos</string>
     <string name="mini_game_dino_tap_to_start">Toque para correr</string>
+    <string name="mini_game_blocks_picker_subtitle">Encaixe as formas, elimine linhas</string>
+    <string name="mini_game_blocks_tap_to_start">Toque para girar, deslize para mover, deslize para baixo para soltar</string>
+    <string name="mini_game_bricks_picker_subtitle">Rebata a bola, destrua a parede</string>
+    <string name="mini_game_bricks_tap_to_start">Arraste para mirar, toque para lançar</string>
+    <string name="mini_game_miner_picker_subtitle">Toque para abrir, segure para marcar</string>
+    <string name="mini_game_pairs_picker_subtitle">Vire as cartas, encontre o par</string>
     <!-- Settings -->
     <string name="appearance">Aparência</string>
     <string name="advanced">Avançado</string>
@@ -665,6 +715,9 @@ A desinstalação apagará permanentemente todos os dados do aplicativo"</string
     <string name="settings_appearance_greeting_phrases_subtitle">Mostrar uma mensagem de saudação na tela inicial</string>
     <string name="settings_appearance_app_grouping">Agrupamento de aplicativos</string>
     <string name="settings_appearance_app_grouping_description">Mostrar um alternador de tela inicial para agrupar aplicativos por origem ou suas próprias categorias, mantendo a seleção quando desativado</string>
+    <string name="settings_appearance_patch_list">Lista de patches</string>
+    <string name="settings_appearance_patch_categories">Agrupar por categoria</string>
+    <string name="settings_appearance_patch_categories_description">Divide as listas de patches pelas categorias que uma fonte declara, deixando as fontes que não declaram nenhuma como uma lista simples.</string>
     <string name="settings_appearance_repatch_notice">Aviso de reaplicação de patch</string>
     <string name="settings_appearance_repatch_notice_description">Exibir um banner na tela inicial quando aplicativos corrigidos puderem ser reaplicados</string>
     <string name="settings_appearance_sort_button">Botão ordenar e filtrar</string>
@@ -778,6 +831,10 @@ Os patches não são afetados: ative os patches de pré-lançamento para cada fo
     <string name="settings_advanced_patch_options_custom_branding_description">Altera o nome de exibição do aplicativo</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Nome do aplicativo</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Escreva o nome personalizado</string>
+    <string name="settings_advanced_patch_options_path_gone">Não é mais possível ler esta pasta. Selecione-a novamente ou remova-a; caso contrário, a aplicação de patches será interrompida e solicitará uma ação a respeito</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Ícone do aplicativo</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">O ícone com o qual o aplicativo é modificado. Ele também é utilizado em situações em que o aplicativo não consegue alterá-lo posteriormente, como no Android Auto e na lista de aplicativos das configurações do sistema</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">O ícone personalizado do aplicativo requer uma pasta com imagens de ícones</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Ícone personalizado</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Pasta com imagens para usar como um ícone personalizado.
 
@@ -862,6 +919,8 @@ As dimensões das imagens devem ser as seguintes:
     <string name="installer_action_open_shizuku">Abrir o Shizuku</string>
     <string name="installer_hint_generic">A instalação falhou. Tente novamente ou mude para um instalador diferente</string>
     <string name="installer_hint_conflict">Outro aplicativo com este nome de pacote já está instalado. Desinstale-o antes de continuar</string>
+    <string name="installer_confirm_notification_title">Confirme a instalação</string>
+    <string name="installer_confirm_notification_text">Toque para concluir a instalação do aplicativo patcheado</string>
     <string name="installer_external_launched">Abrindo %s…</string>
     <string name="installer_external_timeout">%s não confirmou a instalação. Verifique o outro aplicativo e tente novamente</string>
     <string name="installer_external_success">%s informou uma instalação bem-sucedida</string>
@@ -878,7 +937,7 @@ As dimensões das imagens devem ser as seguintes:
     <string name="settings_prompt_installer_on_install">Prompt de seleção do instalador</string>
     <string name="settings_prompt_installer_on_install_description">Smotra a caixa de seleção de instalador toda vez que um aplicativo com patch for instalado</string>
     <string name="settings_auto_install_with_shizuku">Instalação automática após a aplicação do patch</string>
-    <string name="settings_auto_install_with_shizuku_description">Instala silenciosamente o APK patcheado assim que a aplicação de patches for concluída</string>
+    <string name="settings_auto_install_with_shizuku_description">Instala o APK patcheado assim que a aplicação de patches for concluída</string>
     <string name="settings_auto_uninstall_with_shizuku">Desinstalação automática em caso de conflito</string>
     <string name="settings_auto_uninstall_with_shizuku_description">Ao instalar automaticamente com o Shizuku, desinstale o app existente primeiro se o Android relatar um conflito de assinatura. Isso pode remover dados do app.</string>
     <string name="settings_auto_uninstall_warning_title">Ativar desinstalação automática?</string>
@@ -916,6 +975,7 @@ Detalhes: %2$s"</string>
     <string name="settings_system_process_runtime_enable">Habilitar processo de runtime</string>
     <string name="settings_system_memory_limit_subtitle">Memória disponível para patching</string>
     <string name="settings_system_memory_limit_warning">Um limite de memória baixo pode causar falhas ao patchear aplicativos maiores</string>
+    <string name="settings_system_memory_limit_high_warning">Um limite de memória alto pode tornar a aplicação de patch muito mais lenta em alguns dispositivos. Aumente-o somente se a aplicação de patch continuar falhando em limites mais baixos.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB limite</string>
     <string name="settings_system_process_runtime_disabled_description">Clique para configurar</string>
     <string name="settings_system_process_runtime_description_not_available">Este recurso requer Android 11 ou superior</string>
@@ -1075,7 +1135,7 @@ Detalhes: %2$s"</string>
     <string name="credits_current_development">Desenvolvimento atual</string>
     <string name="credits_prior_development">Desenvolvimento anterior</string>
     <string name="opensource_licenses">Licenças de código aberto</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Uma escolha</string>
     <string name="easter_egg_pill_message">Tome a pílula azul e os anúncios permanecem exatamente onde estão. Tome a pílula vermelha e veja até onde o bytecode vai.</string>
     <string name="easter_egg_pill_red">Pílula vermelha</string>
@@ -1086,6 +1146,10 @@ Detalhes: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">De volta na chuva</string>
     <string name="easter_egg_pill_blue_toast_again">Desconectado. O caminho de volta é onde sempre esteve.</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">Selecionar arquivo</string>
     <string name="select_folder">Selecionar pasta</string>
     <string name="patches">Patches</string>
@@ -1187,6 +1251,8 @@ Detalhes: %2$s"</string>
     <string name="hidden">Oculto</string>
     <string name="unhide">Reexibir</string>
     <string name="unhide_done">Visível</string>
+    <string name="ignore">Ignorar</string>
+    <string name="stop_ignoring">Parar de ignorar</string>
     <string name="logs">Registros</string>
     <string name="sources">Fontes</string>
     <string name="installing_ellipsis">Instalando…</string>
@@ -1210,8 +1276,8 @@ Detalhes: %2$s"</string>
     <string name="install_update_manager_failed">Falha ao instalar a atualização</string>
     <string name="installing_manager_update">Instalando atualização…</string>
     <string name="downloading_manager_update">Baixando atualização…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">%1$.1f MB do download concluído</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">%1$s MB do download concluído</string>
     <string name="manager_update_not_ready">Esta versão ainda está sendo publicada. Tente novamente em alguns minutos</string>
     <string name="update_download_missing">A atualização baixada não está mais disponível. Baixe-a novamente</string>
     <string name="download_manager_failed">Falha ao baixar atualização: %s</string>

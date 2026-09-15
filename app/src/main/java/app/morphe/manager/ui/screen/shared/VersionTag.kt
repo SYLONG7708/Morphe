@@ -8,6 +8,7 @@ package app.morphe.manager.ui.screen.shared
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.InstallMobile
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.Recommend
@@ -44,6 +45,9 @@ sealed interface VersionTag {
 
     /** The version the saved original APK is at. */
     data object Saved : VersionTag
+
+    /** The version the app is at on the device right now. */
+    data object Installed : VersionTag
 }
 
 val VersionTag.tone: SemanticTone
@@ -53,7 +57,7 @@ val VersionTag.tone: SemanticTone
 
         VersionTag.Recommended -> SemanticTone.Primary
         VersionTag.Experimental, VersionTag.Unpatched -> SemanticTone.Warning
-        VersionTag.Saved -> SemanticTone.Neutral
+        VersionTag.Saved, VersionTag.Installed -> SemanticTone.Neutral
     }
 
 val VersionTag.icon: ImageVector
@@ -64,6 +68,7 @@ val VersionTag.icon: ImageVector
         VersionTag.Experimental -> Icons.Outlined.Science
         VersionTag.Unpatched -> Icons.Outlined.Inventory2
         VersionTag.Saved -> Icons.Outlined.History
+        VersionTag.Installed -> Icons.Outlined.InstallMobile
     }
 
 @Composable
@@ -81,6 +86,7 @@ fun VersionTag.label(): String = when (this) {
 
     VersionTag.Unpatched -> stringResource(R.string.home_apk_availability_unpatched_label)
     VersionTag.Saved -> stringResource(R.string.saved)
+    VersionTag.Installed -> stringResource(R.string.installed)
 }
 
 /**
@@ -97,7 +103,8 @@ fun versionTagsOf(
     isExperimental: Boolean = false,
     isUnpatched: Boolean = false,
     isRecommended: Boolean = false,
-    isSaved: Boolean = false
+    isSaved: Boolean = false,
+    isInstalled: Boolean = false
 ): List<VersionTag> = buildList {
     val blocking = when {
         requiresAndroidSdk != null -> VersionTag.RequiresAndroid(requiresAndroidSdk)
@@ -114,8 +121,9 @@ fun versionTagsOf(
         if (isUnpatched) add(VersionTag.Unpatched)
     }
 
-    // Saved is about the APK on hand rather than the version itself, so it is shown either way
+    // Both are about the APKs on hand rather than the version itself, so they are shown either way
     if (isSaved) add(VersionTag.Saved)
+    if (isInstalled) add(VersionTag.Installed)
 }
 
 /**

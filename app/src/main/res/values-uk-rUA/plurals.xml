@@ -12,6 +12,24 @@
         <item quantity="many">%s параметрів патчів</item>
         <item quantity="other">%s параметрів патчів</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Джерела патчів для %s застосунку</item>
+        <item quantity="few">Джерела патчів для %s застосунків</item>
+        <item quantity="many">Джерела патчів для %s застосунків</item>
+        <item quantity="other">Джерела патчів для %s застосунків</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s джерело приховано. Натисніть, щоб показати</item>
+        <item quantity="few">%s джерела приховано. Натисніть, щоб показати</item>
+        <item quantity="many">%s джерел приховано. Натисніть, щоб показати</item>
+        <item quantity="other">%s джерел приховано. Натисніть, щоб показати</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s відповідний патч</item>
+        <item quantity="few">%s відповідні патчі</item>
+        <item quantity="many">%s відповідних патчів</item>
+        <item quantity="other">%s відповідних патчів</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s джерело</item>
         <item quantity="few">%s джерела</item>
@@ -113,5 +131,11 @@
         <item quantity="few">Скопійовано %s патчі із вибраного пакета</item>
         <item quantity="many">Скопійовано %s патчів із вибраного пакета</item>
         <item quantity="other">Скопійовано %s патчів із вибраного пакета</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s ядро</item>
+        <item quantity="few">%s ядра</item>
+        <item quantity="many">%s ядер</item>
+        <item quantity="other">%s ядер</item>
     </plurals>
 </resources>

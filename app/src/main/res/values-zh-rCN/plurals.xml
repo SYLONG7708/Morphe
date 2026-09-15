@@ -6,6 +6,15 @@
     <plurals name="option_count">
         <item quantity="other">%s 个补丁选项</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="other">适用于 %s 个应用的补丁源</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="other">已隐藏 %s 个来源。点按以显示</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="other">%s 个匹配的补丁</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="other">%s 个源</item>
     </plurals>
@@ -56,5 +65,8 @@
     </plurals>
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="other">已复制来自选定包的 %s 个补丁</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="other">%s 个核心</item>
     </plurals>
 </resources>

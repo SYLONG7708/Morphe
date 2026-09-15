@@ -20,15 +20,6 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-/** Option keys used in patch configurations */
-object PatchOptionKeys {
-    const val CUSTOM_NAME = "customName"
-    const val CUSTOM_ICON = "customIcon"
-    const val CUSTOM_HEADER = "custom"
-    const val HIDE_SHORTS_APP_SHORTCUT = "hideShortsAppShortcut"
-    const val HIDE_SHORTS_WIDGET = "hideShortsWidget"
-}
-
 /**
  * Managing patch options dynamically loaded from bundle repository.
  */
@@ -114,7 +105,8 @@ class PatchOptionsViewModel : ViewModel(), KoinComponent {
                             title = option.title,
                             description = option.description,
                             required = option.required,
-                            explicitKind = option.explicitKind
+                            explicitKind = option.explicitKind,
+                            presets = option.presets
                         )
                     } ?: emptyList()
 
@@ -177,11 +169,13 @@ class PatchOptionsViewModel : ViewModel(), KoinComponent {
         packageName: String,
         appName: String,
         iconPath: String,
+        appIconStyle: String,
         onDone: () -> Unit
     ) = viewModelScope.launch {
         prefs.edit {
-            prefs.customAppName(packageName).value  = appName
-            prefs.customIconPath(packageName).value = iconPath
+            prefs.customAppName(packageName).value   = appName
+            prefs.customIconPath(packageName).value  = iconPath
+            prefs.appIconStyle(packageName).value    = appIconStyle
         }
         onDone()
     }
@@ -216,5 +210,7 @@ data class OptionInfo(
     val title: String,
     val description: String,
     val required: Boolean,
-    val explicitKind: ExplicitOptionKind? = null
+    val explicitKind: ExplicitOptionKind? = null,
+    /** Values the option declares, as display name to value. Null when it accepts free input. */
+    val presets: Map<String, Any?>? = null
 )

@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">Ei piilotettuja sovelluksia</string>
     <string name="home_app_hidden_apps_title">Piilotetut sovellukset</string>
     <string name="home_app_hidden_apps_hint">Napauta näyttääksesi</string>
+    <string name="home_app_patch_sources_description">Valitsematta jätetyt lähteet eivät ole tarjolla, kun näitä sovelluksia paikataan, eivätkä niiden paikkaukset koskaan liity valintaan itsestään. Jokainen lähde pysyy päällä jokaisessa muussa sovelluksessa</string>
+    <string name="home_app_patch_sources_mixed">Tarjottu %1$s:lle %2$s:stä</string>
+    <string name="home_app_patch_sources_covers">Sisältää patcheja %1$s:lle %2$s:stä</string>
+    <string name="home_app_patch_sources_last">Jokaisella sovelluksella on oltava yksi lähde jäljellä, josta paikata</string>
     <string name="android_11_bug_dialog_title">Android 11 -virhe</string>
     <string name="android_11_bug_dialog_description">Sovelluksen asennusoikeus on myönnettävä etukäteen, jotta vältetään Android 11 -järjestelmän virhe, joka heikentää käyttökokemusta.</string>
     <string name="deep_link_add_source_title">Lisää lähde</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">Napauta tarkistaaksesi lähteet</string>
     <string name="home_outdated_manager_title">Morphe on vanhentunut</string>
     <string name="home_outdated_manager_subtitle">Jotkin päivityslähteet vaativat uudemman version</string>
+    <string name="home_held_back_title">Korjauslähde kaatoi Morphen</string>
+    <string name="home_held_back_subtitle">Se ohitettiin, jotta sovellus voisi käynnistyä. Napauta tarkistaaksesi. It was skipped so the app could start. Tap to review</string>
     <string name="home_metered_skipped_title">Päivitykset keskeytetty mobiilidatalla</string>
     <string name="home_metered_skipped_subtitle">Napauta salliaksesi päivitykset mobiilidatalla</string>
     <string name="home_repatch_available_subtitle">Napauta lisätäksesi kaikki jonoon</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">Päivitykset ohitettu</string>
     <string name="home_update_skipped_metered_subtitle">Mobiilidata on käytössä</string>
     <string name="home_updating_sources">Päivitetään lähteitä…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s Mt (%5$d%%)</string>
     <string name="home_update_success">Lähteiden päivitys valmis</string>
     <string name="home_update_success_subtitle">Lähteet ovat ajan tasalla</string>
     <string name="home_sources_are_loading">Lähteitä ladataan, odota…</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">Aakkosjärjestyksessä, A–Z</string>
     <string name="home_app_sort_name_desc_description">Aakkosjärjestys käänteinen, Z:sta A:han</string>
     <string name="home_app_sort_updates_first">Asennuspaikat ensin</string>
-    <string name="home_app_sort_updates_first_description">Sovellukset, joilla on päivitysmerkintä, ensin, sitten suositellussa järjestyksessä</string>
+    <string name="home_app_sort_updates_first_description">Ensin sovellukset, joissa on uudempia korjauksia, sitten suositeltu järjestys</string>
     <string name="home_app_sort_recently_patched">Viimeksi patchatut</string>
     <string name="home_app_sort_recently_patched_description">Viimeksi patchatut sovellukset ensin</string>
     <string name="home_no_apps_title">Ei sovelluksia saatavilla</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">Yökyykkymäinen ja tuottelias</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Lisäosien lähteet</string>
-    <string name="sources_search">Etsi lähteitä</string>
+    <string name="sources_search">Hae lähteitä ja korjauksia</string>
     <string name="sources_sort_title">Lajittele lisäosien lähteet</string>
     <string name="sources_sort_manual">Manuaalinen järjestys</string>
     <string name="sources_sort_manual_hint">Paina ja pidä lähdettä uudelleenjärjestämistä varten</string>
@@ -127,9 +136,14 @@
     <string name="sources_sort_last_updated_description">Uusimmat lisäosien päivitykset ensin</string>
     <string name="sources_sort_enabled_first">Käytössä olevat ensin</string>
     <string name="sources_sort_enabled_first_description">Näytä aktiiviset lähteet ennen poistettuja lähteitä</string>
+    <string name="sources_patches_source_disabled_hint">Tämä lähde on poistettu käytöstä. Sen korjaukset on lueteltu viitteeksi, eikä niitä sovelleta</string>
     <string name="sources_management_open_in_browser">Avaa selaimessa</string>
     <string name="sources_management_report_issue">Ilmoita ongelmasta</string>
     <string name="sources_management_failed_to_open_url">URL-osoitteen avaaminen epäonnistui</string>
+    <string name="sources_hidden_apps">Piilotettu sovelluksilta</string>
+    <string name="sources_hidden_apps_title">Lähteestä %1$s piilotetut sovellukset</string>
+    <string name="sources_hidden_apps_description">Näille sovelluksille ei tarjota tätä lähdettä, kun niitä paikataan. Lähde itse pysyy päällä kaiken muun kohdalla</string>
+    <string name="sources_hidden_apps_hint">Napauta tarjotaksesi tämän lähteen uudelleen</string>
     <string name="sources_management_prerelease_toggle">Ennakkojulkaisupäivitykset</string>
     <string name="sources_management_prerelease_toggle_description">Saat uusien kokeellisten lisäosaversioiden ennakkopääsyn</string>
     <string name="sources_prerelease_warning_title">Ota käyttöön esijulkaisupatchit?</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">Lisäosapaketin lataaminen epäonnistui. Lähteen URL-osoite saattaa olla virheellinen tai tiedostoa ei ole olemassa</string>
     <string name="sources_management_outdated_manager_badge">Päivitä Morphe</string>
     <string name="sources_management_outdated_manager_hint">Tämä lähde on rakennettu päivitysohjelmalle %1$s, mutta Morphe %2$s sisältää päivitysohjelman %3$s. Päivitä Morphe käyttämään sitä.</string>
+    <string name="sources_management_held_back_badge">Kaatui</string>
+    <string name="sources_management_held_back_hint">Tämä lähde kaatoi Morphen latauksen aikana, joten se ohitetaan. Päivitä tai tuo se uudelleen, niin voit yrittää uudelleen.</string>
     <string name="sources_management_source_enabled">Lähde käytössä</string>
     <string name="sources_management_source_disabled">Lähde poistettu käytöstä</string>
     <string name="sources_management_source_updating">Päivitetään lähdettä</string>
@@ -190,6 +206,7 @@ Kaikki mitä lisäät tältä verkkosivustolta, on oma riskisi."</string>
     <string name="home_apk_availability_recommended_label">Suositeltu</string>
     <string name="home_apk_availability_unpatched_label">Muokkaamaton</string>
     <string name="home_apk_availability_incompatible_label">Yhteensopimaton</string>
+    <string name="home_apk_availability_installed_version">Asennettu tähän laitteeseen: %s</string>
     <string name="home_apk_availability_yes">Kyllä, auta minua löytämään APK</string>
     <string name="home_apk_availability_no">Ei, minulla on jo APK</string>
     <string name="home_apk_helper_download">Käytä apuohjelmaa</string>
@@ -318,9 +335,11 @@ Sovelluksen &lt;b&gt;%s&lt;/b&gt; tässä versiossa on varhainen kokeellinen tuk
     <string name="home_outdated_patches_dialog_warning">Muokkaaminen vanhentuneilla lisäosilla voi rikkoa sovelluksen</string>
     <string name="home_outdated_patches_dialog_update_and_patch">Päivitä ja muokkaa</string>
     <string name="home_low_disk_space_dialog_title">Levytila vähissä</string>
-    <string name="home_low_disk_space_dialog_message">Vain %1$.2f Gt vapaata tallennustilaa. Muokkaaminen edellyttää vähintään %2$.2f Gt vapaata tilaa, jotta se toimii oikein</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Vain %1$s Gt vapaata tallennustilaa. Muokkaaminen edellyttää vähintään %2$s Gt vapaata tilaa, jotta se toimii oikein</string>
     <string name="home_low_disk_space_dialog_warning">Jatkamisesta voi seurata, että saat virheilmoituksen siitä, että tiedostoa ei löydy, tai APK-tiedosto voi vioittua</string>
     <string name="home_simple_bundle_select_title">Valitse lisäosien lähde</string>
+    <string name="home_simple_bundle_select_remember">Käytä tätä lähdettä aina tämän sovelluksen kohdalla</string>
     <!-- Color picker -->
     <string name="custom_color">Oma väri</string>
     <string name="hex_color">HEX-väri</string>
@@ -435,6 +454,10 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <string name="home_app_info_install_type_shizuku_play_store">Shizuku Play Kaupan asennus</string>
     <string name="home_app_info_patch_update_available">Lisäosien päivitys saatavilla</string>
     <string name="home_app_info_patch_update_available_description">Uudempi lisäosien versio on saatavilla. Muokkaa sovellusta uudestaan saadaksesi uusimmat parannukset ja korjaukset</string>
+    <string name="home_app_info_app_update_available">Sovelluspäivitys saatavilla</string>
+    <string name="home_app_info_app_update_available_description">Patch-lähteet tukevat tämän sovelluksen uudempaa versiota. Paikkaa se uudelleen siirtyäksesi siihen versioon.</string>
+    <string name="home_app_info_newest_supported_version">Uusin tuettu</string>
+    <string name="home_app_info_version_move">Asennettu %1$s, uusin tuettu %2$s</string>
     <string name="home_app_info_app_deleted_warning">Sovellus poistettiin</string>
     <string name="home_app_info_app_deleted_description">Tämä sovellus poistettiin Morphen ulkopuolelta. Muokkaa sitä uudelleen palauttaaksesi toiminnot</string>
     <string name="home_app_info_not_patched_description">Tästä sovelluksesta on asennettu korjaamaton versio. Morphella on edelleen aiempi korjaustietue.</string>
@@ -459,6 +482,9 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <string name="patcher_error_log">Virheloki</string>
     <string name="patcher_error_technical">Tekniset tiedot</string>
     <string name="patcher_error_dialog_diagnostics">Diagnostiikka</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Paikkaus aloitettu</string>
+    <string name="patcher_card_succeeded">Paikkaus onnistui</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">Sovellus</string>
     <string name="patcher_field_package">Paketti</string>
@@ -474,6 +500,15 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Muisti</string>
     <string name="patcher_field_storage">Tallennustila</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Tulosteen koko</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Aika</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Keskimääräinen muisti</string>
+    <string name="patcher_field_memory_max">Muistin maksimi</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Tallennustilan I/O-huippu</string>
     <string name="patcher_field_value_unknown">tuntematon</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">poistettu</string>
@@ -520,6 +555,13 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_storage_permission_open_settings">Avaa tallennusasetukset</string>
     <string name="patcher_storage_badge_denied">Lupa evätty</string>
     <string name="patcher_storage_badge_missing">Ei löytynyt</string>
+    <string name="batch_patch_option_paths_skipped">Paikkausasetustiedostot puuttuvat, joten ne ohitetaan: %1$s</string>
+    <string name="patcher_missing_patches_title">Jotkin paikkaukset ovat kadonneet</string>
+    <string name="patcher_missing_patches_description">Tämän sovelluksen tallennettu valinta nimeää paikkauksia, joita mikään käytössä oleva lähde ei enää tarjoa. Jos jatkat, sovellus paikataan ilman niitä.</string>
+    <string name="patcher_missing_patches_label">Ei enää tarjota</string>
+    <string name="patcher_option_paths_gone_title">Paikkausasetustiedostot puuttuvat</string>
+    <string name="patcher_option_paths_gone_description">Yksi tai useampi paikkausasetus viittaa tiedostoihin, joita ei enää ole. Poista polut paikataksesi ilman niitä tai palauta tiedostot ja yritä uudelleen.</string>
+    <string name="patcher_option_paths_clear">Poista polut ja jatka</string>
     <string name="patcher_storage_permission_hint">Vinkki: Siirrä tiedostot /Android/data/app.morphe.manager/files/ – ei tarvita ylimääräisiä lupia</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Valmistellaan</string>
@@ -565,7 +607,7 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_message_15">Kaikki järjestelmät toimivat… muokkausrata on vakaa… 🚀</string>
     <string name="patcher_message_16">Puristetaan lisätehoja irti, kuin mehua digitaalisesta sitruunasta… 🍋</string>
     <string name="patcher_message_17">Rohkaistaan sovellusta hyväksymään uusi, parempi itsensä… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Muutetaan sovelluksen superpositio muokkaamattomasta muokatuksi… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">Sovelluksellasi on kuumetta, ja ainoa lääke on lisää lisäosia… 🩺🔔</string>
@@ -573,6 +615,8 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <!-- Expert patcher Screen -->
     <string name="patching_app">Muokataan sovellusta</string>
     <string name="memory_usage">Muistin käyttö</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s / %2$s Mt</string>
     <string name="cpu_usage">Suorittimen käyttö</string>
     <string name="storage_io_usage">Tallennustilan I/O</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -612,6 +656,12 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="mini_game_snake_swipe_to_start">Pyyhkäise aloittaaksesi</string>
     <string name="mini_game_dino_picker_subtitle">Napauta hypätäksesi kaktusten yli</string>
     <string name="mini_game_dino_tap_to_start">Napauta juostaaksesi</string>
+    <string name="mini_game_blocks_picker_subtitle">Sovita muodot, selkeät linjat</string>
+    <string name="mini_game_blocks_tap_to_start">Napauta kääntääksesi, pyyhkäise liikuttaaksesi, pyyhkäise alas pudottaaksesi</string>
+    <string name="mini_game_bricks_picker_subtitle">Pomputa palloa, raivaa seinä</string>
+    <string name="mini_game_bricks_tap_to_start">Vedä tähdätäksesi, napauta laukaistaksesi</string>
+    <string name="mini_game_miner_picker_subtitle">Napauta avataksesi, pidä painettuna merkitäksesi</string>
+    <string name="mini_game_pairs_picker_subtitle">Käännä kortit, löydä pari</string>
     <!-- Settings -->
     <string name="appearance">Ulkoasu</string>
     <string name="advanced">Lisäasetukset</string>
@@ -665,6 +715,9 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Näytä tervehdysviesti aloitusnäytöllä</string>
     <string name="settings_appearance_app_grouping">Sovellusten ryhmittely</string>
     <string name="settings_appearance_app_grouping_description">Näytä kotinäkymän vaihto, jolla voit ryhmitellä sovellukset lähteen tai omien luokkien mukaan ja säilytä valinta, kun se on poissa päältä</string>
+    <string name="settings_appearance_patch_list">Luettelo korjauspaketeista</string>
+    <string name="settings_appearance_patch_categories">Ryhmittele luokittain</string>
+    <string name="settings_appearance_patch_categories_description">Jaa korjauspakettiluettelot osioihin lähteen ilmoittamien luokkien mukaan; lähteet, jotka eivät ilmoita luokkaa, jäävät tavalliseksi luetteloksi.</string>
     <string name="settings_appearance_repatch_notice">Uudelleenkorjausilmoitus</string>
     <string name="settings_appearance_repatch_notice_description">Näytä banneri aloitusnäytössä, kun korjattuja sovelluksia voidaan korjata uudelleen</string>
     <string name="settings_appearance_sort_button">Lajittelu- ja suodatuspainike</string>
@@ -776,6 +829,10 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_advanced_patch_options_custom_branding_description">Muuta sovelluksen näkyvää nimeä</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Sovelluksen nimi</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Anna mukautettu nimi</string>
+    <string name="settings_advanced_patch_options_path_gone">Tätä kansiota ei voi enää lukea. Valitse se uudelleen tai tyhjennä se, muuten paikkaus pysähtyy ja kysyy siitä.</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Sovelluskuvake</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">Kuvake, jota käytetään sovelluksen paikkauksessa. Sitä käytetään myös siellä, missä sovellus ei voi vaihtaa sitä myöhemmin, kuten Android Autossa ja järjestelmäasetusten sovellusluettelossa.</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">Mukautettu sovelluskuvake tarvitsee kansion, jossa on kuvakuvia.</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Mukautettu kuvake</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Kansion kuvia, joita käytetään mukautettuna kuvakkeena.
 
@@ -860,6 +917,8 @@ Kuvien mittojen on oltava seuraavat:
     <string name="installer_action_open_shizuku">Avaa Shizuku</string>
     <string name="installer_hint_generic">Asennus epäonnistui. Yritä uudelleen tai vaihda toiseen asennukseen.</string>
     <string name="installer_hint_conflict">Toinen sovellus samalla pakettinimellä on jo asennettu. Poista se ennen jatkamista.</string>
+    <string name="installer_confirm_notification_title">Vahvista asennus</string>
+    <string name="installer_confirm_notification_text">Napauta viimeistelläksesi paikatun sovelluksen asennuksen</string>
     <string name="installer_external_launched">Avataan %s…</string>
     <string name="installer_external_timeout">%s ei vahvistanut asennusta. Tarkista toinen sovellus ja yritä uudelleen</string>
     <string name="installer_external_success">%s ilmoitti onnistuneesta asennuksesta</string>
@@ -876,7 +935,7 @@ Kuvien mittojen on oltava seuraavat:
     <string name="settings_prompt_installer_on_install">Asennusohjelman valintakehote</string>
     <string name="settings_prompt_installer_on_install_description">Näytä asennusohjelman valintaikkuna aina, kun asennat paikatun sovelluksen.</string>
     <string name="settings_auto_install_with_shizuku">Asenna automaattisesti korjauksen jälkeen</string>
-    <string name="settings_auto_install_with_shizuku_description">Asentaa korjatun APK:n hiljaa heti korjauksen valmistuttua</string>
+    <string name="settings_auto_install_with_shizuku_description">Asentaa paikatun APK:n heti, kun paikkaus on valmis</string>
     <string name="settings_auto_uninstall_with_shizuku">Automaattinen poisto ristiriitatilanteissa</string>
     <string name="settings_auto_uninstall_with_shizuku_description">Kun asennat automaattisesti Shizukun avulla, poista ensin olemassa oleva sovellus, jos Android raportoi allekirjoitusristiriidasta. Tämä voi poistaa sovelluksen tiedot</string>
     <string name="settings_auto_uninstall_warning_title">Ota automaattinen poisto käyttöön?</string>
@@ -914,6 +973,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="settings_system_process_runtime_enable">Ota prosessin suoritus käyttöön</string>
     <string name="settings_system_memory_limit_subtitle">Muokkaamiseen käytettävissä oleva muisti</string>
     <string name="settings_system_memory_limit_warning">Pieni muistirajoitus voi aiheuttaa virheitä suuria sovelluksia muokattaessa</string>
+    <string name="settings_system_memory_limit_high_warning">Suuri muistiraja voi tehdä paikkaamisesta paljon hitaampaa joissakin laitteissa. Nosta rajaa vain, jos paikkaaminen epäonnistuu edelleen pienemmillä rajoilla.</string>
     <string name="settings_system_process_runtime_enabled_description">%s Mt:n rajoitus</string>
     <string name="settings_system_process_runtime_disabled_description">Napauta määrittääksesi</string>
     <string name="settings_system_process_runtime_description_not_available">Tämä ominaisuus vaatii Android-version 11 tai uudemman </string>
@@ -1073,7 +1133,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="credits_current_development">Nykyinen kehitys</string>
     <string name="credits_prior_development">Aikaisempi kehitys</string>
     <string name="opensource_licenses">Avoimen lähdekoodin lisenssit</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Valinta</string>
     <string name="easter_egg_pill_message">Ota sininen pilleri ja mainokset pysyvät tarkalleen paikoillaan. Ota punainen ja katso kuinka syvälle tavukoodi menee.</string>
     <string name="easter_egg_pill_red">Punainen pilleri</string>
@@ -1084,6 +1144,10 @@ Yksityiskohdat: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">Takaisin sateessa</string>
     <string name="easter_egg_pill_blue_toast_again">Irrotettu. Paluutie on siellä missä se aina oli.</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s Mt / %2$s Mt (%3$s %%)</string>
     <string name="select_file">Valitse tiedosto</string>
     <string name="select_folder">Valitse kansio</string>
     <string name="patches">Lisäosat</string>
@@ -1185,6 +1249,8 @@ Yksityiskohdat: %2$s"</string>
     <string name="hidden">Piilotettu</string>
     <string name="unhide">Näytä</string>
     <string name="unhide_done">Näytetään</string>
+    <string name="ignore">Ohita</string>
+    <string name="stop_ignoring">Lopeta huomiotta jättäminen</string>
     <string name="logs">Lokit</string>
     <string name="sources">Lähteet</string>
     <string name="installing_ellipsis">Asennetaan…</string>
@@ -1208,8 +1274,8 @@ Yksityiskohdat: %2$s"</string>
     <string name="install_update_manager_failed">Päivityksen asentaminen epäonnistui</string>
     <string name="installing_manager_update">Asennetaan päivitystä…</string>
     <string name="downloading_manager_update">Ladataan päivitystä…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">%1$.1f MB ladattu</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">Ladattu %1$s Mt</string>
     <string name="manager_update_not_ready">Tätä julkaisua julkaistaan vielä. Yritä uudelleen muutaman minuutin kuluttua</string>
     <string name="update_download_missing">Ladattu päivitys ei ole enää saatavilla. Lataa se uudelleen</string>
     <string name="download_manager_failed">Päivityksen lataaminen epäonnistui: %s</string>

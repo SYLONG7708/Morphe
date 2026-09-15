@@ -6,10 +6,13 @@
 package app.morphe.manager.domain.bundles
 
 import android.os.Build
+import app.morphe.manager.domain.apk.InstalledApkInfo
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.PatchBundleRepository
+import app.morphe.manager.domain.repository.SourceMuteRepository
 import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
 import app.morphe.manager.patcher.patch.PatchBundleInfo
+import app.morphe.manager.util.compareVersions
 import app.morphe.patcher.patch.AppTarget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -44,6 +47,14 @@ fun List<BundledAppTarget>.patchableAt(version: String, versionCode: Long?): Boo
             (entry.buildCodes == null || versionCode == null || versionCode.toInt() in entry.buildCodes)
     }
 }
+
+/**
+ * The installed APK as a source these targets accept, or null when they do not: the version it
+ * carries has to be one the patches name. Asked here rather than at each call site so the
+ * installed app cannot be offered by one flow and withheld by another.
+ */
+fun InstalledApkInfo?.patchableBy(targets: List<BundledAppTarget>): InstalledApkInfo? =
+    this?.takeIf { targets.patchableAt(it.version, it.versionCode) }
 
 /**
  * Versions any source marks experimental. The single definition every experimental badge and
@@ -82,6 +93,45 @@ fun List<BundledAppTarget>.recommended(): AppTarget? =
     offered().installable().firstOrNull()?.target
 
 /**
+ * Where an install stands against the newest version the sources support: either behind it, with
+ * a rebuild available, or past everything they cover, which is where an app that updated itself
+ * outside the manager ends up. An install at that version has no status, so the absence of one
+ * is what "nothing to report" looks like at every call site.
+ */
+data class AppVersionStatus(
+    val installedVersion: String,
+    val supportedVersion: String,
+    val isBehind: Boolean
+)
+
+/**
+ * Where [installedVersion] stands against [supported], or null when the two are the same version,
+ * when either side is unknown, or when the patches name no version at all, which is what applying
+ * universal patches leaves behind.
+ *
+ * [ignoredVersion] is the version the user turned down. It answers the offer to move up to that
+ * one and nothing else, so an install that has run past the sources is still described.
+ */
+fun versionStatus(
+    installedVersion: String?,
+    supported: AppTarget?,
+    ignoredVersion: String? = null
+): AppVersionStatus? {
+    val installed = installedVersion?.takeIf { it.isNotBlank() } ?: return null
+    val newest = supported?.version?.takeIf { it.isNotBlank() } ?: return null
+
+    val comparison = compareVersions(installed, newest)
+    if (comparison == 0) return null
+    if (comparison < 0 && newest == ignoredVersion) return null
+
+    return AppVersionStatus(
+        installedVersion = installed,
+        supportedVersion = newest,
+        isBehind = comparison < 0
+    )
+}
+
+/**
  * Which app versions the enabled patch sources can work with, and which one to suggest.
  *
  * Both the single-app flow and the batch queue send users to download a specific version, so
@@ -89,6 +139,7 @@ fun List<BundledAppTarget>.recommended(): AppTarget? =
  */
 class AppVersionCatalog(
     patchBundleRepository: PatchBundleRepository,
+    sourceMuteRepository: SourceMuteRepository,
     prefs: PreferencesManager
 ) {
     /**
@@ -99,15 +150,23 @@ class AppVersionCatalog(
     val compatibleVersions: Flow<Map<String, List<BundledAppTarget>>> = combine(
         patchBundleRepository.bundleInfoFlow,
         patchBundleRepository.sources,
-        prefs.bundleExperimentalVersionsEnabled.flow
-    ) { bundleInfo, sources, experimentalEnabledUids ->
+        prefs.bundleExperimentalVersionsEnabled.flow,
+        sourceMuteRepository.mutedSources
+    ) { bundleInfo, sources, experimentalEnabledUids, mutedSources ->
         val enabledSources = sources.filter { it.enabled }
         extract(
             bundleInfo = bundleInfo,
             bundleNames = enabledSources.associate { it.uid to it.displayTitle },
             enabledBundleUids = enabledSources.map { it.uid }.toSet(),
             experimentalEnabledUids = experimentalEnabledUids
-        )
+        ).mapValues { (packageName, targets) ->
+            // Or the picker suggests a download none of the sources left standing can patch
+            val muted = mutedSources[packageName].orEmpty()
+            targets.filterNot { it.bundleUid in muted }
+        }
+            // Unlike the source list this drops the last one: extract promises that a listed
+            // package has a version to offer, and one with none left is a state readers handle
+            .filterValues { it.isNotEmpty() }
     }
 
     /** The single version to offer per package. */

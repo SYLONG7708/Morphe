@@ -7,7 +7,24 @@ package app.morphe.manager.domain.manager
 
 import android.content.Context
 import app.morphe.manager.domain.manager.base.BasePreferencesManager
+import app.morphe.manager.domain.manager.base.StringPreference
 import app.morphe.manager.util.KnownApps
+
+/**
+ * Option keys declared by the patches, exactly as the bundle spells them.
+ * Used both to address a patch option and to build the storage key of its saved value.
+ */
+object PatchOptionKeys {
+    const val CUSTOM_NAME = "customName"
+    const val CUSTOM_ICON = "customIcon"
+    const val APP_ICON = "appIcon"
+    const val CUSTOM_HEADER = "custom"
+    const val HIDE_SHORTS_APP_SHORTCUT = "hideShortsAppShortcut"
+    const val HIDE_SHORTS_WIDGET = "hideShortsWidget"
+
+    /** Value of [APP_ICON] that builds the app with the icon supplied through [CUSTOM_ICON]. */
+    const val APP_ICON_CUSTOM = "custom"
+}
 
 /**
  * Manages patch-specific option values that are applied during patching.
@@ -25,13 +42,6 @@ class PatchOptionsPreferencesManager(
         const val PATCH_CUSTOM_BRANDING = "Custom branding"
         const val PATCH_CHANGE_HEADER = "Change header"
         const val PATCH_HIDE_SHORTS = "Hide Shorts components"
-
-        // Option keys (must match exactly with bundle)
-        const val KEY_CUSTOM_NAME = "customName"
-        const val KEY_CUSTOM_ICON = "customIcon"
-        const val KEY_CUSTOM_HEADER = "custom"
-        const val KEY_HIDE_SHORTS_APP_SHORTCUT = "hideShortsAppShortcut"
-        const val KEY_HIDE_SHORTS_WIDGET = "hideShortsWidget"
 
         // Hide Shorts options
         const val HIDE_SHORTS_APP_SHORTCUT_TITLE = "Hide Shorts app shortcut"
@@ -84,70 +94,79 @@ The image dimensions must be as follows:
 - drawable-xxxhdpi: 512x192 px"""
     }
 
+    /** Value of a string patch option, blank when the user left it unset. */
+    private fun optionValue(packageName: String, patchName: String, optionKey: String) =
+        stringPreference("${packageName}_${patchName}_${optionKey}", "")
+
     // Custom Branding - App Name
-    fun customAppName(packageName: String) = stringPreference(
-        "${packageName}_${PATCH_CUSTOM_BRANDING}_${KEY_CUSTOM_NAME}",
-        ""
-    )
+    fun customAppName(packageName: String) =
+        optionValue(packageName, PATCH_CUSTOM_BRANDING, PatchOptionKeys.CUSTOM_NAME)
 
     // Custom Branding - Icon Path
-    fun customIconPath(packageName: String) = stringPreference(
-        "${packageName}_${PATCH_CUSTOM_BRANDING}_${KEY_CUSTOM_ICON}",
-        ""
-    )
+    fun customIconPath(packageName: String) =
+        optionValue(packageName, PATCH_CUSTOM_BRANDING, PatchOptionKeys.CUSTOM_ICON)
+
+    // Custom Branding - App icon style, blank means the patch picks the icon itself
+    fun appIconStyle(packageName: String) =
+        optionValue(packageName, PATCH_CUSTOM_BRANDING, PatchOptionKeys.APP_ICON)
 
     // Change Header - Custom Header Path
-    fun customHeaderPath(packageName: String) = stringPreference(
-        "${packageName}_${PATCH_CHANGE_HEADER}_${KEY_CUSTOM_HEADER}",
-        ""
-    )
+    fun customHeaderPath(packageName: String) =
+        optionValue(packageName, PATCH_CHANGE_HEADER, PatchOptionKeys.CUSTOM_HEADER)
 
     // Hide Shorts - App Shortcut (YouTube only)
     val hideShortsAppShortcut = booleanPreference(
-        "${KnownApps.YOUTUBE}_${PATCH_HIDE_SHORTS}_${KEY_HIDE_SHORTS_APP_SHORTCUT}",
+        "${KnownApps.YOUTUBE}_${PATCH_HIDE_SHORTS}_${PatchOptionKeys.HIDE_SHORTS_APP_SHORTCUT}",
         false
     )
 
     // Hide Shorts - Widget (YouTube only)
     val hideShortsWidget = booleanPreference(
-        "${KnownApps.YOUTUBE}_${PATCH_HIDE_SHORTS}_${KEY_HIDE_SHORTS_WIDGET}",
+        "${KnownApps.YOUTUBE}_${PATCH_HIDE_SHORTS}_${PatchOptionKeys.HIDE_SHORTS_WIDGET}",
         false
     )
 
     /**
+     * Forgets a saved option value, so the patch runs with its own default instead.
+     * Used to drop a path that no longer leads anywhere, which the patcher would fail the run over.
+     */
+    suspend fun clearOptionValue(packageName: String, patchName: String, optionKey: String) =
+        optionValue(packageName, patchName, optionKey).update("")
+
+    /**
      * Export patch options for a given package.
      * Format: Map<BundleUid, Map<PatchName, Map<OptionKey, Value>>>
+     *
+     * An option the user left unset is left out entirely, so the patch keeps its own default
+     * instead of receiving a blank value it would reject.
      */
     suspend fun exportPatchOptions(packageName: String): Map<Int, Map<String, Map<String, Any?>>> {
-        return buildMap {
-            val bundleOptions = mutableMapOf<String, MutableMap<String, Any?>>()
+        val bundleOptions = mutableMapOf<String, MutableMap<String, Any?>>()
 
-            // Custom Branding patch options
-            val brandingOptions = mutableMapOf<String, Any?>()
-            customAppName(packageName).get()
-                .takeIf { it.isNotBlank() }
-                ?.let { brandingOptions[KEY_CUSTOM_NAME] = it }
-            customIconPath(packageName).get()
-                .takeIf { it.isNotBlank() }
-                ?.let { brandingOptions[KEY_CUSTOM_ICON] = it }
-            if (brandingOptions.isNotEmpty()) bundleOptions[PATCH_CUSTOM_BRANDING] = brandingOptions
-
-            // Change Header patch options
-            customHeaderPath(packageName).get()
-                .takeIf { it.isNotBlank() }
-                ?.let { bundleOptions[PATCH_CHANGE_HEADER] = mutableMapOf(KEY_CUSTOM_HEADER to it) }
-
-            // Hide Shorts patch options (YouTube only)
-            if (packageName == KnownApps.YOUTUBE) {
-                val shortsOptions = mutableMapOf<String, Any?>()
-                if (hideShortsAppShortcut.get()) shortsOptions[KEY_HIDE_SHORTS_APP_SHORTCUT] = true
-                if (hideShortsWidget.get()) shortsOptions[KEY_HIDE_SHORTS_WIDGET] = true
-                if (shortsOptions.isNotEmpty()) bundleOptions[PATCH_HIDE_SHORTS] = shortsOptions
-            }
-
-            // Bundle ID 0 = default Morphe bundle
-            if (bundleOptions.isNotEmpty()) put(0, bundleOptions)
+        // Adds a value to the options of a patch, skipping the ones left unset
+        suspend fun putIfSet(patchName: String, optionKey: String, value: StringPreference) {
+            val stored = value.get().takeIf { it.isNotBlank() } ?: return
+            bundleOptions.getOrPut(patchName) { mutableMapOf() }[optionKey] = stored
         }
+
+        // Custom Branding patch options
+        putIfSet(PATCH_CUSTOM_BRANDING, PatchOptionKeys.CUSTOM_NAME, customAppName(packageName))
+        putIfSet(PATCH_CUSTOM_BRANDING, PatchOptionKeys.CUSTOM_ICON, customIconPath(packageName))
+        putIfSet(PATCH_CUSTOM_BRANDING, PatchOptionKeys.APP_ICON, appIconStyle(packageName))
+
+        // Change Header patch options
+        putIfSet(PATCH_CHANGE_HEADER, PatchOptionKeys.CUSTOM_HEADER, customHeaderPath(packageName))
+
+        // Hide Shorts patch options (YouTube only)
+        if (packageName == KnownApps.YOUTUBE) {
+            val shortsOptions = mutableMapOf<String, Any?>()
+            if (hideShortsAppShortcut.get()) shortsOptions[PatchOptionKeys.HIDE_SHORTS_APP_SHORTCUT] = true
+            if (hideShortsWidget.get()) shortsOptions[PatchOptionKeys.HIDE_SHORTS_WIDGET] = true
+            if (shortsOptions.isNotEmpty()) bundleOptions[PATCH_HIDE_SHORTS] = shortsOptions
+        }
+
+        // Bundle ID 0 = default Morphe bundle
+        return if (bundleOptions.isEmpty()) emptyMap() else mapOf(0 to bundleOptions)
     }
 }
 

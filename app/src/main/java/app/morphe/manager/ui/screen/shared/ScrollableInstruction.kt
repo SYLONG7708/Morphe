@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.morphe.manager.patcher.patch.withoutSourceIndent
 
 /** Height the text fades out over once there is more of it below the box. */
 private val FadeHeight = 24.dp
@@ -41,11 +42,9 @@ fun ScrollableInstruction(
 ) {
     val scrollState = rememberScrollState()
 
-    // Bundle descriptions carry the indentation of the raw string the patch author wrote them in,
-    // which trimIndent leaves in place as soon as one line of the block starts at column zero
-    val instructions = remember(description) {
-        description.lines().joinToString("\n") { it.trim() }.trim()
-    }
+    // Localized instructions reach this box straight from strings.xml, unlike the bundle text
+    // PatchInfo unindents on the way in
+    val instructions = remember(description) { description.withoutSourceIndent() }
 
     // Fades the text itself rather than laying a strip of one color over it: the box is dropped
     // on surfaces of its own tint, which no single gradient color can be right for

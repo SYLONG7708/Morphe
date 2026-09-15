@@ -27,6 +27,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +88,6 @@ class EcosystemUpdateCoordinator(
                 bundledFallback = bundledEcosystemProvisioner.provision()
             }
 
-            patchBundleRepository.updateCheckAndAwait(allowUnsafeNetwork)
             val manifest = manifestRepository.fetch()
             val profile = DeviceProfile(Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS.toList())
 
@@ -97,7 +97,25 @@ class EcosystemUpdateCoordinator(
             val mayUseCurrentNetwork =
                 prefs.allowMeteredUpdates.get() || !networkInfo.isMetered()
             val prepareBackgroundUpdates =
-                prefs.automaticEcosystemUpdates.get() && mayUseCurrentNetwork
+                prefs.automaticEcosystemUpdates.get() && (mayUseCurrentNetwork || allowUnsafeNetwork)
+            var patches = resolvePatches(manifest.patches)
+            if (downloadAssets && prepareBackgroundUpdates) {
+                patches = try {
+                    val artifact = requireNotNull(profile.resolve(manifest.patches.artifacts))
+                    val file = downloadVerified(artifact)
+                    patchBundleRepository.installBundledDefault(
+                        artifact.sha256, manifest.patches.version, file::inputStream,
+                    )
+                    patchBundleRepository.updateCheckAndAwait(allowUnsafeNetwork)
+                    resolvePatches(manifest.patches)
+                } catch (error: CancellationException) {
+                    throw error
+                } catch (error: Exception) {
+                    // Still offer a newer Manager when its patcher is needed for this bundle.
+                    // installBundledDefault validates the candidate before replacing anything.
+                    patches.copy(status = UpdateStatus.ERROR, detail = error.message)
+                }
+            }
             if (downloadAssets && (forcePrepareMicrog || prepareBackgroundUpdates)) {
                 coroutineScope {
                     val managerJob = if (prepareBackgroundUpdates) {
@@ -115,20 +133,21 @@ class EcosystemUpdateCoordinator(
                 checkedAt = System.currentTimeMillis(),
                 sequence = manifest.sequence,
                 manager = manager,
-                patches = resolvePatches(manifest.patches),
+                patches = patches,
                 microg = microg,
                 youtube = resolveYouTube(),
             )
             mutableState.value = EcosystemUpdateState.Ready(snapshot)
             snapshot
         } catch (error: Throwable) {
+            if (error is CancellationException) throw error
             val message = error.message ?: error.javaClass.simpleName
             bundledFallback?.let { bundled ->
                 val snapshot = EcosystemUpdateSnapshot(
                     checkedAt = System.currentTimeMillis(),
                     sequence = BuildConfig.SAFE_PROFILE_REVISION.toLong(),
                     manager = ComponentUpdateState(
-                        status = UpdateStatus.UP_TO_DATE,
+                        status = UpdateStatus.ERROR,
                         installedVersion = BuildConfig.VERSION_NAME,
                         availableVersion = BuildConfig.VERSION_NAME,
                         detail = "Signed update check unavailable; using verified embedded baseline: $message",
@@ -441,8 +460,9 @@ class EcosystemUpdateCoordinator(
             val safeName = artifact.name
                 .substringAfterLast('/')
                 .replace(Regex("[^A-Za-z0-9._-]"), "_")
-            require(safeName.endsWith(".apk", ignoreCase = true)) {
-                "Installable artifact must be an APK"
+            require(safeName.endsWith(".apk", ignoreCase = true) ||
+                (artifact.packageName == null && safeName.endsWith(".mpp", ignoreCase = true))) {
+                "Update artifact must be an APK or patch bundle"
             }
 
             val destination = filesystem.updatesDir.resolve(safeName)

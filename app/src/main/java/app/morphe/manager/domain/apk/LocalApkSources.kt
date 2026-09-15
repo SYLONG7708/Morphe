@@ -108,8 +108,8 @@ internal fun resolveTrackedPatchState(
  * Whether the tracked record can still be removed from the app detail view.
  *
  * The record outlives the build it describes, so cleanup has to stay reachable whenever the
- * patched build is no longer accounted for. Only a confirmed patched install with nothing
- * retained has nothing to clean up, since the record then describes the app on the device.
+ * patched build is no longer accounted for. The one case with nothing to clean up is a confirmed
+ * patched install that retained no APK, since the record then describes the app on the device.
  */
 internal fun canRemoveTrackedRecord(
     installType: InstallType,
@@ -201,6 +201,14 @@ class LocalApkSources(
         Log.e(tag, "Failed to load installed app info", e)
         false to null
     }
+
+    /**
+     * The version the device has for [packageName], whatever the patches make of that APK.
+     * [installed] withholds its info for a version they do not target, which is the one case
+     * where the number is worth showing on its own.
+     */
+    fun installedVersion(packageName: String): String? =
+        pm.getPackageInfo(packageName)?.versionName?.takeUnless { it.isBlank() }
 
     /**
      * Identifies whether the package currently occupying a tracked app's package name is still
@@ -358,8 +366,8 @@ class LocalApkSources(
 
     /**
      * Whether the installation on the device is newer than the patch record tracking it.
-     * Morphe's own reinstalls keep the original record, so this is only trusted next to an
-     * installer that Morphe would not have set.
+     * An install Morphe made itself keeps the original record, so this is only trusted next
+     * to an installer that Morphe would not have set.
      */
     private fun installedAfterPatching(app: InstalledApp, installedPackageInfo: PackageInfo): Boolean {
         val patchedAt = app.patchedAt ?: return false

@@ -223,6 +223,7 @@ class UpdateViewModel : ViewModel(), KoinComponent {
         )
 
         when (plan) {
+            // Replacing the manager kills the process, so a session install never reports back.
             // Completion is handled by installBroadcastReceiver;
             // cancellation by resetIfInstallCancelled() in the dialog
             is InstallerManager.InstallPlan.Internal ->
@@ -236,18 +237,22 @@ class UpdateViewModel : ViewModel(), KoinComponent {
             is InstallerManager.InstallPlan.Mount ->
                 failInstall(app.getString(R.string.installer_status_not_supported))
 
-            is InstallerManager.InstallPlan.Shizuku -> {
-                state = State.INSTALLING
-                try {
-                    handleInstallResult(sessionInstaller.installShizuku(location, app.packageName))
-                } catch (_: InstallCancelledException) {
-                    state = State.CAN_INSTALL
-                } catch (error: Exception) {
-                    failInstall(error.simpleMessage().orEmpty())
-                }
-            }
+            is InstallerManager.InstallPlan.Shizuku ->
+                awaitInstall { sessionInstaller.installShizuku(location, app.packageName) }
 
             is InstallerManager.InstallPlan.External -> launchExternalInstaller(plan)
+        }
+    }
+
+    /** Runs an installer that reports its own outcome, leaving the dialog on a state the user can act on. */
+    private suspend fun awaitInstall(install: suspend () -> InstallResult) {
+        state = State.INSTALLING
+        try {
+            handleInstallResult(install())
+        } catch (_: InstallCancelledException) {
+            state = State.CAN_INSTALL
+        } catch (error: Exception) {
+            failInstall(error.simpleMessage().orEmpty())
         }
     }
 

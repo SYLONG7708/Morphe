@@ -12,6 +12,24 @@
         <item quantity="few">%s Možnosti popravkov</item>
         <item quantity="other">%s možnosti popravka</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Viri popravkov za %s aplikacijo</item>
+        <item quantity="two">Viri popravkov za %s aplikaciji</item>
+        <item quantity="few">Viri popravkov za %s aplikacije</item>
+        <item quantity="other">Viri popravkov za %s aplikacij</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s vir je skrit. Tapnite za prikaz</item>
+        <item quantity="two">%s vira sta skrita. Tapnite za prikaz</item>
+        <item quantity="few">%s viri so skriti. Tapnite za prikaz</item>
+        <item quantity="other">%s virov je skritih. Tapnite za prikaz</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s ustrezen popravek</item>
+        <item quantity="two">%s ustrezna popravka</item>
+        <item quantity="few">%s ustrezni popravki</item>
+        <item quantity="other">%s ustreznih popravkov</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s vir</item>
         <item quantity="two">%s Vira</item>
@@ -113,5 +131,11 @@
         <item quantity="two">Kopirana %s popravka iz izbranega paketa</item>
         <item quantity="few">Kopirani %s popravki iz izbranega paketa</item>
         <item quantity="other">Kopirano %s popravkov iz izbranega paketa</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s jedro</item>
+        <item quantity="two">%s jedri</item>
+        <item quantity="few">%s jedra</item>
+        <item quantity="other">%s jeder</item>
     </plurals>
 </resources>

@@ -61,6 +61,9 @@ On import, Morphe asks how to apply it:
 | **Replace existing** | Match the backup exactly. Anything missing from the backup is removed |
 | **Merge with existing** | Add what the backup has, leave your current items unchanged |
 
+The keystore is not part of that file. It is exported on its own, as above, so a settings
+backup carries neither the signing key nor its credentials.
+
 > [!NOTE]
 > A GitHub personal access token is only included if you enabled **Include in settings
 > export** next to it. If you did, keep the exported file private, it contains the token.

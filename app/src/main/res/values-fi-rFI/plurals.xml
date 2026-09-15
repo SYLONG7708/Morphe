@@ -8,6 +8,18 @@
         <item quantity="one">%s lisäosa-asetus</item>
         <item quantity="other">%s lisäosa-asetusta</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Paikkauslähteet %s sovellukselle</item>
+        <item quantity="other">Paikkauslähteet %s sovellukselle</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s lähde piilotettu. Napauta näyttääksesi</item>
+        <item quantity="other">%s lähdettä piilotettu. Napauta näyttääksesi</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s vastaava korjaus</item>
+        <item quantity="other">%s vastaavaa korjausta</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s lähde</item>
         <item quantity="other">%s lähdettä</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Kopioitiin %s korjaustiedosto valitusta paketista</item>
         <item quantity="other">Kopioitiin %s korjaustiedostoa valitusta paketista</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s ydin</item>
+        <item quantity="other">%s ydintä</item>
     </plurals>
 </resources>

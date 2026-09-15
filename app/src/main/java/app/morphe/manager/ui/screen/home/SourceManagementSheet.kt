@@ -55,12 +55,14 @@ import app.morphe.manager.R
 import app.morphe.manager.domain.bundles.*
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.avatarUrls
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.isDefault
+import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.isHeldBack
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.sourceType
 import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.usesPrerelease
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.manager.SourceBundleSortMode
 import app.morphe.manager.domain.repository.BlocklistRepository
 import app.morphe.manager.domain.repository.PatchBundleRepository
+import app.morphe.manager.domain.repository.SourceMuteRepository
 import app.morphe.manager.ui.screen.patcher.IncompatiblePatcherVersionDialog
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.util.*
@@ -94,6 +96,7 @@ fun BundleManagementSheet(
 ) {
     val patchBundleRepository: PatchBundleRepository = koinInject()
     val prefs: PreferencesManager = koinInject()
+    val sourceMuteRepository: SourceMuteRepository = koinInject()
     val scope = rememberCoroutineScope()
 
     val sources by patchBundleRepository.sources.collectAsStateWithLifecycle()
@@ -104,8 +107,11 @@ fun BundleManagementSheet(
     val activeUpdateUids by patchBundleRepository.activeUpdateUidsFlow.collectAsStateWithLifecycle(emptySet())
     val metadataFetchErrors by patchBundleRepository.metadataFetchErrors.collectAsStateWithLifecycle(emptyMap())
     val experimentalVersionsEnabled by prefs.bundleExperimentalVersionsEnabled.getAsState()
-    val bundleInfo by patchBundleRepository.bundleInfoFlow.collectAsStateWithLifecycle(emptyMap())
+    // Every source, not only the enabled ones: a disabled source still answers a patch search
+    // and still declares whether it carries experimental targets
+    val bundleInfo by patchBundleRepository.allBundlesInfoFlow.collectAsStateWithLifecycle(emptyMap())
     val blockedSources by patchBundleRepository.blockedSources.collectAsStateWithLifecycle(emptyMap())
+    val hiddenApps by sourceMuteRepository.mutedApps.collectAsStateWithLifecycle(emptyMap())
 
     val showSheetOnboarding = globalOnboardingState?.sheetOnboardingActive == true
 
@@ -151,15 +157,37 @@ fun BundleManagementSheet(
     val orderedSources = remember(localOrder, sources, sourceSortMode) {
         sources.sortedForSourceSort(sourceSortMode, localOrder)
     }
-    val visibleSources = remember(orderedSources, search.query) {
-        if (search.query.isBlank()) orderedSources
-        else orderedSources.filter { source ->
-            source.displayTitle.contains(search.query, ignoreCase = true) ||
-                    source.name.contains(search.query, ignoreCase = true)
+    // Patches are searched alongside source names, so one query answers which source carries a
+    // patch instead of the user opening every source to find out. Blocked sources stay out of it,
+    // since nothing they hold is reachable anyway
+    val patchMatchCounts: Map<Int, Int> = remember(bundleInfo, blockedSources, search.query) {
+        val query = search.query.takeIf { it.isNotBlank() } ?: return@remember emptyMap()
+        buildMap {
+            bundleInfo.forEach { (uid, info) ->
+                if (uid in blockedSources) return@forEach
+                val matches = info.patches.count { it.matchesQuery(query) }
+                if (matches > 0) put(uid, matches)
+            }
         }
     }
-    val alphabetScrollMode = sourceSortMode == SourceBundleSortMode.NAME_ASC ||
-            sourceSortMode == SourceBundleSortMode.NAME_DESC
+    val visibleSources = remember(orderedSources, patchMatchCounts, search.query) {
+        val query = search.query
+        if (query.isBlank()) return@remember orderedSources
+        orderedSources
+            .filter { source -> source.matchesQuery(query) || source.uid in patchMatchCounts }
+            // A source the query names is the one that was asked for; the rest rank by how much
+            // of the query they carry. The sort is stable, so ties keep the order the sort mode
+            // gave them, and clearing the query drops back to that order untouched
+            .sortedWith(
+                compareByDescending<PatchBundleSource> { it.matchesQuery(query) }
+                    .thenByDescending { patchMatchCounts[it.uid] ?: 0 }
+            )
+    }
+    // The alphabet rail reads positions off a list that is in name order, which a search ranking
+    // results by relevance no longer is
+    val alphabetScrollMode = !search.isFiltering &&
+            (sourceSortMode == SourceBundleSortMode.NAME_ASC ||
+                    sourceSortMode == SourceBundleSortMode.NAME_DESC)
     val sourceScrollTargets = remember(alphabetScrollMode, visibleSources) {
         if (!alphabetScrollMode) {
             emptyList()
@@ -176,6 +204,7 @@ fun BundleManagementSheet(
     }
 
     val bundleToShowPatches = remember { mutableStateOf<PatchBundleSource?>(null) }
+    val bundleToShowHiddenApps = remember { mutableStateOf<PatchBundleSource?>(null) }
     var bundleRequiringManagerUpdate by remember { mutableStateOf<PatchBundleSource?>(null) }
     var bundleToShowChangelogUid by remember { mutableStateOf<Int?>(null) }
 
@@ -357,6 +386,8 @@ fun BundleManagementSheet(
                                 BundleManagementCard(
                                     bundle = bundle,
                                     patchCount = patchCounts[bundle.uid] ?: 0,
+                                    patchMatchCount = patchMatchCounts[bundle.uid],
+                                    hiddenAppCount = hiddenApps[bundle.uid]?.size ?: 0,
                                     updateInfo = manualUpdateInfo[bundle.uid],
                                     isUpdating = bundle.uid in activeUpdateUids,
                                     metadataFetchError = metadataFetchErrors[bundle.uid],
@@ -400,6 +431,7 @@ fun BundleManagementSheet(
                                     hasExperimentalVersions = hasExperimentalVersions,
                                     useExperimentalVersions = useExperimentalVersions,
                                     onPatchesClick = { bundleToShowPatches.value = bundle },
+                                    onHiddenAppsClick = { bundleToShowHiddenApps.value = bundle },
                                     onOutdatedManagerClick = { bundleRequiringManagerUpdate = bundle },
                                     onVersionClick = {
                                         if (bundle is RemotePatchBundle) {
@@ -514,7 +546,15 @@ fun BundleManagementSheet(
     if (bundleToShowPatches.value != null) {
         BundlePatchesDialog(
             onDismissRequest = { bundleToShowPatches.value = null },
-            src = bundleToShowPatches.value!!
+            src = bundleToShowPatches.value!!,
+            initialQuery = search.query
+        )
+    }
+
+    bundleToShowHiddenApps.value?.let { src ->
+        BundleHiddenAppsDialog(
+            onDismissRequest = { bundleToShowHiddenApps.value = null },
+            src = src
         )
     }
 
@@ -572,6 +612,10 @@ private fun List<PatchBundleSource>.sortedForSourceSort(
 private fun PatchBundleSource.sourceSortTitle(): String =
     displayTitle.lowercase(Locale.ROOT)
 
+/** Whether the source's own name answers to a search query, before its patches are consulted. */
+private fun PatchBundleSource.matchesQuery(query: String): Boolean =
+    displayTitle.contains(query, ignoreCase = true) || name.contains(query, ignoreCase = true)
+
 /**
  * Card for individual bundle management.
  */
@@ -581,6 +625,10 @@ private fun BundleManagementCard(
     bundle: PatchBundleSource,
     modifier: Modifier = Modifier,
     patchCount: Int,
+    /** Patches in this source matching the sheet's search, or null while nothing is searched. */
+    patchMatchCount: Int? = null,
+    /** Apps kept from this source. Zero drops the row, since there is nothing to take back. */
+    hiddenAppCount: Int = 0,
     updateInfo: PatchBundleRepository.ManualBundleUpdateInfo?,
     isUpdating: Boolean = false,
     isDragging: Boolean = false,
@@ -601,6 +649,7 @@ private fun BundleManagementCard(
     hasExperimentalVersions: Boolean,
     useExperimentalVersions: Boolean,
     onPatchesClick: () -> Unit,
+    onHiddenAppsClick: () -> Unit = {},
     onVersionClick: () -> Unit,
     onOpenInBrowser: () -> Unit,
     onReportIssue: () -> Unit,
@@ -614,12 +663,9 @@ private fun BundleManagementCard(
     val disabledState = stringResource(R.string.disabled)
     val openInBrowser = stringResource(R.string.sources_management_open_in_browser)
     val reportIssue = stringResource(R.string.sources_management_report_issue)
+    val patchesLabel = stringResource(R.string.patches)
 
     val context = LocalContext.current
-    fun withToast(doneMessage: String, action: () -> Unit): () -> Unit = {
-        context.toast(doneMessage)
-        action()
-    }
 
     val isBlocked = blockedInfo != null
     val isEnabled = bundle.enabled && !isBlocked
@@ -697,6 +743,8 @@ private fun BundleManagementCard(
                     enabled = isEnabled,
                     metadataFetchError = metadataFetchError,
                     blockedInfo = blockedInfo,
+                    patchMatchCount = patchMatchCount,
+                    onShowPatchMatches = onPatchesClick,
                     modifier = longPressModifier
                         .clickable(
                             indication = null,
@@ -710,6 +758,12 @@ private fun BundleManagementCard(
                                 stateDescription = if (expanded) expandedState else collapsedState
                             }
                             this.contentDescription = contentDesc
+                            // The match badge is a tap target the merged node swallows otherwise
+                            if (patchMatchCount != null) {
+                                customActions = listOf(
+                                    CustomAccessibilityAction(patchesLabel) { onPatchesClick(); true }
+                                )
+                            }
                         }
                 )
 
@@ -760,6 +814,20 @@ private fun BundleManagementCard(
                                 )
                             }
 
+                            // Held back hint (shown when reading the source killed the process)
+                            AnimatedVisibility(
+                                visible = bundle.isHeldBack,
+                                enter = Animations.expandFadeEnter,
+                                exit = Animations.shrinkFadeExit
+                            ) {
+                                Notice(
+                                    text = stringResource(R.string.sources_management_held_back_hint),
+                                    icon = Icons.Outlined.ErrorOutline,
+                                    tone = SemanticTone.Error,
+                                    density = NoticeDensity.Compact
+                                )
+                            }
+
                             // Outdated manager hint
                             AnimatedVisibility(
                                 visible = bundle.requiresManagerUpdate,
@@ -792,9 +860,16 @@ private fun BundleManagementCard(
                             ),
                             icon = Icons.Outlined.Info,
                             title = stringResource(R.string.patches),
-                            value = patchCount.toString(),
+                            value = if (patchMatchCount != null) {
+                                "$patchMatchCount/$patchCount"
+                            } else {
+                                patchCount.toString()
+                            },
                             onClick = onPatchesClick,
-                            enabled = isEnabled && !isUpdating
+                            // A disabled source still lists what it holds, which is what the
+                            // decision to switch it back on is made on. A blocked one does not,
+                            // and neither does one whose patches never loaded
+                            enabled = !isBlocked && !isUpdating && patchCount > 0
                         )
 
                         // Version
@@ -812,6 +887,23 @@ private fun BundleManagementCard(
                             onClick = onVersionClick,
                             enabled = !isUpdating
                         )
+
+                        // Only where something is actually being kept from the source. The row is
+                        // the one way back that does not depend on which mode the user patches in
+                        if (hiddenAppCount > 0) {
+                            BundleInfoCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                icon = Icons.Outlined.VisibilityOff,
+                                title = stringResource(R.string.sources_hidden_apps),
+                                value = pluralStringResource(
+                                    R.plurals.home_category_app_count,
+                                    hiddenAppCount,
+                                    hiddenAppCount.toString()
+                                ),
+                                onClick = onHiddenAppsClick,
+                                enabled = !isUpdating
+                            )
+                        }
 
                         // Both actions leave for the same repository, so they share a row.
                         // Only the primary one carries a label, keeping it clear of the
@@ -929,7 +1021,7 @@ private fun BundleManagementCard(
                                 ) { icon ->
                                     // Disable button
                                     ActionPillButton(
-                                        onClick = withToast(disableToast, onDisable),
+                                        onClick = context.withToast(disableToast, onDisable),
                                         icon = icon,
                                         contentDescription = disableEnableDesc,
                                         tooltip = disableEnableVerb,
@@ -946,7 +1038,7 @@ private fun BundleManagementCard(
                                 // Update button. A local source has nothing to fetch from, so it asks
                                 // for a replacement file instead and reports progress once one is picked
                                 ActionPillButton(
-                                    onClick = if (isLocal) onUpdate else withToast(updateToast, onUpdate),
+                                    onClick = if (isLocal) onUpdate else context.withToast(updateToast, onUpdate),
                                     icon = Icons.Outlined.Refresh,
                                     contentDescription = updateDesc,
                                     tooltip = updateVerb,
@@ -997,6 +1089,8 @@ private fun BundleCardHeader(
     enabled: Boolean = true,
     metadataFetchError: Throwable? = null,
     blockedInfo: BlocklistRepository.BlockedEntry? = null,
+    patchMatchCount: Int? = null,
+    onShowPatchMatches: (() -> Unit)? = null,
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
@@ -1088,6 +1182,22 @@ private fun BundleCardHeader(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
+                // What the search found inside the source leads, being the reason the card is on
+                // screen at all. It swaps in without an animation of its own, since the list
+                // behind it is already re-ordering on every keystroke
+                if (patchMatchCount != null) {
+                    StatusBadge(
+                        text = pluralStringResource(
+                            R.plurals.sources_search_patch_matches,
+                            patchMatchCount,
+                            patchMatchCount.toString()
+                        ),
+                        icon = Icons.Outlined.Search,
+                        tone = SemanticTone.Primary,
+                        onClick = onShowPatchMatches
+                    )
+                }
+
                 // Bundle type badge
                 BundleTypeBadge(bundle.sourceType)
 
@@ -1111,6 +1221,18 @@ private fun BundleCardHeader(
                 ) {
                     StatusBadge(
                         text = stringResource(R.string.sources_management_outdated_manager_badge),
+                        tone = SemanticTone.Error
+                    )
+                }
+
+                // Held back badge
+                AnimatedVisibility(
+                    visible = bundle.isHeldBack,
+                    enter = Animations.expandHorizFadeIn,
+                    exit = Animations.shrinkHorizFadeOut
+                ) {
+                    StatusBadge(
+                        text = stringResource(R.string.sources_management_held_back_badge),
                         tone = SemanticTone.Error
                     )
                 }

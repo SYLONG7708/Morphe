@@ -11,6 +11,11 @@ import io.ktor.client.request.header
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import app.morphe.manager.network.dto.GitHubRelease
 
 class SignedUpdateManifestRepository(
     private val http: HttpService,
@@ -18,13 +23,34 @@ class SignedUpdateManifestRepository(
     private val verifier: DetachedSignatureVerifier,
     private val prefs: PreferencesManager,
 ) {
-    suspend fun fetch(): UpdateManifest {
+    private val mutex = Mutex()
+
+    suspend fun fetch(): UpdateManifest = mutex.withLock {
+        try {
+            fetchPair(MANIFEST_URL, MANIFEST_SIGNATURE_URL)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (first: Exception) {
+            // Resolve both files from one immutable release if latest/CDN raced a publish.
+            // The public API is a fallback; it cannot bypass RSA or rollback verification.
+            delay(1_000)
+            val release = http.request<GitHubRelease> {
+                url("https://api.github.com/repos/SYLONG7708/Morphe/releases/latest")
+            }.getOrThrow()
+            check(!release.draft && !release.prerelease)
+            require(release.tagName.matches(Regex("symorphe-v[0-9.]+")))
+            val base = "https://github.com/SYLONG7708/Morphe/releases/download/${release.tagName}"
+            fetchPair("$base/update-manifest.json", "$base/update-manifest.json.sig")
+        }
+    }
+
+    private suspend fun fetchPair(manifestUrl: String, signatureUrl: String): UpdateManifest {
         val manifestText = http.request<String> {
-            url(MANIFEST_URL)
+            url(manifestUrl)
             header(HttpHeaders.CacheControl, "no-cache")
         }.getOrThrow()
         val signatureText = http.request<String> {
-            url(MANIFEST_SIGNATURE_URL)
+            url(signatureUrl)
             header(HttpHeaders.CacheControl, "no-cache")
         }.getOrThrow()
 

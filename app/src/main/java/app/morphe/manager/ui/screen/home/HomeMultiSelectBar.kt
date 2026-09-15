@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.*
-import app.morphe.manager.util.toast
+import app.morphe.manager.util.withToast
 
 /**
  * Everything [MultiSelectBar] renders from state its own actions clear, kept together so it
@@ -82,13 +82,10 @@ internal fun MultiSelectBar(
     contextActionContentDescription: String? = null,
     contextActionColors: IconButtonColors = IconButtonDefaults.filledTonalIconButtonColors(),
     onMoveToCategory: (() -> Unit)? = null,
-    onPatchSelected: (() -> Unit)? = null
+    onPatchSelected: (() -> Unit)? = null,
+    onPatchSources: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    fun withToast(doneMessage: String, action: () -> Unit): () -> Unit = {
-        context.toast(doneMessage)
-        action()
-    }
 
     val cancelLabel = stringResource(android.R.string.cancel)
     val reorderListLabel = stringResource(R.string.reorder_list)
@@ -104,6 +101,7 @@ internal fun MultiSelectBar(
     val deselectAllDone = stringResource(R.string.deselect_all_done)
     val selectedLabel = stringResource(R.string.selected).lowercase()
     val patchSelectedLabel = stringResource(R.string.batch_patch_action)
+    val patchSourcesLabel = stringResource(R.string.sources_management_title)
 
     val selection = rememberWhileVisible(
         visible,
@@ -143,7 +141,7 @@ internal fun MultiSelectBar(
                     )
                     ActionPillRow {
                         ActionPillButton(
-                            onClick = withToast(resetOrderDone, onResetOrder),
+                            onClick = context.withToast(resetOrderDone, onResetOrder),
                             icon = Icons.Outlined.Restore,
                             contentDescription = resetOrderLabel,
                             tooltip = resetOrderLabel
@@ -155,7 +153,7 @@ internal fun MultiSelectBar(
                             tooltip = cancelLabel
                         )
                         ActionPillButton(
-                            onClick = withToast(reorderDone, onSaveOrder),
+                            onClick = context.withToast(reorderDone, onSaveOrder),
                             icon = Icons.Outlined.Check,
                             contentDescription = doneLabel,
                             tooltip = doneLabel
@@ -183,7 +181,7 @@ internal fun MultiSelectBar(
                     }
                     ActionPillRow {
                         ActionPillButton(
-                            onClick = withToast(selectionToggleDone) {
+                            onClick = context.withToast(selectionToggleDone) {
                                 if (allSelected) onDeselectAll() else onSelectAll()
                             },
                             icon = if (allSelected) Icons.Outlined.RemoveDone else Icons.Outlined.DoneAll,
@@ -201,6 +199,21 @@ internal fun MultiSelectBar(
                                 colors = IconButtonDefaults.filledTonalIconButtonColors(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            )
+                        }
+                        if (onPatchSources != null) {
+                            // Next to "Patch selected" rather than next to "Hide": both answer
+                            // what patching these apps does, while "Hide" is about this screen
+                            ActionPillButton(
+                                onClick = onPatchSources,
+                                icon = Icons.Outlined.Source,
+                                contentDescription = patchSourcesLabel,
+                                tooltip = patchSourcesLabel,
+                                enabled = selection.count > 0,
+                                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             )
                         }
@@ -227,7 +240,7 @@ internal fun MultiSelectBar(
                             )
                         }
                         ActionPillButton(
-                            onClick = withToast(actionDoneMessage, onAction),
+                            onClick = context.withToast(actionDoneMessage, onAction),
                             icon = actionIcon,
                             contentDescription = actionContentDescription,
                             tooltip = actionContentDescription,

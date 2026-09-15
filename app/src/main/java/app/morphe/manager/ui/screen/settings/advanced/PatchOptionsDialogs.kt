@@ -15,14 +15,18 @@ import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
+import app.morphe.manager.domain.manager.PatchOptionKeys
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.CUSTOM_HEADER_INSTRUCTION
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.CUSTOM_ICON_INSTRUCTION
@@ -30,10 +34,12 @@ import app.morphe.manager.domain.manager.getLocalizedOrCustomText
 import app.morphe.manager.patcher.patch.ExplicitOptionKind
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.OptionInfo
-import app.morphe.manager.ui.viewmodel.PatchOptionKeys
 import app.morphe.manager.ui.viewmodel.PatchOptionsViewModel
 import app.morphe.manager.util.rememberFolderPickerWithPermission
 import app.morphe.manager.util.toFilePath
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 
 /**
  * Custom branding dialog with folder picker and adaptive icon creator.
@@ -50,6 +56,7 @@ fun CustomBrandingDialog(
     // Get current values from preferences
     val appName = remember { mutableStateOf(patchOptionsPrefs.customAppName(packageName).getBlocking()) }
     val iconPath = remember { mutableStateOf(patchOptionsPrefs.customIconPath(packageName).getBlocking()) }
+    val appIconStyle = remember { mutableStateOf(patchOptionsPrefs.appIconStyle(packageName).getBlocking()) }
 
     // State for icon creator dialog
     val showIconCreator = remember { mutableStateOf(false) }
@@ -58,6 +65,14 @@ fun CustomBrandingDialog(
     val brandingOptions = patchOptionsViewModel.getBrandingOptions(packageName)
     val appNameOption = patchOptionsViewModel.getOption(brandingOptions, PatchOptionKeys.CUSTOM_NAME)
     val iconOption = patchOptionsViewModel.getOption(brandingOptions, PatchOptionKeys.CUSTOM_ICON)
+    val appIconStyles = patchOptionsViewModel
+        .getOption(brandingOptions, PatchOptionKeys.APP_ICON)
+        ?.presets
+        .orEmpty()
+
+    // The custom icon style has no images of its own, so the patch fails the run without a folder
+    val missingCustomIcon = appIconStyle.value == PatchOptionKeys.APP_ICON_CUSTOM &&
+            iconPath.value.isBlank()
 
     // Folder picker with permission handling (needs permissions for icon creation)
     val openFolderPicker = rememberFolderPickerWithPermission(
@@ -79,9 +94,11 @@ fun CustomBrandingDialog(
                         packageName = packageName,
                         appName = appName.value,
                         iconPath = iconPath.value,
+                        appIconStyle = appIconStyle.value,
                         onDone = onDismiss
                     )
                 },
+                primaryEnabled = !missingCustomIcon,
                 secondaryText = stringResource(android.R.string.cancel),
                 onSecondaryClick = onDismiss
             )
@@ -102,6 +119,25 @@ fun CustomBrandingDialog(
                 )
             }
 
+            // App icon style, the icon the patched app is built with
+            if (appIconStyles.isNotEmpty()) {
+                DropdownOptionItem(
+                    title = stringResource(R.string.settings_advanced_patch_options_custom_branding_app_icon),
+                    description = stringResource(R.string.settings_advanced_patch_options_custom_branding_app_icon_description),
+                    value = appIconStyle.value,
+                    presets = appIconStyles,
+                    onValueChange = { appIconStyle.value = it?.toString().orEmpty() }
+                )
+
+                if (missingCustomIcon) {
+                    Notice(
+                        text = stringResource(R.string.settings_advanced_patch_options_custom_branding_app_icon_needs_folder),
+                        tone = SemanticTone.Error,
+                        density = NoticeDensity.Compact
+                    )
+                }
+            }
+
             // Icon path field with folder picker
             if (iconOption != null) {
                 FolderOptionInput(
@@ -109,6 +145,7 @@ fun CustomBrandingDialog(
                     value = iconPath.value,
                     label = stringResource(R.string.settings_advanced_patch_options_custom_branding_custom_icon),
                     placeholder = "/storage/emulated/0/icons",
+                    isInvalid = missingCustomIcon,
                     onValueChange = { iconPath.value = it },
                     onPickFolder = { openFolderPicker() }
                 )
@@ -140,7 +177,7 @@ fun CustomBrandingDialog(
             }
 
             // Show message if no options available
-            if (appNameOption == null && iconOption == null) {
+            if (appNameOption == null && iconOption == null && appIconStyles.isEmpty()) {
                 Text(
                     text = stringResource(R.string.settings_advanced_patch_options_no_available),
                     style = MaterialTheme.typography.bodyMedium,
@@ -176,13 +213,17 @@ private fun FolderOptionInput(
     label: String,
     placeholder: String,
     onValueChange: (String) -> Unit,
-    onPickFolder: () -> Unit
+    onPickFolder: () -> Unit,
+    isInvalid: Boolean = false
 ) {
+    val isGone = rememberPathIsGone(value)
+    val isMissing = isInvalid || isGone || (option.required && value.isBlank())
+
     if (option.explicitKind == ExplicitOptionKind.Folder) {
         PickerFieldHeader(
             title = label,
             required = option.required,
-            isInvalid = option.required && value.isBlank()
+            isInvalid = isMissing
         )
 
         PickerButtonRow(
@@ -198,10 +239,36 @@ private fun FolderOptionInput(
             onValueChange = onValueChange,
             label = { Text(label) },
             placeholder = { Text(placeholder) },
+            isError = isMissing,
             showClearButton = true,
             onFolderPickerClick = onPickFolder
         )
     }
+
+    // The patcher fails a run over a folder that is gone, and this is where it can still be fixed
+    if (isGone) {
+        Notice(
+            text = stringResource(R.string.settings_advanced_patch_options_path_gone),
+            tone = SemanticTone.Error,
+            density = NoticeDensity.Compact
+        )
+    }
+}
+
+/**
+ * Whether [path] is set but nothing can be read there anymore. Checked off the main thread, and
+ * again whenever the path changes.
+ */
+@Composable
+private fun rememberPathIsGone(path: String): Boolean {
+    var isGone by remember { mutableStateOf(false) }
+
+    LaunchedEffect(path) {
+        // Only an absolute path can be checked, anything else is for the patch to make sense of
+        isGone = path.startsWith("/") && withContext(Dispatchers.IO) { !File(path).canRead() }
+    }
+
+    return isGone
 }
 
 /**

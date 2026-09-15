@@ -12,6 +12,24 @@
         <item quantity="many">%s nastavení záplaty</item>
         <item quantity="other">%s nastavení záplaty</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Zdroje záplat pre %s aplikáciu</item>
+        <item quantity="few">Zdroje záplat pre %s aplikácie</item>
+        <item quantity="many">Zdroje záplat pre %s aplikácií</item>
+        <item quantity="other">Zdroje záplat pre %s aplikácií</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s zdroj je skrytý. Klepnutím zobrazíte</item>
+        <item quantity="few">%s zdroje sú skryté. Klepnutím zobrazíte</item>
+        <item quantity="many">%s zdrojov je skrytých. Klepnutím zobrazíte</item>
+        <item quantity="other">%s zdrojov je skrytých. Klepnutím zobrazíte</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s zodpovedajúca záplata</item>
+        <item quantity="few">%s zodpovedajúce záplaty</item>
+        <item quantity="many">%s zodpovedajúcich záplat</item>
+        <item quantity="other">%s zodpovedajúcich záplat</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s zdroj</item>
         <item quantity="few">%s zdroje</item>
@@ -113,5 +131,11 @@
         <item quantity="few">Skopírované %s záplaty z vybraného balíka</item>
         <item quantity="many">Skopírované %s záplat z vybraného balíka</item>
         <item quantity="other">Skopírované %s záplat z vybraného balíka</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s jadro</item>
+        <item quantity="few">%s jadrá</item>
+        <item quantity="many">%s jadier</item>
+        <item quantity="other">%s jadier</item>
     </plurals>
 </resources>

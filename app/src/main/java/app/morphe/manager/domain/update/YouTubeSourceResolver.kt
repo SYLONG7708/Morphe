@@ -11,6 +11,7 @@ data class YouTubeVersionBuild(
     val version: String?,
     val bundleUid: Int,
     val versionCodes: Set<Int>?,
+    val codesByAbi: Map<String, Int> = emptyMap(),
 )
 
 data class YouTubeDownloadCandidate(
@@ -36,15 +37,21 @@ object YouTubeSourceResolver {
         recommendedVersion: String?,
         selectedBundleUid: Int?,
         compatibleVersions: List<YouTubeVersionBuild>,
+        deviceAbis: List<String> = emptyList(),
     ): List<YouTubeDownloadCandidate> {
         val version = recommendedVersion?.takeUnless(String::isBlank) ?: return emptyList()
         return compatibleVersions.asSequence()
             .filter { it.version == version }
             .filter { selectedBundleUid == null || it.bundleUid == selectedBundleUid }
-            .flatMap { it.versionCodes.orEmpty().asSequence() }
+            .flatMap { entry ->
+                if (entry.codesByAbi.isNotEmpty() && deviceAbis.isNotEmpty()) {
+                    deviceAbis.mapNotNull(entry.codesByAbi::get).asSequence()
+                } else {
+                    entry.versionCodes.orEmpty().sortedDescending().asSequence()
+                }
+            }
             .filter { it > 0 }
             .distinct()
-            .sortedDescending()
             .map { versionCode ->
                 YouTubeDownloadCandidate(
                     packageName = YOUTUBE_PACKAGE,
@@ -69,13 +76,21 @@ object YouTubeSourceResolver {
         pinnedVersion: String,
         pinnedVersionCode: Int,
         pinnedSha256: String,
+        deviceAbis: List<String> = emptyList(),
     ): List<YouTubeDownloadCandidate> {
         val declared = resolve(
             recommendedVersion = recommendedVersion,
             selectedBundleUid = selectedBundleUid,
             compatibleVersions = compatibleVersions,
+            deviceAbis = deviceAbis,
         )
         if (declared.isNotEmpty()) return declared
+        // A known incompatible ABI must never turn into the old pinned ARM64 download.
+        if (compatibleVersions.any {
+            it.version == recommendedVersion &&
+                (selectedBundleUid == null || it.bundleUid == selectedBundleUid) &&
+                it.codesByAbi.isNotEmpty()
+        }) return emptyList()
         if (
             !allowPinnedFallback ||
             recommendedVersion != pinnedVersion ||
@@ -97,4 +112,12 @@ object YouTubeSourceResolver {
 
     internal fun buildDownloadUrl(packageName: String, versionCode: Int): String =
         "$APKPURE_DOWNLOAD_BASE/$packageName?versionCode=$versionCode"
+
+    fun abiName(patcherAbi: String): String = when (patcherAbi) {
+        "ARM64_V8A" -> "arm64-v8a"
+        "ARMEABI_V7A" -> "armeabi-v7a"
+        "X86_64" -> "x86_64"
+        "X86" -> "x86"
+        else -> patcherAbi
+    }
 }

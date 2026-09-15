@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">Gizlədilən tətbiqlər yoxdur</string>
     <string name="home_app_hidden_apps_title">Gizlədilən tətbiqlər</string>
     <string name="home_app_hidden_apps_hint">Göstərmək üçün toxun</string>
+    <string name="home_app_patch_sources_description">İşarələnməmiş mənbələr bu tətbiqlər yamaqlanarkən təklif olunmur və onların yamaqları heç vaxt öz-özünə seçilənlərə qoşulmur. Hər bir mənbə digər bütün tətbiqlər üçün aktiv qalır</string>
+    <string name="home_app_patch_sources_mixed">%2$s-dən %1$s-ə təklif olunur</string>
+    <string name="home_app_patch_sources_covers">%2$s-dən %1$s üçün yamaqlar var</string>
+    <string name="home_app_patch_sources_last">Hər tətbiqin yamaqlanması üçün bir mənbəyə ehtiyacı var</string>
     <string name="android_11_bug_dialog_title">Android 11 səhvi</string>
     <string name="android_11_bug_dialog_description">Tətbiq quraşdırılması icazəsi istifadəçi təcrübəsinə mənfi təsir edəcək Android 11 sistemindəki səhvə mane olmaq üçün əvvəlcədən qəbul edilməlidir</string>
     <string name="deep_link_add_source_title">Mənbə əlavə et</string>
@@ -27,6 +31,8 @@
     <string name="home_metadata_errors_subtitle">Mənbələri gözdən keçirmək üçün toxun</string>
     <string name="home_outdated_manager_title">Morphe köhnəlib</string>
     <string name="home_outdated_manager_subtitle">Bəzi yamaq mənbələrinin daha yeni versiyaya ehtiyacı var</string>
+    <string name="home_held_back_title">Yamaq mənbəyi Morphe-ni xətaya saldı</string>
+    <string name="home_held_back_subtitle">Tətbiqin başladıla bilməsi üçün bu ötürüldü. Baxmaq üçün toxun</string>
     <string name="home_metered_skipped_title">Mobil datada yeniləmələr dayandırıldı</string>
     <string name="home_metered_skipped_subtitle">Mobil datada yeniləmələri qəbul etmək üçün toxun</string>
     <string name="home_repatch_available_subtitle">Hamısını növbəyə qoymaq üçün toxun</string>
@@ -35,6 +41,9 @@
     <string name="home_update_skipped_metered">Yenilənmələr ötürüldü</string>
     <string name="home_update_skipped_metered_subtitle">Mobil data işləkdir</string>
     <string name="home_updating_sources">Mənbələr yenilənir…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s MB (%5$d%%)</string>
     <string name="home_update_success">Mənbələri yeniləmə tamamlandı</string>
     <string name="home_update_success_subtitle">Mənbələriniz yenilənib</string>
     <string name="home_sources_are_loading">Mənbələr yüklənilir, xahiş olunur gözləyin...</string>
@@ -54,7 +63,7 @@
     <string name="home_app_sort_name_asc_description">Əlifbaya uyğun, A-dan Z-yə</string>
     <string name="home_app_sort_name_desc_description">Əlifbanın əksinə uyğun, Z-dən A-ya</string>
     <string name="home_app_sort_updates_first">Əvvəlcə yamaq yeniləmələri olan</string>
-    <string name="home_app_sort_updates_first_description">Əvvəlcə yeniləmə nişanları, sonra tövsiyə olunan düzülüşü olan tətbiqlər</string>
+    <string name="home_app_sort_updates_first_description">Əvvəlcə daha yeni yamaqlar, sonra tövsiyə olunan düzülüşü olan tətbiqlər</string>
     <string name="home_app_sort_recently_patched">Təzəlikcə yamaqlandı</string>
     <string name="home_app_sort_recently_patched_description">Əvvəlcə təzəlikcə yamaqlanmış tətbiqlər</string>
     <string name="home_no_apps_title">Mövcud tətbiq yoxdur</string>
@@ -119,7 +128,7 @@
     <string name="home_greeting_super_late_5">Gecəcil və səmərəli</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Yamaq mənbələri</string>
-    <string name="sources_search">Mənbələri axtar</string>
+    <string name="sources_search">Mənbələri və yamaqları axtar</string>
     <string name="sources_sort_title">Yamaq mənbələrini sırala</string>
     <string name="sources_sort_manual">Əl ilə sıralama</string>
     <string name="sources_sort_manual_hint">Təkrar sıralamaq üçün mənbəyə uzun bas</string>
@@ -127,9 +136,14 @@
     <string name="sources_sort_last_updated_description">Əvvəlcə ən yeni mənbə yeniləmələri</string>
     <string name="sources_sort_enabled_first">Əvvəlcə aktivləşdirilmiş</string>
     <string name="sources_sort_enabled_first_description">İşlək mənbələri qapalı mənbələrdən əvvəl göstər</string>
+    <string name="sources_patches_source_disabled_hint">Bu mənbə qapadılıb. Onun yamaqları məlumat üçün siyahıya alınıb və tətbiq olunmur</string>
     <string name="sources_management_open_in_browser">Brauzerdə açın</string>
     <string name="sources_management_report_issue">Problemi bildir</string>
     <string name="sources_management_failed_to_open_url">URL açmaq uğursuzdu</string>
+    <string name="sources_hidden_apps">Gizlədilib</string>
+    <string name="sources_hidden_apps_title">Tətbiqlər %1$s-dən gizlədilib</string>
+    <string name="sources_hidden_apps_description">Bu tətbiqlər yamaqlanarkən onlara bu mənbə təklif olunmur. Mənbənin özü digər bütün hallar üçün aktiv qalır</string>
+    <string name="sources_hidden_apps_hint">Bu mənbəni təkrar təklif etmək üçün toxun</string>
     <string name="sources_management_prerelease_toggle">İlkin buraxılış yamaqları</string>
     <string name="sources_management_prerelease_toggle_description">Yeni təcrübi yamaq versiyalarına erkən keçid əldə edilir</string>
     <string name="sources_prerelease_warning_title">İlkin buraxılış yamaqlarını aktivləşdirsin?</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">Yamaq paketin yükləmək olmadı. Mənbə URL-si səhv ola bilər və ya fayl mövcud deyil</string>
     <string name="sources_management_outdated_manager_badge">Morphe-ni Yenilə</string>
     <string name="sources_management_outdated_manager_hint">Bu mənbə %1$s yamaqlayıcısı üçün qurulmuşdur, lakin Morphe %2$s versiyası %3$s yamaqlayıcısını ehtiva edir. İstifadə etmək üçün Morphe-ni yenilə</string>
+    <string name="sources_management_held_back_badge">Çökdü</string>
+    <string name="sources_management_held_back_hint">Bu mənbə yüklənərkən Morphe-nin çökməsinə səbəb oldu, buna görə də ötürülür. Təkrar cəhd etmək üçün onu yenilə və ya təkrar idxal et</string>
     <string name="sources_management_source_enabled">Mənbə işləkdir</string>
     <string name="sources_management_source_disabled">Mənbə qapalıdır</string>
     <string name="sources_management_source_updating">Mənbə yenilənir</string>
@@ -190,6 +206,7 @@ Bu veb saytdan əlavə etdiyiniz hər şey öz riskinizlə istifadə olunur"</st
     <string name="home_apk_availability_recommended_label">Tövsiyə olunan</string>
     <string name="home_apk_availability_unpatched_label">Yamaqlanmayan</string>
     <string name="home_apk_availability_incompatible_label">Uyuşmaz</string>
+    <string name="home_apk_availability_installed_version">Bu cihazda quraşdırılıb: %s</string>
     <string name="home_apk_availability_yes">Bəli, APK tapmağa mənə kömək et</string>
     <string name="home_apk_availability_no">Xeyr, Mənim artıq APK-m var</string>
     <string name="home_apk_helper_download">Köməkçi tətbiq istifadə et</string>
@@ -317,9 +334,11 @@ Davam etmək istədiyinizə əminsiniz?"</string>
     <string name="home_outdated_patches_dialog_warning">Köhnə yamaqlarla yamaqlanma tətbiq pozulmasına səbəb ola bilər</string>
     <string name="home_outdated_patches_dialog_update_and_patch">Yenilənmə &amp; yamaq</string>
     <string name="home_low_disk_space_dialog_title">Az disk yaddaşı</string>
-    <string name="home_low_disk_space_dialog_message">Yalnız %1$.2f GB boş yaddaş var. Yamaqlanmanın düzgün işləməsinə ən azı %2$.2f GB boş yer tələb olunur</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Yalnız %1$s GB boş yaddaş var. Yamaqlanmanın düzgün işləməsinə ən azı %2$s GB boş yer tələb olunur</string>
     <string name="home_low_disk_space_dialog_warning">Əməl edilməsi \"fayl tapılmadı\" xətasına və ya hasilat APK korlanmasına səbəb ola bilər</string>
     <string name="home_simple_bundle_select_title">Yamaq mənbəsi seç</string>
+    <string name="home_simple_bundle_select_remember">Bu tətbiq üçün həmişə bu mənbəni istifadə et</string>
     <!-- Color picker -->
     <string name="custom_color">Xüsusi rəng</string>
     <string name="hex_color">Altı dəyərli rəng</string>
@@ -434,6 +453,10 @@ Xarici sahə (ştrixli): başladıcı örtüyündən kəsilə bilər - mühüm h
     <string name="home_app_info_install_type_shizuku_play_store">Shizuku, Play Store quraşdırması</string>
     <string name="home_app_info_patch_update_available">Yamaq yenilənməsi var</string>
     <string name="home_app_info_patch_update_available_description">Yamaqların daha yeni versiyası var. Ən son təkmilləşdirmələr və düzəlişlər üçün tətbiqinizi təkrar yamaqlayın</string>
+    <string name="home_app_info_app_update_available">Tətbiq yeniləməsi var</string>
+    <string name="home_app_info_app_update_available_description">Yamaq mənbələri bu tətbiqin daha yeni versiyasını dəstəkləyir. Həmin versiyaya keçmək üçün onu təkrar yamaqla</string>
+    <string name="home_app_info_newest_supported_version">Ən yeni dəstəklənən</string>
+    <string name="home_app_info_version_move">%1$s quraşdırılıb, ən yeni dəstəklənən %2$s</string>
     <string name="home_app_info_app_deleted_warning">Tətbiq quraşdırması silindi</string>
     <string name="home_app_info_app_deleted_description">Bu tətbiq Morphe xarici silindi. Funksionallığı qaytarmaq üçün onu təkrar quraşdır</string>
     <string name="home_app_info_not_patched_description">Bu tətbiqin yamaqlanmamış versiyası quraşdırılıb. Morphe-də hələ də əvvəlki yamaq qeydi qalır</string>
@@ -458,6 +481,9 @@ Xarici sahə (ştrixli): başladıcı örtüyündən kəsilə bilər - mühüm h
     <string name="patcher_error_log">Xəta jurnalı</string>
     <string name="patcher_error_technical">Texniki təfsilatlar</string>
     <string name="patcher_error_dialog_diagnostics">Diaqnostika</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Yamaqlama başladı</string>
+    <string name="patcher_card_succeeded">Yamaqlama uğurlu oldu</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">Tətbiq</string>
     <string name="patcher_field_package">Paket</string>
@@ -473,6 +499,15 @@ Xarici sahə (ştrixli): başladıcı örtüyündən kəsilə bilər - mühüm h
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Yaddaş</string>
     <string name="patcher_field_storage">Saxlanc</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Çıxarış həcmi</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Müddət</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Orta yaddaş</string>
+    <string name="patcher_field_memory_max">Maksimal yaddaş</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Saxlanc I/O pik dəyər</string>
     <string name="patcher_field_value_unknown">naməlum</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">təmizlənmiş</string>
@@ -519,6 +554,13 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="patcher_storage_permission_open_settings">Saxlanc tənzimləmələrin aç</string>
     <string name="patcher_storage_badge_denied">İcazə rədd edildi</string>
     <string name="patcher_storage_badge_missing">Tapılmadı</string>
+    <string name="batch_patch_option_paths_skipped">Yamaq seçimi faylları yoxdur və ötürüləcək: %1$s</string>
+    <string name="patcher_missing_patches_title">Bəzi yamaqlar silinib</string>
+    <string name="patcher_missing_patches_description">Bu tətbiq üçün saxlanılmış seçimdə artıq heç bir aktiv mənbə tərəfindən təklif olunmayan yamaqlar var. Davam etmək tətbiqi onlar olmadan yamaqlayır</string>
+    <string name="patcher_missing_patches_label">Artıq təklif olunmur</string>
+    <string name="patcher_option_paths_gone_title">Yamaq seçim faylları çatışmır</string>
+    <string name="patcher_option_paths_gone_description">Bir və ya bir neçə yamaq seçimi artıq yerində olmayan fayllara istinad edir. Onlar olmadan yamaqlamaq üçün keçidləri sil və ya faylları geri qaytarıb təkrar cəhd et</string>
+    <string name="patcher_option_paths_clear">Fayl yollarını sil və davam et</string>
     <string name="patcher_storage_permission_hint">İpucu: Faylları /Android/data/app.morphe.manager/files/ -a köçür - əlavə icazələrə ehtiyac yoxdur</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Hazırlanır</string>
@@ -564,7 +606,7 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="patcher_message_15">Bütün sistemlər nominaldır... yamaqlanma işi cizgisi sabitdir... 🚀 </string>
     <string name="patcher_message_16">Rəqəmsal limondan çıxan şirə kimi əlavə gücü sıxır... 🍋 </string>
     <string name="patcher_message_17">Tətbiqi yeni, daha yaxşı özünü təqdir etməyə həvəsləndirir... 🌱 </string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Tətbiqin üstün mövqeyin yamaqlanmayandan yamaqlanana dəyişdirir... 📦⚛️ </string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">Tətbiqinizin hərarəti var və yeganə resept daha çox yamaqdır... 🩺🔔 </string>
@@ -572,6 +614,8 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <!-- Expert patcher Screen -->
     <string name="patching_app">Tətbiqi yamaqlayır</string>
     <string name="memory_usage">Yaddaş istifadəsi</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%1$s of %2$s MB</string>
     <string name="cpu_usage">CPU istifadəsi</string>
     <string name="storage_io_usage">Saxlanc Giriş/Çıxış</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -611,6 +655,12 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="mini_game_snake_swipe_to_start">Başlamaq üçün sürüşdür</string>
     <string name="mini_game_dino_picker_subtitle">Kaktusların üstündən hoppanmaq üçün toxun</string>
     <string name="mini_game_dino_tap_to_start">Qaçmaq üçün toxun</string>
+    <string name="mini_game_blocks_picker_subtitle">Fiqurları uyğunlaşdır, cərgələri təmizlə</string>
+    <string name="mini_game_blocks_tap_to_start">Döndərmək üçün toxun, köçürmək üçün sürüşdür, endirmək üçün aşağı sürüşdür</string>
+    <string name="mini_game_bricks_picker_subtitle">Topu sıçrat, divarı təmizlə</string>
+    <string name="mini_game_bricks_tap_to_start">Nişan almaq üçün dart, buraxmaq üçün toxun</string>
+    <string name="mini_game_miner_picker_subtitle">Açmaq üçün toxun, nişanlamaq üçün basıb saxla</string>
+    <string name="mini_game_pairs_picker_subtitle">Kartları çevir, cütünü tap</string>
     <!-- Settings -->
     <string name="appearance">Görünüş</string>
     <string name="advanced">Qabaqcıl</string>
@@ -663,6 +713,9 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Əsas ekranda salamlaşma mesajı göstər</string>
     <string name="settings_appearance_app_grouping">Tətbiq qruplaşdırılması</string>
     <string name="settings_appearance_app_grouping_description">Tətbiqləri mənbəyə və ya öz kateqoriyalarınıza görə qruplaşdırmaq üçün əsas ekran keçiricisini göstər, qapalı olduqda seçimi qoruyur</string>
+    <string name="settings_appearance_patch_list">Yamaq siyahısı</string>
+    <string name="settings_appearance_patch_categories">Kateqoriyaya görə qruplaşdır</string>
+    <string name="settings_appearance_patch_categories_description">Yamaq siyahılarını mənbənin elan etdiyi kateqoriyalara görə bölür, heç birini elan etməyən mənbələri sadə siyahı kimi saxlayır</string>
     <string name="settings_appearance_repatch_notice">Yenidən yamaqlama bildirişi</string>
     <string name="settings_appearance_repatch_notice_description">Yamaqlanmış tətbiqlər yenidən yamaqlana bildikdə əsas ekranda etiket göstər</string>
     <string name="settings_appearance_sort_button">Sıralama və filtrləmə düyməsi</string>
@@ -775,6 +828,10 @@ Quraşdırma ləğvi bütün tətbiq məlumatını qalıcı siləcək"</string>
     <string name="settings_advanced_patch_options_custom_branding_description">Tətbiq ekran adını dəyişdirir</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Tətbiq adı</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Fərdi ad daxil et</string>
+    <string name="settings_advanced_patch_options_path_gone">Bu qovluq artıq oxuna bilmir. Onu təkrar seçin və ya təmizləyin, əks halda yamaqlama dayanacaq və bu haqda sorğu edəcək</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Tətbiq simvolu</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">Tətbiqin yamaqlandığı simvol. Bu həmçinin Android Auto və sistem tənzimləmələrinin tətbiq siyahısı kimi tətbiqin onu sonradan dəyişə bilmədiyi yerlərdə istifadə olunur</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">Fərdi tətbiq simvolu üçün simvol şəkilləri olan qovluq tələb olunur</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Fərdi simvol</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Fərdi simvol kimi istifadə etməyə şəkillər olan qovluq.
 
@@ -858,6 +915,8 @@ morphe_header_custom_light.png morphe_header_custom_dark.png
     <string name="installer_action_open_shizuku">Shizuku-nu Aç</string>
     <string name="installer_hint_generic">Quraşdırma uğursuz oldu. Təkrar sına yaxud fərqli quraşdırıcıya keç</string>
     <string name="installer_hint_conflict">Başqa tətbiq bu paket adıyla artıq quraşdırılıb. Davam etməzdən əvvəl onu sil</string>
+    <string name="installer_confirm_notification_title">Quraşdırmanı təsdiqlə</string>
+    <string name="installer_confirm_notification_text">Yamaqlanmış tətbiqin quraşdırılmasını tamamlamaq üçün toxun</string>
     <string name="installer_external_launched">%s açılır…</string>
     <string name="installer_external_timeout">%s quraşdırmanı təsdiqləmədi. Digər tətbiqi yoxla və təkrar sına</string>
     <string name="installer_external_success">%s uğurlu quraşdırmanı bildirdi</string>
@@ -874,7 +933,7 @@ morphe_header_custom_light.png morphe_header_custom_dark.png
     <string name="settings_prompt_installer_on_install">Quraşdırıcı seçimi müraciəti</string>
     <string name="settings_prompt_installer_on_install_description">Yamaqlanan tətbiqi quraşdırdığınız hər vaxt quraşdırıcı seçimi dialoqunu göstərir</string>
     <string name="settings_auto_install_with_shizuku">Yamaqlamadan sonra birbaşa quraşdır</string>
-    <string name="settings_auto_install_with_shizuku_description">Yamaqlanma bitən kimi yamaqlanan APK-nı səssizcə quraşdırır</string>
+    <string name="settings_auto_install_with_shizuku_description">Yamaqlama tamamlanan kimi yamaqlanmış APK-nı quraşdırır</string>
     <string name="settings_auto_uninstall_with_shizuku">Ziddiyyət zamanı avtomatik sil</string>
     <string name="settings_auto_uninstall_with_shizuku_description">Shizuku ilə avtomatik quraşdırarkən, Android imza ziddiyyəti bildirərsə, əvvəlcə mövcud tətbiqi sil. Bu, tətbiq məlumatlarını təmizləyə bilər</string>
     <string name="settings_auto_uninstall_warning_title">Avtomatik silmə aktivləşdirilsin?</string>
@@ -912,6 +971,7 @@ Təfərrüatlar: %2$s"</string>
     <string name="settings_system_process_runtime_enable">Emal icra olunma müddətin aktivləşdir</string>
     <string name="settings_system_memory_limit_subtitle">Yamaqlanma üçün əlçatan yaddaş</string>
     <string name="settings_system_memory_limit_warning">Daha həcmli tətbiqlər yamaqlananda aşağı yaddaş həddi, uğursuzluqlara səbəb ola bilər</string>
+    <string name="settings_system_memory_limit_high_warning">Yüksək yaddaş həddi bəzi cihazlarda yamaqlamanı xeyli ləngidə bilər. Limiti yalnız daha aşağı hədlərdə yamaqlama uğursuz olduqda artır</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB hədd</string>
     <string name="settings_system_process_runtime_disabled_description">Qurmaq üçün kliklə</string>
     <string name="settings_system_process_runtime_description_not_available">Bu xüsusiyyət Android 11 yaxud daha böyük istəyir</string>
@@ -1071,7 +1131,7 @@ Təfərrüatlar: %2$s"</string>
     <string name="credits_current_development">Hazırkı inkişaf</string>
     <string name="credits_prior_development">Əvvəlki inkişaf</string>
     <string name="opensource_licenses">Açıq mənbə lisenziyaları</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Seçim</string>
     <string name="easter_egg_pill_message">Mavi həbi seçsəniz, reklamlar olduğu kimi qalacaq. Qırmızı həbi seçin və baytkodun nə qədər dərinə getdiyini görün</string>
     <string name="easter_egg_pill_red">Qırmızı həb</string>
@@ -1082,6 +1142,10 @@ Təfərrüatlar: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">Yenidən yağışda</string>
     <string name="easter_egg_pill_blue_toast_again">Şəbəkədən ayrıldı. Geriyə yol həmişə olduğu yerdədir</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">Faylı seç</string>
     <string name="select_folder">Qovluq seç</string>
     <string name="patches">Yamaqlar</string>
@@ -1183,6 +1247,8 @@ Təfərrüatlar: %2$s"</string>
     <string name="hidden">Gizlədildi</string>
     <string name="unhide">Göstər</string>
     <string name="unhide_done">Göründü</string>
+    <string name="ignore">Məhəl qoyma</string>
+    <string name="stop_ignoring">Məhəl qoymamağı dayandır</string>
     <string name="logs">Jurnallar</string>
     <string name="sources">Mənbələr</string>
     <string name="installing_ellipsis">Quraşdırılır…</string>
@@ -1206,8 +1272,8 @@ Təfərrüatlar: %2$s"</string>
     <string name="install_update_manager_failed">Yeniləməni quraşdırmaq olmadı</string>
     <string name="installing_manager_update">Yeniləmə quraşdırılır…</string>
     <string name="downloading_manager_update">Yenilənmə yüklənilir…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">%1$.1f MB yüklənildi</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">%1$s MB yüklənildi</string>
     <string name="manager_update_not_ready">Bu buraxılış hələ də dərc olunur. Bir neçə dəqiqə sonra təkrar cəhd et</string>
     <string name="update_download_missing">Yüklənilmiş yeniləmə artıq əlçatan deyil. Onu təkrar yüklə</string>
     <string name="download_manager_failed">Yeniləməni yükləmək olmadı: %s</string>

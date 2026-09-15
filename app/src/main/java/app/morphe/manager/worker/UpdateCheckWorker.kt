@@ -17,6 +17,7 @@ import app.morphe.manager.util.tag
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
 
 /**
  * How often the background update check WorkManager job should repeat.
@@ -92,7 +93,10 @@ class UpdateCheckWorker(
                 }
             }
             Log.d(tag, "UpdateCheckWorker: background update check completed")
-            Result.success()
+            if (listOf(snapshot.manager, snapshot.patches, snapshot.microg)
+                    .any { it.status == UpdateStatus.ERROR }) Result.retry() else Result.success()
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.e(tag, "UpdateCheckWorker: failed to check for updates", e)
             // Retry later; avoids spamming logs on persistent failures (e.g. no internet)
@@ -113,6 +117,7 @@ class UpdateCheckWorker(
                 .build()
             val request = OneTimeWorkRequestBuilder<UpdateCheckWorker>()
                 .setConstraints(constraints)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
                 .build()
             WorkManager.getInstance(context).enqueueUniqueWork(
                 IMMEDIATE_WORK_NAME,
@@ -137,6 +142,7 @@ class UpdateCheckWorker(
                 interval.minutes, TimeUnit.MINUTES
             )
                 .setConstraints(constraints)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
                 .setInitialDelay(interval.minutes, TimeUnit.MINUTES)
                 .build()
 

@@ -131,3 +131,20 @@ val MIGRATION_14_15 = object : Migration(14, 15) {
         )
     }
 }
+
+val MIGRATION_15_16 = object : Migration(15, 16) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Only the sources an app is kept from are stored, so an empty table is the state every
+        // app starts in: every source it has patches in is offered to it
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS app_source_mutes (
+                patch_bundle INTEGER NOT NULL,
+                package_name TEXT NOT NULL,
+                PRIMARY KEY(patch_bundle, package_name),
+                FOREIGN KEY(patch_bundle) REFERENCES patch_bundles(uid) ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+    }
+}

@@ -8,6 +8,18 @@
         <item quantity="one">%s επιλογή τροποποίησης</item>
         <item quantity="other">%s επιλογές τροποποίησης</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Πηγές ενημερώσεων για %s εφαρμογή</item>
+        <item quantity="other">Πηγές ενημερώσεων για %s εφαρμογές</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s κρυφή πηγή. Πατήστε για εμφάνιση</item>
+        <item quantity="other">%s κρυφές πηγές. Πατήστε για εμφάνιση</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s αντίστοιχο patch</item>
+        <item quantity="other">%s αντίστοιχα patches</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s πηγή</item>
         <item quantity="other">%s πηγές</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Αντιγράφηκε %s επιλογή από την επιλεγμένη δέσμη</item>
         <item quantity="other">Αντιγράφηκαν %s επιλογές από την επιλεγμένη δέσμη</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s πυρήνας</item>
+        <item quantity="other">%s πυρήνες</item>
     </plurals>
 </resources>

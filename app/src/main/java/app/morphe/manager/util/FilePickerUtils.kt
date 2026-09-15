@@ -211,20 +211,21 @@ fun rememberFolderPickerWithPermission(
 }
 
 /**
- * Represents the result of validating a single path-valued patch option.
+ * A path-valued patch option that cannot be used for the run.
  */
-sealed class PathValidationResult {
-    data class Missing(
-        val patchName: String,
-        val optionKey: String,
-        val path: String
-    ) : PathValidationResult()
+data class PathValidationResult(
+    val patchName: String,
+    val optionKey: String,
+    val path: String,
+    val reason: Reason
+) {
+    enum class Reason {
+        /** Nothing is at the path any more, such as a folder the user has deleted. */
+        Missing,
 
-    data class NotReadable(
-        val patchName: String,
-        val optionKey: String,
-        val path: String
-    ) : PathValidationResult()
+        /** The app cannot read the path, either because of its own access or the storage it is on. */
+        NotReadable
+    }
 }
 
 /**
@@ -245,14 +246,54 @@ fun validateOptionPaths(options: Map<Int, Map<String, Map<String, Any?>>>): List
                 if (!raw.startsWith("/")) continue
 
                 val file = File(raw)
-                when {
-                    !file.exists() -> failures += PathValidationResult.Missing(patchName, optionKey, raw)
-                    !file.canRead() -> failures += PathValidationResult.NotReadable(patchName, optionKey, raw)
-                }
+                val reason = when {
+                    file.canRead() -> null
+                    file.exists() -> PathValidationResult.Reason.NotReadable
+                    // A deleted folder and one hidden by missing storage access both read as
+                    // absent, so the folder it sits in is what tells the two apart
+                    isClosedToApp(file.parentFile) -> PathValidationResult.Reason.NotReadable
+                    else -> PathValidationResult.Reason.Missing
+                } ?: continue
+
+                failures += PathValidationResult(patchName, optionKey, raw, reason)
             }
         }
     }
     return failures
+}
+
+/**
+ * [this] without the options [failures] names, so a path that cannot be read is never handed to
+ * the patcher and the patch falls back to the default it declares instead of failing the run.
+ *
+ * The failures carry no bundle, because a path is just as unreadable whichever bundle asked for
+ * it, so the option is dropped from every bundle that set it.
+ *
+ * What is left empty is kept rather than pruned: a saved configuration is written per bundle by
+ * replacing all of it, so a bundle that loses its last option has to stay for that to reach it.
+ */
+fun Options.withoutFailingPaths(failures: List<PathValidationResult>): Options {
+    if (failures.isEmpty()) return this
+
+    val dropped = failures.mapTo(mutableSetOf()) { it.patchName to it.optionKey }
+
+    return mapValues { (_, patches) ->
+        patches.mapValues { (patchName, optionValues) ->
+            optionValues.filterKeys { optionKey -> (patchName to optionKey) !in dropped }
+        }
+    }
+}
+
+/**
+ * Whether [folder] is there but closed to the app, which is storage it is not allowed into.
+ *
+ * Only the folder a path sits in is asked, because a run fails over the folder it was pointed
+ * at rather than over where that folder happens to live.
+ */
+private fun isClosedToApp(folder: File?): Boolean {
+    if (folder == null) return false
+
+    return folder.exists() && !folder.canRead()
 }
 
 /**

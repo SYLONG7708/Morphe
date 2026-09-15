@@ -8,6 +8,18 @@
         <item quantity="one">%s opción de parche</item>
         <item quantity="other">%s opciones de parche</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Fuentes de parches para %s aplicación</item>
+        <item quantity="other">Fuentes de parches para %s aplicaciones</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s fuente oculta. Pulsa para mostrar</item>
+        <item quantity="other">%s fuentes ocultas. Pulsa para mostrar</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s parche coincidente</item>
+        <item quantity="other">%s parches coincidentes</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s fuente</item>
         <item quantity="other">%s fuentes</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Se copió el parche %s del paquete seleccionado</item>
         <item quantity="other">Se copiaron %s parches del paquete seleccionado</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s núcleo</item>
+        <item quantity="other">%s núcleos</item>
     </plurals>
 </resources>

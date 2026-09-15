@@ -15,6 +15,12 @@ import app.morphe.patcher.patch.IntRangeOption as PatchIntRangeOption
 import app.morphe.patcher.patch.IntSliderOption as PatchIntSliderOption
 import app.morphe.patcher.patch.Option as PatchOption
 
+/**
+ * Drops the indentation of the raw string the bundle author declared the text in, which trimIndent
+ * leaves in place as soon as one line of the block starts at column zero.
+ */
+internal fun String.withoutSourceIndent(): String = lines().joinToString("\n") { it.trim() }.trim()
+
 data class PatchInfo(
     /** Key for selections and options, unique within one app's list: [displayName], suffixed on collision. */
     val name: String,
@@ -25,11 +31,13 @@ data class PatchInfo(
     val availabilityResolver: AvailabilityResolver? = null,
     /** The name as declared by the bundle, for anything the user reads. */
     val displayName: String = name,
+    /** Group declared by the bundle, or null when the bundle does not categorize its patches. */
+    val category: String? = null
 ) {
     @Suppress("DEPRECATION")
     constructor(patch: Patch<*>) : this(
         name = patch.name.orEmpty(),
-        description = patch.description,
+        description = patch.description?.withoutSourceIndent(),
         include = patch.default,
         compatiblePackages = patch.compatibility
             ?.map { compatibility ->
@@ -87,6 +95,7 @@ data class PatchInfo(
             }?.toImmutableList(),
         options = patch.options.map { (_, option) -> Option(option) }.ifEmpty { null }?.toImmutableList(),
         availabilityResolver = patch.availability,
+        category = patch.category?.takeIf { it.isNotBlank() }
     )
 
     /**
@@ -128,6 +137,15 @@ data class PatchInfo(
 
     /** Universal patches declare no compatible packages and therefore apply to any app. */
     val isUniversal get() = compatiblePackages.isNullOrEmpty()
+
+    /**
+     * Whether the patch answers to a search query, matched against the text the user reads of it.
+     * A blank query matches every patch, so a search field can be passed through unchecked.
+     */
+    fun matchesQuery(query: String): Boolean =
+        query.isBlank() ||
+                displayName.contains(query, ignoreCase = true) ||
+                description?.contains(query, ignoreCase = true) == true
 
     fun compatibleWith(packageName: String) =
         compatiblePackages == null ||
@@ -275,7 +293,7 @@ data class Option<T>(
     constructor(option: PatchOption<T>) : this(
         title = option.title ?: option.key,
         key = option.key,
-        description = option.description.orEmpty(),
+        description = option.description.orEmpty().withoutSourceIndent(),
         required = option.required,
         type = option.type,
         default = option.default,

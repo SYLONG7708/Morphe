@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.morphe.manager.R
+import app.morphe.manager.domain.manager.PatchOptionKeys
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.HIDE_SHORTS_APP_SHORTCUT_DESC
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager.Companion.HIDE_SHORTS_APP_SHORTCUT_TITLE
@@ -29,7 +30,6 @@ import app.morphe.manager.domain.manager.getLocalizedOrCustomText
 import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.HomeViewModel
-import app.morphe.manager.ui.viewmodel.PatchOptionKeys
 import app.morphe.manager.ui.viewmodel.PatchOptionsViewModel
 import app.morphe.manager.util.KnownApps
 

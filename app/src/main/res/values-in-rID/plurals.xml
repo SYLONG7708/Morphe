@@ -4,7 +4,16 @@
         <item quantity="other">%s tambalan</item>
     </plurals>
     <plurals name="option_count">
-        <item quantity="other">%s pilihan tambalan</item>
+        <item quantity="other">%s opsi tambalan</item>
+    </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="other">Sumber tambalan untuk %s aplikasi</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="other">%s sumber disembunyikan. Ketuk untuk menampilkan</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="other">%s tambalan yang cocok</item>
     </plurals>
     <plurals name="source_count">
         <item quantity="other">%s sumber</item>
@@ -25,10 +34,10 @@
         <item quantity="other">%s aplikasi dipasang ulang</item>
     </plurals>
     <plurals name="batch_uninstall_summary">
-        <item quantity="other">%s aplikasi dihapus</item>
+        <item quantity="other">Mencopot %s aplikasi</item>
     </plurals>
     <plurals name="batch_uninstall_confirm_title">
-        <item quantity="other">Copot pemasangan %s aplikasi?</item>
+        <item quantity="other">Copot %s aplikasi?</item>
     </plurals>
     <plurals name="batch_patch_ready_count">
         <item quantity="other">%s aplikasi siap ditambal</item>
@@ -56,5 +65,8 @@
     </plurals>
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="other">%s tambalan disalin dari bundel yang dipilih</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="other">%s inti</item>
     </plurals>
 </resources>

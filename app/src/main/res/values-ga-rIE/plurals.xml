@@ -14,6 +14,20 @@
         <item quantity="many">%s roghanna paiste</item>
         <item quantity="other">%s roghanna paiste</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Foinsí paiste le haghaidh %s aip</item>
+        <item quantity="two">Foinsí paiste le haghaidh %s aip</item>
+        <item quantity="few">Foinsí paiste le haghaidh %s aip</item>
+        <item quantity="many">Foinsí paiste le haghaidh %s n-aip</item>
+        <item quantity="other">Foinsí paiste le haghaidh %s aip</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s phaiste meaitseála</item>
+        <item quantity="two">%s phaiste meaitseála</item>
+        <item quantity="few">%s phaiste meaitseála</item>
+        <item quantity="many">%s bpaiste meaitseála</item>
+        <item quantity="other">%s paiste meaitseála</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s foinse</item>
         <item quantity="two">%s foinsí</item>
@@ -132,5 +146,12 @@
         <item quantity="few">Cóipeáladh %s paistí ón bpacáiste roghnaithe</item>
         <item quantity="many">Cóipeáladh %s paistí ón bpacáiste roghnaithe</item>
         <item quantity="other">Cóipeáladh %s paistí ón bpacáiste roghnaithe</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s croí</item>
+        <item quantity="two">%s chroílár</item>
+        <item quantity="few">%s chroílár</item>
+        <item quantity="many">%s chroílár</item>
+        <item quantity="other">%s chroílár</item>
     </plurals>
 </resources>

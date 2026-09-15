@@ -67,7 +67,9 @@ that depends on the mode you are in:
 
 - **Expert mode** puts a **Choose patches** button on each card. It opens the same patch list
   the single-app flow uses, with a tab per source, and **Save** writes your choice into the
-  queue. A successful run then keeps it as the app's saved selection.
+  queue. A successful run then keeps it as the app's saved selection. The list carries the
+  same copy button as the single-app one, so a selection you built for one source can be
+  carried over to another instead of ticked again by hand.
 - **Simple mode** puts a **Select patch source** button on cards where more than one source
   applies, the same question simple mode asks before a single-app patch. Picking one drops the
   others for this app, and you can switch again until the queue starts.

@@ -1,0 +1,17 @@
+name: Verified Android toolchain
+description: Install explicit SDK packages with bounded network recovery
+runs:
+  using: composite
+  steps:
+    - uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4
+      with:
+        packages: 'platform-tools'
+        log-accepted-android-sdk-licenses: false
+    - name: Install current toolchain
+      shell: bash
+      run: |
+        python3 tools/ci_retry.py -- sdkmanager \
+          'platform-tools' 'platforms;android-36' 'platforms;android-37.0' \
+          'build-tools;36.0.0' 'build-tools;37.0.0' 'cmake;3.22.1' 'ndk;28.2.13676358'
+        test -x "$ANDROID_HOME/build-tools/37.0.0/apksigner"
+        test -x "$ANDROID_HOME/build-tools/37.0.0/d8"

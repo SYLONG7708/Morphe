@@ -9,6 +9,7 @@ import android.util.Log
 import app.morphe.manager.BuildConfig
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.network.service.HttpService
+import app.morphe.manager.patcher.util.NativeLibStripper
 import app.morphe.manager.util.PM
 import app.morphe.manager.util.sha256OrNull
 import com.android.apksig.ApkVerifier
@@ -175,6 +176,13 @@ class VerifiedYouTubeSourceDownloader(
                 "APK requires Android API $minSdk; this device is API ${Build.VERSION.SDK_INT}"
             )
         }
+        val nativeAbis = NativeLibStripper.extractAbisFromApk(file)
+        if (!sourceAbiCompatible(nativeAbis, Build.SUPPORTED_ABIS.toList())) {
+            return YouTubeSourceDownloadResult.Failure(
+                "APK architecture ${nativeAbis.joinToString()} cannot run on " +
+                    Build.SUPPORTED_ABIS.joinToString()
+            )
+        }
         val sha256 = file.sha256OrNull()
             ?: return YouTubeSourceDownloadResult.Failure("Unable to hash the downloaded APK")
         candidate.sha256?.let { expected ->
@@ -214,3 +222,6 @@ class VerifiedYouTubeSourceDownloader(
         )
     }
 }
+
+internal fun sourceAbiCompatible(apkAbis: List<String>, deviceAbis: List<String>): Boolean =
+    apkAbis.isEmpty() || deviceAbis.any { it in apkAbis }

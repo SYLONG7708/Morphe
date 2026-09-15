@@ -73,6 +73,7 @@ internal class HomeAppsSectionState(
     // Dialogs
     var showHiddenAppsDialog by mutableStateOf(false)
     var showMoveCategoryDialog by mutableStateOf(false)
+    var showPatchSourcesDialog by mutableStateOf(false)
     var showBatchUninstallConfirm by mutableStateOf(false)
     var categoryNameRequest by mutableStateOf<CategoryNameRequest?>(null)
     var pendingDeleteCategoryId by mutableStateOf<String?>(null)

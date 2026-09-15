@@ -69,8 +69,15 @@ recommended one.
 - **Recommended** - the version the patches are built and tested against. Pick this unless
   you have a reason not to.
 - **Experimental** - support is early and may be unstable or incomplete. Morphe asks for an
-  extra confirmation before patching one of these.
+  extra confirmation before patching one of these. These versions are listed only for sources
+  with **Experimental app versions** turned on, see
+  [Managing patch sources](patch-sources.md).
+- **Saved** - the version of the original APK Morphe kept from an earlier run.
+- **Installed** - the version the app is at on your device right now.
 - **No badge** - an older supported version.
+
+When the version on your device is not one of the listed ones, Morphe says so under the list
+instead, so you can tell at a glance whether the APK you already have is of any use.
 
 Tap a version to select it, then choose how to provide the file:
 
@@ -91,8 +98,17 @@ enabled out of the total, and the magnifier searches the list by name.
 
 Tap a card to enable or disable that patch. Patches that carry configurable values show a
 settings icon that opens their options, for example a custom app name, header logo, or
-theme colors, see [Creating a custom app icon](custom-app-icon.md). Newly added patches are
-highlighted with a **New** badge.
+theme colors, see [Creating a custom app icon](custom-app-icon.md). The icon is highlighted
+once you change something, so a patch you tuned is easy to find again. Newly added patches
+are highlighted with a **New** badge.
+
+Sources that sort their patches into categories get a sectioned list rather than one long
+one. Turn that off under **Settings → Appearance → Patch list** if you prefer the flat list,
+sources that declare no categories are shown flat either way.
+
+The counter in the header doubles as a filter: tap it to narrow the list to the patches you
+have enabled, which is the quickest way to look over a selection before patching, and tap it
+again to bring the rest back.
 
 A **Clone** badge marks a patch that builds the app under a package name of its own. Selecting
 one means the result installs next to the original app instead of updating it, leaving you with
@@ -102,6 +118,10 @@ is an early hint rather than the final word.
 If patches for this app come from more than one source, each source gets its own tab and
 the row of action buttons applies to the source you are currently viewing, see
 [Managing patch sources](patch-sources.md).
+
+A source this app is kept from has no tab here. A notice above the list says how many are
+missing, and tapping it brings them back for this run only, leaving the decision itself alone,
+see [Choosing sources per app](patch-sources.md#choosing-sources-per-app).
 
 ### The action buttons
 
@@ -138,8 +158,9 @@ The log opens with a summary block worth checking if you ever report a problem: 
 patches version, APK size, patch count, whether the input was a split APK, the runtime and
 heap limit, your Android version and device, plus free RAM and storage.
 
-Below it, individual steps stream in as they happen. The **Games** tab next to
-**Patcher logs** has a small game to pass the time while patching runs.
+Below it, individual steps stream in as they happen. The **Games** tab next to **Patcher
+logs** passes the time while patching runs, with a picker for 2048, Flappy, Snake, Dino,
+Blocks, Bricks, Miner and Pairs.
 
 At the bottom, the red button cancels patching and the copy button puts the entire log on
 your clipboard.

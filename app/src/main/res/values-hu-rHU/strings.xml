@@ -2,7 +2,7 @@
 <resources>
     <!-- Home Screen -->
     <string name="home_other_apps">Egyéb alkalmazások</string>
-    <string name="home_other_apps_action">Más alkalmazások kiválasztása</string>
+    <string name="home_other_apps_action">Másik alkalmazás kiválasztása</string>
     <string name="home_not_patched_yet">Még nincs módosítva</string>
     <string name="home_unpatched_version_installed">Nem módosított verzió van telepítve</string>
     <string name="home_unpatched_badge">Nincs módosítva</string>
@@ -13,6 +13,10 @@
     <string name="home_app_no_hidden">Nincs rejtett alkalmazás</string>
     <string name="home_app_hidden_apps_title">Rejtett alkalmazások</string>
     <string name="home_app_hidden_apps_hint">Koppints a megjelenítéshez</string>
+    <string name="home_app_patch_sources_description">A bejelöletlenül hagyott források nincsenek felajánlva, amikor ezeket az alkalmazásokat javítják, és a javításaik soha nem kerülnek be maguktól egy kiválasztásba. Minden másik alkalmazásnál minden forrás bekapcsolva marad.</string>
+    <string name="home_app_patch_sources_mixed">Felajánlva: %1$s a %2$s közül</string>
+    <string name="home_app_patch_sources_covers">A(z) %2$s forrás közül %1$s rendelkezik javításokkal. MAX_LENGTH_32256: MUST BE EMPTY, TERMS: EMPTY</string>
+    <string name="home_app_patch_sources_last">Minden alkalmazáshoz maradnia kell legalább egy forrásnak, amelyből javítani lehet.</string>
     <string name="android_11_bug_dialog_title">Android 11 hiba</string>
     <string name="android_11_bug_dialog_description">Az alkalmazástelepítési engedélyt előre el kell fogadni, hogy elkerülhető legyen az Android 11 rendszerben fellépő hiba, mely negatívan befolyásolja a felhasználói élményt</string>
     <string name="deep_link_add_source_title">Forrás hozzáadása</string>
@@ -25,16 +29,21 @@
     <string name="home_blocked_source_subtitle">Érintsd meg a felülvizsgálathoz és eltávolításhoz</string>
     <string name="home_metadata_errors_title">Egyes módosításforrások nem elérhetők</string>
     <string name="home_metadata_errors_subtitle">Koppints a források áttekintéséhez</string>
-    <string name="home_outdated_manager_title">A Morphe elavult</string>
+    <string name="home_outdated_manager_title">A Morphe verziója elavult</string>
     <string name="home_outdated_manager_subtitle">Néhány módosítási forráshoz újabb verzió szükséges</string>
-    <string name="home_metered_skipped_title">A frissítések szünetelnek mobiladáton</string>
-    <string name="home_metered_skipped_subtitle">Érintse meg a frissítések engedélyezéséhez mobiladatokon keresztül</string>
-    <string name="home_repatch_available_subtitle">Koppintson az összes sorba állításához</string>
+    <string name="home_held_back_title">A Morphe egy módosításforrás miatt összeomlott</string>
+    <string name="home_held_back_subtitle">Kihagytuk, hogy az alkalmazás elindulhasson. Koppintson a felülvizsgálathoz</string>
+    <string name="home_metered_skipped_title">Frissítések szüneteltetése mobiladat használatakor</string>
+    <string name="home_metered_skipped_subtitle">Koppints a frissítések engedélyezéséhez mobiladaton</string>
+    <string name="home_repatch_available_subtitle">Koppints az összes sorba állításához</string>
     <string name="home_update_error">A frissítés sikertelen</string>
     <string name="home_update_error_subtitle">Hiba történt a források frissítése közben</string>
     <string name="home_update_skipped_metered">Frissítések kihagyva</string>
     <string name="home_update_skipped_metered_subtitle">A mobiladat-forgalom aktív</string>
     <string name="home_updating_sources">Források frissítése…</string>
+    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
+         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
+    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s MB (%5$d%%)</string>
     <string name="home_update_success">A források frissítése befejeződött</string>
     <string name="home_update_success_subtitle">A forrásaid naprakészek</string>
     <string name="home_sources_are_loading">Források betöltése...</string>
@@ -42,31 +51,31 @@
     <string name="home_app_list_options_title">Rendezés és szűrés</string>
     <string name="home_app_list_options_state_description">Rendezés: %1$s, szűrés: %2$s</string>
     <string name="home_app_filter_all_description">Minden alkalmazás a kezdőképernyőn</string>
-    <string name="home_app_filter_patched_description">A Morphe segítségével patchelt vagy elmentett alkalmazások</string>
-    <string name="home_app_filter_not_patched_description">A Morphe segítségével még nem patchelt alkalmazások</string>
-    <string name="home_app_filter_installed_description">A jelenleg ezen az eszközön telepített alkalmazások</string>
-    <string name="home_app_filter_uninstalled_description">A Morphe programmal módosított alkalmazások, amelyek már nincsenek ezen az eszközön</string>
-    <string name="home_app_filter_clones">Klónok</string>
-    <string name="home_app_filter_clones_description">Az eredeti mellett települő, saját csomagnévvel rendelkező alkalmazások</string>
-    <string name="home_app_sort_manual_description">Nyomja meg hosszan az alkalmazást, majd érintse meg a sorrend módosítása gombot</string>
+    <string name="home_app_filter_patched_description">A Morphe-val módosított vagy mentett alkalmazások</string>
+    <string name="home_app_filter_not_patched_description">A Morphe-ban még nem módosított alkalmazások</string>
+    <string name="home_app_filter_installed_description">Jelenleg az eszközön telepített alkalmazások</string>
+    <string name="home_app_filter_uninstalled_description">A Morphe-val módosított, az eszközről már eltávolított alkalmazások</string>
+    <string name="home_app_filter_clones">Klónozott alkalmazások</string>
+    <string name="home_app_filter_clones_description">Önálló csomagnévvel, az eredeti alkalmazás mellett telepített alkalmazások</string>
+    <string name="home_app_sort_manual_description">Nyomj hosszan egy alkalmazásra, majd koppints az átrendezés gombra</string>
     <string name="home_app_sort_recommended">Ajánlott sorrend</string>
-    <string name="home_app_sort_recommended_description">Először a telepített és rögzített alkalmazások</string>
-    <string name="home_app_sort_name_asc_description">Betűrendben, A-tól Z-ig</string>
-    <string name="home_app_sort_name_desc_description">Fordított betűrend, Z-től A-ig</string>
-    <string name="home_app_sort_updates_first">Először a javítások</string>
-    <string name="home_app_sort_updates_first_description">Az alkalmazások frissítési jelzéssel először, majd a javasolt sorrendben</string>
-    <string name="home_app_sort_recently_patched">Legutóbb javítva</string>
-    <string name="home_app_sort_recently_patched_description">A legutóbb javított alkalmazások kerülnek előre</string>
+    <string name="home_app_sort_recommended_description">Telepített és rögzített alkalmazások a lista elején</string>
+    <string name="home_app_sort_name_asc_description">Betűrend szerint (A-Z)</string>
+    <string name="home_app_sort_name_desc_description">Fordított betűrendben (Z–A)</string>
+    <string name="home_app_sort_updates_first">Frissíthető alkalmazások előre</string>
+    <string name="home_app_sort_updates_first_description">Először az újabb javításokkal rendelkező alkalmazások, majd az ajánlott sorrend</string>
+    <string name="home_app_sort_recently_patched">Legutóbb módosított</string>
+    <string name="home_app_sort_recently_patched_description">A legutóbb módosított alkalmazások kerülnek előre</string>
     <string name="home_no_apps_title">Nincsenek elérhető alkalmazások</string>
     <string name="home_no_apps_subtitle">Adj hozzá egy módosításforrást, vagy kapcsolj be egyet itt: %s</string>
     <string name="home_no_apps_search_subtitle">Nincs találat erre: „%s”</string>
-    <string name="home_all_apps_hidden_title">Minden alkalmazás el van rejtve</string>
+    <string name="home_all_apps_hidden_title">Minden alkalmazás elrejtve</string>
     <string name="home_all_apps_hidden_subtitle">Minden alkalmazást elrejtettél a kezdőképernyőről</string>
-    <string name="home_no_apps_filter_title">Nincs ennek a szűrőnek megfelelő alkalmazás</string>
-    <string name="home_no_apps_filter_subtitle">Semmi sem felelt meg a(z) %s szűrőnek</string>
+    <string name="home_no_apps_filter_title">Nincs a szűrésnek megfelelő alkalmazás</string>
+    <string name="home_no_apps_filter_subtitle">Nincs találat erre a szűrőre: %s</string>
     <string name="home_category_add">Kategória hozzáadása</string>
     <string name="home_category_all_apps">Összes alkalmazás</string>
-    <string name="home_category_custom">Egyedi</string>
+    <string name="home_category_custom">Egyéni</string>
     <string name="home_category_uncategorized">Kategorizálatlan</string>
     <string name="home_category_new_title">Új kategória</string>
     <string name="home_category_rename_title">Kategória átnevezése</string>
@@ -74,8 +83,8 @@
     <string name="home_category_move_to">Kategóriába helyezés</string>
     <string name="home_category_move_selected_title">Kiválasztott alkalmazások áthelyezése</string>
     <string name="home_category_delete_confirm_title">Kategória törlése</string>
-    <string name="home_category_delete_confirm_message">Törölje a &lt;b&gt;%1$s&lt;/b&gt; kategóriát? A benne lévő alkalmazások visszakerülnek a &lt;b&gt;%2$s&lt;/b&gt; kategóriába</string>
-    <string name="home_category_actions_unavailable">Ez a kategória jelenleg nem támogatja a műveleteket</string>
+    <string name="home_category_delete_confirm_message">Törlöd a &lt;b&gt;%1$s&lt;/b&gt; kategóriát? A benne lévő alkalmazások visszakerülnek a &lt;b&gt;%2$s&lt;/b&gt; kategóriába</string>
+    <string name="home_category_actions_unavailable">Ebben a kategóriában nem érhetők el műveletek</string>
     <!-- Home Screen - Home Greetings -->
     <string name="home_greeting_1">Melyik alkalmazást szeretnéd módosítani?</string>
     <!-- Humorous hype message with light nostalgia -->
@@ -97,29 +106,29 @@
     <!-- Light sarcasm, casual and tech-savvy humor -->
     <string name="home_greeting_10">Koffein és jó módosítások által hajtva</string>
     <!-- Morning greetings (5:00–11:59) -->
-    <string name="home_greeting_morning_1">Ébredés és javítás</string>
-    <string name="home_greeting_morning_2">Jó reggelt! Az alkalmazások nem javítják magukat.</string>
+    <string name="home_greeting_morning_1">Ébredj és módosíts</string>
+    <string name="home_greeting_morning_2">Jó reggelt! Az alkalmazások nem módosítják magukat</string>
     <!-- Afternoon greetings (12:00–16:59) -->
-    <string name="home_greeting_afternoon_1">Délutáni holtpon? Javíts valamit.</string>
-    <string name="home_greeting_afternoon_2">Az ebéd utáni frissítések másképp hatnak</string>
-    <string name="home_greeting_afternoon_3">A délutáni műszak: frissítés kiadás</string>
+    <string name="home_greeting_afternoon_1">Délutáni holtpont? Módosíts valamit</string>
+    <string name="home_greeting_afternoon_2">Ebéd után más élmény a módosítás</string>
+    <string name="home_greeting_afternoon_3">Délutáni műszak: módosításra fel!</string>
     <!-- Evening greetings (17:00–21:59) -->
-    <string name="home_greeting_evening_1">Jó estét! Az esti frissítések másképp hatnak</string>
-    <string name="home_greeting_evening_2">Pihenésre készülsz? Először frissíts egy alkalmazást</string>
-    <string name="home_greeting_evening_3">Már munkahelyet hagyod? Először frissíts valamit</string>
+    <string name="home_greeting_evening_1">Jó estét! Ilyenkor a legkellemesebb a módosítás</string>
+    <string name="home_greeting_evening_2">Lassítanál a nap végén? Egy módosítás még belefér</string>
+    <string name="home_greeting_evening_3">Lejárt a munkaidő? Egy módosítás még belefér!</string>
     <!-- Late night greetings (22:00–23:59) -->
-    <string name="home_greeting_late_night_1">Még ébren vagy? Az alkalmazások is, amiket frissíteni kell</string>
-    <string name="home_greeting_late_night_2">Éjszakai frissítési maraton? Tisztelet</string>
-    <string name="home_greeting_late_night_3">Éjjeli bagoly mód: aktiválva</string>
+    <string name="home_greeting_late_night_1">Még ébren? Az alkalmazások is, amiket módosítanod kell</string>
+    <string name="home_greeting_late_night_2">Éjszakai módosítási maraton? Le a kalappal</string>
+    <string name="home_greeting_late_night_3">Éjjeli bagoly mód: bekapcsolva</string>
     <!-- Super late night greetings (0:00–4:59) -->
-    <string name="home_greeting_super_late_1">A frissítések csúcsideje… állítólag</string>
-    <string name="home_greeting_super_late_2">Nem tudsz aludni? Frissíts valamit</string>
-    <string name="home_greeting_super_late_3">Ezen a ponton csak maradj ébren és frissíts</string>
-    <string name="home_greeting_super_late_4">Te és a szerverek, mindketten ébren</string>
-    <string name="home_greeting_super_late_5">Éjszakai és produktív</string>
+    <string name="home_greeting_super_late_1">A módosítások csúcsideje… állítólag</string>
+    <string name="home_greeting_super_late_2">Nem tudsz aludni? Módosíts valamit</string>
+    <string name="home_greeting_super_late_3">Már megéri fent maradni egy módosításért</string>
+    <string name="home_greeting_super_late_4">Csak te és a szerverek vagytok ébren</string>
+    <string name="home_greeting_super_late_5">Éjszakai műszak, maximális pörgés</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Módosításforrások</string>
-    <string name="sources_search">Források keresése</string>
+    <string name="sources_search">Források és javítások keresése</string>
     <string name="sources_sort_title">Javításforrások rendezése</string>
     <string name="sources_sort_manual">Kézi sorrend</string>
     <string name="sources_sort_manual_hint">Nyomja meg hosszan egy forrást a sorrend megváltoztatásához.</string>
@@ -127,9 +136,14 @@
     <string name="sources_sort_last_updated_description">A legújabb forrásfrissítések először</string>
     <string name="sources_sort_enabled_first">Először az engedélyezettek</string>
     <string name="sources_sort_enabled_first_description">Az aktív forrásokat mutassa először a letiltott forrásokkal szemben</string>
+    <string name="sources_patches_source_disabled_hint">Ez a forrás le van tiltva. A javításai referenciaként vannak felsorolva, és nincsenek alkalmazva.</string>
     <string name="sources_management_open_in_browser">Megnyitás böngészőben</string>
     <string name="sources_management_report_issue">Hiba jelentése</string>
     <string name="sources_management_failed_to_open_url">Hiba történt az URL megnyitásakor</string>
+    <string name="sources_hidden_apps">Elrejtve:</string>
+    <string name="sources_hidden_apps_title">A(z) %1$s elől elrejtett alkalmazások</string>
+    <string name="sources_hidden_apps_description">Ezeknek az alkalmazásoknak nem ajánlják fel ezt a forrást, amikor javítják őket. Maga a forrás minden másnál bekapcsolva marad.</string>
+    <string name="sources_hidden_apps_hint">Koppintson ide, hogy újra felajánlja ezt a forrást.</string>
     <string name="sources_management_prerelease_toggle">Kiadás előtti javítások</string>
     <string name="sources_management_prerelease_toggle_description">Korai hozzáférés kísérleti új javításverziókhoz</string>
     <string name="sources_prerelease_warning_title">Előzetes javítások engedélyezése?</string>
@@ -146,6 +160,8 @@
     <string name="sources_management_metadata_unavailable_hint_missing">A javítócsomag letöltése nem sikerült. A forrás URL helytelen lehet, vagy a fájl nem létezik.</string>
     <string name="sources_management_outdated_manager_badge">Morphe frissítése</string>
     <string name="sources_management_outdated_manager_hint">Ez a forrás a %1$s javítóprogramhoz készült, de a Morphe %2$s a %3$s javítóprogramot tartalmazza. Frissítse a Morphe-t a használatához.</string>
+    <string name="sources_management_held_back_badge">Összeomlott</string>
+    <string name="sources_management_held_back_hint">Ez a forrás a betöltése közben okozott összeomlást a Morphe alkalmazásban, ezért kihagyásra kerül. Frissítse vagy importálja újra, hogy újra megpróbálhassa</string>
     <string name="sources_management_source_enabled">Forrás engedélyezve</string>
     <string name="sources_management_source_disabled">Forrás letiltva</string>
     <string name="sources_management_source_updating">Forrás frissítése</string>
@@ -190,6 +206,7 @@ Bármit is ad hozzá erről a weboldalról, azt saját felelősségére teszi."<
     <string name="home_apk_availability_recommended_label">Javasolt</string>
     <string name="home_apk_availability_unpatched_label">Nem módosított</string>
     <string name="home_apk_availability_incompatible_label">Nem kompatibilis</string>
+    <string name="home_apk_availability_installed_version">Ezen az eszközön telepítve: %s</string>
     <string name="home_apk_availability_yes">Igen, segíts megtalálni az APK-t</string>
     <string name="home_apk_availability_no">Nem, már megvan az APK</string>
     <string name="home_apk_helper_download">Használj egy segédalkalmazást.</string>
@@ -317,9 +334,11 @@ A legjobb eredmény érdekében az alkalmazás javasolja a &lt;b&gt;teljes APK&l
     <string name="home_outdated_patches_dialog_warning">Az elavult módosítások használata hibás alkalmazást eredményezhet</string>
     <string name="home_outdated_patches_dialog_update_and_patch">&amp; módosítás frissítése</string>
     <string name="home_low_disk_space_dialog_title">Kevés a szabad tárhely</string>
-    <string name="home_low_disk_space_dialog_message">Csak %1$.2f GB szabad tárhely áll rendelkezésre. A javítás helyes működéséhez legalább %2$.2f GB szabad helyre van szükség</string>
+    <!-- "%1$s" is the free storage and "%2$s" the amount patching needs, both in gigabytes. -->
+    <string name="home_low_disk_space_dialog_message">Csak %1$s GB szabad tárhely áll rendelkezésre. A javítás legalább %2$s GB szabad helyet igényel a megfelelő működéshez.</string>
     <string name="home_low_disk_space_dialog_warning">A folytatás \"fájl nem található\" hibához vagy sérült APK-hoz vezethet</string>
     <string name="home_simple_bundle_select_title">Módosításforrás kiválasztása</string>
+    <string name="home_simple_bundle_select_remember">Mindig ezt a forrást használja ehhez az alkalmazáshoz.</string>
     <!-- Color picker -->
     <string name="custom_color">Egyedi szín</string>
     <string name="hex_color">Hex szín</string>
@@ -434,6 +453,10 @@ Külső zóna (szaggatott): az indító maszk levághatja – tartsa a fontos r�
     <string name="home_app_info_install_type_shizuku_play_store">Shizuku Play Áruház install</string>
     <string name="home_app_info_patch_update_available">Módosításfrissítések érhetők el</string>
     <string name="home_app_info_patch_update_available_description">Újabb módosítások érhetők el. Alkalmazd őket újra az alkalmazáson a legfrissebb javításokért és fejlesztésekért.</string>
+    <string name="home_app_info_app_update_available">Alkalmazásfrissítés érhető el</string>
+    <string name="home_app_info_app_update_available_description">A patch-források az alkalmazás újabb verzióját támogatják. Patcheld újra, hogy arra a verzióra válts.</string>
+    <string name="home_app_info_newest_supported_version">Legújabb támogatott</string>
+    <string name="home_app_info_version_move">Telepített: %1$s, legújabb támogatott: %2$s</string>
     <string name="home_app_info_app_deleted_warning">Az alkalmazást eltávolították</string>
     <string name="home_app_info_app_deleted_description">Ezt az alkalmazást a Morphén kívül távolították el. Alkalmazd újra a módosításokat a működés helyreállításához.</string>
     <string name="home_app_info_not_patched_description">Az alkalmazás nem javított verziója van telepítve. A Morphe még mindig tartalmazza a korábbi javítási rekordját.</string>
@@ -458,6 +481,9 @@ Külső zóna (szaggatott): az indító maszk levághatja – tartsa a fontos r�
     <string name="patcher_error_log">Hibanapló</string>
     <string name="patcher_error_technical">Technikai részletek</string>
     <string name="patcher_error_dialog_diagnostics">Diagnosztika</string>
+    <!-- Titles of the cards the expert log shows in place of the raw start and success log lines -->
+    <string name="patcher_card_started">Javítás megkezdve</string>
+    <string name="patcher_card_succeeded">Javítás sikeres</string>
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">Alkalmazás</string>
     <string name="patcher_field_package">Csomag</string>
@@ -473,6 +499,15 @@ Külső zóna (szaggatott): az indító maszk levághatja – tartsa a fontos r�
     <!-- Free and total RAM of the device, never its storage -->
     <string name="patcher_field_memory">Memória</string>
     <string name="patcher_field_storage">Tárhely</string>
+    <!-- Size of the patched APK, once patching finished -->
+    <string name="patcher_field_output_size">Kimeneti méret</string>
+    <!-- How long patching took -->
+    <string name="patcher_field_time">Idő</string>
+    <!-- Average and peak memory the patcher process held while it ran -->
+    <string name="patcher_field_memory_average">Memória átlaga</string>
+    <string name="patcher_field_memory_max">Memória maximuma</string>
+    <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_io_peak">Tárolási I/O csúcsa</string>
     <string name="patcher_field_value_unknown">ismeretlen</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <string name="patcher_field_value_stripped">eltávolítva</string>
@@ -519,6 +554,13 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="patcher_storage_permission_open_settings">Tárhelybeállítások megnyitása</string>
     <string name="patcher_storage_badge_denied">Engedély megtagadva</string>
     <string name="patcher_storage_badge_missing">Nem található</string>
+    <string name="batch_patch_option_paths_skipped">A javítási beállítások fájljai hiányoznak, ezért kihagyásra kerülnek: %1$s</string>
+    <string name="patcher_missing_patches_title">Egyes javítások már nem érhetők el.</string>
+    <string name="patcher_missing_patches_description">Az ehhez az alkalmazáshoz mentett kiválasztás olyan javításokat tartalmaz, amelyeket már egyetlen engedélyezett forrás sem kínál. A folytatás ezek nélkül javítja az alkalmazást.</string>
+    <string name="patcher_missing_patches_label">Már nem ajánlott.</string>
+    <string name="patcher_option_paths_gone_title">A javítási beállítások fájljai hiányoznak.</string>
+    <string name="patcher_option_paths_gone_description">Egy vagy több javítási beállítás olyan fájlokra mutat, amelyek már nem léteznek. Távolítsa el az útvonalakat, hogy a javítás ezek nélkül folytatódjon, vagy tegye vissza a fájlokat, és próbálja újra.</string>
+    <string name="patcher_option_paths_clear">Távolítsa el az útvonalakat, és folytassa.</string>
     <string name="patcher_storage_permission_hint">Tipp: Mozgasd át a fájlokat az /Android/data/app.morphe.manager/files/ könyvtárba - nincs szükség extra engedélyekre</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Előkészítés</string>
@@ -564,7 +606,7 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="patcher_message_15">Minden rendszer nominális… a módosítási pálya stabil… 🚀</string>
     <string name="patcher_message_16">Extra teljesítmény kipréselése, mint a digitális citromból a lé… 🍋</string>
     <string name="patcher_message_17">Az alkalmazás ösztönzése, hogy elfogadja az új, jobb énjét… 🌱</string>
-    <!-- Quantum physics (box emoji is a reference to Schrodinger's cat). -->
+    <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->
     <string name="patcher_message_18">Az alkalmazás szuperpozíciójának megváltoztatása módosítás nélküliről módosítottra… 📦⚛️</string>
     <!-- Throw away reference to a Saturday Night Live sketch. "fever" means sickness or the flu. "prescription" means medical treatment or can be translated from "cure" -->
     <string name="patcher_message_19">Az alkalmazásod lázas, és az egyetlen gyógyír rá a mégtöbb módosítás… 🩺🔔</string>
@@ -572,6 +614,8 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <!-- Expert patcher Screen -->
     <string name="patching_app">Alkalmazás módosítása</string>
     <string name="memory_usage">Memóriahasználat</string>
+    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
+    <string name="memory_usage_detail">%2$s MB %1$s-a</string>
     <string name="cpu_usage">CPU-használat</string>
     <string name="storage_io_usage">Tárhely I/O</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -611,6 +655,12 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="mini_game_snake_swipe_to_start">Húzd az ujjad a kezdéshez</string>
     <string name="mini_game_dino_picker_subtitle">Érintsd meg a kaktuszok átugrásához</string>
     <string name="mini_game_dino_tap_to_start">Érintsd meg a futáshoz</string>
+    <string name="mini_game_blocks_picker_subtitle">Illeszd a formákat, tiszta vonalak</string>
+    <string name="mini_game_blocks_tap_to_start">Koppints a forgatáshoz, húzd el a mozgatáshoz, húzd le az ejtéshez</string>
+    <string name="mini_game_bricks_picker_subtitle">Pattintsd a labdát, törd le a falat</string>
+    <string name="mini_game_bricks_tap_to_start">Húzd a célzáshoz, koppints az indításhoz</string>
+    <string name="mini_game_miner_picker_subtitle">Koppints a megnyitáshoz, tartsd lenyomva a megjelöléshez</string>
+    <string name="mini_game_pairs_picker_subtitle">Fordíts kártyákat, találd meg a párokat</string>
     <!-- Settings -->
     <string name="appearance">Megjelenés</string>
     <string name="advanced">Haladó</string>
@@ -663,6 +713,9 @@ Az eltávolítás véglegesen törli az alkalmazás összes adatát."</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Üdvözlő üzenet megjelenítése a kezdőképernyőn</string>
     <string name="settings_appearance_app_grouping">Alkalmazáscsoportosítás</string>
     <string name="settings_appearance_app_grouping_description">Mutasson egy főképernyő váltót az alkalmazások forrás vagy saját kategóriák szerinti csoportosításához, a kiválasztást megőrizve, ha ki van kapcsolva</string>
+    <string name="settings_appearance_patch_list">Javításlista</string>
+    <string name="settings_appearance_patch_categories">Csoportosítás kategóriánként</string>
+    <string name="settings_appearance_patch_categories_description">Szakaszokra bontja a javításlistákat a forrás által meghatározott kategóriák szerint, a kategóriával nem rendelkező forrásokat pedig egyszerű listaként hagyja.</string>
     <string name="settings_appearance_repatch_notice">Újrajavítási értesítés</string>
     <string name="settings_appearance_repatch_notice_description">Jelenítsen meg egy szalagot a kezdőképernyőn, amikor a javított alkalmazások újra javíthatók</string>
     <string name="settings_appearance_sort_button">Rendezés és szűrés gomb</string>
@@ -776,6 +829,10 @@ Patches are not affected: enable pre-release patches for each source in the patc
     <string name="settings_advanced_patch_options_custom_branding_description">Az alkalmazás megjelenített nevének módosítása</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name">Alkalmazásnév</string>
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Adj meg egy egyedi nevet</string>
+    <string name="settings_advanced_patch_options_path_gone">Ez a mappa már nem olvasható. Válassza ki újra, vagy törölje, különben a javítás megáll, és rákérdez.</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon">Alkalmazásikon</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">Az ikon, amellyel az alkalmazást javítják. Olyan helyeken is használják, ahol az alkalmazás később nem tudja megváltoztatni, például az Android Auto-ban és a rendszerbeállítások alkalmazáslistájában.</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">Az egyéni alkalmazásikonhoz egy ikonképeket tartalmazó mappára van szükség.</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Egyedi ikon</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Képek mappája, amelyek egyedi ikonként használhatók.
 
@@ -860,6 +917,8 @@ A képek méreteinek a következőknek kell lennie:
     <string name="installer_action_open_shizuku">Shizuku megnyitása</string>
     <string name="installer_hint_generic">A telepítés sikertelen volt. Próbáld újra, vagy válts egy másik telepítőre</string>
     <string name="installer_hint_conflict">Ezzel a csomagnévvel már telepítve van egy másik alkalmazás. Távolítsd el, mielőtt folytatnád</string>
+    <string name="installer_confirm_notification_title">A telepítés megerősítése</string>
+    <string name="installer_confirm_notification_text">A javított alkalmazás telepítésének befejezéséhez koppintson</string>
     <string name="installer_external_launched">%s megnyitása…</string>
     <string name="installer_external_timeout">%s nem erősítette meg a telepítést. Ellenőrizd a másik alkalmazást és próbáld újra</string>
     <string name="installer_external_success">%s sikeres telepítést jelentett</string>
@@ -876,7 +935,7 @@ A képek méreteinek a következőknek kell lennie:
     <string name="settings_prompt_installer_on_install">Telepítőválasztó ablak</string>
     <string name="settings_prompt_installer_on_install_description">Telepítőválasztó ablak megjelenítése minden alkalommal, amikor módosított alkalmazást telepítesz.</string>
     <string name="settings_auto_install_with_shizuku">Automatikus telepítés a javítás után</string>
-    <string name="settings_auto_install_with_shizuku_description">A javított APK automatikusan települ, amint a javítás befejeződik</string>
+    <string name="settings_auto_install_with_shizuku_description">Telepíti a javított APK-t, amint a javítás befejeződik</string>
     <string name="settings_auto_uninstall_with_shizuku">Automatikus eltávolítás ütközés esetén</string>
     <string name="settings_auto_uninstall_with_shizuku_description">Az automatikus telepítés során a Shizukuval először eltávolítsa a meglévő alkalmazást, ha az Android aláírási konfliktát jelent. Ez eltávolíthatja az alkalmazás adatait.</string>
     <string name="settings_auto_uninstall_warning_title">Engedélyezze az automatikus eltávolítást?</string>
@@ -914,6 +973,7 @@ Részletek: %2$s"</string>
     <string name="settings_system_process_runtime_enable">Folyamatfutási környezet engedélyezése</string>
     <string name="settings_system_memory_limit_subtitle">Módosításhoz rendelkezésre álló memória</string>
     <string name="settings_system_memory_limit_warning">Alacsony memóriakorlát esetén a nagyobb alkalmazások módosításakor hiba léphet fel</string>
+    <string name="settings_system_memory_limit_high_warning">Egy magas memóriakorlát egyes eszközökön sokkal lassabbá teheti a javítást. Csak akkor emeld meg, ha a javítás alacsonyabb korlátoknál is folyamatosan meghiúsul.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB korlát</string>
     <string name="settings_system_process_runtime_disabled_description">Koppints a konfigurálásához</string>
     <string name="settings_system_process_runtime_description_not_available">Ez a funkció Android 11 vagy újabb verziót igényel</string>
@@ -1073,7 +1133,7 @@ Részletek: %2$s"</string>
     <string name="credits_current_development">Jelenlegi fejlesztők</string>
     <string name="credits_prior_development">Korábbi fejlesztők</string>
     <string name="opensource_licenses">Nyílt forráskódú licencek</string>
-    <!-- Easter egg offered after seven taps on the version in the about dialog -->
+    <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">Egy választás</string>
     <string name="easter_egg_pill_message">Take the blue pill and the ads stay exactly where they are. Take the red one and see how deep the bytecode goes</string>
     <string name="easter_egg_pill_red">Piros pirula</string>
@@ -1084,6 +1144,10 @@ Részletek: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">Vissza az esőbe</string>
     <string name="easter_egg_pill_blue_toast_again">Kihúzva. A visszaút ott van, ahol mindig is volt.</string>
     <!-- Shared strings -->
+    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
+         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
+         how a literal percent sign is written here. -->
+    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">Fájl kiválasztása</string>
     <string name="select_folder">Mappa kiválasztása</string>
     <string name="patches">Módosítások</string>
@@ -1185,6 +1249,8 @@ Részletek: %2$s"</string>
     <string name="hidden">Elrejtve</string>
     <string name="unhide">Feloldás</string>
     <string name="unhide_done">Megjelenítve</string>
+    <string name="ignore">Figyelmen kívül hagyás</string>
+    <string name="stop_ignoring">Hagyd abba az ignorálást</string>
     <string name="logs">Naplók</string>
     <string name="sources">Források</string>
     <string name="installing_ellipsis">Telepítés…</string>
@@ -1208,8 +1274,8 @@ Részletek: %2$s"</string>
     <string name="install_update_manager_failed">Nem sikerült telepíteni a frissítést</string>
     <string name="installing_manager_update">Frissítés telepítése…</string>
     <string name="downloading_manager_update">Frissítés letöltése…</string>
-    <!-- Shown while downloading, before the total size is known -->
-    <string name="manager_update_progress_downloaded">Letöltve: %1$.1f MB</string>
+    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <string name="manager_update_progress_downloaded">%1$s MB letöltve</string>
     <string name="manager_update_not_ready">A kiadás még folyamatban van. Próbálkozz néhány perc múlva újra.</string>
     <string name="update_download_missing">A letöltött frissítés már nem elérhető. Töltsd le újra.</string>
     <string name="download_manager_failed">A frissítés letöltése sikertelen: %s</string>

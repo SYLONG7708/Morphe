@@ -13,11 +13,13 @@ import app.morphe.manager.patcher.Session
 import app.morphe.manager.patcher.logger.LogLevel
 import app.morphe.manager.patcher.logger.Logger
 import app.morphe.manager.patcher.patch.PatchBundle
+import app.morphe.manager.patcher.patch.applyPatchOptions
 import app.morphe.manager.patcher.runtime.ProcessRuntime
 import app.morphe.manager.patcher.runtime.ResourceMonitor
 import app.morphe.manager.patcher.split.SplitApkPreparer
 import app.morphe.manager.patcher.split.SplitPreparationEvent
 import app.morphe.manager.ui.model.State
+import app.morphe.manager.util.bytesToMebibytes
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,23 +62,15 @@ class PatcherProcess(private val context: Context) : IPatcherProcess.Stub() {
 
             ResourceMonitor.startPolling(logger)
 
-            logger.info("$LOG_PROCESS_PREFIX_PROCESS_HEAP ${Runtime.getRuntime().maxMemory() / (1024 * 1024)}MB")
+            logger.info("$LOG_PROCESS_PREFIX_PROCESS_HEAP ${bytesToMebibytes(Runtime.getRuntime().maxMemory())}MB")
 
             val allPatches = PatchBundle.Loader.patches(parameters.configurations.map { it.bundle }, parameters.packageName)
             val patchList = parameters.configurations.flatMap { config ->
-                val patches = (allPatches[config.bundle] ?: return@flatMap emptyList())
-                    .filterKeys { it in config.patches }
+                val bundlePatches = allPatches[config.bundle] ?: return@flatMap emptyList()
 
-                config.options.forEach { (patchName, opts) ->
-                    // Morphe: Skip if patch doesn't exist in this bundle
-                    val patchOptions = patches[patchName]?.options ?: return@forEach
+                bundlePatches.applyPatchOptions(config.options, logger)
 
-                    opts.forEach { (key, value) ->
-                        patchOptions[key] = value
-                    }
-                }
-
-                patches.values
+                bundlePatches.filterKeys { it in config.patches }.values
             }
 
             events.progress(null, State.COMPLETED.name, null) // Loading patches

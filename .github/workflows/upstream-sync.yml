@@ -1,0 +1,76 @@
+name: Sync official stable Manager
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 1,7,13,19 * * *'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: official-manager-sync
+  cancel-in-progress: false
+env:
+  GH_REPO: ${{ github.repository }}
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Prepare official stable merge
+        id: upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 tools/sync_upstream.py
+      - uses: actions/setup-java@v5
+        if: steps.upstream.outputs.changed == 'true'
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+      - uses: ./.github/actions/setup-toolchain
+        if: steps.upstream.outputs.changed == 'true'
+      - name: Restore official dependencies and verify both editions
+        if: steps.upstream.outputs.changed == 'true'
+        run: |
+          python3 tools/ci_retry.py -- python3 tools/prepare_morphe_dependencies.py
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          chmod +x gradlew
+          python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PsignAsDebug --stacktrace
+          python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PsignAsDebug -PnoDeviceLicense --stacktrace
+      - name: Publish only a verified source merge and request signed release
+        if: steps.upstream.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_TAG: ${{ steps.upstream.outputs.tag }}
+        run: |
+          git diff --check
+          git add -- config/upstream-manager.json config/dependency-provenance.json vendor/m2
+          git commit -m "merge: sync official Morphe $UPSTREAM_TAG after verification"
+          git push origin HEAD:main
+          gh workflow run release.yml --ref main
+      - name: Record recovery status
+        if: always()
+        env:
+          SYNC_RESULT: ${{ job.status }}
+        run: |
+          echo "Official source sync: $SYNC_RESULT" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Only merges passing both editions are published. Conflicts and failed checks retain the current release.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the scheduled maintenance active during quiet months
+        if: success() && steps.upstream.outputs.changed == 'false'
+        run: |
+          month="$(date -u +%Y-%m)"
+          file='.github/maintenance-heartbeat.txt'
+          if [ ! -f "$file" ] || [ "$(cat "$file")" != "$month" ]; then
+            printf '%s\n' "$month" > "$file"
+            git add -- "$file"
+            git commit -m 'chore: monthly maintenance heartbeat [skip ci]'
+            git push origin HEAD:main
+          fi

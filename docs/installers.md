@@ -40,17 +40,17 @@ here.
 
 ### Shizuku
 
-Installs silently through [Shizuku](https://shizuku.rikka.app/) or Sui, with no confirmation
-dialog at all. Shizuku has to be installed, running, and have granted Morphe permission,
-Morphe tells you which of those is missing.
+Installs silently through [Shizuku](https://shizuku.rikka.app/), Shizuku+ or Sui, with no
+confirmation dialog at all. One of them has to be installed, running, and have granted Morphe
+permission, Morphe tells you which of those is missing.
 
 <p align="center">
   <img src="images/installers/02-shizuku-options.jpg" width="320" alt="Shizuku selected with its extra options" />
 </p>
 
-**Check Shizuku status** opens a breakdown of the current state: mode (Shizuku or Sui),
-whether it is installed, supported, and running, and whether permission is granted, with
-buttons to request permission or open the Shizuku app.
+**Check Shizuku status** opens a breakdown of the current state: the mode and the provider it
+came from, whether it is installed, supported, and running, and whether permission is granted,
+with buttons to request permission or open the Shizuku app.
 
 ### Third-party installers
 
@@ -77,8 +77,11 @@ Morphe shows this warning and asks you to confirm before enabling the option.
 
 ### Auto-install after patching
 
-Shizuku only. The patched APK is installed the moment patching finishes, without you
-returning to the app.
+The patched APK is installed the moment patching finishes, without you returning to the app.
+Shizuku does this for any install. The system installer manages it only where Android lets
+Morphe update an app it installed itself, which means replacing a build Morphe put there,
+with the same signature and no installer prompt in the way. Anything else still opens the
+usual confirmation.
 
 ### Auto-uninstall on conflict
 

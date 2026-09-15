@@ -8,6 +8,18 @@
         <item quantity="one">%s módosítási opció</item>
         <item quantity="other">%s módosítási opció</item>
     </plurals>
+    <plurals name="home_app_patch_sources_title">
+        <item quantity="one">Patch-források %s alkalmazáshoz</item>
+        <item quantity="other">Patch-források %s alkalmazáshoz</item>
+    </plurals>
+    <plurals name="expert_mode_hidden_sources_notice">
+        <item quantity="one">%s forrás elrejtve. Koppintson a megjelenítéshez</item>
+        <item quantity="other">%s forrás elrejtve. Koppintson a megjelenítéshez</item>
+    </plurals>
+    <plurals name="sources_search_patch_matches">
+        <item quantity="one">%s egyező patch</item>
+        <item quantity="other">%s egyező patch</item>
+    </plurals>
     <plurals name="source_count">
         <item quantity="one">%s forrás</item>
         <item quantity="other">%s forrás</item>
@@ -75,5 +87,9 @@
     <plurals name="expert_mode_copy_from_bundle_done">
         <item quantity="one">Másolta a kiválasztott csomagból a(z) %s javítást</item>
         <item quantity="other">Másolta a kiválasztott csomagból a(z) %s javításokat</item>
+    </plurals>
+    <plurals name="core_count">
+        <item quantity="one">%s mag</item>
+        <item quantity="other">%s mag</item>
     </plurals>
 </resources>
