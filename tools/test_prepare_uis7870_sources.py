@@ -18,6 +18,7 @@ class PrepareUis7870SourcesTest(unittest.TestCase):
                     "patchedYouTubePackage=com.sylong.autopatch.android.youtube",
                     "microgPackage=com.sylong.autopatch.android.gms",
                     "profileRevision=1",
+                    "microgSignerSha256=7cee829c140e3ba32767e541e98d99a87214b80c7b3095692549131a2d6ebf02",
                 )
             ),
             encoding="utf-8",

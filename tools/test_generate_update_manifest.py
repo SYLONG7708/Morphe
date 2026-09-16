@@ -1,6 +1,17 @@
 import unittest
 
-from generate_update_manifest import manager_component, min_sdk_from_badging
+from generate_update_manifest import manager_component, min_sdk_from_badging, validate_microg_identity
+
+
+class MicrogIdentityTest(unittest.TestCase):
+    def test_rejects_release_that_cannot_satisfy_runtime_trust(self):
+        profile = {"microgPackage": "com.sylong.autopatch.android.gms", "microgSignerSha256": "known-pin"}
+        valid = {"package_name": profile["microgPackage"], "signer_sha256": ["known-pin"]}
+        validate_microg_identity(valid, profile)
+        for changed in ({"package_name": "app.revanced.android.gms"},
+                        {"signer_sha256": ["other-pin"]}, {"signer_sha256": ["known-pin", "other-pin"]}):
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                validate_microg_identity({**valid, **changed}, profile)
 
 
 class MinSdkBadgingTest(unittest.TestCase):

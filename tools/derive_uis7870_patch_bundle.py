@@ -11,12 +11,14 @@ import zipfile
 from pathlib import Path
 
 from prepare_uis7870_sources import PACKAGE_RE, load_profile
+from derive_microg_runtime import derive_runtime
 
 
 GMS_CLASS = "app/morphe/patches/shared/misc/gms/GmsCoreSupportPatchKt.class"
 YOUTUBE_GMS_CLASS = "app/morphe/patches/youtube/misc/gms/GmsCoreSupportPatchKt.class"
 YOUTUBE_GMS_CONSTANTS_CLASS = "app/morphe/patches/youtube/misc/gms/Constants.class"
 MANIFEST = "META-INF/MANIFEST.MF"
+GMS_EXTENSION = "extensions/shared-youtube.mpe"
 
 
 def transform_class_utf8(class_bytes: bytes, old: bytes, new: bytes) -> tuple[bytes, int]:
@@ -134,9 +136,14 @@ def derive_bundle(
             YOUTUBE_GMS_CLASS,
             YOUTUBE_GMS_CONSTANTS_CLASS,
             MANIFEST,
+            GMS_EXTENSION,
         } - names
         if missing:
             raise ValueError(f"Official bundle is missing: {', '.join(sorted(missing))}")
+
+        derived_extension = derive_runtime(
+            source_zip.read(GMS_EXTENSION), profile["microgSignerSha256"]
+        )
 
         original_class = source_zip.read(GMS_CLASS)
         derived_class, replacements = transform_class_utf8(
@@ -225,6 +232,8 @@ def derive_bundle(
                     data = derived_dex
                 elif info.filename == MANIFEST:
                     data = manifest.encode("utf-8")
+                elif info.filename == GMS_EXTENSION:
+                    data = derived_extension
                 output_zip.writestr(info, data)
 
     with zipfile.ZipFile(output, "r") as result:
