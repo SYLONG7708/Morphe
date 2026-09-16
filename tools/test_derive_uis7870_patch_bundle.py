@@ -2,10 +2,12 @@ import struct
 import tempfile
 import unittest
 import zipfile
+from unittest.mock import patch
 from pathlib import Path
 
 from derive_uis7870_patch_bundle import (
     GMS_CLASS,
+    GMS_EXTENSION,
     MANIFEST,
     YOUTUBE_GMS_CLASS,
     YOUTUBE_GMS_CONSTANTS_CLASS,
@@ -23,7 +25,8 @@ def minimal_class(*values: bytes) -> bytes:
 
 
 class DeriveUis7870PatchBundleTest(unittest.TestCase):
-    def test_derives_vendor_group_and_manifest(self) -> None:
+    @patch("derive_uis7870_patch_bundle.derive_runtime", return_value=b"derived-extension")
+    def test_derives_vendor_group_and_manifest(self, runtime) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "official.mpp"
@@ -56,17 +59,20 @@ class DeriveUis7870PatchBundleTest(unittest.TestCase):
                     minimal_class(b"app.morphe.android.youtube"),
                 )
                 bundle.writestr(MANIFEST, manifest)
+                bundle.writestr(GMS_EXTENSION, b"official-extension")
 
             version = derive_bundle(
                 source,
                 output,
                 "1.37.0",
-                {"vendorGroup": "com.sylong.autopatch", "profileRevision": "1"},
+                {"vendorGroup": "com.sylong.autopatch", "profileRevision": "1", "microgSignerSha256": "test-pin"},
                 vendor_override="com.sylong.autopatch.test",
             )
 
             self.assertEqual("1.37.0.7870.1", version)
+            runtime.assert_called_once_with(b"official-extension", "test-pin")
             with zipfile.ZipFile(output) as bundle:
+                self.assertEqual(b"derived-extension", bundle.read(GMS_EXTENSION))
                 class_bytes = bundle.read(GMS_CLASS)
                 self.assertIn(b"com.sylong.autopatch.test.android.gms", class_bytes)
                 self.assertNotIn(b"app.revanced", class_bytes)

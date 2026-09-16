@@ -44,6 +44,9 @@ def load_profile(path: Path) -> dict[str, str]:
         raise ValueError("microgPackage must match <vendorGroup>.android.gms")
     if not values["profileRevision"].isdigit() or int(values["profileRevision"]) < 1:
         raise ValueError("profileRevision must be a positive integer")
+    signer = values.get("microgSignerSha256", "")
+    if not re.fullmatch(r"[0-9a-f]{64}", signer) or signer == "0" * 64:
+        raise ValueError("microgSignerSha256 must pin the coexistence release certificate")
     return values
 
 

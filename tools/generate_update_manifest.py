@@ -12,6 +12,8 @@ import re
 import subprocess
 from pathlib import Path
 
+from prepare_uis7870_sources import load_profile
+
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -124,6 +126,13 @@ def manager_component(managers: list[dict]) -> dict:
     }
 
 
+def validate_microg_identity(microg: dict, profile: dict[str, str]) -> None:
+    if microg.get("package_name") != profile["microgPackage"]:
+        raise ValueError("MicroG package does not match the coexistence runtime")
+    if microg.get("signer_sha256") != [profile["microgSignerSha256"]]:
+        raise ValueError("MicroG signing certificate does not match the runtime trust pin")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--manager", type=Path, action="append", required=True)
@@ -133,6 +142,8 @@ def main() -> None:
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--sequence", type=int)
+    parser.add_argument("--profile", type=Path,
+                        default=Path(__file__).resolve().parents[1] / "config/uis7870-safe.properties")
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -142,6 +153,7 @@ def main() -> None:
     manager = managers[0]
     patches = artifact(args.patches, args.base_url)
     microg = artifact(args.microg, args.base_url, apk=True)
+    validate_microg_identity(microg, load_profile(args.profile))
 
     manifest = {
         "schema": 1,
