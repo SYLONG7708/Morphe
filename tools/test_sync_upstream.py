@@ -1,3 +1,5 @@
+import difflib
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -83,3 +85,76 @@ class OfficialSyncTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "current release retained"):
             self.prepare()
         self.assertEqual(before, self.cmd(self.fork, "rev-parse", "HEAD").stdout)
+        self.assertEqual("", self.cmd(self.fork, "status", "--porcelain", "--untracked-files=no").stdout)
+        status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
+        self.assertEqual("blocked", status["state"])
+        self.assertEqual(["app.txt"], status["conflicts"])
+
+    def reviewed_rule(self):
+        local = "custom behavior\n"
+        result = "upstream improvement\ncustom behavior\n"
+        (self.fork / "app.txt").write_text(local)
+        patch_file = "config/source-repair.patch"
+        patch_data = "".join(difflib.unified_diff(local.splitlines(True), result.splitlines(True),
+                                                fromfile="a/app.txt", tofile="b/app.txt")).encode()
+        (self.fork / patch_file).write_bytes(patch_data)
+        digest = lambda text: hashlib.sha256(text.encode()).hexdigest()
+        rule = {"id": "reviewed-fixture", "path": "app.txt",
+                "inputs": {"base": digest("base\n"), "local": digest(local), "upstream": digest("upstream improvement\n")},
+                "patch": patch_file, "patch_sha256": hashlib.sha256(patch_data).hexdigest(),
+                "result_sha256": digest(result)}
+        catalog = {"schema": 1, "resolutions": [rule]}
+        (self.fork / "config/upstream-resolutions.json").write_text(json.dumps(catalog))
+        self.commit(self.fork, "reviewed resolution")
+        return catalog
+
+    def test_exact_reviewed_conflict_is_repaired_and_next_sync_is_idempotent(self):
+        self.reviewed_rule()
+        self.prepare()
+        self.assertEqual("upstream improvement\ncustom behavior\n", (self.fork / "app.txt").read_text())
+        status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
+        self.assertEqual(["reviewed-fixture"], status["repairs"])
+        self.assertEqual("prepared", status["state"])
+        self.commit(self.fork, "tested merge")
+        self.prepare()
+        self.assertEqual("current", json.loads((self.fork / "verification/upstream-sync.json").read_text())["state"])
+
+    def test_changed_local_blob_is_not_overwritten_by_a_reviewed_rule(self):
+        self.reviewed_rule()
+        (self.fork / "app.txt").write_text("newer local behavior\n")
+        self.commit(self.fork, "local changed")
+        with self.assertRaisesRegex(RuntimeError, "current release retained"):
+            self.prepare()
+        self.assertEqual("newer local behavior\n", (self.fork / "app.txt").read_text())
+
+    def test_changed_upstream_blob_is_not_silently_accepted(self):
+        self.reviewed_rule()
+        (self.upstream / "app.txt").write_text("new upstream behavior\n")
+        self.commit(self.upstream, "upstream changed")
+        self.cmd(self.upstream, "tag", "-f", "v1.31.0")
+        with self.assertRaisesRegex(RuntimeError, "current release retained"):
+            self.prepare()
+        self.assertEqual("custom behavior\n", (self.fork / "app.txt").read_text())
+
+    def test_corrupt_patch_is_rejected_and_merge_is_aborted(self):
+        self.reviewed_rule()
+        (self.fork / "config/source-repair.patch").write_text("bad patch\n")
+        self.commit(self.fork, "bad recipe")
+        with self.assertRaisesRegex(ValueError, "patch hash mismatch"):
+            self.prepare()
+        self.assertEqual("", self.cmd(self.fork, "status", "--porcelain", "--untracked-files=no").stdout)
+
+    def test_unexpected_resolution_result_is_rejected(self):
+        catalog = self.reviewed_rule()
+        catalog["resolutions"][0]["result_sha256"] = "0" * 64
+        (self.fork / "config/upstream-resolutions.json").write_text(json.dumps(catalog))
+        self.commit(self.fork, "bad result hash")
+        with self.assertRaisesRegex(ValueError, "result hash mismatch"):
+            self.prepare()
+        self.assertEqual("custom behavior\n", (self.fork / "app.txt").read_text())
+
+    def test_dirty_checkout_is_preserved(self):
+        (self.fork / "app.txt").write_text("user work\n")
+        with self.assertRaisesRegex(RuntimeError, "clean checkout"):
+            self.prepare()
+        self.assertEqual("user work\n", (self.fork / "app.txt").read_text())

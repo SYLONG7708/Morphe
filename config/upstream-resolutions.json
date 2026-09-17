@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "resolutions": [
+    {
+      "id": "manager-1.31.1-installed-source",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt",
+      "inputs": {
+        "base": "77efad7812a4fb62dc142102334fbfbd73c47bb094731adf0199264aa04f2891",
+        "local": "38a77a1a2948ba0001b5a886196f82627fb35f95e935eb95cfa4af95f441dc91",
+        "upstream": "1d6d660ca36dcbfe9d5ef9e62ed616ab589acc8035d06c57fb6eac7581790bfa"
+      },
+      "patch": "config/upstream-resolutions/manager-1.31.1-home.patch",
+      "patch_sha256": "18e5dc3f0720ffadd349d74af156b81801257d7826eb95c374293b7f81d06f12",
+      "result_sha256": "19b37bdff29c38c68b7820d9a11188296fae3e119526b2a4f90e00f2c7366d14"
+    }
+  ]
+}
