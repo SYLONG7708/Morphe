@@ -19,9 +19,9 @@
     <string name="home_app_patch_sources_last">Cada aplicación necesita una fuente restante desde la que parchear</string>
     <string name="android_11_bug_dialog_title">Error de Android 11</string>
     <string name="android_11_bug_dialog_description">El permiso para instalar aplicaciones debe concederse antes para evitar un problema de Android 11 que afecta negativamente a la experiencia de usuario</string>
-    <string name="deep_link_add_source_title">Agregar fuente</string>
-    <string name="deep_link_add_source_message">¿Quieres agregar esta fuente de parches a Morphe?</string>
-    <string name="deep_link_add_source_warning">Agrega solo fuentes en las que confíes</string>
+    <string name="deep_link_add_source_title">Añadir fuente</string>
+    <string name="deep_link_add_source_message">¿Quieres añadir esta fuente de parches a Morphe?</string>
+    <string name="deep_link_add_source_warning">Añade solo fuentes en las que confíes</string>
     <!-- Home Screen - Update Notifications -->
     <string name="home_update_available">Actualización de Morphe disponible</string>
     <string name="home_update_available_subtitle">Nueva versión lista para instalar</string>
@@ -140,7 +140,7 @@
     <string name="sources_management_open_in_browser">Abrir en el navegador</string>
     <string name="sources_management_report_issue">Informar de un problema</string>
     <string name="sources_management_failed_to_open_url">No se pudo abrir la URL</string>
-    <string name="sources_hidden_apps">Oculta para</string>
+    <string name="sources_hidden_apps">Oculto para</string>
     <string name="sources_hidden_apps_title">Aplicaciones ocultas de %1$s</string>
     <string name="sources_hidden_apps_description">Estas aplicaciones no reciben esta fuente al parchearlas. La fuente en sí permanece activada para todo lo demás</string>
     <string name="sources_hidden_apps_hint">Pulsa para ofrecer esta fuente de nuevo</string>
@@ -153,7 +153,7 @@
     <string name="sources_management_experimental_versions_toggle_description">Muestra y parchea versiones experimentales de la aplicación</string>
     <string name="sources_management_already_exists">Esta fuente ya ha sido añadida</string>
     <string name="sources_management_invalid_url">La URL de la fuente no es válida. Comprueba la dirección e inténtalo de nuevo</string>
-    <string name="sources_management_blocked">Esta fuente de parches está bloqueada y no se puede agregar</string>
+    <string name="sources_management_blocked">Esta fuente de parches está bloqueada y no se puede añadir</string>
     <string name="sources_management_source_blocked_badge">Bloqueado</string>
     <string name="sources_management_metadata_unavailable">Metadatos no disponibles</string>
     <string name="sources_management_metadata_unavailable_hint">El archivo de metadatos remoto no está disponible. La aplicación de parches con el paquete instalado sigue funcionando, pero la actualización automática está desactivada para esta fuente</string>
@@ -172,7 +172,7 @@
     <string name="sources_dialog_missing_error">No se pudo actualizar esta fuente de parches</string>
     <string name="sources_dialog_view_any_version">Cualquier versión</string>
     <string name="sources_dialog_view_any_package">Cualquier paquete</string>
-    <string name="sources_dialog_add_source">Agregar fuente de parches</string>
+    <string name="sources_dialog_add_source">Añadir fuente de parches</string>
     <string name="sources_dialog_delete_confirm_message">¿Eliminar la fuente \"%s\"? Esto no se puede deshacer.</string>
     <string name="sources_dialog_remote">Remota</string>
     <string name="sources_dialog_remote_url">URL de la fuente</string>
@@ -346,10 +346,10 @@ Para un mejor resultado, esta aplicación te recomienda parchear un &lt;b&gt;APK
     <string name="color_picker_hue">Tono</string>
     <!-- Patch Options -->
     <string name="patch_option_instructions">Instrucciones</string>
-    <string name="patch_option_enter_value">Ingresar valor</string>
-    <string name="patch_option_enter_number">Ingresar número</string>
-    <string name="patch_option_enter_decimal">Ingresar decimal</string>
-    <string name="patch_option_slider_edit">Ingresa un valor exacto</string>
+    <string name="patch_option_enter_value">Introducir valor</string>
+    <string name="patch_option_enter_number">Introducir número</string>
+    <string name="patch_option_enter_decimal">Introducir decimal</string>
+    <string name="patch_option_slider_edit">Introduce un valor exacto</string>
     <string name="patch_option_slider_range_start">Desde</string>
     <string name="patch_option_slider_range_end">Hasta</string>
     <string name="patch_option_list_duplicate">Este valor ya existe</string>
@@ -790,9 +790,9 @@ Los parches no se ven afectados: habilita los parches preliminares para cada fue
     <string name="notification_channel_patcher">Parcheando</string>
     <string name="notification_channel_patcher_description">Se muestra mientras Morphe está parcheando una aplicación en segundo plano</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
-    <string name="settings_advanced_expert">Ajustes Expertos</string>
+    <string name="settings_advanced_expert">Ajustes avanzados</string>
     <string name="settings_advanced_expert_mode">Modo Experto</string>
-    <string name="settings_advanced_expert_mode_description">Activa ajustes complejos de parcheo de Morphe y opciones de personalización</string>
+    <string name="settings_advanced_expert_mode_description">Activa ajustes avanzados de parcheo de Morphe y opciones de personalización</string>
     <string name="settings_advanced_expert_mode_dialog_title">¿Activar el modo Experto?</string>
     <string name="settings_advanced_expert_mode_dialog_message">El modo Experto ofrece más control sobre cómo se aplican los parches, pero configurar incorrectamente estos ajustes puede resultar en una aplicación no funcional</string>
     <string name="settings_advanced_strip_unused_libs">Optimizar para la arquitectura del dispositivo</string>
@@ -814,7 +814,7 @@ Los parches no se ven afectados: habilita los parches preliminares para cada fue
     <string name="settings_advanced_github_pat_dialog_description">"Establece un token de acceso personal (PAT) de GitHub para poder añadir pull requests como fuentes externas. Crea un PAT con alcance public_repo en
 %s"</string>
     <string name="settings_advanced_github_pat_export_include_label">Incluir al exportar los ajustes</string>
-    <string name="settings_advanced_github_pat_export_include_supporting">Agrega este token de acceso personal a los ajustes exportados de Morphe</string>
+    <string name="settings_advanced_github_pat_export_include_supporting">Añade este token de acceso personal a los ajustes exportados de Morphe</string>
     <string name="settings_advanced_github_pat_export_warning">No compartas tu token de acceso personal. Si lo incluyes al exportar las configuraciones, mantén ese archivo privado porque contiene el token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Opciones de parches</string>
@@ -995,7 +995,7 @@ Detalles: %2$s"</string>
     <string name="settings_system_import_export">Importar y exportar</string>
     <string name="settings_system_keystore">Almacén de claves</string>
     <string name="settings_system_import_keystore_description">Importa o exporta tu almacén de claves de firma</string>
-    <string name="settings_system_import_keystore_dialog_title">Ingresa las credenciales del almacén de claves</string>
+    <string name="settings_system_import_keystore_dialog_title">Introduce las credenciales del almacén de claves</string>
     <string name="settings_system_import_keystore_dialog_description">Necesitarás introducir las credenciales del almacén de claves para importarlo</string>
     <string name="settings_system_import_keystore_dialog_alias_field">Nombre de usuario (Alias)</string>
     <string name="settings_system_import_keystore_dialog_password_field">Contraseña</string>
@@ -1019,7 +1019,7 @@ Detalles: %2$s"</string>
     <string name="import_mode_replace_title">Reemplazar existente</string>
     <string name="import_mode_replace_description">Coincidir exactamente con la copia de seguridad. Los elementos que falten en la copia de seguridad se eliminarán</string>
     <string name="import_mode_merge_title">Combinar con lo existente</string>
-    <string name="import_mode_merge_description">Agregar los elementos faltantes de la copia de seguridad. Los elementos existentes se mantienen sin cambios</string>
+    <string name="import_mode_merge_description">Añadir los elementos faltantes de la copia de seguridad. Los elementos existentes se mantienen sin cambios</string>
     <string name="settings_system_export_manager_settings_fail">Error al exportar ajustes de Morphe: %s</string>
     <string name="settings_system_export_manager_settings_success">Ajustes de Morphe exportados</string>
     <string name="settings_system_debug">Depurar</string>
@@ -1235,7 +1235,7 @@ Detalles: %2$s"</string>
     <string name="mounted">Montado</string>
     <string name="unmount">Desmontar</string>
     <string name="unmounted">Desmontado</string>
-    <string name="remount">Montar</string>
+    <string name="remount">Volver a montar</string>
     <string name="share">Compartir</string>
     <string name="install">Instalar</string>
     <string name="installed">Instalado</string>
@@ -1298,7 +1298,7 @@ Detalles: %2$s"</string>
     <string name="onboarding_sources_prerelease_desc">Activa esta opción para recibir versiones pre-lanzamiento de parches de esta fuente</string>
     <string name="onboarding_appearance_tab_desc">Personaliza el aspecto de la aplicación: tema, color de acento y fondo.</string>
     <string name="onboarding_appearance_theme_desc">Elige entre tema claro, oscuro o del sistema. También puedes elegir un color de acento personalizado o activar Color dinámico.</string>
-    <string name="onboarding_expert_mode_desc">Activa el Modo Experto para desbloquear la selección de parches, opciones personalizadas y otras funciones avanzadas</string>
+    <string name="onboarding_expert_mode_desc">Activa el modo Experto para desbloquear la selección de parches, opciones personalizadas y otras funciones avanzadas</string>
     <!-- Translate "System" the same way as the System settings tab -->
     <string name="onboarding_system_tab_title">Pestaña del sistema</string>
     <string name="onboarding_system_tab_desc">Administración de almacenes de claves, herramientas de importación/exportación e información de la aplicación.</string>

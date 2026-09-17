@@ -416,11 +416,12 @@ class HomeViewModel(
     var resolvedDownloadUrl by mutableStateOf<String?>(null)
     var pendingSavedApkInfo by mutableStateOf<SavedApkInfo?>(null)
     var pendingInstalledApkInfo by mutableStateOf<InstalledApkInfo?>(null)
-    // What the device has right now: [pendingInstalledApkInfo] is dropped for a version the
-    // patches do not target, which is exactly when the version itself is worth showing
+    // The unpatched version the device has right now: [pendingInstalledApkInfo] is dropped for a
+    // version the patches do not target, which is exactly when the version itself is worth showing
     var pendingInstalledAppVersion by mutableStateOf<String?>(null)
-    // null = not yet loaded, true/false = loaded result
-    var pendingTargetAppInstalled by mutableStateOf<Boolean?>(null)
+    // Whether a mount install would have the app itself to overlay, which a patched build under
+    // the same package name is not. null = not yet loaded, true/false = loaded result
+    var pendingStockAppInstalled by mutableStateOf<Boolean?>(null)
 
     // Bundle update snackbar state
     var showBundleUpdateSnackbar by mutableStateOf(false)
@@ -2102,7 +2103,7 @@ class HomeViewModel(
         pendingSavedApkInfo = null
         pendingInstalledApkInfo = null
         pendingInstalledAppVersion = null
-        pendingTargetAppInstalled = null
+        pendingStockAppInstalled = null
     }
 
     private data class LocalYouTubeInspection(
@@ -2346,21 +2347,18 @@ class HomeViewModel(
             automaticYouTubeMode == OneTapYouTubeMode.LOCAL_INSTALLED &&
             packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE
         ) {
-            val (installed, info) = withContext(Dispatchers.IO) {
+            val source = withContext(Dispatchers.IO) {
                 localApkSources.installed(packageName)
             }
-            pendingTargetAppInstalled = installed
-            pendingInstalledApkInfo = info?.takeIf {
-                isInstalledVersionCompatible(it.version, it.versionCode)
-            }
+            applyInstalledAppSource(source)
             val compatibleInfo = pendingInstalledApkInfo
             if (compatibleInfo == null) {
                 oneTapHubUiState = oneTapHubUiState.copy(
                     working = false,
-                    errorMessage = if (installed) {
+                    errorMessage = if (source.hasStockInstall) {
                         app.getString(
                             R.string.one_tap_local_incompatible,
-                            info?.version ?: oneTapHubUiState.localYouTubeVersion.orEmpty(),
+                            source.version ?: oneTapHubUiState.localYouTubeVersion.orEmpty(),
                         )
                     } else {
                         app.getString(R.string.one_tap_local_not_found)
@@ -2432,25 +2430,20 @@ class HomeViewModel(
      * open the APK availability dialog.
      */
     private suspend fun continueApkSelectionFlow(packageName: String) {
-        // Load both safe local sources in parallel. Simple mode can then select the exact
-        // compatible source automatically, including Play Store split installs.
+        // Load saved APK (Room + AppDataResolver) and installed app (PackageManager) in
+        // parallel. The device is asked about in both modes, because the version it carries is
+        // worth showing wherever the installed APK itself is not offered as a source
         val expertMode = isExpertMode()
         coroutineScope {
             val savedJob = if (pendingSavedApkInfo == null) {
                 async(Dispatchers.IO) { localApkSources.saved(packageName) }
             } else null
-            val installedJob = if (
-                (expertMode || automaticYouTubeSourceSelection) &&
-                pendingTargetAppInstalled == null
-            ) {
-                async(Dispatchers.IO) { localApkSources.installed(packageName) }
-            } else null
-            // Read on its own, because the version is worth showing in both modes and
-            // whatever the patches make of the APK behind it
-            val versionJob = async(Dispatchers.IO) { localApkSources.installedVersion(packageName) }
+            val installedJob = async(Dispatchers.IO) { localApkSources.installed(packageName) }
             savedJob?.await()?.let { pendingSavedApkInfo = it }
-            installedJob?.await()?.let { (installed, info) -> applyInstalledApkInfo(installed, info) }
-            pendingInstalledAppVersion = versionJob.await()
+            applyInstalledAppSource(
+                installedJob.await(),
+                offersApk = expertMode || automaticYouTubeSourceSelection,
+            )
         }
 
         val recommendedVersion = pendingRecommendedVersion
@@ -2637,11 +2630,13 @@ class HomeViewModel(
 
     /**
      * Stores the installed-app lookup, keeping the APK only when its version can be patched
-     * so every caller offers the installed source under the same condition.
+     * so every caller offers the installed source under the same condition. [offersApk] is what
+     * the flow itself allows: simple mode hides the button rather than the app behind it.
      */
-    private fun applyInstalledApkInfo(installed: Boolean, info: InstalledApkInfo?) {
-        pendingTargetAppInstalled = installed
-        pendingInstalledApkInfo = info?.takeIf {
+    private fun applyInstalledAppSource(source: InstalledAppSource, offersApk: Boolean = true) {
+        pendingStockAppInstalled = source.hasStockInstall
+        pendingInstalledAppVersion = source.version
+        pendingInstalledApkInfo = source.apk.takeIf { offersApk }?.takeIf {
             isInstalledVersionCompatible(it.version, it.versionCode)
         }
     }
@@ -2746,17 +2741,17 @@ class HomeViewModel(
             }
 
             processingApkSelection = true
-            val (installed, info) = withContext(Dispatchers.IO) {
+            val source = withContext(Dispatchers.IO) {
                 localApkSources.installed(packageName)
             }
-            applyInstalledApkInfo(installed, info)
+            applyInstalledAppSource(source)
 
             val installedInfo = pendingInstalledApkInfo
             if (installedInfo == null) {
                 // An app store hands out the newest build, which is regularly one no bundle covers
                 stopHelperHandoff(
                     packageName,
-                    if (info == null) {
+                    if (source.apk == null) {
                         R.string.home_apk_helper_installed_unavailable
                     } else {
                         R.string.home_apk_helper_installed_incompatible
@@ -3955,7 +3950,7 @@ class HomeViewModel(
             fileType = apkFileType?.toHelperFileType(),
             // Mirrors processSelectedApp - only a required plain APK rules split archives out
             allowSplitArchive = !(apkFileType?.isApk == true && apkFileType.isRequired),
-            stockInstallRequired = usingMountInstall && pendingTargetAppInstalled != true,
+            stockInstallRequired = usingMountInstall && pendingStockAppInstalled != true,
             fallbackWebUrl = downloadUrlResolver.webSearchUrl(packageName, requestedVersion?.version)
         )
     }
@@ -4007,7 +4002,7 @@ class HomeViewModel(
         pendingSavedApkInfo = null
         pendingInstalledApkInfo = null
         pendingInstalledAppVersion = null
-        pendingTargetAppInstalled = null
+        pendingStockAppInstalled = null
         if (!keepSelectedApp) {
             pendingSelectedApp?.let { app ->
                 if (app is SelectedApp.Local && app.temporary) {

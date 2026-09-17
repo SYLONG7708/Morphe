@@ -718,8 +718,8 @@
     <string name="settings_appearance_patch_categories_description">ソースが宣言するカテゴリに基づいてパッチリストをセクション分けします。カテゴリを宣言しないソースは、プレーンリストのまま表示されます。</string>
     <string name="settings_appearance_repatch_notice">再パッチ通知</string>
     <string name="settings_appearance_repatch_notice_description">パッチ適用済みアプリが再パッチ可能な場合、ホーム画面にバナーを表示する</string>
-    <string name="settings_appearance_sort_button">並べ替えとフィルターボタン</string>
-    <string name="settings_appearance_sort_button_description">ホーム画面に並べ替えとフィルターボタンを表示する</string>
+    <string name="settings_appearance_sort_button">並べ替えとフィルター ボタン</string>
+    <string name="settings_appearance_sort_button_description">ホーム画面に並べ替えとフィルター ボタンを表示します</string>
     <string name="settings_appearance_app_card_colors">アプリカードの色</string>
     <string name="settings_appearance_app_card_colors_default">デフォルト</string>
     <string name="settings_appearance_app_card_colors_default_description">アプリの色を、それぞれのバンドルカラーにする</string>
@@ -895,7 +895,7 @@ morphe_header_custom_dark.png
     <string name="installer">インストーラー</string>
     <string name="installer_settings_title">デフォルトのインストーラー</string>
     <string name="installer_title">インストーラーを選択</string>
-    <string name="installer_internal_description">Android パッケージインストーラーを使用します</string>
+    <string name="installer_internal_description">Android パッケージ インストーラーを使用します</string>
     <string name="installer_play_store_description">システム インストーラーを使用し、インストール元を Google Play ストアに設定します</string>
     <string name="installer_root_play_store_description">Root 権限でサイレント インストールを実行し、インストール元を Google Play ストアに設定します</string>
     <string name="installer_auto_saved_name">Root マウント</string>
@@ -934,7 +934,7 @@ morphe_header_custom_dark.png
     <string name="settings_prompt_installer_on_install">インストーラー選択ダイアログ</string>
     <string name="settings_prompt_installer_on_install_description">パッチ適用済みアプリをインストールする際に、毎回インストーラー選択ダイアログを表示します</string>
     <string name="settings_auto_install_with_shizuku">パッチ適用後の自動インストール</string>
-    <string name="settings_auto_install_with_shizuku_description">パッチ適用が完了次第、パッチ適用済みAPKをインストールします</string>
+    <string name="settings_auto_install_with_shizuku_description">パッチ適用が完了次第、パッチ適用済み APK をインストールします</string>
     <string name="settings_auto_uninstall_with_shizuku">競合時に自動でアンインストール</string>
     <string name="settings_auto_uninstall_with_shizuku_description">Shizuku を使用して自動インストールを行う際、署名の競合が検出された場合は、既存のアプリをアンインストールします。これにより、アプリのデータが消去される場合があります</string>
     <string name="settings_auto_uninstall_warning_title">自動アンインストールを有効にしますか？</string>
@@ -1037,7 +1037,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_apks_export_zip_failed">選択された APK のエクスポートに失敗しました</string>
     <!-- Settings - System Tab - Storage Management screen -->
     <string name="settings_system_storage_management_title">ストレージの管理</string>
-    <string name="settings_system_storage_management_description">ディスク使用状況を確認し、キャッシュファイルを削除します。</string>
+    <string name="settings_system_storage_management_description">ディスクの使用状況を確認し、キャッシュ ファイルを削除します</string>
     <string name="settings_system_storage_keystore_title">署名キーストア</string>
     <string name="settings_system_storage_app_data_title">アプリのデータ</string>
     <string name="settings_system_storage_patch_bundles_title">パッチバンドル</string>
