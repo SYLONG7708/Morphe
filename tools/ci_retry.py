@@ -17,7 +17,9 @@ PERMANENT = re.compile(
     r"signature verification failed|hash mismatch|compilation error|"
     r"tests? (?:failed|completed, [1-9].* failed)|failed to find package|"
     r"status code[^\n]*(?:401|403)|"
-    r"requires morphe-patcher|keystore was tampered|password was incorrect",
+    r"requires morphe-patcher|keystore was tampered|password was incorrect|"
+    r"Upstream merge needs a code change|Reviewed resolution.*(?:mismatch|did not apply)|"
+    r"requires a clean checkout|CONFLICT \(",
     re.IGNORECASE,
 )
 

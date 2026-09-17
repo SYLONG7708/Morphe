@@ -12,3 +12,6 @@ app/src/main/assets/root/*.sh text eol=lf
 # Public Maven metadata is hashed and must have identical bytes on every runner.
 vendor/m2/**/*.pom text eol=lf
 vendor/m2/**/*.module text eol=lf
+
+# Reviewed unified patches are hashed; blank context lines intentionally contain a space.
+config/upstream-resolutions/*.patch text eol=lf whitespace=-blank-at-eol

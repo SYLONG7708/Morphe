@@ -160,7 +160,7 @@
     <string name="sources_management_metadata_unavailable_hint">Le fichier de métadonnées distant est indisponible. Le patching avec le bundle installé fonctionne toujours, mais la mise à jour automatique est désactivée pour cette source</string>
     <string name="sources_management_metadata_unavailable_hint_missing">Le bundle de patchs n\'a pas pu être téléchargé. L\'URL de la source est peut-être incorrecte ou le fichier n\'existe pas</string>
     <string name="sources_management_outdated_manager_badge">Mettre à jour Morphe</string>
-    <string name="sources_management_outdated_manager_hint">Cette source est conçue pour le patcheur %1$s, mais Morphe %2$s inclut le patcher %3$s. Mettez Morphe à jour pour l\'utiliser</string>
+    <string name="sources_management_outdated_manager_hint">Cette source est conçue pour le patcheur %1$s, mais Morphe %2$s inclut le patcheur %3$s. Mettez Morphe à jour pour l\'utiliser</string>
     <string name="sources_management_held_back_badge">A planté</string>
     <string name="sources_management_held_back_hint">Cette source a fait planter Morphe lors du chargement, elle est donc ignorée. Mettez-la à jour ou réimportez-la pour réessayer.</string>
     <string name="sources_management_source_enabled">Source activée</string>

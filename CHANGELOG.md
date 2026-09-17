@@ -1,80 +1,96 @@
-# [1.31.0](https://github.com/[secure]App/morphe-manager/compare/v1.30.0...v1.31.0) (2026-09-15)
+## [1.31.1](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0...v1.31.1) (2026-09-16)
 
 
 ### Bug Fixes
 
-* Apply patch options only to the patches the run selected ([7c176a8](https://github.com/[secure]App/morphe-manager/commit/7c176a8be641241d3689e65b508f79662ac5e569))
-* Check for updates once a screen exists instead of on any process start ([9ff49d6](https://github.com/[secure]App/morphe-manager/commit/9ff49d65ade03be63c97d4d5cd9edb4f46300575))
-* Keep patching working when firmware makes a system call the device forbids ([ecd4c43](https://github.com/[secure]App/morphe-manager/commit/ecd4c431777a665efb8d17668e41456de95b4417))
-* Keep the empty patch list state below the source notice ([a831cb1](https://github.com/[secure]App/morphe-manager/commit/a831cb1325d4207af892ae007348214fd307cf26))
-* Set patch options as the type each option declares ([a18b93e](https://github.com/[secure]App/morphe-manager/commit/a18b93ed2e5601e152fb17a9f10e71b06be6b43d))
-* Strip the source indentation bundles leave in patch descriptions ([ea6de33](https://github.com/[secure]App/morphe-manager/commit/ea6de33326e5ee7a9453e9a65451b0eb786ad8c8))
-* Survive a patch bundle that crashes the process while loading ([c048cce](https://github.com/[secure]App/morphe-manager/commit/c048cce7312d2988e51420a1793610d09c8a30da))
-* Update the manager through an installer that outlives the process it replaces ([d1c0b60](https://github.com/[secure]App/morphe-manager/commit/d1c0b608e89c8f92e558311ced664be3d41e8774))
+* Ask whether the stock app is there before requiring it for mount ([90730a1](https://github.com/MorpheApp/morphe-manager/commit/90730a156a43d9cf51a054f61778005278e2b2fa))
+* Stop reporting a patched install as the version on the device ([4c6436c](https://github.com/MorpheApp/morphe-manager/commit/4c6436c6ab3f56cb0bd0c502c1848cb4c9c357e0))
 
-
-### Features
-
-* Add Blocks, Bricks, Miner and Pairs mini-games ([8e5961c](https://github.com/[secure]App/morphe-manager/commit/8e5961c0ed0142b99c53a130f00b090a974668aa))
-* Choose the app icon in simple mode and handle missing option paths ([efb4896](https://github.com/[secure]App/morphe-manager/commit/efb48967a36352994bdafa17fee1c70f4ab127d8))
-* Choose which sources each app is patched from ([#947](https://github.com/[secure]App/morphe-manager/issues/947)) ([5b8815c](https://github.com/[secure]App/morphe-manager/commit/5b8815cf031c9da6f977c23ca9949b21f91df2aa))
-* Report launcher shortcut usage so launchers can rank them ([c076d4a](https://github.com/[secure]App/morphe-manager/commit/c076d4a66d5e99f20b68615ae0b44f30bc32bf53))
-* Search patches across every source from the source list ([65bb9d0](https://github.com/[secure]App/morphe-manager/commit/65bb9d04160f42bce8486f49bee15e7bf04d5dbe))
-* Show when the patch sources support a newer app version ([460776b](https://github.com/[secure]App/morphe-manager/commit/460776b1b620bc29af880e0de960157b451f235e))
-* Show which app version the device has when picking an APK ([ae27fcc](https://github.com/[secure]App/morphe-manager/commit/ae27fccdfc37800977a66c49d281124ba53ae4e4))
-* Switch to a patch source with results when filtering the list ([#918](https://github.com/[secure]App/morphe-manager/issues/918)) ([13d0dbd](https://github.com/[secure]App/morphe-manager/commit/13d0dbd705909e84b5421ca9252e8942f097f400))
-* Update patched apps without the system confirmation dialog ([a609bee](https://github.com/[secure]App/morphe-manager/commit/a609beeb34be84a6670dabf60492b78d6b46e752))
-
-# [1.31.0-dev.9](https://github.com/[secure]App/morphe-manager/compare/v1.31.0-dev.8...v1.31.0-dev.9) (2026-09-14)
-
-
-### Features
-
-* Choose the app icon in simple mode and handle missing option paths ([efb4896](https://github.com/[secure]App/morphe-manager/commit/efb48967a36352994bdafa17fee1c70f4ab127d8))
-
-# [1.31.0-dev.8](https://github.com/[secure]App/morphe-manager/compare/v1.31.0-dev.7...v1.31.0-dev.8) (2026-09-14)
-
-
-### Features
-
-* Choose which sources each app is patched from ([#947](https://github.com/[secure]App/morphe-manager/issues/947)) ([5b8815c](https://github.com/[secure]App/morphe-manager/commit/5b8815cf031c9da6f977c23ca9949b21f91df2aa))
-
-# [1.31.0-dev.7](https://github.com/[secure]App/morphe-manager/compare/v1.31.0-dev.6...v1.31.0-dev.7) (2026-09-14)
-
-
-### Features
-
-* Search patches across every source from the source list ([65bb9d0](https://github.com/[secure]App/morphe-manager/commit/65bb9d04160f42bce8486f49bee15e7bf04d5dbe))
-
-# [1.31.0-dev.6](https://github.com/[secure]App/morphe-manager/compare/v1.31.0-dev.5...v1.31.0-dev.6) (2026-09-13)
+## [1.31.1-dev.1](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0...v1.31.1-dev.1) (2026-09-15)
 
 
 ### Bug Fixes
 
-* Check for updates once a screen exists instead of on any process start ([9ff49d6](https://github.com/[secure]App/morphe-manager/commit/9ff49d65ade03be63c97d4d5cd9edb4f46300575))
-* Keep the empty patch list state below the source notice ([a831cb1](https://github.com/[secure]App/morphe-manager/commit/a831cb1325d4207af892ae007348214fd307cf26))
+* Ask whether the stock app is there before requiring it for mount ([90730a1](https://github.com/MorpheApp/morphe-manager/commit/90730a156a43d9cf51a054f61778005278e2b2fa))
+* Stop reporting a patched install as the version on the device ([4c6436c](https://github.com/MorpheApp/morphe-manager/commit/4c6436c6ab3f56cb0bd0c502c1848cb4c9c357e0))
+
+# [1.31.0](https://github.com/MorpheApp/morphe-manager/compare/v1.30.0...v1.31.0) (2026-09-15)
+
+
+### Bug Fixes
+
+* Apply patch options only to the patches the run selected ([7c176a8](https://github.com/MorpheApp/morphe-manager/commit/7c176a8be641241d3689e65b508f79662ac5e569))
+* Check for updates once a screen exists instead of on any process start ([9ff49d6](https://github.com/MorpheApp/morphe-manager/commit/9ff49d65ade03be63c97d4d5cd9edb4f46300575))
+* Keep patching working when firmware makes a system call the device forbids ([ecd4c43](https://github.com/MorpheApp/morphe-manager/commit/ecd4c431777a665efb8d17668e41456de95b4417))
+* Keep the empty patch list state below the source notice ([a831cb1](https://github.com/MorpheApp/morphe-manager/commit/a831cb1325d4207af892ae007348214fd307cf26))
+* Set patch options as the type each option declares ([a18b93e](https://github.com/MorpheApp/morphe-manager/commit/a18b93ed2e5601e152fb17a9f10e71b06be6b43d))
+* Strip the source indentation bundles leave in patch descriptions ([ea6de33](https://github.com/MorpheApp/morphe-manager/commit/ea6de33326e5ee7a9453e9a65451b0eb786ad8c8))
+* Survive a patch bundle that crashes the process while loading ([c048cce](https://github.com/MorpheApp/morphe-manager/commit/c048cce7312d2988e51420a1793610d09c8a30da))
+* Update the manager through an installer that outlives the process it replaces ([d1c0b60](https://github.com/MorpheApp/morphe-manager/commit/d1c0b608e89c8f92e558311ced664be3d41e8774))
 
 
 ### Features
 
-* Show when the patch sources support a newer app version ([460776b](https://github.com/[secure]App/morphe-manager/commit/460776b1b620bc29af880e0de960157b451f235e))
-* Show which app version the device has when picking an APK ([ae27fcc](https://github.com/[secure]App/morphe-manager/commit/ae27fccdfc37800977a66c49d281124ba53ae4e4))
-* Switch to a patch source with results when filtering the list ([#918](https://github.com/[secure]App/morphe-manager/issues/918)) ([13d0dbd](https://github.com/[secure]App/morphe-manager/commit/13d0dbd705909e84b5421ca9252e8942f097f400))
+* Add Blocks, Bricks, Miner and Pairs mini-games ([8e5961c](https://github.com/MorpheApp/morphe-manager/commit/8e5961c0ed0142b99c53a130f00b090a974668aa))
+* Choose the app icon in simple mode and handle missing option paths ([efb4896](https://github.com/MorpheApp/morphe-manager/commit/efb48967a36352994bdafa17fee1c70f4ab127d8))
+* Choose which sources each app is patched from ([#947](https://github.com/MorpheApp/morphe-manager/issues/947)) ([5b8815c](https://github.com/MorpheApp/morphe-manager/commit/5b8815cf031c9da6f977c23ca9949b21f91df2aa))
+* Report launcher shortcut usage so launchers can rank them ([c076d4a](https://github.com/MorpheApp/morphe-manager/commit/c076d4a66d5e99f20b68615ae0b44f30bc32bf53))
+* Search patches across every source from the source list ([65bb9d0](https://github.com/MorpheApp/morphe-manager/commit/65bb9d04160f42bce8486f49bee15e7bf04d5dbe))
+* Show when the patch sources support a newer app version ([460776b](https://github.com/MorpheApp/morphe-manager/commit/460776b1b620bc29af880e0de960157b451f235e))
+* Show which app version the device has when picking an APK ([ae27fcc](https://github.com/MorpheApp/morphe-manager/commit/ae27fccdfc37800977a66c49d281124ba53ae4e4))
+* Switch to a patch source with results when filtering the list ([#918](https://github.com/MorpheApp/morphe-manager/issues/918)) ([13d0dbd](https://github.com/MorpheApp/morphe-manager/commit/13d0dbd705909e84b5421ca9252e8942f097f400))
+* Update patched apps without the system confirmation dialog ([a609bee](https://github.com/MorpheApp/morphe-manager/commit/a609beeb34be84a6670dabf60492b78d6b46e752))
 
-# [1.31.0-dev.5](https://github.com/[secure]App/morphe-manager/compare/v1.31.0-dev.4...v1.31.0-dev.5) (2026-09-13)
+# [1.31.0-dev.9](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0-dev.8...v1.31.0-dev.9) (2026-09-14)
+
+
+### Features
+
+* Choose the app icon in simple mode and handle missing option paths ([efb4896](https://github.com/MorpheApp/morphe-manager/commit/efb48967a36352994bdafa17fee1c70f4ab127d8))
+
+# [1.31.0-dev.8](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0-dev.7...v1.31.0-dev.8) (2026-09-14)
+
+
+### Features
+
+* Choose which sources each app is patched from ([#947](https://github.com/MorpheApp/morphe-manager/issues/947)) ([5b8815c](https://github.com/MorpheApp/morphe-manager/commit/5b8815cf031c9da6f977c23ca9949b21f91df2aa))
+
+# [1.31.0-dev.7](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0-dev.6...v1.31.0-dev.7) (2026-09-14)
+
+
+### Features
+
+* Search patches across every source from the source list ([65bb9d0](https://github.com/MorpheApp/morphe-manager/commit/65bb9d04160f42bce8486f49bee15e7bf04d5dbe))
+
+# [1.31.0-dev.6](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0-dev.5...v1.31.0-dev.6) (2026-09-13)
 
 
 ### Bug Fixes
 
-* Strip the source indentation bundles leave in patch descriptions ([ea6de33](https://github.com/[secure]App/morphe-manager/commit/ea6de33326e5ee7a9453e9a65451b0eb786ad8c8))
-* Update the manager through an installer that outlives the process it replaces ([d1c0b60](https://github.com/[secure]App/morphe-manager/commit/d1c0b608e89c8f92e558311ced664be3d41e8774))
+* Check for updates once a screen exists instead of on any process start ([9ff49d6](https://github.com/MorpheApp/morphe-manager/commit/9ff49d65ade03be63c97d4d5cd9edb4f46300575))
+* Keep the empty patch list state below the source notice ([a831cb1](https://github.com/MorpheApp/morphe-manager/commit/a831cb1325d4207af892ae007348214fd307cf26))
 
-# [1.31.0-dev.4](https://github.com/[secure]App/morphe-manager/compare/v1.31.0-dev.3...v1.31.0-dev.4) (2026-09-12)
+
+### Features
+
+* Show when the patch sources support a newer app version ([460776b](https://github.com/MorpheApp/morphe-manager/commit/460776b1b620bc29af880e0de960157b451f235e))
+* Show which app version the device has when picking an APK ([ae27fcc](https://github.com/MorpheApp/morphe-manager/commit/ae27fccdfc37800977a66c49d281124ba53ae4e4))
+* Switch to a patch source with results when filtering the list ([#918](https://github.com/MorpheApp/morphe-manager/issues/918)) ([13d0dbd](https://github.com/MorpheApp/morphe-manager/commit/13d0dbd705909e84b5421ca9252e8942f097f400))
+
+# [1.31.0-dev.5](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0-dev.4...v1.31.0-dev.5) (2026-09-13)
 
 
 ### Bug Fixes
 
-* Apply patch options only to the patches the run selected ([7c176a8](https://github.com/[secure]App/morphe-manager/commit/7c176a8be641241d3689e65b508f79662ac5e569))
+* Strip the source indentation bundles leave in patch descriptions ([ea6de33](https://github.com/MorpheApp/morphe-manager/commit/ea6de33326e5ee7a9453e9a65451b0eb786ad8c8))
+* Update the manager through an installer that outlives the process it replaces ([d1c0b60](https://github.com/MorpheApp/morphe-manager/commit/d1c0b608e89c8f92e558311ced664be3d41e8774))
+
+# [1.31.0-dev.4](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0-dev.3...v1.31.0-dev.4) (2026-09-12)
+
+
+### Bug Fixes
+
+* Apply patch options only to the patches the run selected ([7c176a8](https://github.com/MorpheApp/morphe-manager/commit/7c176a8be641241d3689e65b508f79662ac5e569))
 
 # [1.31.0-dev.3](https://github.com/MorpheApp/morphe-manager/compare/v1.31.0-dev.2...v1.31.0-dev.3) (2026-09-12)
 

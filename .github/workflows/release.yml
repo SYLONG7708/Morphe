@@ -94,11 +94,13 @@ jobs:
             publish=false
           fi
           if [ "${{ github.event_name }}" = "schedule" ]; then
+            latest_tag="$(gh release view --json tagName --jq .tagName)"
             current="$(curl --fail --silent --location \
               https://github.com/SYLONG7708/Morphe/releases/latest/download/update-manifest.json || true)"
             if [ -n "$current" ] \
               && [ "$(jq -r '.patches.version' <<<"$current")" = "$PATCH_VERSION" ] \
-              && [ "$(jq -r '.microg.version' <<<"$current")" = "$MICROG_VERSION" ]; then
+              && [ "$(jq -r '.microg.version' <<<"$current")" = "$MICROG_VERSION" ] \
+              && python3 tools/release_source.py "$latest_tag"; then
               publish=false
             fi
           fi

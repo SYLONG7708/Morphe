@@ -1,42 +1,44 @@
-name: Recover failed cloud release
+name: Recover failed cloud workflows
 on:
   workflow_run:
-    workflows: ['Signed ecosystem release']
+    workflows: ['Signed ecosystem release', 'Sync official stable Manager']
     types: [completed]
+  workflow_dispatch:
+    inputs:
+      failed_run:
+        description: Existing run to diagnose; only trusted main runs are eligible
+        required: true
+        type: string
 permissions:
   actions: write
   contents: read
 concurrency:
-  group: release-recovery-${{ github.event.workflow_run.id }}
+  group: cloud-recovery-${{ github.event.workflow_run.id || inputs.failed_run }}
   cancel-in-progress: false
 jobs:
   recover:
-    if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'main'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (contains(fromJSON('["failure", "timed_out", "startup_failure"]'), github.event.workflow_run.conclusion) &&
+      github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+      - name: Checkout trusted recovery implementation
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
       - name: Diagnose and retry within budget
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          FAILED_RUN: ${{ github.event.workflow_run.id }}
-          FAILED_SHA: ${{ github.event.workflow_run.head_sha }}
-          ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          jobs="$(gh api "repos/$GH_REPO/actions/runs/$FAILED_RUN/jobs")"
-          failed="$(jq -r '[.jobs[].steps[] | select(.conclusion == "failure") | .name] | join(", ")' <<<"$jobs")"
-          printf 'Failed step: %s; attempt: %s\n' "$failed" "$ATTEMPT" >> "$GITHUB_STEP_SUMMARY"
-          current="$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)"
-          if [[ "$current" != "$FAILED_SHA" ]]; then
-            echo 'A newer main exists; the old commit will not be rerun.' >> "$GITHUB_STEP_SUMMARY"
-          elif [[ "$ATTEMPT" -lt 3 ]]; then
-            # A fresh runner repairs transient setup/cache/download failures. The original
-            # validation still runs and the published release is never overwritten.
-            sleep 30
-            gh api --method POST "repos/$GH_REPO/actions/runs/$FAILED_RUN/rerun-failed-jobs"
-          else
-            echo 'Retry budget exhausted; current release retained. Checking official source compatibility.' >> "$GITHUB_STEP_SUMMARY"
-            gh workflow run upstream-sync.yml --ref main
-          fi
+          FAILED_RUN: ${{ inputs.failed_run }}
+        run: python3 tools/cloud_recovery.py
+      - name: Preserve recovery decision
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cloud-recovery-${{ github.run_id }}
+          path: verification/cloud-recovery.json
+          if-no-files-found: warn
