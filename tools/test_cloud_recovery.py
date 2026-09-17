@@ -1,6 +1,6 @@
 import copy
 import unittest
-from cloud_recovery import decision
+from cloud_recovery import decision, failure_output
 
 
 class CloudRecoveryTest(unittest.TestCase):
@@ -53,3 +53,16 @@ class CloudRecoveryTest(unittest.TestCase):
         for conclusion in ("timed_out", "startup_failure"):
             self.run["conclusion"] = conclusion
             self.assertEqual("retry", self.choose(logs="")["action"])
+
+    def test_whole_job_log_does_not_misclassify_successful_regression_examples(self):
+        logs = ("##[group]Run python -m unittest\n##[endgroup]\n"
+                "CONFLICT (content)\n2 tests failed\nAll tests OK\n"
+                "##[group]Run gradlew assemble\n##[endgroup]\nHTTP 503\n"
+                "##[error]Process completed with exit code 1.\n"
+                "##[group]Run cleanup\n##[endgroup]\n")
+        self.assertEqual("retry", self.choose(failure_output(logs))["action"])
+
+    def test_final_command_real_compile_failure_is_retained(self):
+        logs = ("##[group]Run gradlew assemble\nHTTP 503\nCompilation error\n"
+                "##[error]Process completed with exit code 1.\n")
+        self.assertEqual("retain", self.choose(failure_output(logs))["action"])

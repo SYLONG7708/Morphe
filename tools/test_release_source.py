@@ -47,3 +47,9 @@ class ReleaseSourceTest(unittest.TestCase):
     def test_missing_or_invalid_tag_cannot_suppress_release(self):
         for tag in ("symorphe-v1.1.999", "--bad", "main"):
             self.assertFalse(unchanged(tag))
+
+    def test_bundled_markdown_asset_is_part_of_app_source(self):
+        Path("app/assets").mkdir()
+        Path("app/assets/help.md").write_text("Updated in-app help\n")
+        self.commit()
+        self.assertFalse(unchanged("symorphe-v1.1.80"))

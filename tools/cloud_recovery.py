@@ -19,6 +19,19 @@ HARD_FAILURE = re.compile(
 )
 
 
+def failure_output(logs: str) -> str:
+    # gh can fall back to whole-job logs ("UNKNOWN STEP"). Earlier successful
+    # regression tests/repairs may themselves print example failure messages.
+    # Classify the command containing the final runner error, not those examples.
+    error = logs.rfind("##[error]")
+    if error >= 0:
+        start = logs.rfind("##[group]Run ", 0, error)
+        if start >= 0:
+            end = logs.find("\n", error)
+            return logs[start:end if end >= 0 else len(logs)]
+    return logs
+
+
 def decision(run: dict, repository: str, current_sha: str, logs: str) -> dict:
     result = {"run_id": run["id"], "attempt": run.get("run_attempt", 1),
               "workflow": run.get("path"), "action": "retain", "reason": ""}
@@ -67,7 +80,7 @@ def main() -> None:
         logs = subprocess.run(["gh", "run", "view", str(run_id), "--repo", repository,
                                "--attempt", str(run.get("run_attempt", 1)), "--log-failed"],
                               capture_output=True, text=True, encoding="utf-8", errors="replace")
-        log_text = logs.stdout if logs.returncode == 0 else ""
+        log_text = failure_output(logs.stdout) if logs.returncode == 0 else ""
         check = decision(run, repository, current, log_text)
     if check["action"] == "retry":
         time.sleep(30)

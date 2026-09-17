@@ -13,7 +13,7 @@ def unchanged(tag: str) -> bool:
     if subprocess.run(["git", "rev-parse", "--verify", ref], capture_output=True).returncode:
         return False
     result = subprocess.run(["git", "diff", "--quiet", ref, "HEAD", "--", ".",
-                             *[":(exclude)" + path for path in EXCLUDED]], capture_output=True)
+                             *[":(top,exclude,glob)" + path for path in EXCLUDED]], capture_output=True)
     return result.returncode == 0
 
 
