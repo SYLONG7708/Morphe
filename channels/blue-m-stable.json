@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "channel": "blue-m-stable",
+  "sequence": 2026092404,
+  "published_at": "2026-09-24T00:00:00Z",
+  "packages": [
+    {
+      "package": "app.morphe.android.youtube",
+      "version_code": 2026092404,
+      "version_name": "21.29.366-SY.1",
+      "size": 208920684,
+      "sha256": "e93da1667a705dfa4f6cf55caa2e8867c7149084481d48fd3fef23c697735bef",
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "min_sdk": 29,
+      "signer_sha256": "7cee829c140e3ba32767e541e98d99a87214b80c7b3095692549131a2d6ebf02",
+      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-20260924.1/BlueM-21.29.366-SY.1.apk"
+    },
+    {
+      "package": "app.revanced.android.gms",
+      "version_code": 255034004,
+      "version_name": "6.1.4",
+      "size": 13393291,
+      "sha256": "907b0f1d64d4bdf2fc15df596129cdf9f140f5360f557d24ff2e987c9f586f15",
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "min_sdk": 24,
+      "signer_sha256": "0b6c9515afb195fac59601696ba0a7907a0b217ccf720b43148427ccf64343e7",
+      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-20260924.1/MicroG-6.1.4.apk"
+    }
+  ]
+}
