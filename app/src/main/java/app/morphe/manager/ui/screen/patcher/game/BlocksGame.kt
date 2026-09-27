@@ -104,6 +104,7 @@ class BlocksGameState(
     var clearingRows by mutableStateOf<List<Int>>(emptyList())
         private set
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
     override val score get() = points.value
     override val highScore get() = points.high
     override var isGameOver by mutableStateOf(false)
@@ -212,7 +213,13 @@ class BlocksGameState(
         }
         board = next
         val completed = (0 until BLOCKS_ROWS).filter { r -> next[r].all { it != 0 } }
-        if (completed.isEmpty()) spawn() else clearingRows = completed
+        if (completed.isEmpty()) {
+            haptics.tick()
+            spawn()
+        } else {
+            haptics.reward()
+            clearingRows = completed
+        }
     }
 
     /** Takes the lit rows out, drops the stack into the gap and brings in the next piece. */

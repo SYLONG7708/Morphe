@@ -8,6 +8,10 @@ package app.morphe.manager.ui.model
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import app.morphe.manager.domain.bundles.BundledAppTarget
+import app.morphe.manager.domain.bundles.offered
+import app.morphe.manager.patcher.patch.BundleAppMetadata
 import app.morphe.manager.util.ApkDownloadHelperContract
 import app.morphe.patcher.patch.ApkFileType
 
@@ -42,8 +46,62 @@ interface ApkDownloadHelperHost {
     fun onHelperInstalledAppChosen(packageName: String)
 }
 
+/**
+ * Whether a helper's APK for an app the bundle describes with [metadata] will have its signature
+ * checked. Android 8-10 cannot read signatures from an archive at all.
+ */
+internal fun helperSignatureCheckAvailable(metadata: BundleAppMetadata?): Boolean =
+    Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && !metadata?.signatures.isNullOrEmpty()
+
+/**
+ * The request both patching flows send a helper, derived from what the bundle declares.
+ *
+ * @param versionName Version the user asked for, or null when any compatible one will do.
+ * @param compatible Versions the bundle can patch, before narrowing to the offered ones.
+ */
+internal fun createApkDownloadHelperRequest(
+    component: ComponentName,
+    callerPackage: String,
+    packageName: String,
+    appName: String,
+    versionName: String?,
+    compatible: List<BundledAppTarget>,
+    metadata: BundleAppMetadata?,
+    stockInstallRequired: Boolean,
+    fallbackWebUrl: String
+): Intent {
+    val apkFileType = metadata?.apkFileType
+
+    val versionCodes = compatible
+        .filter { it.target.version == versionName }
+        .flatMap { it.buildCodes.orEmpty() }
+        .distinct()
+        .map(Int::toLong)
+        .toLongArray()
+
+    return ApkDownloadHelperContract.createRequestIntent(
+        component = component,
+        callerPackage = callerPackage,
+        packageName = packageName,
+        appName = appName,
+        versionName = versionName,
+        versionCodes = versionCodes,
+        // Narrowed the same way the picker is: a helper told an experimental version is
+        // acceptable would hand back the very one the user chose to hide
+        compatibleVersionNames = compatible.offered()
+            .mapNotNull { it.target.version }
+            .distinct(),
+        supportedAbis = Build.SUPPORTED_ABIS,
+        fileType = apkFileType?.toHelperFileType(),
+        // Mirrors processSelectedApp - only a required plain APK rules split archives out
+        allowSplitArchive = !(apkFileType?.isApk == true && apkFileType.isRequired),
+        stockInstallRequired = stockInstallRequired,
+        fallbackWebUrl = fallbackWebUrl
+    )
+}
+
 /** The archive format a bundle asks for, named the way the helper protocol spells it. */
-internal fun ApkFileType.toHelperFileType() = when {
+private fun ApkFileType.toHelperFileType() = when {
     isApk -> ApkDownloadHelperContract.FILE_TYPE_APK
     isApkM -> ApkDownloadHelperContract.FILE_TYPE_APKM
     isApkS -> ApkDownloadHelperContract.FILE_TYPE_APKS

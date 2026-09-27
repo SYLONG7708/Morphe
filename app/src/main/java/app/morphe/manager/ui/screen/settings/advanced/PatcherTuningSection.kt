@@ -10,8 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Api
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.LayersClear
 import androidx.compose.material.icons.outlined.Memory
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material3.MaterialTheme
@@ -26,14 +27,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
-import app.morphe.manager.ui.screen.settings.system.BytecodeModeDialog
-import app.morphe.manager.ui.screen.settings.system.ProcessRuntimeDialog
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.SettingsViewModel
-import app.morphe.patcher.dex.BytecodeMode
 
 /**
- * Patcher-runtime tuning: process runtime + bytecode mode.
+ * Patcher tuning: process runtime, native library stripping and external batch patch triggers.
  */
 @Composable
 fun PatcherTuningSection(
@@ -44,26 +42,20 @@ fun PatcherTuningSection(
     val prefs = settingsViewModel.prefs
     val useProcessRuntime by prefs.useProcessRuntime.getAsState()
     val memoryLimit by prefs.patcherProcessMemoryLimit.getAsState()
-    val bytecodeMode by prefs.bytecodeModePreference.getAsState()
+    val heapLimitIgnored by prefs.patcherHeapLimitIgnored.getAsState()
+    val stripUnusedNativeLibs by prefs.stripUnusedNativeLibs.getAsState()
+    val externalBatchPatchEnabled by prefs.externalBatchPatchEnabled.getAsState()
 
     val showProcessRuntimeDialog = remember { mutableStateOf(false) }
-    val showBytecodeDialog = remember { mutableStateOf(false) }
 
     if (showProcessRuntimeDialog.value) {
         ProcessRuntimeDialog(
             currentEnabled = useProcessRuntime,
             currentLimit = memoryLimit,
+            heapLimitIgnored = heapLimitIgnored,
             onDismiss = { showProcessRuntimeDialog.value = false },
             onEnabledChange = { settingsViewModel.setProcessRuntime(it) },
             onLimitChange = { settingsViewModel.setMemoryLimit(it) }
-        )
-    }
-
-    if (showBytecodeDialog.value) {
-        BytecodeModeDialog(
-            current = bytecodeMode,
-            onDismiss = { showBytecodeDialog.value = false },
-            onSelect = { settingsViewModel.setBytecodeMode(it) }
         )
     }
 
@@ -117,17 +109,27 @@ fun PatcherTuningSection(
 
             SettingsDivider()
 
-            SettingsItem(
-                onClick = { showBytecodeDialog.value = true },
-                title = stringResource(R.string.settings_advanced_bytecode_mode),
-                subtitle = stringResource(bytecodeMode.labelRes()),
-                leadingContent = { ThemedIcon(icon = Icons.Outlined.Code) }
+            // Strip unused native libraries + filter split APKs for device
+            SettingsSwitchItem(
+                checked = stripUnusedNativeLibs,
+                onToggle = {
+                    settingsViewModel.setStripUnusedNativeLibs(!stripUnusedNativeLibs)
+                },
+                icon = Icons.Outlined.LayersClear,
+                title = stringResource(R.string.settings_advanced_strip_unused_libs),
+                subtitle = stringResource(R.string.settings_advanced_strip_unused_libs_description)
+            )
+
+            SettingsDivider()
+
+            // Entry point other apps use to start a re-patch queue
+            SettingsSwitchItem(
+                checked = externalBatchPatchEnabled,
+                onToggle = { settingsViewModel.toggleExternalBatchPatch(externalBatchPatchEnabled) },
+                icon = Icons.Outlined.Api,
+                title = stringResource(R.string.settings_advanced_external_batch_patch),
+                subtitle = stringResource(R.string.settings_advanced_external_batch_patch_description)
             )
         }
     }
-}
-
-private fun BytecodeMode.labelRes(): Int = when (this) {
-    BytecodeMode.FULL -> R.string.settings_advanced_bytecode_mode_full
-    else -> R.string.settings_advanced_bytecode_mode_strip_fast
 }

@@ -9,6 +9,8 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -32,9 +34,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -59,7 +65,7 @@ import kotlinx.coroutines.delay
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import kotlin.time.Duration.Companion.milliseconds
 
-/** Cards get more room where the layout splits into two columns and each holds only its half. */
+/** Cards get more room where the layout splits into two columns and each holds only it's half. */
 private val LandscapeMaxCardWidth = 700.dp
 
 internal fun HomeCategoryGroup.selectionKey(): String =
@@ -164,7 +170,7 @@ fun SectionsLayout(
         if (!chromeFlags.showSearchButton) searchVisible.value = false
     }
 
-    // Back gesture closes search (registered before multiselect BackHandler so multiselect takes priority)
+    // Back gesture closes search (registered before the footer bars' own back handling, so an open bar takes priority)
     BackHandler(enabled = searchVisible.value) { searchVisible.value = false }
 
     val searchState = HomeSearchState(
@@ -176,6 +182,16 @@ fun SectionsLayout(
     )
     var showListOptionsDialog by remember { mutableStateOf(false) }
     var filterMode by rememberSaveable { mutableStateOf(HomeAppFilterMode.ALL) }
+
+    // Held here rather than in the section, since the footer bar docks over the bottom action
+    // bar, which hides while it is up
+    val sectionState = rememberHomeAppsSectionState(
+        initialOrder = apps.visible.map { it.id },
+        initialSourceGroupOrder = apps.sourceGroups.map { it.uid },
+        initialCategoryOrder = apps.categoryState.categories.map { it.id },
+        hasContent = apps.visible.isNotEmpty() || apps.hidden.isNotEmpty(),
+    )
+    val footerBar = remember { HomeFooterBarHost() }
 
     // Drop the filter if the button disappears, otherwise the list stays trimmed with no way back
     LaunchedEffect(chromeFlags.showSortButton) {
@@ -216,6 +232,8 @@ fun SectionsLayout(
                     filterMode = filterMode,
                     onClearFilter = { filterMode = HomeAppFilterMode.ALL },
                     onSortClick = { showListOptionsDialog = true },
+                    state = sectionState,
+                    footerBar = footerBar,
                     onboardingState = onboardingState
                 )
             }
@@ -223,6 +241,7 @@ fun SectionsLayout(
             // Section 5: Bottom action bar
             if (!isLandscape()) {
                 HomeBottomActionBar(
+                    modifier = Modifier.coveredByFooterBar(sectionState.isFooterBarVisible),
                     onBundlesClick = chromeActions.onBundlesClick,
                     onSettingsClick = chromeActions.onSettingsClick,
                     isExpertModeEnabled = chromeFlags.isExpertModeEnabled,
@@ -237,6 +256,17 @@ fun SectionsLayout(
                     onSettingsPositioned = onboardingState?.let { s -> { b -> s.settingsButtonBounds = b } }
                 )
             }
+        }
+
+        // In landscape the bar docks inside the list pane instead, clear of the sidebar
+        if (!isLandscape()) {
+            HomeFooterBarDock(
+                host = footerBar,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .widthIn(max = Defaults.ContentMaxWidth)
+                    .fillMaxWidth()
+            )
         }
 
         val maxCardWidth = if (isLandscape()) LandscapeMaxCardWidth else Defaults.ContentMaxWidth
@@ -265,6 +295,8 @@ private fun AdaptiveContent(
     filterMode: HomeAppFilterMode,
     onClearFilter: () -> Unit,
     onSortClick: () -> Unit,
+    state: HomeAppsSectionState,
+    footerBar: HomeFooterBarHost,
     onboardingState: OnboardingState? = null
 ) {
     val contentPadding = windowSize.contentPadding
@@ -282,13 +314,9 @@ private fun AdaptiveContent(
     // groups expand or collapse; the flat All-apps view lets the list wrap to its content
     // so the greeting and cards center together as one block
     val isGroupedAppView = apps.categoryViewMode != HomeAppCategoryViewMode.ALL_APPS
-
-    val state = rememberHomeAppsSectionState(
-        initialOrder = apps.visible.map { it.id },
-        initialSourceGroupOrder = apps.sourceGroups.map { it.uid },
-        initialCategoryOrder = apps.categoryState.categories.map { it.id },
-        hasContent = apps.visible.isNotEmpty() || apps.hidden.isNotEmpty(),
-    )
+    val trackContentBottom = Modifier.onGloballyPositioned {
+        footerBar.contentBottom = it.boundsInWindow().bottom
+    }
 
     // Horizontal swipe on the background cycles through the visible grouping modes
     val modes = HomeAppCategoryViewMode.entries
@@ -348,56 +376,70 @@ private fun AdaptiveContent(
                     onSettingsPositioned = onboardingState?.let { s -> { b -> s.settingsButtonBounds = b } }
                 )
                 VerticalDivider(modifier = Modifier.padding(vertical = 20.dp))
-                Column(
+                Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(horizontal = contentPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(horizontal = contentPadding)
                 ) {
                     Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .then(modeSwipe),
-                        verticalArrangement = if (isGroupedAppView) Arrangement.Top else Arrangement.Center,
+                        modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (!greetingMessage.isNullOrEmpty()) {
-                            GreetingSection(
-                                message = greetingMessage,
-                                modifier = Modifier.widthIn(max = maxCardWidth).fillMaxWidth(),
-                                onRefresh = chromeActions.onRefreshGreeting
-                            )
-                            Spacer(modifier = Modifier.height(itemSpacing))
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .then(trackContentBottom)
+                                .then(modeSwipe),
+                            verticalArrangement = if (isGroupedAppView) Arrangement.Top else Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (!greetingMessage.isNullOrEmpty()) {
+                                GreetingSection(
+                                    message = greetingMessage,
+                                    modifier = Modifier.widthIn(max = maxCardWidth).fillMaxWidth(),
+                                    onRefresh = chromeActions.onRefreshGreeting
+                                )
+                                Spacer(modifier = Modifier.height(itemSpacing))
+                            }
+                            Box(modifier = Modifier.weight(1f, fill = isGroupedAppView)) {
+                                MainAppsSection(
+                                    apps = apps,
+                                    appActions = appActions,
+                                    state = state,
+                                    searchState = searchState,
+                                    filterMode = filterMode,
+                                    onClearFilter = onClearFilter,
+                                    onBundlesClick = chromeActions.onBundlesClick,
+                                    itemSpacing = itemSpacing,
+                                    maxCardWidth = maxCardWidth,
+                                    onboardingState = onboardingState,
+                                    footerBar = footerBar,
+                                    showFadeOverlay = false,
+                                    fillHeight = isGroupedAppView,
+                                    modifier = if (isGroupedAppView) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
+                                )
+                            }
                         }
-                        Box(modifier = Modifier.weight(1f, fill = isGroupedAppView)) {
-                            MainAppsSection(
-                                apps = apps,
-                                appActions = appActions,
-                                state = state,
-                                searchState = searchState,
-                                filterMode = filterMode,
-                                onClearFilter = onClearFilter,
-                                onBundlesClick = chromeActions.onBundlesClick,
-                                itemSpacing = itemSpacing,
-                                maxCardWidth = maxCardWidth,
-                                onboardingState = onboardingState,
-                                showFadeOverlay = false,
-                                fillHeight = isGroupedAppView,
-                                modifier = if (isGroupedAppView) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
-                            )
-                        }
+                        // Footer stays pinned to the bottom of the pane regardless of view mode
+                        HomeFooterControls(
+                            showOtherApps = showOtherAppsFooter,
+                            showGroupingSelector = showGroupingFooter,
+                            mode = apps.categoryViewMode,
+                            onOtherAppsClick = chromeActions.onOtherAppsClick,
+                            onModeChange = appActions.onCategoryViewModeChange,
+                            itemSpacing = itemSpacing,
+                            modifier = Modifier
+                                .widthIn(max = maxCardWidth)
+                                .fillMaxWidth()
+                                .coveredByFooterBar(state.isFooterBarVisible)
+                        )
                     }
-                    // Footer stays pinned to the bottom of the pane regardless of view mode
-                    HomeFooterControls(
-                        showOtherApps = showOtherAppsFooter,
-                        showGroupingSelector = showGroupingFooter,
-                        mode = apps.categoryViewMode,
-                        onOtherAppsClick = chromeActions.onOtherAppsClick,
-                        onModeChange = appActions.onCategoryViewModeChange,
-                        itemSpacing = itemSpacing,
+                    HomeFooterBarDock(
+                        host = footerBar,
                         modifier = Modifier
+                            .align(Alignment.BottomCenter)
                             .widthIn(max = maxCardWidth)
                             .fillMaxWidth()
                     )
@@ -409,6 +451,7 @@ private fun AdaptiveContent(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .then(trackContentBottom)
                     .then(modeSwipe),
                 verticalArrangement = if (isGroupedAppView) Arrangement.Top else Arrangement.Center
             ) {
@@ -439,6 +482,7 @@ private fun AdaptiveContent(
                         horizontalPadding = contentPadding,
                         maxCardWidth = maxCardWidth,
                         onboardingState = onboardingState,
+                        footerBar = footerBar,
                         fillHeight = isGroupedAppView,
                         modifier = if (isGroupedAppView) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
                     )
@@ -461,6 +505,7 @@ private fun AdaptiveContent(
                         .padding(horizontal = contentPadding)
                         .widthIn(max = maxCardWidth - contentPadding * 2)
                         .fillMaxWidth()
+                        .coveredByFooterBar(state.isFooterBarVisible)
                 )
             }
         }
@@ -597,6 +642,7 @@ internal fun MainAppsSection(
     filterMode: HomeAppFilterMode,
     onClearFilter: () -> Unit,
     onBundlesClick: () -> Unit,
+    footerBar: HomeFooterBarHost,
     modifier: Modifier = Modifier,
     itemSpacing: Dp = 16.dp,
     horizontalPadding: Dp = 0.dp,
@@ -637,16 +683,9 @@ internal fun MainAppsSection(
             isFooterSlotReserved = false
         }
     }
-
-    // Back gesture/button cancels multi-select instead of navigating back
-    BackHandler(enabled = state.isMultiSelectMode) { state.exitMultiSelect() }
-
-    // Back gesture/button exits reorder mode without saving
-    BackHandler(enabled = state.isReorderMode) {
-        state.exitReorder(homeAppItems.map { it.id })
-    }
-
-    BackHandler(enabled = state.isCategoryBarVisible) { state.closeCategoryBar() }
+    // Only the part of the bar that reaches into the list's own area needs clearing, and it
+    // follows the height the bar was last measured at, which its actions and font scale move
+    val footerBarOverlap = with(LocalDensity.current) { footerBar.listOverlapPx.toDp() }
 
     // Retire stale header action state when switching grouping modes.
     LaunchedEffect(appGrouping) { state.closeCategoryBar() }
@@ -1057,7 +1096,7 @@ internal fun MainAppsSection(
         }
     }
 
-    // Flat-only: grouped scrolls in onEnterReorder before the items list swaps
+    // Flat-only: grouped scrolls in enterReorder before the items list swaps
     LaunchedEffect(state.isReorderMode) {
         if (state.isReorderMode && state.reorderScopePackages == null) {
             val targets = state.reorderFocusPackages
@@ -1157,18 +1196,25 @@ internal fun MainAppsSection(
                                 Modifier.fillMaxWidth()
                             }
                         ) {
+                            // Clears the action bar, plus itemSpacing for a consistent card gap.
+                            // Eased rather than switched, since a centered list that wraps its
+                            // content moves by half of it and would jump the cards
+                            val footerClearance by animateDpAsState(
+                                targetValue = if (isFooterSlotReserved) {
+                                    footerBarOverlap + itemSpacing
+                                } else {
+                                    0.dp
+                                },
+                                animationSpec = tween(Defaults.ANIMATION_DURATION, easing = FastOutSlowInEasing),
+                                label = "footerClearance"
+                            )
                             // Cached so the LazyColumn doesn't allocate a new PaddingValues on
                             // every recomposition (which can be per-frame under scroll)
-                            val listContentPadding = remember(horizontalPadding, itemSpacing, isFooterSlotReserved) {
+                            val listContentPadding = remember(horizontalPadding, footerClearance) {
                                 PaddingValues(
                                     start = horizontalPadding,
                                     end = horizontalPadding,
-                                    // Clears the action bar, plus itemSpacing for a consistent card gap
-                                    bottom = if (isFooterSlotReserved) {
-                                        MultiSelectBarDefaults.ListClearance + itemSpacing
-                                    } else {
-                                        0.dp
-                                    }
+                                    bottom = footerClearance
                                 )
                             }
                             val listArrangement = remember(itemSpacing, isGroupedAppView) {
@@ -1317,54 +1363,82 @@ internal fun MainAppsSection(
                                 )
                             }
 
+                            val controlClearance = if (isFooterSlotReserved) {
+                                footerBarOverlap
+                            } else {
+                                0.dp
+                            }
                             ListScrollbar(
                                 listState = listState,
                                 alphabetTargets = scrollTargets,
                                 alphabetMode = alphabetScrollMode,
-                                extraBottomPadding = if (isFooterSlotReserved) {
-                                    MultiSelectBarDefaults.ControlClearance
-                                } else {
-                                    0.dp
-                                }
+                                extraBottomPadding = controlClearance
                             )
 
                             // Lift extra space for the MultiSelectBar when it's visible
                             ScrollToTopButton(
                                 listState = listState,
-                                extraBottomPadding = if (isFooterSlotReserved) {
-                                    MultiSelectBarDefaults.ControlClearance
-                                } else {
-                                    0.dp
-                                }
+                                extraBottomPadding = controlClearance
                             )
                         }
 
                     }
 
-                    HomeAppsFooterBars(
-                        state = state,
-                        apps = apps,
-                        appActions = appActions,
-                        searchState = searchState,
-                        listedItems = filteredItems,
-                        reorderItems = reorderItems,
-                        orderedItems = orderedItems,
-                        itemsByPackage = homeItemsByPackage,
-                        groupedSelectionGroup = groupedSelectionGroup,
-                        groupedSelectionPackages = groupedSelectionPackages,
-                        sourceGroups = displayedSourceCategoryGroups,
-                        isCustomCategoryView = isCustomCategoryView,
-                        isSourceCategoryView = isSourceCategoryView,
-                        listState = listState,
-                        scope = scope,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(horizontal = horizontalPadding)
-                    )
+                    val footerBarContent: @Composable (Modifier) -> Unit = { barModifier ->
+                        HomeAppsFooterBars(
+                            state = state,
+                            apps = apps,
+                            appActions = appActions,
+                            searchState = searchState,
+                            listedItems = filteredItems,
+                            reorderItems = reorderItems,
+                            orderedItems = orderedItems,
+                            itemsByPackage = homeItemsByPackage,
+                            groupedSelectionGroup = groupedSelectionGroup,
+                            groupedSelectionPackages = groupedSelectionPackages,
+                            sourceGroups = displayedSourceCategoryGroups,
+                            isCustomCategoryView = isCustomCategoryView,
+                            isSourceCategoryView = isSourceCategoryView,
+                            listState = listState,
+                            scope = scope,
+                            modifier = barModifier
+                        )
+                    }
+                    SideEffect { footerBar.bar = footerBarContent }
+                    DisposableEffect(footerBar) { onDispose { footerBar.bar = null } }
                 }
             }
         }
     }
+}
+
+/**
+ * Fades out home chrome the docked footer bar stands in for while it is [covered], and keeps
+ * taps and screen readers off it meanwhile. It keeps its place in the layout, so nothing above
+ * it moves when the bar comes and goes.
+ */
+@Composable
+private fun Modifier.coveredByFooterBar(covered: Boolean): Modifier {
+    val alpha by animateFloatAsState(
+        targetValue = if (covered) 0f else 1f,
+        animationSpec = tween(Defaults.ANIMATION_DURATION_SHORT),
+        label = "footer_chrome_alpha"
+    )
+    return graphicsLayer { this.alpha = alpha }.then(
+        if (covered) {
+            Modifier
+                .clearAndSetSemantics {}
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() }
+                        }
+                    }
+                }
+        } else {
+            Modifier
+        }
+    )
 }
 
 private fun LazyListScope.filterEmptyState(

@@ -3,7 +3,7 @@
  * https://github.com/MorpheApp/morphe-manager
  */
 
-package app.morphe.manager.ui.screen.settings.system
+package app.morphe.manager.ui.screen.settings.advanced
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +35,7 @@ import kotlin.math.roundToInt
 fun ProcessRuntimeDialog(
     currentEnabled: Boolean,
     currentLimit: Int,
+    heapLimitIgnored: Boolean,
     onDismiss: () -> Unit,
     onEnabledChange: (Boolean) -> Unit,
     onLimitChange: (Int) -> Unit,
@@ -131,8 +132,12 @@ fun ProcessRuntimeDialog(
                     icon = Icons.Outlined.Info
                 )
 
-                // Both ends of the range have something to say, and never at the same time
+                // One warning at a time. A device that ignores the limit makes the slider moot,
+                // and otherwise both ends of the range have something to say
                 val warning = when {
+                    heapLimitIgnored ->
+                        R.string.settings_system_process_runtime_heap_limit_ignored to SemanticTone.Warning
+
                     selectedLimit < PROCESS_RUNTIME_MEMORY_LOW_WARNING ->
                         R.string.settings_system_memory_limit_warning to SemanticTone.Error
 

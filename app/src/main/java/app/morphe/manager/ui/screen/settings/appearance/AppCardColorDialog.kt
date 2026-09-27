@@ -137,23 +137,18 @@ fun AppCardColorDialog(
         ) {
             AppCardColorPreview(colors = previewColors)
 
-            Column(verticalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing)) {
-                MODE_OPTIONS.chunked(MODE_COLUMNS).forEach { row ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing)
-                    ) {
-                        row.forEach { (optionMode, icon) ->
-                            ModernIconOptionCard(
-                                selected = draftMode == optionMode,
-                                onClick = { draftMode = optionMode },
-                                icon = icon,
-                                label = stringResource(optionMode.labelResId),
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
-                }
+            OptionGrid(
+                items = MODE_OPTIONS,
+                columns = MODE_COLUMNS,
+                spacing = Defaults.ItemSpacing
+            ) { (optionMode, icon), itemModifier ->
+                ModernIconOptionCard(
+                    selected = draftMode == optionMode,
+                    onClick = { draftMode = optionMode },
+                    icon = icon,
+                    label = stringResource(optionMode.labelResId),
+                    modifier = itemModifier
+                )
             }
 
             Text(

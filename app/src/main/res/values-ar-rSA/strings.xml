@@ -5,7 +5,7 @@
     <string name="home_other_apps_action">اختيار تطبيقات أخرى</string>
     <string name="home_not_patched_yet">لم يتم تعديله بعد</string>
     <string name="home_unpatched_version_installed">تم تثبيت إصدار غير معدل</string>
-    <string name="home_unpatched_badge">لم يتم تعديله</string>
+    <string name="home_unpatched_badge">غير معدل</string>
     <string name="home_no_patches_available">لا يوجد تعديلات متاحة</string>
     <string name="home_app_hide_title">إخفاء هذا التطبيق؟</string>
     <string name="home_app_hide_message">سيتم إخفاء هذا التطبيق من الشاشة الرئيسية. يمكنك استعادته لاحقًا من قائمة التطبيقات المخفية باستخدام الزر الموجود أسفل القائمة.</string>
@@ -13,7 +13,7 @@
     <string name="home_app_no_hidden">لا تطبيقات مخفية</string>
     <string name="home_app_hidden_apps_title">التطبيقات المخفية</string>
     <string name="home_app_hidden_apps_hint">انقر لإظهارها</string>
-    <string name="home_app_patch_sources_description">المصادر التي تُركت غير محددة لا تُقدَّم عند تعديل هذه التطبيقات، وتعديلاتها لا تنضم أبدًا إلى أي تحديد من تلقاء نفسها. يبقى كل مصدر مفعَّلًا لكل تطبيق آخر</string>
+    <string name="home_app_patch_sources_description">المصادر الغير محددة لا تُقدَّم عند تعديل هذه التطبيقات، وتعديلاتها لا تنضم أبدًا إلى أي تحديد من تلقاء نفسها. يبقى كل مصدر مفعَّلًا لكل تطبيق آخر</string>
     <string name="home_app_patch_sources_mixed">مقدَّمة إلى %1$s من %2$s</string>
     <string name="home_app_patch_sources_covers">لديه تعديلات لـ %1$s من %2$s</string>
     <string name="home_app_patch_sources_last">يحتاج كل تطبيق إلى مصدر واحد متبقٍّ للتعديل منه</string>
@@ -140,10 +140,14 @@
     <string name="sources_management_open_in_browser">فتح في المتصفح</string>
     <string name="sources_management_report_issue">الإبلاغ عن مشكلة</string>
     <string name="sources_management_failed_to_open_url">فشل في فتح الرابط</string>
-    <string name="sources_hidden_apps">مخفي لـ</string>
-    <string name="sources_hidden_apps_title">تطبيقات مخفية من %1$s</string>
-    <string name="sources_hidden_apps_description">هذه التطبيقات لا تُقدّم هذا المصدر عند تعديلها. يبقى المصدر نفسه مفعلًا لكل شيء آخر</string>
-    <string name="sources_hidden_apps_hint">انقر لتقديم هذا المصدر مرة أخرى</string>
+    <string name="sources_apps">التطبيقات</string>
+    <string name="sources_apps_title">تطبيقات من %1$s</string>
+    <string name="sources_apps_description">انقر على تطبيق لاستبعاده من هذا المصدر أو لإعادته، أو اضغط مطولًا لتحديد عدة تطبيقات. تتم إزالته من الشاشة الرئيسية عندما لا يجلبه أي مصدر</string>
+    <string name="sources_apps_brought">ما يجلبه هذا المصدر</string>
+    <string name="sources_apps_left_out">المستبعدة من هذا المصدر</string>
+    <string name="sources_apps_leave_out">استبعاد</string>
+    <string name="sources_apps_leave_out_done">مستبعد</string>
+    <string name="sources_apps_bring_back">إعادة</string>
     <string name="sources_management_prerelease_toggle">إصدارات ما قبل الإطلاق</string>
     <string name="sources_management_prerelease_toggle_description">احصل على وصول مبكر إلى إصدارات التعديل التجريبية الجديدة</string>
     <string name="sources_prerelease_warning_title">تمكين إصدارات تعديلات ما قبل الإطلاق؟</string>
@@ -187,6 +191,8 @@
     <string name="sources_dialog_local_change_file">تغيير الملف</string>
     <string name="sources_dialog_preinstalled">مثبتة مسبقًا</string>
     <string name="sources_dialog_community">تعديلات المجتمع</string>
+    <string name="sources_dialog_choose_apps">اختيار التطبيقات</string>
+    <string name="sources_dialog_choose_apps_description">اختر أي من تطبيقاته ترغب في الاحتفاظ بها بمجرد تحميل المصدر</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">مصادر التعديل من طرف ثالث</string>
     <string name="sources_dialog_community_notice_message">"يتم إنشاء وصيانة مصادر تعديلات المجتمع بواسطة مؤلفيها أنفسهم. لا يقوم Morphe بمراجعة أو التحقق من التعديلات التي يقدمها طرف ثالث، ولا يتحمل أي مسؤولية عن محتواها أو عن تأثيرها على جهازك.
@@ -395,7 +401,7 @@
     <string name="header_creator_guide_positioning_title">الموضع والحجم</string>
     <string name="header_creator_guide_positioning_body">استخدم إيماءات التكبير والتصغير والسحب مباشرةً في المعاينة لتحديد موضع الصورة وتغيير حجمها. تظهر خطوط التوجيه عندما تكون الصورة قريبة من المركز. يمكنك أيضًا استخدام شريط التمرير أسفل المعاينة.</string>
     <!-- Batch patching -->
-    <string name="batch_patch_action">تعديل محدد</string>
+    <string name="batch_patch_action">تحديد التعديل</string>
     <string name="batch_patch_title">تعديل عدة تطبيقات على دفعات</string>
     <string name="batch_patch_planning">جارٍ إعداد قائمة الانتظار...</string>
     <string name="batch_patch_preparing_next">جارٍ إعداد التطبيق التالي...</string>
@@ -504,8 +510,8 @@
     <!-- How long patching took -->
     <string name="patcher_field_time">الوقت</string>
     <!-- Average and peak memory the patcher process held while it ran -->
-    <string name="patcher_field_memory_average">متوسط الذاكرة</string>
-    <string name="patcher_field_memory_max">أقصى ذاكرة</string>
+    <string name="patcher_field_memory_average">متوسط استخدام الذاكرة</string>
+    <string name="patcher_field_memory_max">أقصى استخدام للذاكرة</string>
     <!-- Fastest read or write rate reached while patching, in data per second -->
     <string name="patcher_field_io_peak">ذروة التخزين</string>
     <string name="patcher_field_value_unknown">غير معروف</string>
@@ -717,12 +723,9 @@
     <string name="settings_appearance_greeting_phrases">عبارات الترحيب</string>
     <string name="settings_appearance_greeting_phrases_subtitle">عرض رسالة ترحيب على الشاشة الرئيسية</string>
     <string name="settings_appearance_app_grouping">تجميع التطبيقات</string>
-    <string name="settings_appearance_app_grouping_description">عرض مُبدِّل الشاشة الرئيسية لتجميع التطبيقات حسب المصدر أو فئاتك الخاصة، مع الاحتفاظ بالتحديد عند إيقاف تشغيلها</string>
-    <string name="settings_appearance_patch_list">قائمة التعديل</string>
-    <string name="settings_appearance_patch_categories">تجميع حسب الفئة</string>
-    <string name="settings_appearance_patch_categories_description">تصنيف قوائم التعديلات حسب الفئات التي يعلن عنها المصدر، وترك المصادر التي لا تعلن عن أي فئة على شكل قائمة بسيطة</string>
+    <string name="settings_appearance_app_grouping_description">عرض مفتاح تبديل لتجميع التطبيقات حسب المصدر أو الفئة</string>
     <string name="settings_appearance_repatch_notice">إشعار إعادة التعديل</string>
-    <string name="settings_appearance_repatch_notice_description">عرض لافتة على الشاشة الرئيسية عندما يمكن إعادة تعديل التطبيقات المعدلة</string>
+    <string name="settings_appearance_repatch_notice_description">عرض شريط إعلام عندما يمكن إعادة تعديل التطبيقات المعدلة</string>
     <string name="settings_appearance_sort_button">زر الفرز والتصفية</string>
     <string name="settings_appearance_sort_button_description">عرض زر الفرز والتصفية على الشاشة الرئيسية</string>
     <string name="settings_appearance_app_card_colors">ألوان بطاقة التطبيق</string>
@@ -767,6 +770,8 @@
     <string name="settings_advanced_updates_background_notifications">إشعارات تحديث الخلفية</string>
     <string name="settings_advanced_updates_background_notifications_description">تحقق بشكل دوري من توفر تحديثات في الخلفية و الإشعار عند توفرها</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">تلقي إشعارات فورية بالإصدارات الجديدة، حتى عندما يكون التطبيق مغلقًا</string>
+    <string name="settings_system_notifications_categories">فئات الإشعارات</string>
+    <string name="settings_system_notifications_categories_description">اختر في إعدادات النظام التحديثات التي ترغب في تلقي الإشعارات عنها</string>
     <string name="settings_advanced_update_interval">تكرار التحقق</string>
     <string name="settings_advanced_update_interval_dialog_title">التحقق من توفر تحديثات</string>
     <string name="settings_advanced_update_interval_hourly">مرة في الساعة</string>
@@ -776,7 +781,7 @@
     <string name="settings_advanced_update_interval_chip_subtitle">تكرار التحقق في الخلفية</string>
     <string name="settings_advanced_update_interval_battery_warning">قد لا يعمل التحقق في الخلفية بشكل موثوق على بعض الأجهزة. غالبًا ماتقيّد الشركات المصنعة مثل Xiaomi، Huawei، Samsung، و OnePlus عمليات الخلفية بشدة لتوفير البطارية</string>
     <string name="settings_advanced_external_batch_patch">السماح بالمشغلات الخارجية</string>
-    <string name="settings_advanced_external_batch_patch_description">يسمح لتطبيقات الأتمتة ببدء التعديل على دفعات عبر intent، مع تأكيد كل طلب قبل التنفيذ</string>
+    <string name="settings_advanced_external_batch_patch_description">يسمح لتطبيقات الأتمتة ببدء التعديل الجماعي عبر أمر محدد</string>
     <string name="external_batch_patch_title">بدء تعديل التطبيقات على دفعات؟</string>
     <string name="external_batch_patch_description">%s يريد من Morphe تعديل التطبيقات وتثبيتها</string>
     <string name="external_batch_patch_trust_caller">السماح لهذا التطبيق دائمًا</string>
@@ -789,8 +794,10 @@
     <string name="notification_permission_dialog_title">السماح بالإشعارات</string>
     <string name="notification_permission_dialog_description">يحتاج Morphe إلى إذن الإشعارات لتنبيهك عند توفر تحديثات في الخلفية</string>
     <string name="notification_post_patch_dialog_title">هل تريد أن يتم تنبيهك عندما تكون التحديثات متاحة؟</string>
-    <string name="notification_channel_fcm_updates">إشعارات التحديث</string>
-    <string name="notification_channel_fcm_updates_description">إشعارات عن إصدارات جديدة من Morphe</string>
+    <string name="notification_channel_manager_updates">تحديثات Morphe</string>
+    <string name="notification_channel_manager_updates_description">إشعارات عن إصدارات Morphe جديدة</string>
+    <string name="notification_channel_patch_updates">تحديثات التعديل</string>
+    <string name="notification_channel_patch_updates_description">إشعارات عن إصدارات تعديل جديدة</string>
     <string name="notification_channel_patcher">التعديل</string>
     <string name="notification_channel_patcher_description">يتم عرضه أثناء قيام Morphe بتعديل تطبيق في الخلفية</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -801,16 +808,7 @@
     <string name="settings_advanced_expert_mode_dialog_message">وضع الخبير يوفر مزيدًا من التحكم في كيفية تطبيق التعديلات، ولكن الإعداد الخاطئ لوضع الخبير يمكن أن يوقف التطبيق عن العمل</string>
     <string name="settings_advanced_strip_unused_libs">تحسين وفق معمارية الجهاز</string>
     <string name="settings_advanced_strip_unused_libs_description">يُزيل مكتبات معمارية المعالج غير المستخدمة ووحدات Split APK</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">وضع معالجة Bytecode</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">يتحكم في كيفية معالجة Bytecode أثناء التعديل. يؤثر على سرعة التعديل، استخدام الذاكرة، وحجم APK الناتج</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">(موصى به) Fast</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">Fast</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">تعديل أسرع واستخدام أقل للذاكرة، على حساب حجم APK أكبر. موصى به للأجهزة ذات ذاكرة الوصول العشوائي المنخفضة أو الأجهزة القديمة</string>
-    <string name="settings_advanced_bytecode_mode_full">Full</string>
-    <string name="settings_advanced_bytecode_mode_full_description">أبطأ في التعديل، ويُحاكي السلوك القديم. يُنصح به فقط إذا كان وضع Fast يسبب مشكلات</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">رمز GitHub PAT</string>
     <string name="settings_advanced_github_pat_description">مطلوب لمصادر طلب السحب</string>
     <string name="settings_advanced_github_pat_configured">تم تكوين الرمز</string>
     <string name="settings_advanced_github_pat_how_to_get">كيفية الحصول على رمز وصول</string>
@@ -819,7 +817,9 @@
 أنشئ رمز وصول شخصي (PAT) بنطاق public_repo
 %s"</string>
     <string name="settings_advanced_github_pat_export_include_label">تضمين في تصدير الإعدادات</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">يضيف هذا الرمز المميز PAT إلى إعدادات Morphe المصدرة</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">لا تشارك رمز PAT الخاص بك. إذا قمت بتضمينه في إعدادات التصدير، فاحتفظ بهذا الملف خاصًا لأنه يحتوي على الرمز المميز</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">خيارات التعديل</string>
@@ -979,6 +979,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_process_runtime_memory_limit_description">رفع الحدود يزيد سرعة التعديل على الأجهزة القادرة</string>
     <string name="settings_system_process_runtime_enable">تمكين وقت تشغيل العملية</string>
     <string name="settings_system_memory_limit_subtitle">الذاكرة المتاحة للتعديل</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">تجاهل هذا الجهاز حد الذاكرة في آخر تشغيل، لذا قد يتراجع التعديل إلى التشغيل داخل Morphe</string>
     <string name="settings_system_memory_limit_warning">الحد الأدنى للذاكرة قد يتسبب في فشل عند تعديل التطبيقات الأكبر حجمًا</string>
     <string name="settings_system_memory_limit_high_warning">قد يؤدي حد الذاكرة المرتفع إلى جعل عملية التعديل أبطأ بكثير على بعض الأجهزة. ارفعه فقط إذا استمرت عملية التعديل في الفشل عند الحدود الأقل.</string>
     <string name="settings_system_process_runtime_enabled_description">حد %s ميجابايت</string>
@@ -999,8 +1000,20 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_notifications_ringtone_picker_title">اختر نغمة</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">استيراد &amp; تصدير</string>
-    <string name="settings_system_keystore">Keystore</string>
-    <string name="settings_system_import_keystore_description">استيراد أو تصدير Keystore التوقيع الخاص بك</string>
+    <string name="settings_system_signing_key">مفتاح التوقيع</string>
+    <string name="settings_system_signing_key_description">ينشئ نسخة احتياطية من المفتاح الذي تُوقَّع به تطبيقاتك المعدلة ويستعيده</string>
+    <string name="settings_system_signing_key_dialog_description">كل تطبيق يتم تعديله عبر Morphe يتم توقيعه بهذا المفتاح. احتفظ بنسخة: بدونه، لا يمكن تحديث التطبيقات المعدلة إلا بعد إلغاء تثبيتها.</string>
+    <string name="settings_system_signing_key_missing">ينشئ Morphe مفتاحًا مع أول عملية تعديل تقوم بها</string>
+    <string name="settings_system_signing_key_created">تم الإنشاء في %s</string>
+    <string name="settings_system_signing_key_fingerprint">بصمة SHA-256</string>
+    <string name="settings_system_backup_appearance_description">المظهر، الألوان واللغة</string>
+    <string name="settings_system_backup_home_description">المجموعات، التطبيقات المخفية، الفرز والمفاتيح التبديلية</string>
+    <string name="settings_system_backup_patching">التعديل والتثبيت</string>
+    <string name="settings_system_backup_patching_description">أداة التثبيت، أداة التعديل وملفات APK المحفوظة</string>
+    <string name="settings_system_backup_updates_description">إصدارات ما قبل الإطلاق وفحوصات التحديثات</string>
+    <string name="settings_system_backup_sources_description">المصادر المخصصة ورمز GitHub</string>
+    <string name="settings_system_backup_patch_selections_description">التعديلات التي تم اختيارها لكل تطبيق</string>
+    <string name="settings_system_backup_signing_key_note">يتم نسخ مفتاح التوقيع احتياطيًا بشكل منفصل</string>
     <string name="settings_system_import_keystore_dialog_title">أدخل بيانات اعتماد Keystore</string>
     <string name="settings_system_import_keystore_dialog_description">سوف تحتاج إلى إدخال بيانات اعتماد Keystore لاستيراده</string>
     <string name="settings_system_import_keystore_dialog_alias_field">اسم المستخدم (الاسم المستعار)</string>
@@ -1009,7 +1022,6 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_import_keystore_wrong_credentials">بيانات Keystore غير صحيحة</string>
     <string name="settings_system_import_keystore_success">تم استيراد Keystore</string>
     <string name="settings_system_import_keystore_failed">فشل استيراد Keystore</string>
-    <string name="settings_system_export_keystore_unavailable">لا يوجد Keystore متاح للتصدير</string>
     <string name="settings_system_export_keystore_success">تم تصدير Keystore</string>
     <string name="settings_system_export_keystore_failed">فشل تصدير Keystore</string>
     <string name="settings_system_show_password_field">عرض كلمة المرور</string>
@@ -1028,7 +1040,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="import_mode_merge_description">إضافة العناصر المفقودة من النسخة الاحتياطية. سيتم الحفاظ على العناصر الموجودة دون تغيير</string>
     <string name="settings_system_export_manager_settings_fail">تعذر تصدير إعدادات Morphe: %s</string>
     <string name="settings_system_export_manager_settings_success">تم تصدير إعدادات Morphe</string>
-    <string name="settings_system_debug">Debug</string>
+    <string name="settings_system_export_debug_logs">تصدير سجلات تصحيح الأخطاء</string>
     <string name="settings_system_export_debug_logs_description">يحفظ سجلات النظام لاستكشاف الأخطاء وإصلاحها</string>
     <string name="settings_system_export_debug_logs_export_read_failed">فشل في قراءة السجلات (رمز الخروج %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">فشل تصدير السجلات</string>
@@ -1116,7 +1128,11 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_custom_file_picker_description">استخدم مستعرض التخزين المدمج في Morphe بدلًا من مستعرض النظام الافتراضي</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">مساعد تنزيل APK</string>
-    <string name="settings_system_apk_download_helper_description">السماح لتطبيق مساعد مُثبّت بجلب ملفات APK الأصلية لك. يأتي الملف من هذا التطبيق، لذا فعّل هذا الخيار فقط إذا كنت تثق به</string>
+    <string name="settings_system_apk_download_helper_trusted_count">موثوق: %1$d من %2$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">يمكن للتطبيقات المساعدة تنزيل ملفات APK الأصلية لك. في تعليمات التنزيل، تظهر فقط التطبيقات التي تثق بها هنا.</string>
+    <string name="settings_system_apk_download_helper_warning">يأتي ملف APK من تطبيق المساعدة، لذا ثق فقط بالتطبيقات التي تعرفها. لا يزال Morphe يتحقق من الحزمة والإصدار والتوقيع لكل ملف قبل التعديل.</string>
+    <string name="settings_system_apk_download_helper_installed_by">مثبّت بواسطة %s</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">أداة التثبيت غير معروفة</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">المجلد السابق</string>
     <string name="file_picker_no_files">لا توجد ملفات هنا</string>
@@ -1133,8 +1149,6 @@ morphe_adaptive_monochrome_custom.xml
     <string name="file_picker_show_hidden_files">إظهار الملفات المخفية</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">لمحة</string>
-    <string name="settings_system_share_website">مشاركة الموقع الإلكتروني</string>
-    <string name="settings_system_share_website_description">يشارك موقع Morphe الرسمي</string>
     <string name="settings_system_manager_description">مشروع مفتوح المصدر يهدف إلى توفير طريقة حديثة ومبسطة لتعديل تطبيقات Android الشهيرة، مستندًا إلى ملاحظات المستخدمين ومساهمات المجتمع</string>
     <string name="credits">حقوق الملكية</string>
     <string name="credits_current_development">التطوير الحالي</string>
@@ -1223,6 +1237,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="import_">استيراد</string>
     <string name="export">تصدير</string>
     <string name="copy">نسخ</string>
+    <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
     <string name="download">تنزيل</string>
     <string name="less">أقل</string>
     <string name="expand">توسيع</string>
@@ -1269,7 +1284,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="changelog_for_app">التغييرات لـ %s</string>
     <string name="changelog_general_changes">تغييرات عامة</string>
     <string name="whats_new">ما الجديد</string>
-    <string name="changelog_description">اطّلع على آخر التغييرات في هذا التحديث</string>
+    <string name="changelog_description">ما الجديد في هذا الإصدار</string>
     <string name="changelog_download_fail">فشل تنزيل سجل التغييرات: %s</string>
     <string name="changelog_empty">لا يتوفر سجل تغييرات</string>
     <string name="changelog_show_older">عرض الإصدارات الأقدم</string>
@@ -1317,5 +1332,8 @@ morphe_adaptive_monochrome_custom.xml
     <string name="tour_prompt_desc">هل تريد جولة سريعة في الميزات الرئيسية لـ Morphe؟</string>
     <string name="tour_prompt_confirm">خذني في جولة</string>
     <string name="onboarding_restart_title">جولة في الميزات</string>
-    <string name="onboarding_restart_desc">قم بجولة إرشادية في الميزات الرئيسية لـ Morphe</string>
+    <string name="onboarding_restart_desc">جولة إرشادية حول الميزات الرئيسية</string>
+    <string name="settings_appearance_patch_list">قائمة التعديل</string>
+    <string name="settings_appearance_patch_categories">تجميع حسب الفئة</string>
+    <string name="settings_appearance_patch_categories_description">تصنيف قوائم التعديلات حسب الفئات التي يعلن عنها المصدر، وترك المصادر التي لا تعلن عن أي فئة على شكل قائمة بسيطة</string>
 </resources>

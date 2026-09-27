@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.domain.manager.AppIconManager
@@ -33,45 +34,47 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import kotlinx.coroutines.launch
 
 /**
- * App icon selector with adaptive grid.
+ * Settings row showing the launcher icon in use, opening a picker of the others on tap. A pick
+ * is confirmed before the launcher icon is swapped.
  */
 @Composable
-fun AppIconSelector() {
+fun AppIconSettingsItem() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val iconManager = remember { AppIconManager(context) }
 
     val currentIcon = remember { mutableStateOf(iconManager.getCurrentIcon()) }
+    val showPicker = remember { mutableStateOf(false) }
     val showConfirmDialog = remember { mutableStateOf<AppIconManager.AppIcon?>(null) }
 
-    SectionCard {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Defaults.ContentPadding),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    SettingsItem(
+        onClick = { showPicker.value = true },
+        title = stringResource(R.string.settings_appearance_app_icon_selector_title),
+        subtitle = stringResource(currentIcon.value.displayNameResId),
+        leadingContent = { AppIconPreview(icon = currentIcon.value, size = Defaults.IconSize) }
+    )
+
+    if (showPicker.value) {
+        AppDialog(
+            onDismissRequest = { showPicker.value = false },
+            title = stringResource(R.string.settings_appearance_app_icon_selector_title),
+            footer = {
+                AppDialogOutlinedButton(
+                    text = stringResource(R.string.close),
+                    onClick = { showPicker.value = false },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         ) {
-            // Icon grid - 3 columns
-            AppIconManager.AppIcon.entries.chunked(3).forEach { rowIcons ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    rowIcons.forEach { icon ->
-                        AppIconCard(
-                            icon = icon,
-                            isSelected = currentIcon.value == icon,
-                            onClick = {
-                                if (currentIcon.value != icon) showConfirmDialog.value = icon
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    // Fill remaining space for incomplete row
-                    repeat(3 - rowIcons.size) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
+            OptionGrid(items = AppIconManager.AppIcon.entries, columns = 3) { icon, itemModifier ->
+                AppIconCard(
+                    icon = icon,
+                    isSelected = currentIcon.value == icon,
+                    onClick = {
+                        if (currentIcon.value != icon) showConfirmDialog.value = icon
+                    },
+                    modifier = itemModifier
+                )
             }
         }
     }
@@ -86,10 +89,27 @@ fun AppIconSelector() {
                     currentIcon.value = selectedIcon
                 }
                 showConfirmDialog.value = null
+                showPicker.value = false
             },
             onDismiss = { showConfirmDialog.value = null }
         )
     }
+}
+
+/** A launcher icon drawn at [size] with the rounding the picker gives it. */
+@Composable
+private fun AppIconPreview(icon: AppIconManager.AppIcon, size: Dp) {
+    val context = LocalContext.current
+    val iconPainter = rememberDrawablePainter(
+        drawable = remember(icon) { AppCompatResources.getDrawable(context, icon.previewIconResId) }
+    )
+    Image(
+        painter = iconPainter,
+        contentDescription = null,
+        modifier = Modifier
+            .size(size)
+            .clip(RoundedCornerShape(size * 0.2f))
+    )
 }
 
 /**
@@ -102,12 +122,6 @@ private fun AppIconCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val iconDrawable = remember(icon) {
-        AppCompatResources.getDrawable(context, icon.previewIconResId)
-    }
-    val iconPainter = rememberDrawablePainter(drawable = iconDrawable)
-
     val windowSize = rememberWindowSize()
     val iconSize = when (windowSize.widthSizeClass) {
         WindowWidthSizeClass.Compact -> 48.dp
@@ -133,14 +147,7 @@ private fun AppIconCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Icon preview
-            Image(
-                painter = iconPainter,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(iconSize)
-                    .clip(RoundedCornerShape(10.dp))
-            )
+            AppIconPreview(icon = icon, size = iconSize)
 
             Spacer(modifier = Modifier.height(6.dp))
 

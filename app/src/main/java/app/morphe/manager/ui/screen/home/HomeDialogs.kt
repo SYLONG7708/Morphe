@@ -11,7 +11,6 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,6 +18,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -30,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -74,12 +73,10 @@ fun HomeDialogs(
     val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val apkDownloadHelperEnabled by homeViewModel.prefs.useApkDownloadHelper.getAsState()
-
     // Kept outside the dialog so the picker state survives the download dialog's exit animation
     val openApkDownloadHelper = rememberApkDownloadHelperAction(
         host = homeViewModel,
-        enabled = apkDownloadHelperEnabled && homeViewModel.showDownloadInstructionsDialog
+        enabled = homeViewModel.showDownloadInstructionsDialog
     )
 
     // APK selection processing overlay - blocks interaction while APK is loaded/validated in background
@@ -568,17 +565,17 @@ fun HomeDialogs(
                 homeViewModel.selectedBundleUri = null
                 homeViewModel.selectedBundlePath = null
             },
-            onLocalSubmit = {
+            onLocalSubmit = { chooseApps ->
                 homeViewModel.showAddSourceDialog = false
                 homeViewModel.selectedBundleUri?.let { uri ->
-                    homeViewModel.createLocalSource(uri)
+                    homeViewModel.createLocalSource(uri, chooseApps)
                 }
                 homeViewModel.selectedBundleUri = null
                 homeViewModel.selectedBundlePath = null
             },
-            onRemoteSubmit = { url ->
+            onRemoteSubmit = { url, chooseApps ->
                 homeViewModel.showAddSourceDialog = false
-                homeViewModel.createRemoteSource(url, true)
+                homeViewModel.createRemoteSource(url, autoUpdate = true, chooseApps = chooseApps)
             },
             onLocalPick = {
                 openBundlePicker()
@@ -596,7 +593,7 @@ fun HomeDialogs(
         DeepLinkAddSourceDialog(
             url = bundle.url,
             name = bundle.name,
-            onConfirm = { homeViewModel.confirmDeepLinkBundle() },
+            onConfirm = { chooseApps -> homeViewModel.confirmDeepLinkBundle(chooseApps) },
             onDismiss = { homeViewModel.dismissDeepLinkBundle() }
         )
     }
@@ -606,9 +603,21 @@ fun HomeDialogs(
         MppImportDialog(
             manifest = homeViewModel.pendingMppManifest,
             fileName = homeViewModel.pendingMppFileName,
-            onConfirm = { homeViewModel.confirmMppImport() },
+            onConfirm = { chooseApps -> homeViewModel.confirmMppImport(chooseApps) },
             onDismiss = { homeViewModel.dismissMppImport() }
         )
+    }
+
+    // App list of a source just added with "Choose apps" on
+    homeViewModel.sourceAppsDialogUid?.let { uid ->
+        val sources by homeViewModel.patchBundleRepository.sources.collectAsStateWithLifecycle()
+        val source = sources.firstOrNull { it.uid == uid }
+        if (source != null) {
+            SourceAppsDialog(
+                onDismissRequest = { homeViewModel.sourceAppsDialogUid = null },
+                src = source
+            )
+        }
     }
 
     // Rename bundle dialog
@@ -1059,7 +1068,8 @@ private fun UnsupportedVersionWarningDialog(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
                         color = tone.container.copy(alpha = 0.3f),
-                        tonalElevation = 1.dp
+                        tonalElevation = 1.dp,
+                        border = CardBorder.tinted(tone.accent)
                     ) {
                         Row(
                             modifier = Modifier
@@ -1175,12 +1185,6 @@ fun InvalidSignatureDialog(
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Outlined.GppBad,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(48.dp)
-            )
             Text(
                 text = htmlAnnotatedString(
                     stringResource(R.string.home_invalid_signature_message, appName)
@@ -1229,12 +1233,6 @@ fun SplitApkWarningDialog(
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Outlined.FolderZip,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(48.dp)
-            )
             Text(
                 text = htmlAnnotatedString(
                     stringResource(R.string.home_split_apk_warning_message, appName)
@@ -1371,12 +1369,6 @@ private fun NoCompatibleVersionsDialog(
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Outlined.PhoneAndroid,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(48.dp)
-            )
             Text(
                 text = htmlAnnotatedString(
                     stringResource(
@@ -1429,7 +1421,8 @@ private fun SelectableVersionListCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-        tonalElevation = 1.dp
+        tonalElevation = 1.dp,
+        border = CardBorder.neutral
     ) {
         Column(modifier = Modifier.fillMaxWidth().selectableGroup()) {
             var lastBundleUid = -1
@@ -1610,7 +1603,8 @@ private fun VersionListCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         color = containerColor,
-        tonalElevation = 1.dp
+        tonalElevation = 1.dp,
+        border = CardBorder.neutral
     ) {
         Column(
             modifier = Modifier
@@ -1718,13 +1712,6 @@ fun LowDiskSpaceDialog(
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Outlined.FolderOff,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(48.dp)
-            )
-
             Text(
                 text = stringResource(
                     R.string.home_low_disk_space_dialog_message,
@@ -1785,13 +1772,6 @@ fun MeteredPatchingDialog(
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Outlined.SignalCellularAlt,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(48.dp)
-            )
-
             Text(
                 text = stringResource(R.string.home_outdated_patches_dialog_message),
                 style = MaterialTheme.typography.bodyLarge,
@@ -1817,9 +1797,11 @@ fun MeteredPatchingDialog(
 fun DeepLinkAddSourceDialog(
     url: String,
     name: String?,
-    onConfirm: () -> Unit,
+    onConfirm: (chooseApps: Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var chooseApps by rememberSaveable { mutableStateOf(false) }
+
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.deep_link_add_source_title),
@@ -1827,7 +1809,7 @@ fun DeepLinkAddSourceDialog(
         footer = {
             AppDialogButtonRow(
                 primaryText = stringResource(R.string.add),
-                onPrimaryClick = onConfirm,
+                onPrimaryClick = { onConfirm(chooseApps) },
                 primaryIcon = Icons.Outlined.Extension,
                 secondaryText = stringResource(android.R.string.cancel),
                 onSecondaryClick = onDismiss
@@ -1912,6 +1894,12 @@ fun DeepLinkAddSourceDialog(
                 tone = SemanticTone.Warning,
                 icon = Icons.Outlined.Warning
             )
+
+            ChooseAppsToggle(
+                checked = chooseApps,
+                onCheckedChange = { chooseApps = it },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -1923,9 +1911,11 @@ fun DeepLinkAddSourceDialog(
 fun MppImportDialog(
     manifest: MppManifest?,
     fileName: String?,
-    onConfirm: () -> Unit,
+    onConfirm: (chooseApps: Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
+    var chooseApps by rememberSaveable { mutableStateOf(false) }
+
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.deep_link_add_source_title),
@@ -1933,7 +1923,7 @@ fun MppImportDialog(
         footer = {
             AppDialogButtonRow(
                 primaryText = stringResource(R.string.add),
-                onPrimaryClick = onConfirm,
+                onPrimaryClick = { onConfirm(chooseApps) },
                 primaryIcon = Icons.Outlined.Extension,
                 secondaryText = stringResource(android.R.string.cancel),
                 onSecondaryClick = onDismiss
@@ -1945,22 +1935,6 @@ fun MppImportDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Icon
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.size(56.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Outlined.FolderZip,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
-
             // Message
             Text(
                 text = stringResource(R.string.deep_link_add_source_message),
@@ -2068,6 +2042,12 @@ fun MppImportDialog(
                 text = stringResource(R.string.deep_link_add_source_warning),
                 tone = SemanticTone.Warning,
                 icon = Icons.Outlined.Warning
+            )
+
+            ChooseAppsToggle(
+                checked = chooseApps,
+                onCheckedChange = { chooseApps = it },
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
@@ -2203,30 +2183,14 @@ fun SimpleBundleSelectDialog(
         // Outside the group above, since this answers what to do with the sources that were not
         // picked rather than being one more of them
         if (canRemember) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Defaults.ContentPaddingSmall)
-                    .toggleable(
-                        value = rememberChoice.value,
-                        role = Role.Checkbox,
-                        onValueChange = { rememberChoice.value = it }
-                    )
-                    .padding(Defaults.ContentPaddingSmall),
-                verticalAlignment = Alignment.CenterVertically,
-                // The cards above carry the same round indicator, so the two kinds of choice in
-                // this dialog are told apart by their shape rather than by two styles of box
-                horizontalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing, Alignment.CenterHorizontally)
-            ) {
-                SelectionCheckIndicator(
-                    if (rememberChoice.value) ToggleableState.On else ToggleableState.Off
-                )
-                Text(
-                    text = stringResource(R.string.home_simple_bundle_select_remember),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = LocalDialogSecondaryTextColor.current
-                )
-            }
+            // The cards above carry the same round indicator, so the two kinds of choice in
+            // this dialog are told apart by their shape rather than by two styles of box
+            SelectionCheckRow(
+                text = stringResource(R.string.home_simple_bundle_select_remember),
+                checked = rememberChoice.value,
+                onCheckedChange = { rememberChoice.value = it },
+                modifier = Modifier.padding(top = Defaults.ContentPaddingSmall)
+            )
         }
     }
 }

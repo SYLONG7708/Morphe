@@ -7,6 +7,8 @@ oneway interface IPatcherEvents {
     void progress(String name, String state, String msg);
     // Resolved in the main process so the label uses the app locale, not the system locale
     void splitProgress(String eventType, String apkName);
+    // The heap limit ART granted the process, in mebibytes. Sent once, before any patch loads
+    void heapLimit(int megabytes);
     // The patching process has ended. The exceptionStackTrace is null if it finished successfully
     void finished(String exceptionStackTrace);
 }

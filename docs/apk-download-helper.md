@@ -9,16 +9,19 @@ contract: any app can implement it.
 
 ## Turning it on
 
-**Settings → System → Files & storage → APK download helper**. The toggle only appears once
-an app implementing the contract is installed, and it is off by default.
+**Settings → System → Files & storage → APK download helper**. The entry only appears once
+an app implementing the contract is installed. It opens a list of every installed helper with
+its version, package name and the app that installed it, and each helper has its own switch.
+No helper is trusted by default.
 
-With it on, the download instructions dialog gains a **Use a helper app** button
-next to the usual **Continue** button.
+Once at least one helper is trusted, the download instructions dialog gains a
+**Use a helper app** button next to the usual **Continue** button. Only trusted helpers are
+offered there.
 
 ## What happens when you use it
 
 1. Morphe shows which app the file will come from and asks you to confirm. When several
-   helpers are installed, you pick one.
+   helpers are trusted, you pick one.
 2. The helper opens with a description of the APK Morphe needs: package name, version and its
    build codes, other versions that would also work, your device ABIs, and the archive format
    the patch bundle expects.
@@ -60,8 +63,8 @@ just for claiming the action.
 
 | Problem | What to do |
 | --- | --- |
-| The toggle is missing in Settings | No installed app implements the contract |
-| The button is missing in the dialog | The toggle is off, or the helper was uninstalled since Morphe last looked |
+| The entry is missing in Settings | No installed app implements the contract |
+| The button is missing in the dialog | No helper is trusted, or the trusted one was uninstalled since Morphe last looked |
 | "The helper app did not return an APK" | The helper finished without handing back a file. Use **Continue** to download it manually |
 | "The helper app did not grant access to the APK it returned" | The helper answered without `FLAG_GRANT_READ_URI_PERMISSION` |
 | A wrong package or version warning | The helper returned a different app or version than the one requested |

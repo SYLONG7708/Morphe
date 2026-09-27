@@ -53,6 +53,7 @@ data class InstallQueueRequest(
  * Callers are responsible for placing [app.morphe.manager.ui.screen.settings.system.InstallerFlowDialogs]
  * somewhere in their tree so the installer selection / unavailable dialogs can appear.
  *
+ * @param onDrained invoked with the number of apps installed once the queue runs out.
  * @return a callback that replaces the current queue with new requests and starts the
  *         first install immediately.
  */
@@ -60,7 +61,8 @@ data class InstallQueueRequest(
 fun rememberInstallQueue(
     installViewModel: InstallViewModel,
     @PluralsRes completedPluralRes: Int,
-    showOverlay: Boolean = true
+    showOverlay: Boolean = true,
+    onDrained: (installed: Int) -> Unit = {}
 ): (requests: List<InstallQueueRequest>) -> Unit {
     val context = LocalContext.current
     val conflictText = stringResource(R.string.installer_hint_conflict)
@@ -86,7 +88,9 @@ fun rememberInstallQueue(
         if (next == null) {
             active = null
             awaitedInstallerDialog = false
+            val installed = completed
             showSummary()
+            onDrained(installed)
             return
         }
 

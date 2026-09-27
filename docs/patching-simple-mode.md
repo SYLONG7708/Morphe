@@ -202,7 +202,7 @@ Neither prompt appears again. If you skipped the tour and want it later, start i
 | "Unsupported version" warning | You downloaded a different version than the one Morphe asked for. Download the exact version shown in step 2 |
 | "Split APK detected" warning | You downloaded a bundle (APKM / APKS / XAPK). A full APK gives the best results, pick another download on the website |
 | "Unverified APK" warning | The file does not match the expected signing certificate. Download it again from a trusted source |
-| Patching fails or the app crashes | Update your patch sources and try again. Export debug logs from **Settings → Advanced** when reporting the issue |
+| Patching fails or the app crashes | Update your patch sources and try again. Export debug logs from **Settings → System → About** when reporting the issue |
 
 ## Next steps
 

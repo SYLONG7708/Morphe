@@ -5,8 +5,10 @@
 
 package app.morphe.manager.ui.screen.patcher.game
 
+import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.view.HapticFeedbackConstants
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
@@ -26,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,11 +36,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.domain.manager.PreferencesManager
+import app.morphe.manager.ui.screen.patcher.PatcherCardPadding
 import app.morphe.manager.ui.screen.shared.GradientCircleIcon
 import app.morphe.manager.ui.screen.shared.Animations
 import app.morphe.manager.ui.screen.shared.SurfaceCard
 import app.morphe.manager.ui.screen.shared.Defaults
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -75,6 +83,9 @@ interface MiniGameStateBase {
     val isGameOver: Boolean
     val isPaused: Boolean
 
+    /** Moments of a round the player feels, played by [GameHapticsEffect]. */
+    val haptics: GameHaptics
+
     fun restart()
 
     /** Pauses a running round. A game that is over, or not started yet, is left alone. */
@@ -107,6 +118,38 @@ internal class GameScore(initialHighScore: Int, private val onHighScoreUpdated: 
 
     fun reset() {
         value = 0
+    }
+}
+
+/** How strongly a moment of a round is felt. */
+enum class GameHaptic {
+    /** Something small went right: a pipe passed, a brick broken, a pair matched. */
+    Tick,
+
+    /** A milestone: lines cleared, a wave or a board finished. */
+    Reward
+}
+
+/**
+ * Moments a game marks for the player to feel.
+ *
+ * Kept apart from the score, which also moves on things too frequent to feel, such as every row
+ * of a soft drop in Blocks or every frame of the run in Dino.
+ */
+@Stable
+class GameHaptics {
+    private val _events = MutableSharedFlow<GameHaptic>(
+        extraBufferCapacity = 4,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val events: SharedFlow<GameHaptic> = _events.asSharedFlow()
+
+    fun tick() {
+        _events.tryEmit(GameHaptic.Tick)
+    }
+
+    fun reward() {
+        _events.tryEmit(GameHaptic.Reward)
     }
 }
 
@@ -234,9 +277,9 @@ internal fun GamePickerContent(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(GamePickerMinCardWidth),
         modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(PatcherCardPadding),
+        horizontalArrangement = Arrangement.spacedBy(PatcherCardPadding),
+        verticalArrangement = Arrangement.spacedBy(PatcherCardPadding)
     ) {
         items(MiniGame.entries, key = { it.name }) { game ->
             GamePickerGridCard(
@@ -260,13 +303,14 @@ private fun GamePickerGridCard(
 ) {
     SurfaceCard(
         onClick = onClick,
-        cornerRadius = Defaults.SectionCornerRadius,
+        cornerRadius = Defaults.CompactCornerRadius,
+        borderWidth = 1.dp,
         modifier = modifier
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp, vertical = 14.dp),
+                .padding(PatcherCardPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
             // Anchored to the top rather than centered, so the icons line up across a row
             // whether a card's subtitle takes one line or two
@@ -315,9 +359,9 @@ internal fun MiniGameContent(
             else -> {
                 val activeState = state.stateOf(selected)
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(8.dp),
+                    modifier = Modifier.fillMaxSize().padding(PatcherCardPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(PatcherCardPadding)
                 ) {
                     GameScoreRow(
                         score = activeState.score,
@@ -338,7 +382,7 @@ internal fun MiniGameContent(
                             ) {
                                 GameCanvasSlot(selected = selected, state = state)
 
-                                GameOverHaptic { activeState.isGameOver }
+                                GameHapticsEffect(activeState)
 
                                 if (activeState.isGameOver) {
                                     GameOverOverlay(
@@ -501,9 +545,32 @@ internal fun GamePauseOverlay(onResume: () -> Unit, modifier: Modifier = Modifie
     }
 }
 
+/**
+ * Plays the haptics of the game on screen. Its own moments go through the view, so they follow
+ * the system touch feedback setting like any other tap, and a lost round ends on a double buzz.
+ */
+@Composable
+internal fun GameHapticsEffect(state: MiniGameStateBase) {
+    val view = LocalView.current
+    LaunchedEffect(state) {
+        state.haptics.events.collect { haptic ->
+            view.performHapticFeedback(
+                when (haptic) {
+                    GameHaptic.Tick -> HapticFeedbackConstants.CLOCK_TICK
+                    GameHaptic.Reward ->
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM
+                        else HapticFeedbackConstants.CONTEXT_CLICK
+                }
+            )
+        }
+    }
+
+    GameOverHaptic(isGameOver = { state.isGameOver })
+}
+
 /** Fires a double-buzz haptic pattern once when [isGameOver] transitions to `true`. */
 @Composable
-internal fun GameOverHaptic(isGameOver: () -> Boolean) {
+private fun GameOverHaptic(isGameOver: () -> Boolean) {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         var seenFalse = false

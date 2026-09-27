@@ -12,6 +12,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.work.WorkManager
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.data.room.apps.installed.InstalledApp
 import app.morphe.manager.di.*
@@ -68,6 +69,12 @@ class ManagerApplication : Application() {
         private const val MIN_SHORTCUT_SLOTS = 2
         private const val MAX_SHORTCUT_SLOTS = 4
         private const val SHORTCUT_ICON_PX = 192
+
+        /**
+         * Schedule of the automatic re-patching the re-patch alert replaced. Installs that had
+         * it on still carry it in the WorkManager database, where it fails on every run.
+         */
+        private const val LEGACY_AUTO_PATCH_WORK = "morphe_auto_patch"
     }
     private val scope = MainScope()
     private val licensedRuntimeGate = LicensedRuntimeGate()
@@ -169,6 +176,7 @@ class ManagerApplication : Application() {
             } else {
                 UpdateCheckWorker.cancel(this@ManagerApplication)
             }
+            WorkManager.getInstance(this@ManagerApplication).cancelUniqueWork(LEGACY_AUTO_PATCH_WORK)
             syncFcmTopics(
                 notificationsEnabled = notificationsEnabled,
                 useManagerPrereleases = useManagerPrereleases,
@@ -223,6 +231,7 @@ class ManagerApplication : Application() {
             override fun onActivityStarted(activity: Activity) {}
             override fun onActivityResumed(activity: Activity) {
                 resumedActivityCount++
+                updateNotificationManager.cancelPatchingResultNotifications()
                 onReturnToForeground?.let {
                     onReturnToForeground = null
                     it()

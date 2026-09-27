@@ -15,6 +15,7 @@
     <string name="home_app_hidden_apps_hint">Pindutin para ipakita</string>
     <string name="home_app_patch_sources_description">Ang mga source na iniwang hindi naka-check ay hindi inaalok kapag na-patch ang mga app na ito, at ang kanilang mga patch ay hindi kailanman kusang naisasama sa isang seleksyon. Nananatiling naka-on ang bawat source para sa bawat iba pang app. The output is cut off? Need complete json array? I accidentally started with object? Let\'s reassess. I must not send incomplete. I attempted final with </string>
     <string name="home_app_patch_sources_mixed">Inaalok sa %1$s sa %2$s</string>
+    <string name="home_app_patch_sources_covers">May mga patch para sa %1$s sa %2$s</string>
     <string name="home_app_patch_sources_last">Bawat app ay nangangailangan ng isang source na natitira upang ma-patch.</string>
     <string name="android_11_bug_dialog_title">Isang pagkakamali sa Android 11</string>
     <string name="android_11_bug_dialog_description">Dapat pahintulutan nang maaga ang pag-install ng app para maiwasan ang isang pagkakamali sa sistema ng Android 11 na negatibong makakaapekto sa karanasan ng tagagamit</string>
@@ -139,9 +140,14 @@
     <string name="sources_management_open_in_browser">Buksan sa browser</string>
     <string name="sources_management_report_issue">Mag-ulat ng isyu</string>
     <string name="sources_management_failed_to_open_url">Nabigong buksan ang URL</string>
-    <string name="sources_hidden_apps">Nakatago para sa</string>
-    <string name="sources_hidden_apps_description">Ang mga app na ito ay hindi inaalukan ng source na ito kapag pina-patch ang mga ito. Ang source mismo ay nananatiling naka-on para sa lahat ng iba pa.</string>
-    <string name="sources_hidden_apps_hint">I-tap para i-alok muli ang source na ito.</string>
+    <string name="sources_apps">Mga app</string>
+    <string name="sources_apps_title">Mga app mula sa %1$s</string>
+    <string name="sources_apps_description">I-tap ang isang app para alisin ito sa source na ito o ibalik, o pindutin nang matagal para pumili ng ilan. Aalis ang isang app sa home screen kapag wala nang source na nagdadala nito.</string>
+    <string name="sources_apps_brought">Dala ng source na ito</string>
+    <string name="sources_apps_left_out">Hindi kasama sa source na ito</string>
+    <string name="sources_apps_leave_out">Huwag isama</string>
+    <string name="sources_apps_leave_out_done">Hindi kasama</string>
+    <string name="sources_apps_bring_back">Ibalik</string>
     <string name="sources_management_prerelease_toggle">Mga patch na pre-release</string>
     <string name="sources_management_prerelease_toggle_description">Tumatanggap ng maagang pag-access sa mga bagong bersyon ng patch na pang-eksperimento</string>
     <string name="sources_prerelease_warning_title">Paganahin ang mga pre-release na patch?</string>
@@ -185,6 +191,8 @@
     <string name="sources_dialog_local_change_file">Baguhin ang file</string>
     <string name="sources_dialog_preinstalled">Naka-install</string>
     <string name="sources_dialog_community">Mga patch ng komunidad</string>
+    <string name="sources_dialog_choose_apps">Pumili ng mga app</string>
+    <string name="sources_dialog_choose_apps_description">Piliin kung alin sa mga app nito ang pananatilihin kapag na-load na ang source.</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">Mga pinagmulan ng third-party patch</string>
     <string name="sources_dialog_community_notice_message">"Ang mga pinagmulan ng community patch ay ginawa at pinapanatili ng kanilang mga sariling may-akda. Hindi nire-review o bine-verify ng Morphe ang mga third-party patches, at hindi ito responsable sa kanilang nilalaman o sa mga ginagawa nito sa iyong device.
@@ -711,12 +719,9 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="settings_appearance_greeting_phrases">Mga pagbati</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Ipakita ang mensahe ng pagbati sa pangunahing iskrin</string>
     <string name="settings_appearance_app_grouping">Pagpapangkat ng app</string>
-    <string name="settings_appearance_app_grouping_description">Magpakita ng home screen switcher upang pangkatin ang mga app ayon sa pinagmulan o iyong sariling mga kategorya, pinapanatili ang pagpili kapag naka-off</string>
-    <string name="settings_appearance_patch_list">Listahan ng patch</string>
-    <string name="settings_appearance_patch_categories">Pangkatin ayon sa kategorya</string>
-    <string name="settings_appearance_patch_categories_description">Hatiin ang mga listahan ng patch ayon sa mga kategoryang idinideklara ng isang source, at iwan ang mga source na walang idinideklarang kategorya bilang isang simpleng listahan.</string>
+    <string name="settings_appearance_app_grouping_description">Magpakita ng pampaglipat upang pangkatin ang mga app ayon sa pinagmulan o kategorya.</string>
     <string name="settings_appearance_repatch_notice">Paunawa sa muling pag-patch</string>
-    <string name="settings_appearance_repatch_notice_description">Magpakita ng banner sa home screen kapag ang mga na-patch na app ay maaaring i-patch muli</string>
+    <string name="settings_appearance_repatch_notice_description">Magpakita ng banner kapag ang mga na-patch na app ay maaari nang i-patch muli.</string>
     <string name="settings_appearance_sort_button">Button ng pag-uuri at pagsala</string>
     <string name="settings_appearance_sort_button_description">Ipakita ang button ng pag-uuri at pagsala sa home screen</string>
     <string name="settings_appearance_app_card_colors">Mga kulay ng card ng app</string>
@@ -761,6 +766,8 @@ Hindi maaapektuhan ang mga patch: paganahin ang mga patch na pre-release para sa
     <string name="settings_advanced_updates_background_notifications">Mga notipikasyon sa pag-update sa background</string>
     <string name="settings_advanced_updates_background_notifications_description">Paminsan-minsang suriin ang mga update sa background at abisuhan kung magagamit</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Tumanggap ng agarang abiso para sa bagong release, kahit sarado ang aplikasyon</string>
+    <string name="settings_system_notifications_categories">Mga kategorya ng notification</string>
+    <string name="settings_system_notifications_categories_description">Piliin sa mga setting ng system kung aling mga update ang magpapaalam sa iyo</string>
     <string name="settings_advanced_update_interval">Suriin ang prikwensiya</string>
     <string name="settings_advanced_update_interval_dialog_title">Suriin ang mga update</string>
     <string name="settings_advanced_update_interval_hourly">Minsan sa isang oras</string>
@@ -770,7 +777,7 @@ Hindi maaapektuhan ang mga patch: paganahin ang mga patch na pre-release para sa
     <string name="settings_advanced_update_interval_chip_subtitle">Kadalasan ng pagsusuri sa background</string>
     <string name="settings_advanced_update_interval_battery_warning">Maaaring hindi gumana nang mapagkakatiwalaan ang mga pagsusuri sa background sa ilang device. Ang mga tagagawa tulad ng Xiaomi, Huawei, Samsung, at OnePlus ay madalas na agresibong naghihigpit sa mga proseso sa background upang makatipid ng baterya</string>
     <string name="settings_advanced_external_batch_patch">Payagan ang mga panlabas na trigger</string>
-    <string name="settings_advanced_external_batch_patch_description">Hinahayaan ang mga app ng automation na simulan ang batch patching na may intent. Ang bawat kahilingan ay kinukumpirma bago ang anumang tumakbo</string>
+    <string name="settings_advanced_external_batch_patch_description">Pinapayagan ang mga automation app na simulan ang batch patching sa pamamagitan ng isang intent</string>
     <string name="external_batch_patch_title">Magsimulang mag-batch patch?</string>
     <string name="external_batch_patch_description">%s ay gustong i-patch at i-install ang mga app ng Morphe</string>
     <string name="external_batch_patch_trust_caller">Payagan ang app na ito palagi</string>
@@ -783,8 +790,10 @@ Hindi maaapektuhan ang mga patch: paganahin ang mga patch na pre-release para sa
     <string name="notification_permission_dialog_title">Payagan ang mga notipikasyon</string>
     <string name="notification_permission_dialog_description">Kailangan ng Morphe ang pahintulot sa notipikasyon upang abisuhan ka kapag may mga update na magagamit sa background</string>
     <string name="notification_post_patch_dialog_title">Nais mo bang abisuhan ka kung may magagamit na mga update?</string>
-    <string name="notification_channel_fcm_updates">I-update ang mga notipikasyon</string>
-    <string name="notification_channel_fcm_updates_description">Mga notipikasyon tungkol sa mga bagong Morphe at paglabas ng patch</string>
+    <string name="notification_channel_manager_updates">Mga update sa Morphe</string>
+    <string name="notification_channel_manager_updates_description">Mga notification tungkol sa mga bagong release ng Morphe</string>
+    <string name="notification_channel_patch_updates">Mga update sa patch</string>
+    <string name="notification_channel_patch_updates_description">Mga notification tungkol sa mga bagong patch release</string>
     <string name="notification_channel_patcher">Nagpa-patch</string>
     <string name="notification_channel_patcher_description">Ipinapakita habang ina-patch ng Morphe ang isang app sa background</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -795,24 +804,19 @@ Hindi maaapektuhan ang mga patch: paganahin ang mga patch na pre-release para sa
     <string name="settings_advanced_expert_mode_dialog_message">Nagbibigay ng higit na kontrol ang Expert mode sa kung paano inilalapat ang mga patch, ngunit ang maling pagkompigura ng mga pagpipilian sa expert mode ay maaaring magresulta sa isang hindi gumaganang aplikasyon</string>
     <string name="settings_advanced_strip_unused_libs">I-optimize para sa arkitektura ng device</string>
     <string name="settings_advanced_strip_unused_libs_description">Inaalis ang mga hindi ginagamit na CPU architecture libs at split APK modules</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">Paraan ng pagproseso ng bytecode</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">Kinokontrol kung paano ipinoproseso ang bytecode sa panahon ng pag-patch. Nakakaapekto sa bilis ng pag-patch, paggamit ng memorya, at sukat ng output na APK</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">Mabilis (Inirerekomenda)</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">Mabilis</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">Mas mabilis na pag-patch at mas mababang paggamit ng memorya, sa kapinsalaan ng mas malaking APK. Inirerekomenda para sa mga low-RAM o mas lumang device</string>
-    <string name="settings_advanced_bytecode_mode_full">Buo</string>
-    <string name="settings_advanced_bytecode_mode_full_description">Mas mabagal na pag-patch, ginagaya ang legacy behavior. Inirerekomenda lamang kung ang mabilis na mode ay nagdudulot ng mga isyu</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">GitHub PAT</string>
     <string name="settings_advanced_github_pat_description">Kailangan para sa mga pull request sources</string>
     <string name="settings_advanced_github_pat_configured">Nakompigura ang token</string>
     <string name="settings_advanced_github_pat_how_to_get">Paano kumuha ng token</string>
-    <string name="settings_advanced_github_pat_dialog_title">Itakda ang GitHub Personal Access Token</string>
-    <string name="settings_advanced_github_pat_dialog_description">"Magtakda ng GitHub Personal Access Token para makapagdagdag ng mga pull request bilang mga external na source. Lumikha ng PAT na may saklaw na public_repo on
-%s"</string>
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <string name="settings_advanced_github_pat_dialog_title">Itakda ang %s</string>
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <string name="settings_advanced_github_pat_dialog_description">"Magtakda ng %3$s upang maidagdag ang mga pull request bilang mga panlabas na source. Gumawa ng PAT na may scope na %2$s sa
+%1$s"</string>
     <string name="settings_advanced_github_pat_export_include_label">Isama sa settings export</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">Idinaragdag ang PAT na ito sa mga na-export na setting ng Morphe</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">Huwag mong ibahagi ang iyong PAT. Kung isasama mo ito sa isang settings export, panatilihing pribado ang file na iyon dahil naglalaman ito ng token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Mga pagpipilian ng patch</string>
@@ -971,6 +975,7 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_process_runtime_memory_limit_description">Ang mas mataas na limitasyon ay nagpapabilis ng pag-patch sa mga kayang device</string>
     <string name="settings_system_process_runtime_enable">Paganahin ang runtime ng proseso</string>
     <string name="settings_system_memory_limit_subtitle">Magagamit ang memorya para sa pagpa-patch</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">Ang device na ito ay hindi pinansin ang limitasyon ng memorya sa huling pagtakbo, kaya ang pag-patch ay maaaring mag-fallback sa pagtakbo sa loob ng Morphe.</string>
     <string name="settings_system_memory_limit_warning">Ang mababang limitasyon ng memorya ay maaaring magdulot ng mga pagkabigo kapag nag-patch ng mas malalaking aplikasyon</string>
     <string name="settings_system_memory_limit_high_warning">Ang mataas na limitasyon ng memorya ay maaaring gawing mas mabagal ang pag-patch sa ilang mga device. Itaas lamang ito kung patuloy na nabibigo ang pag-patch sa mas mababang mga limitasyon.</string>
     <string name="settings_system_process_runtime_enabled_description">%s limitasyon sa MB</string>
@@ -991,8 +996,20 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_notifications_ringtone_picker_title">Pumili ng tono</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">I-import &amp; i-export</string>
-    <string name="settings_system_keystore">Keystore</string>
-    <string name="settings_system_import_keystore_description">Nag-i-import o nag-e-export ng iyong signing keystore</string>
+    <string name="settings_system_signing_key">Susi sa pagpirma</string>
+    <string name="settings_system_signing_key_description">Nagba-back up at nagre-restore ng susi na ginagamit sa pagpirma sa iyong mga na-patch na app</string>
+    <string name="settings_system_signing_key_dialog_description">Ang bawat app na ina-patch ng Morphe ay nilalagdaan gamit ang susi na ito. Magtago ng kopya: kung wala nito, ang mga na-patch na app ay maaari lamang i-update pagkatapos i-uninstall ang mga ito</string>
+    <string name="settings_system_signing_key_missing">Gumagawa ang Morphe ng susi sa iyong unang pag-patch</string>
+    <string name="settings_system_signing_key_created">Ginawa noong %s</string>
+    <string name="settings_system_signing_key_fingerprint">Fingerprint ng SHA-256</string>
+    <string name="settings_system_backup_appearance_description">Tema, mga kulay at wika</string>
+    <string name="settings_system_backup_home_description">Mga grupo, mga nakatagong app, pag-uuri, at mga toggle.</string>
+    <string name="settings_system_backup_patching">Pag-patch at pag-install</string>
+    <string name="settings_system_backup_patching_description">Installer, patcher at mga naka-save na APK</string>
+    <string name="settings_system_backup_updates_description">Mga pre-release at mga pagsusuri sa update</string>
+    <string name="settings_system_backup_sources_description">Mga custom na source at GitHub token</string>
+    <string name="settings_system_backup_patch_selections_description">Mga napiling patch para sa bawat app</string>
+    <string name="settings_system_backup_signing_key_note">Ang susi sa pagpirma ay naka-back up nang hiwalay</string>
     <string name="settings_system_import_keystore_dialog_title">Ilagay ang keystore credentials</string>
     <string name="settings_system_import_keystore_dialog_description">Kailangan mong ilagay ang keystore credentials upang ma-import ito</string>
     <string name="settings_system_import_keystore_dialog_alias_field">Pangalan ng tagagamit (Bansag)</string>
@@ -1001,7 +1018,6 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_import_keystore_wrong_credentials">Mali ang keystore credentials</string>
     <string name="settings_system_import_keystore_success">Na-import ang keystore</string>
     <string name="settings_system_import_keystore_failed">Nabigong ma-import ang keystore</string>
-    <string name="settings_system_export_keystore_unavailable">Walang magagamit na keystore para sa pag-export</string>
     <string name="settings_system_export_keystore_success">Na-export ang keystore </string>
     <string name="settings_system_export_keystore_failed">Nabigo ang pag-export ng keystore</string>
     <string name="settings_system_show_password_field">Ipakita ang password</string>
@@ -1020,7 +1036,7 @@ Mga Detalye: %2$s"</string>
     <string name="import_mode_merge_description">Idagdag ang mga nawawalang item mula sa backup. Ang mga kasalukuyang item ay mananatiling hindi nababago.</string>
     <string name="settings_system_export_manager_settings_fail">Nabigong ma-export ang mga setting ng Morphe: %s</string>
     <string name="settings_system_export_manager_settings_success">Na-export ang mga setting ng Morphe</string>
-    <string name="settings_system_debug">Debug</string>
+    <string name="settings_system_export_debug_logs">I-export ang mga tala ng debug</string>
     <string name="settings_system_export_debug_logs_description">I-save ang mga tala ng sistema para sa troubleshooting</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Nabigong mabasa ang mga tala (exit code %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Nabigong ma-export ang mga tala</string>
@@ -1108,7 +1124,11 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_custom_file_picker_description">Gumamit ng file picker na binuo ng Morphe sa halip na ang default ng sistema</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">APK download helper</string>
-    <string name="settings_system_apk_download_helper_description">Pahintulutan ang isang naka-install na helper app na kunin ang mga orihinal na APK para sa iyo. Ang file ay nagmumula sa app na iyon, kaya paganahin lamang ito kung pinagkakatiwalaan mo ito</string>
+    <string name="settings_system_apk_download_helper_trusted_count">Pinagkakatiwalaan: %1$d sa %2$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">Maaaring i-download ng mga helper app ang mga orihinal na APK para sa iyo. Tanging ang mga pinagkakatiwalaan mo dito ang inaalok sa mga tagubilin sa pag-download.</string>
+    <string name="settings_system_apk_download_helper_warning">Ang APK ay nagmumula sa helper app, kaya magtiwala ka lamang sa mga app na kilala mo. Sinusuri pa rin ng Morphe ang package, bersyon, at lagda ng bawat file bago i-patch.</string>
+    <string name="settings_system_apk_download_helper_installed_by">In-install ng %s</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">Hindi kilala ang installer</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Nakaraang direktoryo</string>
     <string name="file_picker_no_files">Walang mga file dito</string>
@@ -1125,8 +1145,6 @@ Mga Detalye: %2$s"</string>
     <string name="file_picker_show_hidden_files">Ipakita ang mga nakatagong file</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Tungkol sa</string>
-    <string name="settings_system_share_website">Ibahagi ang website</string>
-    <string name="settings_system_share_website_description">Ibahagi ang opisyal na Morphe website</string>
     <string name="settings_system_manager_description">Isang open-source na proyekto para sa moderno, pinasimpleng pag-aayos ng mga sikat na app ng Android, na pinapatakbo ng feedback at kontribusyon ng komunidad</string>
     <string name="credits">Kredito</string>
     <string name="credits_current_development">Kasalukuyang pag-unlad</string>
@@ -1215,6 +1233,7 @@ Mga Detalye: %2$s"</string>
     <string name="import_">I-import</string>
     <string name="export">I-export</string>
     <string name="copy">Kopyahin</string>
+    <string name="copied_to_clipboard">Nakopya sa clipboard.</string>
     <string name="download">I-download</string>
     <string name="less">Kaunti</string>
     <string name="expand">Palawakin</string>
@@ -1261,7 +1280,7 @@ Mga Detalye: %2$s"</string>
     <string name="changelog_for_app">Mga pagbabago para sa %s</string>
     <string name="changelog_general_changes">Mga pangkalahatang pagbabago</string>
     <string name="whats_new">Ano ang bago</string>
-    <string name="changelog_description">Tingnan ang mga pinakabagong pagbabago sa update na ito</string>
+    <string name="changelog_description">Ano ang bago sa bersyong ito</string>
     <string name="changelog_download_fail">Nabigong mag-download ang changelog: %s</string>
     <string name="changelog_empty">Walang magagamit na changelog</string>
     <string name="changelog_show_older">Ipakita ang mga lumang bersyon</string>
@@ -1308,5 +1327,8 @@ Gusto mo pa bang ituloy?"</string>
     <string name="tour_prompt_desc">Gusto mo bang mabilis na paglilibot sa mga pangunahing feature ng Morphe?</string>
     <string name="tour_prompt_confirm">Ipakita sa akin</string>
     <string name="onboarding_restart_title">Paglilibot sa feature</string>
-    <string name="onboarding_restart_desc">Sumali sa isang guided tour ng mga pangunahing feature ng Morphe</string>
+    <string name="onboarding_restart_desc">Isang gabay na paglilibot sa mga pangunahing tampok</string>
+    <string name="settings_appearance_patch_list">Listahan ng patch</string>
+    <string name="settings_appearance_patch_categories">Pangkatin ayon sa kategorya</string>
+    <string name="settings_appearance_patch_categories_description">Hatiin ang mga listahan ng patch ayon sa mga kategoryang idinideklara ng isang source, at iwan ang mga source na walang idinideklarang kategorya bilang isang simpleng listahan.</string>
 </resources>

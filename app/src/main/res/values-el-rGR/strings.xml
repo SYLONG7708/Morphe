@@ -140,10 +140,14 @@
     <string name="sources_management_open_in_browser">Άνοιγμα σε πρόγραμμα περιήγησης</string>
     <string name="sources_management_report_issue">Αναφορά προβλήματος</string>
     <string name="sources_management_failed_to_open_url">Απέτυχε το άνοιγμα της διεύθυνσης URL</string>
-    <string name="sources_hidden_apps">Κρυμμένες για</string>
-    <string name="sources_hidden_apps_title">Εφαρμογές για τις οποίες έχει κρυφτεί η πηγή %1$s</string>
-    <string name="sources_hidden_apps_description">Σε αυτές τις εφαρμογές δεν προσφέρεται αυτή η πηγή όταν τροποποιούνται. Η ίδια η πηγή παραμένει ενεργή για όλα τα υπόλοιπα.</string>
-    <string name="sources_hidden_apps_hint">Πατήστε για να προσφερθεί ξανά αυτή η πηγή.</string>
+    <string name="sources_apps">Εφαρμογές</string>
+    <string name="sources_apps_title">Εφαρμογές από %1$s</string>
+    <string name="sources_apps_description">Πατήστε μια εφαρμογή για να την εξαιρέσετε από αυτήν την πηγή ή να την επαναφέρετε, ή πατήστε παρατεταμένα για να επιλέξετε πολλές. Μια εφαρμογή φεύγει από την αρχική οθόνη όταν καμία πηγή δεν την παρέχει.</string>
+    <string name="sources_apps_brought">Παρέχονται από αυτήν την πηγή</string>
+    <string name="sources_apps_left_out">Εξαιρούνται από αυτήν την πηγή</string>
+    <string name="sources_apps_leave_out">Εξαίρεση</string>
+    <string name="sources_apps_leave_out_done">Εξαιρέθηκε</string>
+    <string name="sources_apps_bring_back">Επαναφορά</string>
     <string name="sources_management_prerelease_toggle">Ενημερώσεις πριν την κυκλοφορία</string>
     <string name="sources_management_prerelease_toggle_description">Λάβετε πρόωρη πρόσβαση σε νέες πειραματικές εκδόσεις τροποποιήσεων</string>
     <string name="sources_prerelease_warning_title">Ενεργοποίηση επιδιορθώσεων προ-έκδοσης;</string>
@@ -187,6 +191,8 @@
     <string name="sources_dialog_local_change_file">Αλλαγή αρχείου</string>
     <string name="sources_dialog_preinstalled">Προεγκατεστημένες</string>
     <string name="sources_dialog_community">Κοινοτικά patches</string>
+    <string name="sources_dialog_choose_apps">Επιλογή εφαρμογών</string>
+    <string name="sources_dialog_choose_apps_description">Επιλέξτε ποιες από τις εφαρμογές της θα κρατήσετε μόλις φορτωθεί η πηγή.</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">Πηγές patches τρίτων</string>
     <string name="sources_dialog_community_notice_message">"Οι πηγές patches κοινότητας δημιουργούνται και συντηρούνται από τους ίδιους τους συγγραφείς. Η Morphe δεν εξετάζει ούτε επαληθεύει patches τρίτων και δεν είναι υπεύθυνη για το περιεχόμενό τους ή για ό,τι κάνουν στη συσκευή σας.
@@ -713,13 +719,9 @@
     <string name="settings_appearance_greeting_phrases">Φράσεις υποδοχής</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Εμφάνιση μηνύματος υποδοχής στην αρχική οθόνη</string>
     <string name="settings_appearance_app_grouping">Ομαδοποίηση εφαρμογών</string>
-    <string name="settings_appearance_app_grouping_description">Εμφάνιση διακόπτη στην αρχική οθόνη για ομαδοποίηση εφαρμογών κατά πηγή ή δικές σας κατηγορίες, διατηρώντας την επιλογή όταν είναι απενεργοποιημένη</string>
-    <string name="settings_appearance_patch_list">Λίστα επιδιορθώσεων</string>
-    <string name="settings_appearance_patch_categories">Ομαδοποίηση ανά κατηγορία</string>
-    <string name="settings_appearance_patch_categories_description">Ομαδοποίηση των λιστών επιδιορθώσεων ανά κατηγορίες που δηλώνει μια πηγή, ενώ οι πηγές χωρίς κατηγορία παραμένουν ως απλή λίστα.</string>
+    <string name="settings_appearance_app_grouping_description">Εμφάνιση ενός διακόπτη για ομαδοποίηση εφαρμογών ανά πηγή ή κατηγορία</string>
     <string name="settings_appearance_repatch_notice">Ειδοποίηση επανάληψης τροποποιήσεων</string>
-    <string name="settings_appearance_repatch_notice_description">Εμφάνιση banner στην αρχική οθόνη όταν οι εφαρμογές μπορούν να επαναδιορθωθούν
-</string>
+    <string name="settings_appearance_repatch_notice_description">Εμφάνιση banner όταν οι επιδιορθωμένες εφαρμογές μπορούν να επιδιορθωθούν εκ νέου</string>
     <string name="settings_appearance_sort_button">Κουμπί ταξινόμησης και φιλτραρίσματος</string>
     <string name="settings_appearance_sort_button_description">Εμφάνιση του κουμπιού ταξινόμησης και φιλτραρίσματος στην αρχική οθόνη</string>
     <string name="settings_appearance_app_card_colors">Χρώματα καρτών εφαρμογών</string>
@@ -764,6 +766,8 @@
     <string name="settings_advanced_updates_background_notifications">Ειδοποιήσεις ενημερώσεων παρασκηνίου</string>
     <string name="settings_advanced_updates_background_notifications_description">Περιοδικός έλεγχος για ενημερώσεις στο παρασκήνιο και ειδοποίηση όταν υπάρχουν διαθέσιμες</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Λάβετε άμεσες ειδοποιήσεις push για νέες εκδόσεις, ακόμα και όταν η εφαρμογή είναι κλειστή</string>
+    <string name="settings_system_notifications_categories">Κατηγορίες ειδοποιήσεων</string>
+    <string name="settings_system_notifications_categories_description">Επιλέξτε στις ρυθμίσεις του συστήματος ποιες ενημερώσεις σας ειδοποιούν</string>
     <string name="settings_advanced_update_interval">Συχνότητα ελέγχου</string>
     <string name="settings_advanced_update_interval_dialog_title">Έλεγχος για ενημερώσεις</string>
     <string name="settings_advanced_update_interval_hourly">Κάθε ώρα</string>
@@ -773,7 +777,7 @@
     <string name="settings_advanced_update_interval_chip_subtitle">Συχνότητα ελέγχου στο παρασκήνιο</string>
     <string name="settings_advanced_update_interval_battery_warning">Οι έλεγχοι στο παρασκήνιο μπορεί να μη λειτουργούν σωστά σε ορισμένες συσκευές. Κατασκευαστές όπως Xiaomi, Huawei, Samsung και OnePlus συχνά περιορίζουν σφοδρά τις διαδικασίες παρασκηνίου για να εξοικονομήσουν μπαταρία</string>
     <string name="settings_advanced_external_batch_patch">Επιτρέψτε εξωτερικούς ενεργοποιητές</string>
-    <string name="settings_advanced_external_batch_patch_description">Επιτρέπει σε εφαρμογές αυτοματισμού να ξεκινήσουν την ομαδική διόρθωση με μια πρόθεση. Κάθε αίτημα επιβεβαιώνεται πριν από την εκτέλεση οποιασδήποτε ενέργειας</string>
+    <string name="settings_advanced_external_batch_patch_description">Επιτρέπει σε εφαρμογές αυτοματισμού να ξεκινούν μαζική επιδιόρθωση μέσω ενός intent</string>
     <string name="external_batch_patch_title">Έναρξη ομαδικής διόρθωσης;</string>
     <string name="external_batch_patch_description">Το %s θέλει να κάνει το Morphe να διορθώσει και να εγκαταστήσει εφαρμογές</string>
     <string name="external_batch_patch_trust_caller">Να επιτρέπεται πάντα αυτήν την εφαρμογή</string>
@@ -786,8 +790,10 @@
     <string name="notification_permission_dialog_title">Να επιτρέπονται ειδοποιήσεις</string>
     <string name="notification_permission_dialog_description">Το Morphe χρειάζεται άδεια ειδοποιήσεων για να σας ειδοποιεί όταν είναι διαθέσιμες ενημερώσεις στο παρασκήνιο</string>
     <string name="notification_post_patch_dialog_title">Θα θέλατε να ειδοποιηθείτε όταν υπάρξουν διαθέσιμες ενημερώσεις;</string>
-    <string name="notification_channel_fcm_updates">Ειδοποιήσεις ενημερώσεων</string>
-    <string name="notification_channel_fcm_updates_description">Ειδοποιήσεις σχετικά με νέες εκδόσεις του Morphe και τροποποιήσεων</string>
+    <string name="notification_channel_manager_updates">Ενημερώσεις Morphe</string>
+    <string name="notification_channel_manager_updates_description">Ειδοποιήσεις για νέες εκδόσεις του Morphe</string>
+    <string name="notification_channel_patch_updates">Ενημερώσεις επιδιόρθωσης</string>
+    <string name="notification_channel_patch_updates_description">Ειδοποιήσεις για νέες εκδόσεις επιδιόρθωσης</string>
     <string name="notification_channel_patcher">Τροποποίηση</string>
     <string name="notification_channel_patcher_description">Εμφανίζεται όταν το Morphe ενημερώνει μια εφαρμογή στο παρασκήνιο</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -798,16 +804,7 @@
     <string name="settings_advanced_expert_mode_dialog_message">Η λειτουργία εξειδικευμένου χρήστη δίνει περισσότερο έλεγχο για την εφαρμογή των τροποποιήσεων, αλλά η λάθος ρύθμιση στη λειτουργία αυτή μπορεί να προκαλέσει τη δυσλειτουργικότητα της εφαρμογής</string>
     <string name="settings_advanced_strip_unused_libs">Βελτιστοποίηση για αρχιτεκτονική συσκευής</string>
     <string name="settings_advanced_strip_unused_libs_description">Αφαιρεί αχρησιμοποίητες βιβλιοθήκες αρχιτεκτονικής CPU και διαχωρισμένα modules APK</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">Λειτουργία επεξεργασίας bytecode</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">Ελέγχει τον τρόπο επεξεργασίας του bytecode κατά τη διάρκεια της επιδιόρθωσης. Επηρεάζει την ταχύτητα επιδιόρθωσης, τη χρήση μνήμης και το μέγεθος του APK εξόδου</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">Γρήγορος (Συνιστάται)</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">Γρήγορα</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">Ταχύτερη επιδιόρθωση και χαμηλότερη χρήση μνήμης, με αντάλλαγμα ένα μεγαλύτερο APK. Συνιστάται για συσκευές με χαμηλή μνήμη RAM ή παλαιότερες</string>
-    <string name="settings_advanced_bytecode_mode_full">Πλήρες</string>
-    <string name="settings_advanced_bytecode_mode_full_description">Πιο αργή εφαρμογή αλλαγών, αναπαράγει την παλαιότερη συμπεριφορά. Συνιστάται μόνο αν η γρήγορη λειτουργία προκαλεί προβλήματα</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">GitHub PAT</string>
     <string name="settings_advanced_github_pat_description">Απαιτείται για πηγές pull request</string>
     <string name="settings_advanced_github_pat_configured">Διαμορφωμένο κλειδί</string>
     <string name="settings_advanced_github_pat_how_to_get">Πως να πάρετε ένα κλειδί</string>
@@ -815,7 +812,9 @@
     <string name="settings_advanced_github_pat_dialog_description">"Ορίστε ένα PAT στο GitHub για να μπορείτε να προσθέσετε pull requests ως εξωτερικές πηγές. Δημιουργήστε ένα PAT με πρόθεση το public_repo
 %s"</string>
     <string name="settings_advanced_github_pat_export_include_label">Συμπερίληψη στις ρυθμίσεις εξαγωγής</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">Προσθέτει αυτό το PAT στις εξαγόμενες ρυθμίσεις του Morphe</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">Δεν πρέπει να μοιράζεστε το PAT. Εάν το συμπεριλάβετε στις εξαγόμενες ρυθμίσεις, διατηρήστε το αρχείο ιδιωτικό διότι περιέχει το κλειδί</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Επιλογές τροποποιήσεων</string>
@@ -974,6 +973,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime_memory_limit_description">Υψηλότερες τιμές επιταχύνουν την εφαρμογή αλλαγών σε συσκευές με κατάλληλες δυνατότητες</string>
     <string name="settings_system_process_runtime_enable">Ενεργοποίηση χρόνου εκτέλεσης διεργασίας</string>
     <string name="settings_system_memory_limit_subtitle">Διαθέσιμη μνήμη για τροποποίηση</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">Αυτή η συσκευή αγνόησε το όριο μνήμης κατά την τελευταία εκτέλεση, οπότε η εφαρμογή διορθώσεων ενδέχεται να χρησιμοποιήσει ως εναλλακτική την εκτέλεση εντός του Morphe.</string>
     <string name="settings_system_memory_limit_warning">Ένα μικρό όριο μνήμης μπορεί να δημιουργήσει αποτυχία όταν τροποποιούνται μεγαλύτερες εφαρμογές</string>
     <string name="settings_system_memory_limit_high_warning">Ένα υψηλό όριο μνήμης μπορεί να κάνει την επιδιόρθωση πολύ πιο αργή σε ορισμένες συσκευές. Αυξήστε το μόνο αν η επιδιόρθωση συνεχίζει να αποτυγχάνει σε χαμηλότερα όρια.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB όριο</string>
@@ -994,8 +994,20 @@ morphe_header_custom_dark.png
     <string name="settings_system_notifications_ringtone_picker_title">Επιλέξτε τόνο</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">Εισαγωγή &amp; εξαγωγή</string>
-    <string name="settings_system_keystore">Χώρος αποθήκευσης κλειδιών</string>
-    <string name="settings_system_import_keystore_description">Εισάγει ή εξάγει το κλειδί υπογραφής σας</string>
+    <string name="settings_system_signing_key">Κλειδί υπογραφής</string>
+    <string name="settings_system_signing_key_description">Δημιουργεί αντίγραφο ασφαλείας και επαναφέρει το κλειδί με το οποίο υπογράφονται οι επιδιορθωμένες εφαρμογές σας.</string>
+    <string name="settings_system_signing_key_dialog_description">Κάθε εφαρμογή που επιδιορθώνει το Morphe υπογράφεται με αυτό το κλειδί. Φυλάξτε ένα αντίγραφο: χωρίς αυτό, οι επιδιορθωμένες εφαρμογές μπορούν να ενημερωθούν μόνο μετά την απεγκατάστασή τους.</string>
+    <string name="settings_system_signing_key_missing">Το Morphe δημιουργεί ένα με την πρώτη σας επιδιόρθωση.</string>
+    <string name="settings_system_signing_key_created">Δημιουργήθηκε %s</string>
+    <string name="settings_system_signing_key_fingerprint">Αποτύπωμα SHA-256</string>
+    <string name="settings_system_backup_appearance_description">Θέμα, χρώματα και γλώσσα</string>
+    <string name="settings_system_backup_home_description">Ομάδες, κρυφές εφαρμογές, ταξινόμηση και διακόπτες</string>
+    <string name="settings_system_backup_patching">Επιδιόρθωση και εγκατάσταση</string>
+    <string name="settings_system_backup_patching_description">Εγκαταστάτης, επιδιορθωτής και αποθηκευμένα APK</string>
+    <string name="settings_system_backup_updates_description">Προεκδόσεις και έλεγχοι ενημερώσεων</string>
+    <string name="settings_system_backup_sources_description">Προσαρμοσμένες πηγές και διακριτικό GitHub</string>
+    <string name="settings_system_backup_patch_selections_description">Επιλεγμένες επιδιορθώσεις για κάθε εφαρμογή</string>
+    <string name="settings_system_backup_signing_key_note">Το κλειδί υπογραφής λαμβάνει ξεχωριστό αντίγραφο ασφαλείας.</string>
     <string name="settings_system_import_keystore_dialog_title">Εισαγωγή διαπιστευτηρίων χώρου αποθήκευσης κλειδιών</string>
     <string name="settings_system_import_keystore_dialog_description">Θα χρειαστεί να καταχωρίσεις τα διαπιστευτήρια της αποθήκης κλειδιών για να τα εισάγεις</string>
     <string name="settings_system_import_keystore_dialog_alias_field">Όνομα χρήστη (Ψευδώνυμο)</string>
@@ -1004,7 +1016,6 @@ morphe_header_custom_dark.png
     <string name="settings_system_import_keystore_wrong_credentials">Λανθασμένα διαπιστευτήρια αποθήκης κλειδιών</string>
     <string name="settings_system_import_keystore_success">Επιτυχής εισαγωγή αποθήκης κλειδιών </string>
     <string name="settings_system_import_keystore_failed">Απέτυχε η εισαγωγή χώρου αποθήκευσης κλειδιών</string>
-    <string name="settings_system_export_keystore_unavailable">Κανένας διαθέσιμος χώρος αποθήκευσης κλειδιών για εξαγωγή</string>
     <string name="settings_system_export_keystore_success">Επιτυχής εξαγωγή της αποθήκης κλειδιών</string>
     <string name="settings_system_export_keystore_failed">Απέτυχε η εξαγωγή χώρου αποθήκευσης κλειδιών</string>
     <string name="settings_system_show_password_field">Εμφάνιση κωδικού πρόσβασης</string>
@@ -1023,7 +1034,7 @@ morphe_header_custom_dark.png
     <string name="import_mode_merge_description">Προσθήκη στοιχείων που λείπουν από το αντίγραφο ασφαλείας. Τα υπάρχοντα στοιχεία θα παραμείνουν χωρίς αλλαγές</string>
     <string name="settings_system_export_manager_settings_fail">Αποτυχία εξαγωγής των ρυθμίσεων του Morphe: %s</string>
     <string name="settings_system_export_manager_settings_success">Επιτυχής εξαγωγή ρυθμίσεων του Morphe</string>
-    <string name="settings_system_debug">Εντοπισμός σφαλμάτων</string>
+    <string name="settings_system_export_debug_logs">Εξαγωγή αρχείων καταγραφής εντοπισμού σφαλμάτων</string>
     <string name="settings_system_export_debug_logs_description">Αποθηκεύει τα αρχεία καταγραφής σφαλμάτων του συστήματος για την αντιμετώπιση προβλημάτων</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Αποτυχία ανάγνωσης αρχείων καταγραφής (κωδικός εξόδου %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Αποτυχία εξαγωγής αρχείων καταγραφής</string>
@@ -1111,7 +1122,11 @@ morphe_header_custom_dark.png
     <string name="settings_system_custom_file_picker_description">Χρησιμοποιήστε την ενσωματωμένη επιλογή αρχείων του Morphe αντί για την προεπιλεγμένη του συστήματος</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">Βοηθητικό εργαλείο λήψης APK</string>
-    <string name="settings_system_apk_download_helper_description">Αφήστε μια εγκατεστημένη βοηθητική εφαρμογή να ανακτήσει αρχικά APK για εσάς. Το αρχείο προέρχεται από αυτή την εφαρμογή, επομένως ενεργοποιήστε το μόνο εάν την εμπιστεύεστε</string>
+    <string name="settings_system_apk_download_helper_trusted_count">Έμπιστες: %1$d από %2$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">Οι βοηθητικές εφαρμογές μπορούν να κατεβάζουν πρωτότυπα APK για εσάς. Μόνο όσες εμπιστεύεστε εδώ προσφέρονται στις οδηγίες λήψης.</string>
+    <string name="settings_system_apk_download_helper_warning">Το APK προέρχεται από τη βοηθητική εφαρμογή, γι\' αυτό εμπιστευτείτε μόνο εφαρμογές που γνωρίζετε. Το Morphe εξακολουθεί να ελέγχει το πακέτο, την έκδοση και την υπογραφή κάθε αρχείου πριν από την τροποποίηση.</string>
+    <string name="settings_system_apk_download_helper_installed_by">Εγκαταστάθηκε από %s</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">Άγνωστος εγκαταστάτης</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Προηγούμενος κατάλογος</string>
     <string name="file_picker_no_files">Δεν υπάρχουν αρχεία εδώ</string>
@@ -1128,8 +1143,6 @@ morphe_header_custom_dark.png
     <string name="file_picker_show_hidden_files">Εμφάνιση κρυφών αρχείων</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Πληροφορίες</string>
-    <string name="settings_system_share_website">Κοινοποίηση ιστότοπου</string>
-    <string name="settings_system_share_website_description">Κοινοποίηση του επίσημου ιστότοπου του Morphe</string>
     <string name="settings_system_manager_description">Ένα έργο ανοικτού κώδικα για σύγχρονη, βελτιστοποιημένη ενημέρωση δημοφιλών εφαρμογών Android, που υποστηρίζεται από την κοινότητα και τις συνεισφορές της</string>
     <string name="credits">Εύσημα</string>
     <string name="credits_current_development">Τρέχουσα ανάπτυξη</string>
@@ -1218,6 +1231,7 @@ morphe_header_custom_dark.png
     <string name="import_">Εισαγωγή</string>
     <string name="export">Εξαγωγή</string>
     <string name="copy">Αντιγραφή</string>
+    <string name="copied_to_clipboard">Αντιγράφτηκε στο πρόχειρο</string>
     <string name="download">Λήψη</string>
     <string name="less">Λιγότερα</string>
     <string name="expand">Επεκτείνετε</string>
@@ -1264,7 +1278,7 @@ morphe_header_custom_dark.png
     <string name="changelog_for_app">Αλλαγές για %s</string>
     <string name="changelog_general_changes">Γενικές αλλαγές</string>
     <string name="whats_new">Τι νέο</string>
-    <string name="changelog_description">Έλεγξε τις τελευταίες αλλαγές σε αυτή την ενημέρωση</string>
+    <string name="changelog_description">Τι νέο υπάρχει σε αυτήν την έκδοση</string>
     <string name="changelog_download_fail">Αποτυχία λήψης αρχείου καταγραφής αλλαγών: %s</string>
     <string name="changelog_empty">Δεν υπάρχει διαθέσιμο αρχείο καταγραφών αλλαγών </string>
     <string name="changelog_show_older">Εμφάνιση παλαιότερων εκδόσεων</string>
@@ -1311,5 +1325,8 @@ morphe_header_custom_dark.png
     <string name="tour_prompt_desc">Θέλετε μια γρήγορη περιήγηση στις βασικές λειτουργίες του Morphe;</string>
     <string name="tour_prompt_confirm">Δείξτε μου γύρω</string>
     <string name="onboarding_restart_title">Περιήγηση λειτουργιών</string>
-    <string name="onboarding_restart_desc">Κάντε μια καθοδηγούμενη περιήγηση στις βασικές λειτουργίες του Morphe</string>
+    <string name="onboarding_restart_desc">Μια ξενάγηση στα βασικά χαρακτηριστικά</string>
+    <string name="settings_appearance_patch_list">Λίστα επιδιορθώσεων</string>
+    <string name="settings_appearance_patch_categories">Ομαδοποίηση ανά κατηγορία</string>
+    <string name="settings_appearance_patch_categories_description">Ομαδοποίηση των λιστών επιδιορθώσεων ανά κατηγορίες που δηλώνει μια πηγή, ενώ οι πηγές χωρίς κατηγορία παραμένουν ως απλή λίστα.</string>
 </resources>

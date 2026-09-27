@@ -34,6 +34,7 @@ import app.morphe.manager.patcher.patch.PatchSourceRef
 import app.morphe.manager.patcher.runtime.CoroutineRuntime
 import app.morphe.manager.patcher.runtime.ProcessRuntime
 import app.morphe.manager.patcher.runtime.coerceMemoryLimit
+import app.morphe.manager.patcher.runtime.heapLimitMebibytes
 import app.morphe.manager.patcher.split.SplitApkPreparer
 import app.morphe.manager.patcher.util.NativeLibStripper
 import app.morphe.manager.ui.model.SelectedApp
@@ -180,7 +181,17 @@ class PatcherWorker(
                 )
             )
             .setContentText(applicationContext.getText(R.string.patcher_notification_text))
-            .setSmallIcon(Icon.createWithResource(applicationContext, R.drawable.ic_notification))
+            .setSmallIcon(
+                Icon.createWithResource(
+                    applicationContext,
+                    if (succeeded) R.drawable.ic_notification_done else R.drawable.ic_notification_failed
+                )
+            )
+            .setColor(
+                applicationContext.getColor(
+                    if (succeeded) R.color.notification_success else R.color.notification_failure
+                )
+            )
             .setContentIntent(mainActivityPendingIntent())
             .setAutoCancel(true)
             .build()
@@ -344,8 +355,7 @@ class PatcherWorker(
             val deviceStats = applicationContext.deviceStats()
 
             // What this build of Morphe brings to the run. Every bug report needs the versions,
-            // and native lib stripping silently changes what ends up in the output APK.
-            // The bytecode mode is left out, the patcher logs it itself while writing dex
+            // and native lib stripping silently changes what ends up in the output APK
             args.logger.info(
                 "$LOG_WORKER_PREFIX_BUILD " +
                         "$LOG_WORKER_FIELD_MANAGER=${BuildConfig.VERSION_NAME} " +
@@ -392,7 +402,7 @@ class PatcherWorker(
                 args.logger.info("$LOG_WORKER_PREFIX_RUNTIME process $LOG_WORKER_FIELD_MEMORY_LIMIT=$memLimit")
             } else {
                 // CoroutineRuntime starts memory polling internally; only log the heap size here
-                args.logger.info("$LOG_PROCESS_PREFIX_COROUTINE_HEAP ${bytesToMebibytes(Runtime.getRuntime().maxMemory())}MB")
+                args.logger.logCoroutineHeap()
                 args.logger.info("$LOG_WORKER_PREFIX_RUNTIME coroutine")
             }
 
@@ -439,6 +449,8 @@ class PatcherWorker(
                 val fallbackReason = when {
                     !useProcessRuntime -> null
                     isBlockedSyscall(e) -> "Patcher process was killed for a system call the device forbids"
+                    e is ProcessRuntime.ProcessConnectTimeoutException -> e.message
+                    e is ProcessRuntime.HeapLimitIgnoredException -> e.message
                     isOomRelated(e) && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q ->
                         "Process runtime OOM on Android ${Build.VERSION.RELEASE}"
                     else -> null
@@ -448,6 +460,7 @@ class PatcherWorker(
 
                 // The fallback is a fresh run of the whole pipeline, same as a memory retry
                 onRestart()
+                args.logger.logCoroutineHeap()
 
                 CoroutineRuntime(applicationContext).execute(
                     inputFile.absolutePath,
@@ -588,12 +601,12 @@ class PatcherWorker(
     private fun isBlockedSyscall(e: Exception) =
         e is ProcessRuntime.ProcessExitException && e.exitCode == ProcessRuntime.SIGSYS_EXIT_CODE
 
+    private fun Logger.logCoroutineHeap() = info("$LOG_PROCESS_PREFIX_COROUTINE_HEAP ${heapLimitMebibytes()}MB")
+
     private fun isOomRelated(e: Exception) = when (e) {
         is ProcessRuntime.ProcessExitException ->
             e.exitCode == ProcessRuntime.OOM_EXIT_CODE || e.exitCode == ProcessRuntime.SIGKILL_EXIT_CODE
         is ProcessRuntime.HeapExhaustedException -> true
-        is ProcessRuntime.RemoteFailureException ->
-            e.originalStackTrace.contains("OutOfMemoryError", ignoreCase = true)
         else -> false
     }
 

@@ -140,10 +140,14 @@
     <string name="sources_management_open_in_browser">Otvori u pregledaču</string>
     <string name="sources_management_report_issue">Prijavi problem</string>
     <string name="sources_management_failed_to_open_url">Otvaranje URL-a nije uspelo</string>
-    <string name="sources_hidden_apps">Sakriveno za</string>
-    <string name="sources_hidden_apps_title">Aplikacije skrivene od %1$s</string>
-    <string name="sources_hidden_apps_description">Ovaj izvor ne nudi ove aplikacije prilikom zakrpljivanja. Sam izvor ostaje uključen za sve ostalo.</string>
-    <string name="sources_hidden_apps_hint">Dodirni da ponovo omogućiš ovaj izvor.</string>
+    <string name="sources_apps">Aplikacije</string>
+    <string name="sources_apps_title">Aplikacije iz %1$s</string>
+    <string name="sources_apps_description">Dodirnite aplikaciju da biste je izostavili iz ovog izvora ili je vratili, ili dugo pritisnite da biste izabrali više njih. Aplikacija napušta početni ekran kada je nijedan izvor više ne donosi.</string>
+    <string name="sources_apps_brought">Donesene iz ovog izvora</string>
+    <string name="sources_apps_left_out">Izostavljene iz ovog izvora</string>
+    <string name="sources_apps_leave_out">Izostavite</string>
+    <string name="sources_apps_leave_out_done">Izostavljeno</string>
+    <string name="sources_apps_bring_back">Vratite</string>
     <string name="sources_management_prerelease_toggle">Zakrpe u predprodukciji</string>
     <string name="sources_management_prerelease_toggle_description">Dobija rani pristup novim eksperimentalnim verzijama zakrpa</string>
     <string name="sources_prerelease_warning_title">Omogući zakrpe za predizdanje?</string>
@@ -187,6 +191,8 @@
     <string name="sources_dialog_local_change_file">Promeni fajl</string>
     <string name="sources_dialog_preinstalled">Preinstalirano</string>
     <string name="sources_dialog_community">Zakrpe zajednice</string>
+    <string name="sources_dialog_choose_apps">Izaberite aplikacije</string>
+    <string name="sources_dialog_choose_apps_description">Izaberite koje od njegovih aplikacija da zadržite nakon što se izvor učita.</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">Izvori zakrpa trećih strana</string>
     <string name="sources_dialog_community_notice_message">"Izvore zakrpa zajednice kreiraju i održavaju njihovi autori. Morphe ne pregleda niti verifikuje zakrpe trećih strana i nije odgovoran za njihov sadržaj ili za ono što rade na vašem uređaju.
@@ -713,12 +719,9 @@ Deinstalacija će trajno obrisati sve podatke aplikacije"</string>
     <string name="settings_appearance_greeting_phrases">Pozdravne poruke</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Prikaži poruku dobrodošlice na početnom ekranu</string>
     <string name="settings_appearance_app_grouping">Grupisanje aplikacija</string>
-    <string name="settings_appearance_app_grouping_description">Pokaži prekidač na početnom ekranu da bi grupisao aplikacije po izvoru ili vlastitim kategorijama, zadržavajući selekciju kada je isključen</string>
-    <string name="settings_appearance_patch_list">Lista zakrpa</string>
-    <string name="settings_appearance_patch_categories">Grupiši po kategoriji</string>
-    <string name="settings_appearance_patch_categories_description">Razdvoji liste zakrpa prema kategorijama koje izvor navodi, a izvore koji ne navode nijednu kategoriju ostavi kao običnu listu</string>
+    <string name="settings_appearance_app_grouping_description">Prikaži prekidač za grupisanje aplikacija po izvoru ili kategoriji</string>
     <string name="settings_appearance_repatch_notice">Obaveštenje o ponovnom zakrpavanju</string>
-    <string name="settings_appearance_repatch_notice_description">Prikaži baner na početnom ekranu kada se zakrpane aplikacije mogu ponovo zakrpiti</string>
+    <string name="settings_appearance_repatch_notice_description">Prikaži baner kada se već zakrpljene aplikacije mogu ponovo zakrpiti</string>
     <string name="settings_appearance_sort_button">Dugme za sortiranje i filtriranje</string>
     <string name="settings_appearance_sort_button_description">Prikaži dugme za sortiranje i filtriranje na početnom ekranu</string>
     <string name="settings_appearance_app_card_colors">Boje kartice aplikacije</string>
@@ -763,6 +766,8 @@ Zakrpe nisu pogođene: omogućite prerelease zakrpe za svaki izvor na listi izvo
     <string name="settings_advanced_updates_background_notifications">Ažuriranja u pozadini</string>
     <string name="settings_advanced_updates_background_notifications_description">Periodično proveravaj za ažuriranja u pozadini i obaveštavaj kada su dostupna</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Push obaveštenja za nove verzije, čak i kada je aplikacija zatvorena</string>
+    <string name="settings_system_notifications_categories">Kategorije obaveštenja</string>
+    <string name="settings_system_notifications_categories_description">U sistemskim podešavanjima izaberite koja ažuriranja vas obaveštavaju</string>
     <string name="settings_advanced_update_interval">Pronalaženje frekvencije</string>
     <string name="settings_advanced_update_interval_dialog_title">Pronalaženje ažuriranja</string>
     <string name="settings_advanced_update_interval_hourly">Jedanput na sat</string>
@@ -772,7 +777,7 @@ Zakrpe nisu pogođene: omogućite prerelease zakrpe za svaki izvor na listi izvo
     <string name="settings_advanced_update_interval_chip_subtitle">Učestalost pozadinskog proveravanja</string>
     <string name="settings_advanced_update_interval_battery_warning">Pronalaženje u pozadini možda neće funkcionisati pouzdano na nekim uređajima. Proizvođači poput Xiaomi, Huawei, Samsunga i OnePlus često agresivno ograničavaju processe u pozadini da bi sačuvali bateriju</string>
     <string name="settings_advanced_external_batch_patch">Dozvoli eksterne okidače</string>
-    <string name="settings_advanced_external_batch_patch_description">Omogućava aplikacijama za automatizaciju da pokrenu masovno zakrpljivanje sa namerom. Svaki zahtev je potvrđen pre nego što se išta pokrene</string>
+    <string name="settings_advanced_external_batch_patch_description">Omogućava aplikacijama za automatizaciju da započnu grupnu primenu zakrpa putem intent-a</string>
     <string name="external_batch_patch_title">Pokreni masovno zakrpljivanje?</string>
     <string name="external_batch_patch_description">%s želi da Morphe zakrpi i instalira aplikacije</string>
     <string name="external_batch_patch_trust_caller">Uvek dozvoli ovu aplikaciju</string>
@@ -785,8 +790,10 @@ Zakrpe nisu pogođene: omogućite prerelease zakrpe za svaki izvor na listi izvo
     <string name="notification_permission_dialog_title">Dozvoli obaveštenja</string>
     <string name="notification_permission_dialog_description">Morphe треба дозволу за обавештења да вас упозори када су доступне надоградње у позадини</string>
     <string name="notification_post_patch_dialog_title">Da li biste hteli da budete obavešteni kada su ažuriranja dostupna?</string>
-    <string name="notification_channel_fcm_updates">Ažuriranja obaveštenja</string>
-    <string name="notification_channel_fcm_updates_description">Obaveštenja o novim Morphe izdanjima i ažuriranjima zakrpa</string>
+    <string name="notification_channel_manager_updates">Morphe ažuriranja</string>
+    <string name="notification_channel_manager_updates_description">Obaveštenja o novim Morphe izdanjima</string>
+    <string name="notification_channel_patch_updates">Ažuriranja zakrpa</string>
+    <string name="notification_channel_patch_updates_description">Obaveštenja o novim zakrpama</string>
     <string name="notification_channel_patcher">Zakrpavanje</string>
     <string name="notification_channel_patcher_description">Prikazuje se dok Morphe zakrpava aplikaciju u pozadini</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -797,24 +804,19 @@ Zakrpe nisu pogođene: omogućite prerelease zakrpe za svaki izvor na listi izvo
     <string name="settings_advanced_expert_mode_dialog_message">Režim eksperta daje više kontrole nad primenom patchova, ali pogrešno podešavanje u režimu eksperta može da rezultuje u nefunkcionalnoj aplikaciji</string>
     <string name="settings_advanced_strip_unused_libs">Optimizujte za arhitekturu uređaja</string>
     <string name="settings_advanced_strip_unused_libs_description">Uklanja neiskorišćene CPU arhitektonske biblioteke i split APK module</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">Način obrade bajtkoda</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">Kontroliše kako se bajtkod obrađuje tokom popravki. Utiče na brzinu popravki, korišćenje memorije i veličinu izlaznog APK fajla</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">Brzo (Preporučeno)</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">Brzo</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">Brže ispravljanje i manja upotreba memorije, uz veći APK. Preporučeno za uređaje sa malo RAM-a ili starije uređaje</string>
-    <string name="settings_advanced_bytecode_mode_full">Puno</string>
-    <string name="settings_advanced_bytecode_mode_full_description">Sporije patchovanje, replikuje prethodno ponašanje. Preporučeno samo ako brzi režim izaziva probleme</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">GitHub PAT</string>
     <string name="settings_advanced_github_pat_description">Potrebno za izvore zahtjeva za povlačenje</string>
     <string name="settings_advanced_github_pat_configured">Token je konfigurisan</string>
     <string name="settings_advanced_github_pat_how_to_get">Kako dobiti token</string>
-    <string name="settings_advanced_github_pat_dialog_title">Postavi GitHub Personal Access Token</string>
-    <string name="settings_advanced_github_pat_dialog_description">"Postavite GitHub Personal Access Token kako biste mogli da dodate pull request-e kao eksterne izvore. Napravite PAT sa opsegom public_repo na
-%s"</string>
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <string name="settings_advanced_github_pat_dialog_title">Podesite %s</string>
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <string name="settings_advanced_github_pat_dialog_description">"Podesite %3$s da biste mogli da dodate pull request-ove kao eksterne izvore. Napravite PAT sa opsegom %2$s na
+%1$s"</string>
     <string name="settings_advanced_github_pat_export_include_label">Uključeno u postavke izvoza</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">Додаје овај PAT у извозене подешавања Morphe-а</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">Ne deli svoj PAT. Ako ga uključiš u postavke izvoza, drž taj fajl privatno jer sadrži token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Opcije patchiranja</string>
@@ -957,6 +959,7 @@ Detalji: %2$s"</string>
     <string name="settings_system_process_runtime_memory_limit_description">Veće granice ubrzavaju patchovanje na sposobnim uređajima</string>
     <string name="settings_system_process_runtime_enable">Memorija dostupna za patchiranje</string>
     <string name="settings_system_memory_limit_subtitle">Upozorenje: Niska memorija ograničenja može dovesti neuspeh u patchiranju većih aplikacija</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">Ovaj uređaj je ignorisao ograničenje memorije pri poslednjem pokretanju, pa zakrpljivanje može da se vrati na izvršavanje unutar Morphe-a.</string>
     <string name="settings_system_memory_limit_warning">%d MB ograničenje</string>
     <string name="settings_system_memory_limit_high_warning">Veliko ograničenje memorije može znatno usporiti primenu zakrpa na nekim uređajima. Povećajte ga samo ako primena zakrpa stalno ne uspeva pri nižim ograničenjima.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB ograničenje</string>
@@ -977,8 +980,20 @@ Detalji: %2$s"</string>
     <string name="settings_system_notifications_ringtone_picker_title">Izaberite ton</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">Uvoz i izvoz</string>
-    <string name="settings_system_keystore">Keystore</string>
-    <string name="settings_system_import_keystore_description">Uvozi ili izvozi vaš keystore za potpisivanje</string>
+    <string name="settings_system_signing_key">Ključ za potpisivanje</string>
+    <string name="settings_system_signing_key_description">Pravi rezervnu kopiju i vraća ključ kojim su potpisane vaše zakrpljene aplikacije</string>
+    <string name="settings_system_signing_key_dialog_description">Svaka aplikacija koju Morphe zakrpi potpisana je ovim ključem. Sačuvajte kopiju: bez njega, zakrpljene aplikacije se mogu ažurirati samo nakon deinstalacije.</string>
+    <string name="settings_system_signing_key_missing">Morphe ga kreira pri vašoj prvoj zakrpi.</string>
+    <string name="settings_system_signing_key_created">Kreirano %s</string>
+    <string name="settings_system_signing_key_fingerprint">SHA-256 otisak</string>
+    <string name="settings_system_backup_appearance_description">Tema, boje i jezik</string>
+    <string name="settings_system_backup_home_description">Grupe, skrivene aplikacije, sortiranje i prekidači</string>
+    <string name="settings_system_backup_patching">Zakrpljivanje i instaliranje</string>
+    <string name="settings_system_backup_patching_description">Instalater, zakrpljivač i sačuvani APK-ovi</string>
+    <string name="settings_system_backup_updates_description">Preliminarne verzije i provere ažuriranja</string>
+    <string name="settings_system_backup_sources_description">Prilagođeni izvori i GitHub token</string>
+    <string name="settings_system_backup_patch_selections_description">Izabrane zakrpe za svaku aplikaciju</string>
+    <string name="settings_system_backup_signing_key_note">Rezervna kopija ključa za potpisivanje pravi se posebno.</string>
     <string name="settings_system_import_keystore_dialog_title">Pogrešni izvor</string>
     <string name="settings_system_import_keystore_dialog_description">Morate unijeti podacima o keystore-u za njegovo uvođenje</string>
     <string name="settings_system_import_keystore_dialog_alias_field">Pogrešni izvor</string>
@@ -987,7 +1002,6 @@ Detalji: %2$s"</string>
     <string name="settings_system_import_keystore_wrong_credentials">Pogrešni izvor</string>
     <string name="settings_system_import_keystore_success">Kejtore uvezeno</string>
     <string name="settings_system_import_keystore_failed">Nijeleženo uvoz kejtora</string>
-    <string name="settings_system_export_keystore_unavailable">Nema dostupnih kejtora za izvoz</string>
     <string name="settings_system_export_keystore_success">Kejtore izvezeno</string>
     <string name="settings_system_export_keystore_failed">Nije uspelo izvozivanje skladišta ključeva</string>
     <string name="settings_system_show_password_field">Prikaži lozinku</string>
@@ -1006,7 +1020,7 @@ Detalji: %2$s"</string>
     <string name="import_mode_merge_description">Dodaj nedostajuće stavke iz rezervne kopije. Postojeće stavke ostaju nepromenjene</string>
     <string name="settings_system_export_manager_settings_fail">Није успело извожење подешавања Morphe-а: %s</string>
     <string name="settings_system_export_manager_settings_success">Извезена су подешавања Morphe-а</string>
-    <string name="settings_system_debug">Debug</string>
+    <string name="settings_system_export_debug_logs">Izvezi evidencije otklanjanja grešaka</string>
     <string name="settings_system_export_debug_logs_description">Čuva sistemske logove za rešavanje problema</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Neuspeh pri čitanju dnevnika (kôd izlaza %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Neuspešan izvoz evidencija</string>
@@ -1094,7 +1108,11 @@ Detalji: %2$s"</string>
     <string name="settings_system_custom_file_picker_description">Koristite ugrađeni odabir datoteka u Morpheu umesto fabričkog sistema</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">Preuzimač APK datoteka</string>
-    <string name="settings_system_apk_download_helper_description">Dozvolite instaliranoj pomoćnoj aplikaciji da preuzme originalne APK datoteke za vas. Datoteka dolazi iz te aplikacije, pa ovo omogučite samo ako joj verujete</string>
+    <string name="settings_system_apk_download_helper_trusted_count">Pouzdano: %1$d od %2$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">Pomoćne aplikacije mogu da preuzimaju originalne APK-ove umesto vas. U uputstvima za preuzimanje nude se samo one kojima ovde verujete.</string>
+    <string name="settings_system_apk_download_helper_warning">APK dolazi od pomoćne aplikacije, zato verujte samo aplikacijama koje poznajete. Morphe i dalje proverava paket, verziju i potpis svake datoteke pre zakrpljivanja.</string>
+    <string name="settings_system_apk_download_helper_installed_by">Instalirao: %s</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">Instalater nepoznat</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Prethodna direktorijum</string>
     <string name="file_picker_no_files">Ovde nema datoteka</string>
@@ -1111,8 +1129,6 @@ Detalji: %2$s"</string>
     <string name="file_picker_show_hidden_files">Prikaži skrivene datoteke</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">O programu</string>
-    <string name="settings_system_share_website">Podeli mrežni-sajt</string>
-    <string name="settings_system_share_website_description">Podele zvanični veb sajt aplikacije Morphe</string>
     <string name="settings_system_manager_description">Otvoreni projekat za moderno, pojednostavljeno ispravljanje popularnih Android aplikacija, pokretan povratnim odzivom i doprinosima zajednice</string>
     <string name="credits">Заслуге</string>
     <string name="credits_current_development">Тренутни развој</string>
@@ -1201,6 +1217,7 @@ Detalji: %2$s"</string>
     <string name="import_">Uvoz</string>
     <string name="export">Izvezi</string>
     <string name="copy">Kopiraj</string>
+    <string name="copied_to_clipboard">Kopirano u klipbord</string>
     <string name="download">Preuzmi</string>
     <string name="less">Manje</string>
     <string name="expand">Proširi</string>
@@ -1247,7 +1264,7 @@ Detalji: %2$s"</string>
     <string name="changelog_for_app">Izmene za %s</string>
     <string name="changelog_general_changes">Opšte izmene</string>
     <string name="whats_new">Šta je novo</string>
-    <string name="changelog_description">Pogledaj najnovije promene u ovom ažuriranju</string>
+    <string name="changelog_description">Šta je novo u ovoj verziji</string>
     <string name="changelog_download_fail">Preuzimanje zapisa o promenama nije uspelo: %s</string>
     <string name="changelog_empty">Nema dostupne verzije promjene</string>
     <string name="changelog_show_older">Prikaži starije verzije</string>
@@ -1294,5 +1311,8 @@ Da li i dalje želite da nastavite?"</string>
     <string name="tour_prompt_desc">Želite brzu turu po ključnim funkcijama Morphe?</string>
     <string name="tour_prompt_confirm">Pokaži mi</string>
     <string name="onboarding_restart_title">Tura po funkcijama</string>
-    <string name="onboarding_restart_desc">Prođite kroz vođenu turu po ključnim funkcijama Morphe.</string>
+    <string name="onboarding_restart_desc">Vođeni obilazak ključnih funkcija</string>
+    <string name="settings_appearance_patch_list">Lista zakrpa</string>
+    <string name="settings_appearance_patch_categories">Grupiši po kategoriji</string>
+    <string name="settings_appearance_patch_categories_description">Razdvoji liste zakrpa prema kategorijama koje izvor navodi, a izvore koji ne navode nijednu kategoriju ostavi kao običnu listu</string>
 </resources>

@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/patcher/split/SplitApkPreparer.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.patcher.split
 
 import android.content.res.Resources
@@ -14,6 +24,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.util.Locale
+import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
 sealed class SplitPreparationEvent {
@@ -128,10 +139,7 @@ object SplitApkPreparer {
     fun splitArchiveAbis(file: File): List<String> =
         runCatching {
             ZipFile(file).use { zip ->
-                val modules = zip.entries().asSequence()
-                    .filterNot { it.isDirectory }
-                    .filter { isSplitModuleEntry(it.name) }
-                    .toList()
+                val modules = splitModuleEntries(zip).toList()
 
                 modules.mapNotNull { Abi.namedIn(it.name) }.distinct().ifEmpty {
                     modules
@@ -145,16 +153,16 @@ object SplitApkPreparer {
 
     // Split module entries are always at the root of the archive (no path separator).
     // Nested .apk files (e.g. res/raw/) are embedded resources, not split modules.
-    internal fun isSplitModuleEntry(entryName: String): Boolean =
-        !entryName.contains('/') && entryName.endsWith(".apk", ignoreCase = true)
+    internal fun splitModuleEntries(zip: ZipFile): Sequence<ZipEntry> =
+        zip.entries().asSequence().filter { entry ->
+            !entry.isDirectory &&
+                    !entry.name.contains('/') &&
+                    entry.name.endsWith(".apk", ignoreCase = true)
+        }
 
     private fun hasEmbeddedApkEntries(file: File): Boolean =
         runCatching {
-            ZipFile(file).use { zip ->
-                zip.entries().asSequence().any { entry ->
-                    !entry.isDirectory && isSplitModuleEntry(entry.name)
-                }
-            }
+            ZipFile(file).use { zip -> splitModuleEntries(zip).any() }
         }.getOrDefault(false)
 
     private data class ExtractedModule(val name: String, val file: File)
@@ -323,10 +331,7 @@ object SplitApkPreparer {
         runInterruptible(Dispatchers.IO) {
             val extracted = mutableListOf<ExtractedModule>()
             ZipFile(source).use { zip ->
-                val apkEntries = zip.entries().asSequence()
-                    .filterNot { it.isDirectory }
-                    .filter { isSplitModuleEntry(it.name) }
-                    .toList()
+                val apkEntries = splitModuleEntries(zip).toList()
 
                 if (apkEntries.isEmpty()) {
                     throw IOException("Split archive does not contain any APK entries.")

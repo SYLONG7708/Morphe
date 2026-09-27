@@ -24,7 +24,6 @@ import app.morphe.manager.patcher.patch.PatchBundleInfo.Extensions.toPatchSelect
 import app.morphe.manager.patcher.patch.PatchInfo
 import app.morphe.manager.patcher.patch.installerTypeFor
 import app.morphe.manager.patcher.split.SplitApkInspector
-import app.morphe.manager.patcher.split.SplitApkPreparer
 import app.morphe.manager.ui.model.declaresPackageName
 import app.morphe.manager.util.AppDataResolver
 import app.morphe.manager.util.AppDataSource
@@ -560,26 +559,13 @@ class BatchPlanResolver(
 
     private suspend fun readAttachedApk(file: File): AttachedApk? {
         if (!file.exists()) return null
-        if (!SplitApkPreparer.isSplitArchive(file)) return readApk(file, file)
 
-        // A split archive is not a valid APK, so the representative base entry is extracted
-        // first, exactly like the single-app picker does
-        val extracted = SplitApkInspector.extractRepresentativeApk(
+        // A split archive is not a valid APK, so it is read through its base module, exactly
+        // like the single-app picker does
+        return SplitApkInspector.withRepresentativeApk(
             source = file,
             workspace = fs.uiTempDir
-        ) ?: return AttachedApk(
-            file = file,
-            packageName = null,
-            version = UNSPECIFIED_VERSION,
-            versionCode = null,
-            signatureHashes = null
-        )
-
-        return try {
-            readApk(extracted.file, file)
-        } finally {
-            extracted.cleanup()
-        }
+        ) { apk -> readApk(apk, file) }
     }
 
     /**

@@ -7,12 +7,11 @@ import re
 import subprocess
 from upstream_resolution import resolve_reviewed
 
-OWNED = {".github/workflows/release.yml", "README.md", "app-release.json", "app/gradle.properties"}
-UPSTREAM_ONLY_WORKFLOWS = {
-    ".github/workflows/build_pull_request.yml", ".github/workflows/crowdin_pull.yml",
-    ".github/workflows/crowdin_push.yml", ".github/workflows/open_pull_request.yml",
-    ".github/workflows/test_fcm.yml",
-}
+OWNED = {"README.md", "app-release.json", "app/gradle.properties"}
+
+
+class IntegrationNeeded(RuntimeError):
+    """The stable source changed in a way that requires a reviewed merge."""
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
@@ -20,6 +19,16 @@ def git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
     if check and result.returncode:
         raise RuntimeError(f"git {args[0]} failed: {result.stdout}{result.stderr}")
     return result
+
+
+def write_outputs(status: dict) -> None:
+    if output := os.environ.get("GITHUB_OUTPUT"):
+        with open(output, "a", encoding="utf-8") as stream:
+            stream.write(
+                f"changed={str(status.get('changed', False)).lower()}\n"
+                f"blocked={str(status.get('state') == 'blocked').lower()}\n"
+                f"tag={status['tag']}\ncommit={status['commit']}\n"
+            )
 
 
 def prepare(status: dict) -> None:
@@ -37,32 +46,28 @@ def prepare(status: dict) -> None:
         result = git("merge", "--no-ff", "--no-commit", commit, check=False)
         print(result.stdout, result.stderr)
         original_conflicts = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
-        # GitHub jobs belong to this signed release channel; upstream's publishing,
-        # translation and notification jobs must not replace or add to them.
-        git("restore", "--source=HEAD", "--staged", "--worktree", "--", ".github/workflows")
+        # CI jobs, reusable actions, and repository automation belong to this
+        # signed release channel and must not be replaced by upstream's tree.
+        git("restore", "--source=HEAD", "--staged", "--worktree", "--", ".github")
         conflicts = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
         for path in conflicts:
             if path in OWNED:
                 git("restore", "--ours", "--", path)
                 git("add", "--", path)
-            elif path in UPSTREAM_ONLY_WORKFLOWS:
-                git("rm", "--", path)
         remaining = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
         status["repairs"] = resolve_reviewed(remaining)
         remaining = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
         if remaining:
             status["conflicts"] = remaining
-            raise RuntimeError("Upstream merge needs a code change; current release retained: " + ", ".join(remaining))
+            raise IntegrationNeeded("Upstream merge needs a code change; current release retained: " + ", ".join(remaining))
         if result.returncode and not original_conflicts:
             raise RuntimeError("Official merge failed; current release retained")
         changed = True
         Path("config/upstream-manager.json").write_text(json.dumps({
             "repository": "MorpheApp/morphe-manager", "tag": tag, "commit": commit,
         }, indent=2) + "\n", encoding="utf-8")
-    if output := os.environ.get("GITHUB_OUTPUT"):
-        with open(output, "a", encoding="utf-8") as stream:
-            stream.write(f"changed={str(changed).lower()}\ntag={tag}\ncommit={commit}\n")
     status.update(state="prepared" if changed else "current", changed=changed)
+    write_outputs(status)
     print(f"Official Manager {tag}: {commit}; changed={changed}")
     if status.get("repairs"):
         print("Reviewed automatic repairs: " + ", ".join(status["repairs"]))
@@ -75,8 +80,14 @@ def main() -> None:
     status = {"state": "checking", "repairs": [], "conflicts": []}
     try:
         prepare(status)
+    except IntegrationNeeded as error:
+        status.update(state="blocked", changed=False, error=str(error))
+        if git("rev-parse", "-q", "--verify", "MERGE_HEAD", check=False).returncode == 0:
+            git("merge", "--abort")
+        write_outputs(status)
+        print(f"Official Manager {status['tag']} needs reviewed integration; current release retained")
     except Exception as error:
-        status.update(state="blocked", error=str(error))
+        status.update(state="error", error=str(error))
         # A retry starts from a clean checkout; retain the report, not a half-merged index.
         if git("rev-parse", "-q", "--verify", "MERGE_HEAD", check=False).returncode == 0:
             git("merge", "--abort")

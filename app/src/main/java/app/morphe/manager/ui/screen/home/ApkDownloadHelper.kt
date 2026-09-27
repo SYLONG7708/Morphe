@@ -21,28 +21,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import app.morphe.manager.R
+import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.ui.model.ApkDownloadHelperHost
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.util.ApkDownloadHelperContract
 import app.morphe.manager.util.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 
 /**
  * Wires up the optional APK download helper flow and returns the action that starts it,
- * or null when no helper can serve the request.
+ * or null when no trusted helper can serve the request.
  *
  * @param host The patching flow asking for the APK, which is what a result is handed back to.
- * @param enabled Whether a helper may be used at all. Resolving helpers queries PackageManager,
- * so callers pass true only while the download instructions dialog is on screen.
+ * @param enabled Whether a helper may be offered right now. Resolving helpers queries
+ * PackageManager, so callers pass true only while the download instructions dialog is on screen.
  */
 @Composable
 fun rememberApkDownloadHelperAction(
     host: ApkDownloadHelperHost,
-    enabled: Boolean
+    enabled: Boolean,
+    prefs: PreferencesManager = koinInject()
 ): (() -> Unit)? {
     val context = LocalContext.current
+    val trustedPackages by prefs.trustedApkDownloadHelpers.getAsState()
     val noResultMessage = stringResource(R.string.home_apk_helper_no_result)
     val noAccessMessage = stringResource(R.string.home_apk_helper_no_access)
     val noPackageMessage = stringResource(R.string.home_apk_helper_no_package)
@@ -50,9 +55,12 @@ fun rememberApkDownloadHelperAction(
     var showPicker by remember { mutableStateOf(false) }
 
     // Re-resolved every time the dialog opens, so helpers installed mid-session are picked up
-    LaunchedEffect(enabled) {
-        helpers = if (enabled) {
-            withContext(Dispatchers.IO) { ApkDownloadHelperContract.findHelpers(context) }
+    LaunchedEffect(enabled, trustedPackages) {
+        helpers = if (enabled && trustedPackages.isNotEmpty()) {
+            withContext(Dispatchers.IO) {
+                ApkDownloadHelperContract.findHelpers(context)
+                    .filter { it.componentName.packageName in trustedPackages }
+            }
         } else {
             emptyList()
         }
@@ -147,8 +155,10 @@ private fun ApkDownloadHelperDialog(
         ) {
             Text(
                 text = stringResource(R.string.home_apk_helper_description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = LocalDialogSecondaryTextColor.current
+                style = MaterialTheme.typography.bodyLarge,
+                color = LocalDialogSecondaryTextColor.current,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
             helpers.forEach { helper ->

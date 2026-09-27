@@ -42,6 +42,7 @@ class Game2048State(
     private var _hasWon by mutableStateOf(false)
     private var _isPaused by mutableStateOf(false)
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
 
     // board is read-only from outside; only accessed within this file via BoardGrid
     val board: Array<IntArray> get() = _board
@@ -88,7 +89,12 @@ class Game2048State(
         if (!snapshot.contentDeepEquals(next)) {
             _board = next
             points.value += gained
-            if (!_hasWon && next.any { row -> row.any { it >= 2048 } }) _hasWon = true
+            if (!_hasWon && next.any { row -> row.any { it >= 2048 } }) {
+                _hasWon = true
+                haptics.reward()
+            } else if (gained > 0) {
+                haptics.tick()
+            }
             spawnTile()
             checkGameOver()
         }

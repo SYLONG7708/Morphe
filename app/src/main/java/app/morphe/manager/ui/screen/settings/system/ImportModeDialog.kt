@@ -6,28 +6,21 @@
 package app.morphe.manager.ui.screen.settings.system
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MergeType
 import androidx.compose.material.icons.outlined.SwapVert
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.domain.repository.PatchBundleRepository.ImportMode
 import app.morphe.manager.ui.screen.shared.*
-import app.morphe.manager.util.isDarkBackground
 
 /**
  * Two-choice dialog that asks the user how an import should be applied:
@@ -55,8 +48,10 @@ fun ImportModeDialog(
         Column(verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)) {
             Text(
                 text = stringResource(descriptionRes),
-                style = MaterialTheme.typography.bodyMedium,
-                color = LocalDialogTextColor.current
+                style = MaterialTheme.typography.bodyLarge,
+                color = LocalDialogSecondaryTextColor.current,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
             ImportModeOption(
@@ -86,50 +81,28 @@ private fun ImportModeOption(
     isDestructive: Boolean,
     onClick: () -> Unit,
 ) {
-    val textColor = LocalDialogTextColor.current
-    val isDark = !textColor.isDarkBackground()
-    val accent = if (isDestructive) {
-        Color.Red.copy(alpha = if (isDark) 0.85f else 0.75f)
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
-    val borderColor = accent.copy(alpha = if (isDark) 0.4f else 0.3f)
-    val containerColor = accent.copy(alpha = if (isDark) 0.14f else 0.08f)
+    val destructiveColor = dialogDestructiveColor()
 
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        color = containerColor,
-        border = BorderStroke(1.dp, borderColor),
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = accent,
-                modifier = Modifier.size(28.dp)
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColor
-                )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = LocalDialogSecondaryTextColor.current
-                )
-            }
+    SettingsItemCard(
+        onClick = onClick,
+        borderWidth = 1.dp,
+        borderColor = if (isDestructive) {
+            destructiveColor.copy(alpha = 0.5f)
+        } else {
+            MaterialTheme.colorScheme.outlineVariant
         }
+    ) {
+        IconTextRow(
+            modifier = Modifier.padding(Defaults.ContentPadding),
+            leadingContent = {
+                ThemedIcon(
+                    icon = icon,
+                    tint = if (isDestructive) destructiveColor else MaterialTheme.colorScheme.primary
+                )
+            },
+            title = title,
+            description = description,
+            titleColor = if (isDestructive) destructiveColor else MaterialTheme.colorScheme.onSurface
+        )
     }
 }

@@ -182,8 +182,11 @@
     <!-- Notification content -->
     <string name="notification_manager_update_title">મોર્ફે અદ્યતન ઉપલબ્ધ છે</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
-    <!-- Bytecode mode -->
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">પેચ વિકલ્પો</string>
     <string name="settings_advanced_patch_options_restart_message">પેચ વિકલ્પો બદલવાથી નવા પ્રભાવો મેળવવા માટે એપ્લિકેશનને ફરીથી પેચ કરવાની જરૂર છે</string>
@@ -237,7 +240,6 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - APK download helper -->
     <!-- File Picker -->
     <!-- Settings - System Tab - About Section -->
-    <string name="settings_system_share_website">વેબસાઇટ બાટો </string>
     <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <!-- Shared strings -->
     <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the

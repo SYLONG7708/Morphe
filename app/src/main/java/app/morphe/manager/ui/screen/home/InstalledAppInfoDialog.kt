@@ -169,14 +169,13 @@ fun InstalledAppInfoDialog(
         ?.takeIf { it == supportedVersion?.version }
         ?.let { { homeViewModel.stopIgnoringSupportedVersion(catalogPackageName) } }
 
-    // Accent color resolution order: bundle metadata (appIconColor) -> KnownApps.brandColor -> default.
+    // Accent color resolution order: bundle metadata (appIconColor) -> default.
     // originalPackageName needed because metadata is keyed by original pkg, not patched.
     val bundleAppMetadata by homeViewModel.bundleAppMetadataFlow.collectAsStateWithLifecycle()
     val appAccentColor: Color by remember(packageName) {
         derivedStateOf {
             val orig = viewModel.installedApp?.originalPackageName ?: packageName
             bundleAppMetadata[orig]?.downloadColor
-                ?: KnownApps.fromPackage(orig)?.brandColor
                 ?: KnownApps.DEFAULT_DOWNLOAD_COLOR
         }
     }

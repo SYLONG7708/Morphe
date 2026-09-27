@@ -79,6 +79,7 @@ class BricksGameState(
     var isLaunched by mutableStateOf(false)
         private set
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
     override val score get() = points.value
     override val highScore get() = points.high
     override var isGameOver by mutableStateOf(false)
@@ -170,7 +171,7 @@ class BricksGameState(
         val enteredFromSide = prevY > rowTop && prevY < rowTop + BRICK_ROW_HEIGHT
         if (enteredFromSide) velocityX = -velocityX else velocityY = -velocityY
 
-        if (bricks.none { it }) nextWave()
+        if (bricks.none { it }) nextWave() else haptics.tick()
     }
 
     private fun bouncePaddle() {
@@ -188,6 +189,7 @@ class BricksGameState(
 
     private fun nextWave() {
         points.value += WAVE_BONUS
+        haptics.reward()
         speed = (speed + BALL_SPEED_PER_WAVE).coerceAtMost(BALL_SPEED_MAX)
         bricks = fullWave()
         resetBall()

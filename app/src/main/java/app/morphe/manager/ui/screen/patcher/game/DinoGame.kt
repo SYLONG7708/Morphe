@@ -43,6 +43,7 @@ private const val BASE_SPEED  = 0.35f  // canvas-widths per second at start
 private const val MAX_SPEED   = 0.80f  // upper speed cap
 private const val GRAVITY     = 2.8f   // canvas-height per second squared
 private const val JUMP_VEL    = 1.05f  // upward velocity on tap (canvas-height per second)
+private const val MILESTONE   = 100    // score between the buzzes that mark the run
 
 data class DinoObstacle(
     val x: Float,       // left edge, fraction of canvas width
@@ -73,6 +74,7 @@ class DinoGameState(
     var obstacles by mutableStateOf<List<DinoObstacle>>(emptyList())
         private set
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
     override val score get() = points.value
     override val highScore get() = points.high
     override var isGameOver by mutableStateOf(false)
@@ -109,7 +111,9 @@ class DinoGameState(
 
         val speed = min(BASE_SPEED + elapsedSec * 0.03f, MAX_SPEED)
         distanceTraveled += speed * dt
+        val previous = points.value
         points.value = (distanceTraveled * 100).toInt()
+        if (points.value / MILESTONE > previous / MILESTONE) haptics.reward()
 
         // Leg animation when on ground
         if (dinoJump == 0f) legPhase = ((nowMs / 150) % 2).toInt()

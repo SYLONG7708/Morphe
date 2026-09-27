@@ -2,7 +2,6 @@ package app.morphe.manager.patcher.runtime.process
 
 import android.os.Parcelable
 import app.morphe.manager.patcher.patch.PatchBundle
-import app.morphe.patcher.dex.BytecodeMode
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
@@ -16,9 +15,8 @@ data class Parameters(
     val configurations: List<PatchConfiguration>,
     val skipUnneededSplits: Boolean = false,
     // If non-null, PatcherProcess writes the merged mono-APK to this path after prepareIfNeeded.
-    // ProcessRuntime reads it back so the main process knows the merged file location.
-    val mergedInputFile: String? = null,
-    val bytecodeMode: BytecodeMode,
+    // ProcessRuntime reads it back so the main process knows the merged file location
+    val mergedInputFile: String? = null
 ) : Parcelable
 
 @Parcelize

@@ -5,6 +5,7 @@
 
 package app.morphe.manager.ui.screen.settings.system
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -13,27 +14,43 @@ import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Launch
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import app.morphe.manager.R
-import app.morphe.manager.ui.screen.settings.advanced.NotificationPermissionDialog
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.SettingsViewModel
 import app.morphe.manager.util.displayName
+import app.morphe.manager.util.openAppNotificationSettings
 import app.morphe.manager.util.rememberAdaptiveFilePicker
+import app.morphe.manager.worker.UpdateCheckInterval
+import kotlin.math.roundToInt
 
 /**
- * Consolidated notification settings: background update alerts and patcher completion sounds.
+ * Consolidated notification settings: background update alerts with their check interval, and patcher
+ * completion sounds.
  */
 @Composable
 fun NotificationsDialog(
@@ -55,6 +72,7 @@ fun NotificationsDialog(
     val ringtoneTitle = stringResource(R.string.settings_system_notifications_ringtone_picker_title)
 
     var showPermissionDialog by remember { mutableStateOf(false) }
+    var showIntervalDialog by remember { mutableStateOf(false) }
     var showSourcePickerFor by remember { mutableStateOf<SoundKind?>(null) }
     var pendingRingtoneFor by remember { mutableStateOf<SoundKind?>(null) }
     var pendingFileFor by remember { mutableStateOf<SoundKind?>(null) }
@@ -112,6 +130,17 @@ fun NotificationsDialog(
                 )
                 showPermissionDialog = false
             }
+        )
+    }
+
+    if (showIntervalDialog) {
+        UpdateCheckIntervalDialog(
+            currentInterval = updateCheckInterval,
+            onIntervalSelected = {
+                settingsViewModel.selectUpdateInterval(it)
+                showIntervalDialog = false
+            },
+            onDismiss = { showIntervalDialog = false }
         )
     }
 
@@ -180,8 +209,38 @@ fun NotificationsDialog(
                     )
                 )
 
-                SettingsDivider()
+                AnimatedVisibility(
+                    visible = backgroundUpdateNotifications,
+                    enter = Animations.expandFadeEnter,
+                    exit = Animations.shrinkFadeExit
+                ) {
+                    Column {
+                        // FCM pushes updates as they land, so the polling interval only matters without GMS
+                        if (!settingsViewModel.hasGms) {
+                            SettingsDivider()
 
+                            SettingsItem(
+                                onClick = { showIntervalDialog = true },
+                                leadingContent = { ThemedIcon(icon = Icons.Outlined.Schedule) },
+                                title = stringResource(R.string.settings_advanced_update_interval),
+                                subtitle = stringResource(updateCheckInterval.labelResId)
+                            )
+                        }
+
+                        SettingsDivider()
+
+                        // Manager and patch updates have channels of their own, tuned where Android keeps them
+                        SettingsItem(
+                            onClick = { context.openAppNotificationSettings() },
+                            leadingContent = { ThemedIcon(icon = Icons.AutoMirrored.Outlined.Launch) },
+                            title = stringResource(R.string.settings_system_notifications_categories),
+                            subtitle = stringResource(R.string.settings_system_notifications_categories_description)
+                        )
+                    }
+                }
+            }
+
+            SettingsGroup {
                 SettingsSwitchItem(
                     checked = completionSound,
                     onToggle = { settingsViewModel.setPatcherCompletionSound(!completionSound) },
@@ -189,26 +248,32 @@ fun NotificationsDialog(
                     title = stringResource(R.string.settings_system_patcher_completion_sound),
                     subtitle = stringResource(R.string.settings_system_patcher_completion_sound_description)
                 )
-            }
 
-            SettingsGroup {
-                SoundSelectorItem(
-                    title = stringResource(R.string.settings_system_notifications_success_sound),
-                    icon = Icons.Outlined.CheckCircle,
-                    currentUri = successSoundUri,
-                    defaultLabel = defaultLabel,
-                    enabled = completionSound,
-                    onClick = { showSourcePickerFor = SoundKind.Success }
-                )
-                SettingsDivider()
-                SoundSelectorItem(
-                    title = stringResource(R.string.settings_system_notifications_error_sound),
-                    icon = Icons.Outlined.ErrorOutline,
-                    currentUri = errorSoundUri,
-                    defaultLabel = defaultLabel,
-                    enabled = completionSound,
-                    onClick = { showSourcePickerFor = SoundKind.Error }
-                )
+                // Tones only play with the completion sound on, so picking one is offered under it
+                AnimatedVisibility(
+                    visible = completionSound,
+                    enter = Animations.expandFadeEnter,
+                    exit = Animations.shrinkFadeExit
+                ) {
+                    Column {
+                        SettingsDivider()
+                        SoundSelectorItem(
+                            title = stringResource(R.string.settings_system_notifications_success_sound),
+                            icon = Icons.Outlined.CheckCircle,
+                            currentUri = successSoundUri,
+                            defaultLabel = defaultLabel,
+                            onClick = { showSourcePickerFor = SoundKind.Success }
+                        )
+                        SettingsDivider()
+                        SoundSelectorItem(
+                            title = stringResource(R.string.settings_system_notifications_error_sound),
+                            icon = Icons.Outlined.ErrorOutline,
+                            currentUri = errorSoundUri,
+                            defaultLabel = defaultLabel,
+                            onClick = { showSourcePickerFor = SoundKind.Error }
+                        )
+                    }
+                }
             }
         }
     }
@@ -220,7 +285,6 @@ private fun SoundSelectorItem(
     icon: ImageVector,
     currentUri: String,
     defaultLabel: String,
-    enabled: Boolean,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -228,7 +292,7 @@ private fun SoundSelectorItem(
         if (currentUri.isBlank()) defaultLabel else ringtoneDisplayName(context, currentUri) ?: currentUri
     }
     SettingsItem(
-        onClick = { if (enabled) onClick() },
+        onClick = onClick,
         title = title,
         subtitle = subtitle,
         leadingContent = { ThemedIcon(icon = icon) }
@@ -293,4 +357,135 @@ private fun ringtoneDisplayName(context: Context, uriString: String): String? {
     val uri = runCatching { uriString.toUri() }.getOrNull() ?: return null
     return runCatching { RingtoneManager.getRingtone(context, uri)?.getTitle(context) }.getOrNull()
         ?: uri.displayName(context.contentResolver)
+}
+
+/**
+ * Dialog shown on Android 13+ when the user enables background notifications
+ * and [Manifest.permission.POST_NOTIFICATIONS] has not yet been granted.
+ */
+@Composable
+fun NotificationPermissionDialog(
+    onDismissRequest: () -> Unit,
+    onPermissionResult: (granted: Boolean) -> Unit,
+    title: String = stringResource(R.string.notification_permission_dialog_title),
+) {
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = onPermissionResult
+    )
+
+    AppDialog(
+        onDismissRequest = onDismissRequest,
+        title = title,
+        footer = {
+            AppDialogButtonRow(
+                primaryText = stringResource(R.string.allow),
+                onPrimaryClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        onPermissionResult(true)
+                    }
+                },
+                secondaryText = stringResource(android.R.string.cancel),
+                onSecondaryClick = onDismissRequest
+            )
+        }
+    ) {
+        Text(
+            text = stringResource(R.string.notification_permission_dialog_description),
+            style = MaterialTheme.typography.bodyLarge,
+            color = LocalDialogSecondaryTextColor.current,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+/** Discrete-slider dialog to pick how often the background update check runs. */
+@Composable
+private fun UpdateCheckIntervalDialog(
+    currentInterval: UpdateCheckInterval,
+    onIntervalSelected: (UpdateCheckInterval) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val title = stringResource(R.string.settings_advanced_update_interval_dialog_title)
+    val chipSubtitle = stringResource(R.string.settings_advanced_update_interval_chip_subtitle)
+    val entries = UpdateCheckInterval.entries
+    val sliderState = rememberSliderState(
+        value = entries.indexOf(currentInterval).toFloat(),
+        steps = entries.size - 2, // n entries → n-2 internal steps
+        trackRange = 0f..(entries.size - 1).toFloat()
+    )
+    val selectedInterval = entries[sliderState.value.roundToInt().coerceIn(entries.indices)]
+
+    AppDialog(
+        onDismissRequest = onDismiss,
+        title = title,
+        footer = {
+            AppDialogButtonRow(
+                primaryText = stringResource(R.string.save),
+                onPrimaryClick = { onIntervalSelected(selectedInterval) },
+                primaryIcon = Icons.Outlined.Check,
+                secondaryText = stringResource(android.R.string.cancel),
+                onSecondaryClick = onDismiss
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Current value chip
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(Defaults.CompactCornerRadius),
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                border = CardBorder.tinted(MaterialTheme.colorScheme.primary)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = stringResource(selectedInterval.labelResId),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = LocalDialogTextColor.current
+                    )
+                    Text(
+                        text = chipSubtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = LocalDialogSecondaryTextColor.current,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            // Slider
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Slider(
+                    state = sliderState,
+                    onValueChange = { sliderState.value = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                SliderScaleLabels(
+                    start = stringResource(entries.first().labelResId),
+                    end = stringResource(entries.last().labelResId)
+                )
+            }
+
+            // Battery optimization warning
+            Notice(
+                text = stringResource(R.string.settings_advanced_update_interval_battery_warning),
+                tone = SemanticTone.Warning,
+                icon = Icons.Outlined.BatteryAlert,
+                density = NoticeDensity.Compact
+            )
+        }
+    }
 }

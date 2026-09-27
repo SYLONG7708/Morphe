@@ -49,6 +49,7 @@ class SnakeGameState(
     private var direction = SnakeDir.RIGHT
     private var pendingDir = SnakeDir.RIGHT
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
     override val score get() = points.value
     override val highScore get() = points.high
     override var isGameOver by mutableStateOf(false)
@@ -83,7 +84,7 @@ class SnakeGameState(
         }
         val ateFood = newHead == food
         snake = if (ateFood) listOf(newHead) + snake else listOf(newHead) + snake.dropLast(1)
-        if (ateFood) { points.value++; spawnFood() }
+        if (ateFood) { points.value++; haptics.tick(); spawnFood() }
     }
 
     override fun restart() {

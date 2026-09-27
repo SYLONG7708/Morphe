@@ -7,56 +7,53 @@ package app.morphe.manager.ui.screen.shared
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DoneAll
 import androidx.compose.material.icons.outlined.RemoveDone
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.ui.theme.MonochromeThemeDefaults
-import app.morphe.manager.util.withToast
+
+/** Shape of the [MultiSelectShell] surface: rounded where it leaves the bottom edge, like a sheet. */
+private val ShellShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
 
 /**
- * Metrics of the [MultiSelectShell] surface. The bar floats over the content it belongs to, so
- * layouts underneath have to keep that content clear of it; the values they pad by live here
- * rather than being restated at each call site, where nothing would keep them in step.
- */
-object MultiSelectBarDefaults {
-    /** Padding the shell keeps above and below its surface. */
-    val SurfacePadding = 8.dp
-
-    /** Height of a bar carrying a counter line and one row of pills. */
-    val Height = 100.dp
-
-    /** Bottom padding a scrolling list needs for its last item to clear the bar. */
-    val ListClearance = Height - SurfacePadding
-
-    /** Clearance for floating controls, which keep a little more air between them and the bar. */
-    val ControlClearance = 96.dp
-}
-
-/**
- * Slide-up surface used to host a multi-select action row. Keeps the surface, elevation
- * and enter/exit animations consistent between the home multi-select bar and the saved-APK
- * dialog footer.
+ * Slide-up surface hosting a selection panel or a reorder bar. It sits on the bottom edge of the
+ * screen like a sheet, with its content kept clear of the navigation bar, so it is meant for the
+ * home screen's footer dock and the [AppDialog] bottom bar. Keeps the surface, elevation and
+ * enter/exit animations the same everywhere a selection is made.
+ *
+ * @param onBack Closes the panel on back, which then follows the predictive gesture down like
+ * an [AppBottomSheet] does. Required so no panel is left to a back handler that cannot animate
+ * it, such as the dismissal of the [AppDialog] it is docked to.
  */
 @Composable
 fun MultiSelectShell(
     visible: Boolean,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
+    val backProgress = remember { Animatable(0f) }
+    // A gesture that closed the panel leaves it drawn down, which the next opening must not inherit
+    LaunchedEffect(visible) { if (visible) backProgress.snapTo(0f) }
+    PredictiveBackSlideHandler(backProgress, enabled = visible, onBack = onBack)
+
     AnimatedVisibility(
         visible = visible,
         enter = Animations.springSlideUpEnter,
@@ -66,20 +63,22 @@ fun MultiSelectShell(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = MultiSelectBarDefaults.SurfacePadding),
-            shape = RoundedCornerShape(16.dp),
+                .padding(horizontal = Defaults.SheetSideInset)
+                .predictiveBackSlide(backProgress),
+            shape = ShellShape,
             color = MonochromeThemeDefaults.surfaceColor(MaterialTheme.colorScheme.surfaceContainerHigh),
             shadowElevation = 8.dp,
-            tonalElevation = 4.dp,
-            content = content
-        )
+            tonalElevation = 4.dp
+        ) {
+            Box(modifier = Modifier.navigationBarsPadding().padding(bottom = 4.dp)) { content() }
+        }
     }
 }
 
 private class LastVisibleValue<T>(var value: T)
 
 /**
- * Returns [value] while [visible] is true, and the last value seen before that afterwards.
+ * Returns [value] while [visible] is true, and the last value seen before that afterward.
  *
  * Action handlers clear the selection in the same pass that hides the bar, so a row rendered
  * from live state loses buttons and zeroes its counter while it is still sliding out.
@@ -95,84 +94,205 @@ fun <T> rememberWhileVisible(visible: Boolean, value: T): T {
 }
 
 /**
- * Counter label ("N selected") followed by an [ActionPillRow] with SelectAll,
- * optional DeselectAll and Cancel, and caller-provided [actions]. Meant to be placed
- * inside a [MultiSelectShell].
+ * Top line of a panel in a [MultiSelectShell] or of an [AppBottomSheet]: what it is about at the
+ * start, and its controls, if any, at the end, which are [TitleAction]s so they read like the
+ * ones in a dialog's title row.
+ */
+@Composable
+fun PanelHeader(
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = Defaults.ContentPadding, vertical = Defaults.ItemSpacing),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(modifier = Modifier.weight(1f)) { title() }
+        // Outside a dialog nothing sets the text color title actions tint with, so they take the
+        // panel's own
+        CompositionLocalProvider(LocalDialogTextColor provides LocalContentColor.current) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                content = actions
+            )
+        }
+    }
+}
+
+/** Title of a [PanelHeader], set like the section headers across the app. */
+@Composable
+fun PanelTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+/** Line under a [PanelTitle] with a detail of what the panel holds, such as a count or a size. */
+@Composable
+fun PanelSubtitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+}
+
+/** What an action of a panel does, as far as its color goes. */
+enum class ActionTone { Neutral, Primary, Secondary, Tertiary, Destructive }
+
+/**
+ * One action of a panel, listed by [PanelActions] under its [label]. The label also keys its row,
+ * so no two actions of one panel share a label.
+ */
+@Immutable
+data class SelectionAction(
+    val icon: ImageVector,
+    val label: String,
+    val onClick: () -> Unit,
+    val enabled: Boolean = true,
+    val tone: ActionTone = ActionTone.Neutral
+)
+
+/**
+ * Selection panel: the "N selected" counter with SelectAll (or DeselectAll) and Cancel, over every
+ * one of [actions] as a row under its full name. Meant to be placed inside a [MultiSelectShell].
+ *
+ * None of the actions has anything to act on until something is selected.
  */
 @Composable
 fun SelectionActionBar(
     selectedCount: Int,
     totalCount: Int,
     onSelectAll: () -> Unit,
+    actions: List<SelectionAction>,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     onDeselectAll: (() -> Unit)? = null,
-    onCancel: (() -> Unit)? = null,
-    actions: @Composable () -> Unit = {}
+    onCancel: (() -> Unit)? = null
 ) {
-    val context = LocalContext.current
-
     val selectAllLabel = stringResource(R.string.select_all)
-    val selectAllDone = stringResource(R.string.select_all_done)
     val deselectAllLabel = stringResource(R.string.deselect_all)
-    val deselectAllDone = stringResource(R.string.deselect_all_done)
     val cancelLabel = stringResource(android.R.string.cancel)
     val selectedLabel = stringResource(R.string.selected).lowercase()
     val allSelected = totalCount in 1..selectedCount
     val canToggleToDeselect = allSelected && onDeselectAll != null
     val selectionToggleLabel = if (canToggleToDeselect) deselectAllLabel else selectAllLabel
-    val selectionToggleDone = if (canToggleToDeselect) deselectAllDone else selectAllDone
+    val hasSelection = selectedCount > 0
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        AnimatedContent(
-            targetState = selectedCount,
-            transitionSpec = Animations.compactCounterTransitionSpec,
-            label = "selected_count"
-        ) { count ->
-            Text(
-                text = "$count $selectedLabel",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        if (subtitle != null) {
-            AnimatedContent(
-                targetState = subtitle,
-                transitionSpec = Animations.compactCounterTransitionSpec,
-                label = "selection_subtitle"
-            ) { text ->
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
-                )
+    Column(modifier = modifier.fillMaxWidth()) {
+        PanelHeader(
+            title = {
+                Column {
+                    AnimatedContent(
+                        targetState = selectedCount,
+                        transitionSpec = Animations.compactCounterTransitionSpec,
+                        label = "selected_count"
+                    ) { count ->
+                        PanelTitle(text = "$count $selectedLabel")
+                    }
+                    if (subtitle != null) {
+                        AnimatedContent(
+                            targetState = subtitle,
+                            transitionSpec = Animations.compactCounterTransitionSpec,
+                            label = "selection_subtitle"
+                        ) { text ->
+                            PanelSubtitle(text = text)
+                        }
+                    }
+                }
             }
-        }
-
-        ActionPillRow {
-            ActionPillButton(
-                onClick = context.withToast(selectionToggleDone) {
-                    if (canToggleToDeselect) onDeselectAll() else onSelectAll()
-                },
+        ) {
+            TitleAction(
                 icon = if (canToggleToDeselect) Icons.Outlined.RemoveDone else Icons.Outlined.DoneAll,
                 contentDescription = selectionToggleLabel,
-                tooltip = selectionToggleLabel,
+                onClick = { if (canToggleToDeselect) onDeselectAll() else onSelectAll() },
+                style = TitleActionStyle.Toggle,
+                active = canToggleToDeselect,
                 enabled = canToggleToDeselect || selectedCount < totalCount
             )
-            actions()
             if (onCancel != null) {
-                ActionPillButton(
-                    onClick = onCancel,
+                TitleAction(
                     icon = Icons.Outlined.Close,
                     contentDescription = cancelLabel,
-                    tooltip = cancelLabel
+                    onClick = onCancel
                 )
             }
         }
+
+        PanelActions(actions = actions, enabled = hasSelection)
     }
+}
+
+/**
+ * The actions of a panel in a [MultiSelectShell], one row each under its full name, so what every
+ * one does reads without guessing from an icon. Nothing is folded away, and the rows are kept
+ * short enough for the panel to leave the list above it usable. Destructive actions are kept
+ * apart from the rest by a divider. [enabled] holds them all back at once, as an empty selection
+ * does.
+ */
+@Composable
+fun PanelActions(actions: List<SelectionAction>, enabled: Boolean = true) {
+    actions.forEachIndexed { index, action ->
+        val startsDestructiveGroup = action.tone == ActionTone.Destructive &&
+                index > 0 && actions[index - 1].tone != ActionTone.Destructive
+        if (startsDestructiveGroup) {
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = Defaults.ContentPadding, vertical = 4.dp)
+            )
+        }
+        // Keyed so a row keeps its own state when an action ahead of it comes or goes
+        key(action.label) {
+            PanelActionRow(action = action, enabled = enabled && action.enabled)
+        }
+    }
+}
+
+@Composable
+private fun PanelActionRow(action: SelectionAction, enabled: Boolean) {
+    val alpha = if (enabled) 1f else Defaults.DISABLED_ALPHA
+    val accent = action.tone.accentColor()
+    // The icon carries the tone; the label only takes it as a warning, so the list reads as one
+    // piece with its destructive entries standing out
+    val textColor = if (action.tone == ActionTone.Destructive) accent else MaterialTheme.colorScheme.onSurface
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable(enabled = enabled, role = Role.Button, onClick = action.onClick)
+            .padding(horizontal = Defaults.ContentPadding),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Icon(
+            imageVector = action.icon,
+            contentDescription = null,
+            tint = accent.copy(alpha = accent.alpha * alpha),
+            modifier = Modifier.size(Defaults.IconSize)
+        )
+        // Set like the item rows across the app
+        Text(
+            text = action.label,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = textColor.copy(alpha = textColor.alpha * alpha)
+        )
+    }
+}
+
+/** The tone as a color that stands on the plain surface a panel is drawn over. */
+@Composable
+private fun ActionTone.accentColor(): Color = when (this) {
+    ActionTone.Neutral -> MaterialTheme.colorScheme.onSurfaceVariant
+    ActionTone.Primary -> MaterialTheme.colorScheme.primary
+    ActionTone.Secondary -> MaterialTheme.colorScheme.secondary
+    ActionTone.Tertiary -> MaterialTheme.colorScheme.tertiary
+    ActionTone.Destructive -> MaterialTheme.colorScheme.error
 }

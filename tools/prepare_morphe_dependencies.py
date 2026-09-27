@@ -41,7 +41,10 @@ def restore(root: Path = ROOT) -> None:
                     if sha256(target / filename) != digest:
                         raise ValueError(f"Vendored dependency hash mismatch: {filename}")
             continue
-        with tempfile.TemporaryDirectory(prefix=f"{name}-", dir=root) as staging:
+        # Gradle may briefly hold files open after a Windows build. The verified
+        # artifacts can still be recorded; a leftover staging tree is disposable.
+        with tempfile.TemporaryDirectory(prefix=f"{name}-", dir=root,
+                                         ignore_cleanup_errors=(os.name == "nt")) as staging:
             source = Path(staging) / "source"
             subprocess.run(["git", "clone", "--depth", "1", "--branch", f"v{version}",
                             f"https://github.com/{repository}.git", str(source)], check=True)

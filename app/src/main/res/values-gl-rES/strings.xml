@@ -288,8 +288,11 @@ Elixe outro APK</string>
     <string name="notification_channel_patcher">Parcheando</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert_mode">Modo Experto</string>
-    <!-- Bytecode mode -->
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Opcións de parche</string>
     <!-- Settings - Advanced Tab - Patch Options Section: Custom Branding -->
@@ -301,6 +304,7 @@ Elixe outro APK</string>
     <!-- Settings - System Tab - Notifications Section -->
     <string name="settings_system_notifications_sound_default">Predefinido</string>
     <!-- Settings - System Tab - Import and Export Section -->
+    <string name="settings_system_export_debug_logs">Exportar rexistros de depuración</string>
     <string name="settings_system_export_debug_logs_export_failed">Fallo ao exportar rexistros</string>
     <!-- Settings - System Tab - Files & Storage Section -->
     <!-- Settings - System Tab - Storage Management screen -->

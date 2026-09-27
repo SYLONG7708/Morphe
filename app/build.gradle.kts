@@ -157,7 +157,7 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.preview)
-    implementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.livedata)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.material3)
@@ -250,6 +250,20 @@ dependencies {
     // Unit tests
     testImplementation(libs.kotlin.test.junit)
 }
+
+/**
+ * Locales Morphe is translated into, read from its resource folders so a new Crowdin language needs
+ * no change here. Each comes with and without the region, since libraries mostly use the bare one.
+ */
+val translatedLocales = project.file("src/main/res").listFiles().orEmpty()
+    .mapNotNull { Regex("values-([a-z]{2,3})(-r[A-Z]{2})?").matchEntire(it.name) }
+    .flatMap { match ->
+        val language = match.groupValues[1]
+        // Filipino is still filed under its legacy Tagalog code by some libraries
+        listOfNotNull(language, match.value.removePrefix("values-"), "tl".takeIf { language == "fil" })
+    }
+    .plus("en")
+    .toSet()
 
 android {
     namespace = "app.morphe.manager"
@@ -407,13 +421,29 @@ android {
 
                 // Crypto optional metadata
                 "/org/bouncycastle/pqc/**.properties",
-                "/org/bouncycastle/x509/**.properties"
+                "/org/bouncycastle/x509/**.properties",
+
+                // ANTLR tool templates and grammar tokens; smali only needs the runtime at patch time
+                "/org/antlr/codegen/**",
+                "/org/antlr/tool/**",
+                "/com/android/tools/smali/smali/*.tokens",
+
+                // Mocking agent resources whose classes R8 already strips
+                "/org/mockito/**",
+                "/win32-x86/**",
+                "/win32-x86-64/**"
             )
         )
 
         jniLibs {
             useLegacyPackaging = true
         }
+    }
+
+    androidResources {
+        // Libraries ship strings in far more languages than Morphe has, which only bloat resources.arsc
+        @Suppress("UnstableApiUsage")
+        localeFilters += translatedLocales
     }
 
     buildFeatures {

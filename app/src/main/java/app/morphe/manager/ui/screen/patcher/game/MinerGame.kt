@@ -78,6 +78,7 @@ class MinerGameState(
     var mineCount by mutableIntStateOf(MINE_COUNT_START)
         private set
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
     override val score get() = points.value
     override val highScore get() = points.high
     override var isGameOver by mutableStateOf(false)
@@ -143,6 +144,7 @@ class MinerGameState(
     // a game that is normally won or lost into one with an endless high score
     private fun clearField() {
         points.value += MINE_FIELD_BONUS
+        haptics.reward()
         mineCount = (mineCount + 1).coerceAtMost(MINE_COUNT_MAX)
         mineField = MineField.empty()
     }

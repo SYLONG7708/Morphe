@@ -82,12 +82,14 @@ fun PickerButtonRow(
 }
 
 /**
- * Dropdown for an option that declares a fixed set of values, shown with the option title and
+ * Dropdown for an option that declares a set of values, shown with the option title and
  * description above it. Used both while patching and by the simple mode option dialogs, so an
  * option is offered the same way wherever it is edited.
  *
  * A value the option declares as null stands for "let the patch decide", so picking it clears
  * the stored value instead of writing a blank the patch would reject as invalid.
+ *
+ * @param allowCustomValue Whether a value besides [presets] can be typed in.
  */
 @Composable
 fun DropdownOptionItem(
@@ -95,6 +97,7 @@ fun DropdownOptionItem(
     description: String,
     value: String,
     presets: Map<String, Any?>,
+    allowCustomValue: Boolean = true,
     onValueChange: (Any?) -> Unit
 ) {
     // Convert presets to String map for dropdown: display name -> value as string
@@ -131,7 +134,8 @@ fun DropdownOptionItem(
                     if (declared != null) declared.value else newValue.takeIf { it.isNotBlank() }
                 )
             },
-            dropdownItems = dropdownItems
+            dropdownItems = dropdownItems,
+            allowCustomValue = allowCustomValue
         )
     }
 }

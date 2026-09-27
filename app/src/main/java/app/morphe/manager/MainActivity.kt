@@ -617,6 +617,17 @@ private fun MorpheManager(vm: MainViewModel) {
 
     val totalOnboardingSteps = homeSteps.size + sheetSteps.size + settingsSteps.size
 
+    // Every entry point starts the tour from its first step on the home screen
+    val startOnboardingTour: () -> Unit = {
+        onboardingPhase = OnboardingPhase.HOME
+        phaseInitialStep = 0
+        showOnboardingOverlay = true
+        wantsOnboardingTour.value = true
+    }
+    val declineOnboardingTour: () -> Unit = {
+        scope.launch { prefs.firstLaunch.update(false) }
+    }
+
     // Box with background at the highest level
     Box(
         modifier = Modifier
@@ -702,6 +713,8 @@ private fun MorpheManager(vm: MainViewModel) {
                     targets = params.targets,
                     useMount = params.useMount,
                     onBackClick = { navController.popBackStack() },
+                    onStartTour = startOnboardingTour,
+                    onDeclineTour = declineOnboardingTour,
                     onAppStateChanged = homeViewModel::notifyAppStateChanged
                 )
             }
@@ -720,14 +733,8 @@ private fun MorpheManager(vm: MainViewModel) {
                     usingMountInstall = usingMountInstallState.value,
                     onBackgroundSpeedChange = { patcherBackgroundSpeed.floatValue = it },
                     onPatchingCompleted = { patchingCompleted.value = true },
-                    onStartTour = {
-                        phaseInitialStep = 0
-                        onboardingPhase = OnboardingPhase.HOME
-                        wantsOnboardingTour.value = true
-                    },
-                    onDeclineTour = {
-                        scope.launch { prefs.firstLaunch.update(false) }
-                    }
+                    onStartTour = startOnboardingTour,
+                    onDeclineTour = declineOnboardingTour
                 )
             }
 
@@ -740,10 +747,7 @@ private fun MorpheManager(vm: MainViewModel) {
                     globalOnboardingState = if (showOnboarding) globalOnboardingState else null,
                     onStartTour = if (!showOnboarding) {
                         {
-                            onboardingPhase = OnboardingPhase.HOME
-                            phaseInitialStep = 0
-                            showOnboardingOverlay = true
-                            wantsOnboardingTour.value = true
+                            startOnboardingTour()
                             navController.popBackStack(HomeScreen, false)
                         }
                     } else null

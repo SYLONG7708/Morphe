@@ -76,6 +76,7 @@ fun KeystoreCredentialsDialog(
                     format = KeystoreInputFormat.entries.firstOrNull { it.name == name } ?: format
                 },
                 dropdownItems = formatItems,
+                allowCustomValue = false,
                 label = { Text(stringResource(R.string.settings_system_import_keystore_dialog_format_field)) },
                 leadingIcon = {
                     Icon(

@@ -6,12 +6,11 @@
 package app.morphe.manager.patcher.patch
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import app.morphe.manager.util.KnownApps
 import app.morphe.patcher.patch.ApkFileType
 
 /**
- * Aggregated metadata about an app as declared in one or more enabled patch bundles.
+ * Aggregated metadata about an app as declared in one or more patch bundles.
  * Priority for conflicting values across bundles: first non-null value wins.
  *
  * @param packageName  The app package name.
@@ -42,8 +41,8 @@ data class BundleAppMetadata(
 
     companion object {
         /**
-         * Build a [Map] of packageName → [BundleAppMetadata] from all enabled [PatchBundleInfo.Global].
-         * Called whenever bundleInfoFlow emits a new value.
+         * Build a [Map] of packageName → [BundleAppMetadata] from every [PatchBundleInfo.Global] given.
+         * Which bundles count is the caller's choice, so a disabled one still names its apps.
          */
         fun buildFrom(bundleInfoMap: Map<Int, PatchBundleInfo.Global>): Map<String, BundleAppMetadata> {
             // packageName → mutable accumulators
@@ -54,7 +53,6 @@ data class BundleAppMetadata(
             val signaturesMap = mutableMapOf<String, MutableSet<String>>()
 
             bundleInfoMap.values
-                .filter { it.enabled }
                 .flatMap { it.patches }
                 .forEach { patch ->
                     patch.compatiblePackages?.forEach { pkg ->
@@ -84,20 +82,11 @@ data class BundleAppMetadata(
                 BundleAppMetadata(
                     packageName = pkgName,
                     displayName = displayNames[pkgName] ?: KnownApps.fallbackName(pkgName),
-                    appIconColor = iconColors[pkgName] ?: legacyAppIconColor(pkgName),
+                    appIconColor = iconColors[pkgName],
                     apkFileType = apkFileTypes[pkgName],
                     signatures = signaturesMap[pkgName]?.toSet(),
                 )
             }
         }
-
-        // TODO: Remove once all active bundles ship Compatibility with appIconColor field.
-        //  Transitional fallback for the period between Manager 1.3.0 release and
-        //  patch bundles being updated to use the new Compatibility API.
-        private fun legacyAppIconColor(packageName: String): Int? =
-            KnownApps.fromPackage(packageName)?.brandColor?.let { color ->
-                // appIconColor spec uses 0xRRGGBB - strip alpha from ARGB
-                color.toArgb() and 0x00FFFFFF
-            }
     }
 }

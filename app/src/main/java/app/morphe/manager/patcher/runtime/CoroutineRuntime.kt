@@ -28,7 +28,7 @@ class CoroutineRuntime(private val context: Context) : Runtime(context) {
         skipUnneededSplits: Boolean,
         onMergedApkReady: (suspend (File) -> Unit)?,
         // This runtime patches in the app's own process and gets one attempt at it
-        onRestart: suspend () -> Unit,
+        onRestart: suspend () -> Unit
     ) {
         ResourceMonitor.startPolling(logger)
 
@@ -85,8 +85,7 @@ class CoroutineRuntime(private val context: Context) : Runtime(context) {
                     logger = logger,
                     input = preparation.file,
                     onPatchCompleted = onPatchCompleted,
-                    onProgress = onProgress,
-                    bytecodeMode = prefs.bytecodeModePreference.get(),
+                    onProgress = onProgress
                 ).use { session ->
                     session.run(
                         File(outputFile),

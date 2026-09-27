@@ -19,7 +19,7 @@ in full detail in the Expert mode log:
 
 While this runs, Morphe keeps a **Patching in progress** notification so you can leave the
 app and come back, and a notification arrives the moment it finishes. **Completion sound** in
-**Settings → System** adds a distinct tone for success and failure.
+**Settings → System → Notifications** adds a distinct tone for success and failure.
 
 The red button stops the run, with a confirmation. Nothing is installed or changed on your
 device until you press Install afterwards.
@@ -93,8 +93,8 @@ clipboard.
 For anything you want to report, the Expert mode log is the useful part: it opens with a
 summary of app version, patches version, APK size, patch count, split APK or not, runtime and
 heap limit, your Android version and device, and free RAM and storage. The copy button at the
-bottom of the log takes the whole thing. **Settings → System → Debug** additionally exports
-full system logs.
+bottom of the log takes the whole thing. **Export debug logs** in **Settings → System →
+About** additionally exports full system logs.
 
 | Symptom | What to try |
 | --- | --- |

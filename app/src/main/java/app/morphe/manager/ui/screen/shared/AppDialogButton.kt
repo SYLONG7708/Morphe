@@ -34,6 +34,14 @@ private val DestructiveColorDark = Color(0xFFFF6B6B)
 /** Destructive content color for light dialog backgrounds. */
 private val DestructiveColorLight = Color(0xFFD32F2F)
 
+/**
+ * Destructive content color readable on the current dialog background.
+ * Shared with dialog content that marks a destructive choice outside a button.
+ */
+@Composable
+fun dialogDestructiveColor(): Color =
+    if (LocalDialogTextColor.current.isDarkBackground()) DestructiveColorLight else DestructiveColorDark
+
 /** Resolved colors for a dialog button variant. */
 private data class DialogButtonColors(
     val containerColor: Color,
@@ -56,7 +64,7 @@ private fun resolveButtonColors(isDestructive: Boolean, filled: Boolean): Dialog
     return if (isDestructive) {
         DialogButtonColors(
             containerColor = if (filled) Color.Red.copy(alpha = if (isDark) 0.25f else 0.2f) else Color.Transparent,
-            contentColor = if (isDark) DestructiveColorDark else DestructiveColorLight,
+            contentColor = dialogDestructiveColor(),
             borderColor = Color.Red.copy(alpha = if (isDark) 0.4f else 0.35f)
         )
     } else {
@@ -236,7 +244,7 @@ enum class DialogButtonLayout {
     /** Buttons stacked vertically - use for longer text or equal-weight choices. */
     Vertical,
 
-    /** Lay out side by side while every label fits its share of the row, stack otherwise. */
+    /** Lay outside by side while every label fits its share of the row, stack otherwise. */
     Auto
 }
 
