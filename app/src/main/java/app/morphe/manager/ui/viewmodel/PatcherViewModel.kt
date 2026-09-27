@@ -45,7 +45,6 @@ import app.morphe.manager.ui.model.navigation.Patcher
 import app.morphe.manager.ui.screen.patcher.PatcherErrorInfo
 import app.morphe.manager.util.*
 import app.morphe.manager.util.PatchSelectionUtils.restrictTo
-import app.morphe.manager.worker.UpdateCheckWorker
 import app.morphe.patcher.patch.ApkArchitecture
 import app.morphe.patcher.patch.InstallerType
 import kotlinx.coroutines.*
@@ -131,9 +130,13 @@ class PatcherViewModel(
     private var successScreenHeldBack = false
     private var successScreenDeferred = false
 
+    // An auto-install waits for the success screen, so it never starts over a game still in play
+    private var autoInstallQueued = false
+
     fun showSuccess() {
         successScreenHeldBack = false
         showSuccessScreen = true
+        startQueuedAutoInstall()
     }
 
     fun hideSuccessScreen() { showSuccessScreen = false }
@@ -143,7 +146,8 @@ class PatcherViewModel(
      * the run has no right to interrupt, currently a mini-game, and releases it again afterward.
      *
      * A run that finishes meanwhile is not lost: the progress screen turns its own action bar into
-     * an install button, and the screen appears on its own once [defer] goes back to false.
+     * an install button, and the screen appears on its own once [defer] goes back to false,
+     * bringing an auto-install that was waiting for it along.
      */
     fun deferSuccessScreen(defer: Boolean) {
         successScreenDeferred = defer
@@ -233,7 +237,7 @@ class PatcherViewModel(
     }
 
     /**
-     * Non-null when the saved selection names patches no enabled source offers any more, which
+     * Non-null when the saved selection names patches no enabled source offers anymore, which
      * the run is held on until the user says whether to go ahead without them.
      */
     data class MissingPatchWarningState(
@@ -513,20 +517,8 @@ class PatcherViewModel(
     /** True when the current patching step has been running for over a minute. */
     val showLongStepWarning: StateFlow<Boolean> = patchRun.showLongStepWarning
 
-    /**
-     * Emits true once after a successful export or install to prompt the notification permission
-     * dialog. Resets to false after the UI acknowledges it via [consumeNotificationPrompt].
-     */
-    private val _shouldPromptNotification = MutableStateFlow(false)
-    val shouldPromptNotification: StateFlow<Boolean> = _shouldPromptNotification.asStateFlow()
-
-    /**
-     * Emits true after the first successful install to prompt the onboarding tour dialog.
-     * Always follows [shouldPromptNotification]; fires only after the notification dialog closes.
-     * Resets to false after the UI acknowledges it via [consumeTourPrompt].
-     */
-    private val _shouldPromptTour = MutableStateFlow(false)
-    val shouldPromptTour: StateFlow<Boolean> = _shouldPromptTour.asStateFlow()
+    /** Notification and tour prompts raised after a successful install or export. */
+    val postPatchPrompts = PostPatchPrompts(app, prefs, viewModelScope)
 
     init {
         restoreOutcome()
@@ -904,7 +896,7 @@ class PatcherViewModel(
 
     /**
      * Shared post-export logic: persists the patched app record, shows a toast,
-     * and triggers the notification prompt on success.
+     * and raises the post-patch prompts on success.
      */
     private suspend fun finishExport(exportSucceeded: Boolean) {
         if (!exportSucceeded) {
@@ -921,74 +913,7 @@ class PatcherViewModel(
             delay(2.seconds)
         }
 
-        if (saved) triggerNotificationPromptIfNeeded()
-    }
-
-
-    /**
-     * Checks prefs and triggers the notification prompt if conditions are met.
-     * Called after a successful install or export so UI doesn't read prefs directly.
-     */
-    fun triggerNotificationPromptIfNeeded() {
-        viewModelScope.launch {
-            if (!prefs.notificationPermissionRequested.get() &&
-                !prefs.backgroundUpdateNotifications.get()
-            ) {
-                _shouldPromptNotification.value = true
-            }
-        }
-    }
-
-    /**
-     * Triggers post-install prompts in order: notification permission (if needed), then
-     * onboarding tour (if first launch). The tour waits for the notification dialog to close
-     * before appearing, so the two dialogs never overlap.
-     */
-    fun triggerPostInstallPromptsIfNeeded() {
-        viewModelScope.launch {
-            val needsNotification = !prefs.notificationPermissionRequested.get() &&
-                    !prefs.backgroundUpdateNotifications.get()
-            val needsTour = prefs.firstLaunch.get()
-
-            if (needsNotification) _shouldPromptNotification.value = true
-            if (needsTour) {
-                _shouldPromptNotification.first { !it }
-                _shouldPromptTour.value = true
-            }
-        }
-    }
-
-    fun consumeNotificationPrompt() {
-        _shouldPromptNotification.value = false
-    }
-
-    fun consumeTourPrompt() {
-        _shouldPromptTour.value = false
-    }
-
-    /**
-     * Notifies ViewModel that the user responded to the notification permission dialog.
-     * Handles prefs writes and FCM/worker setup so UI doesn't need coroutine scope for prefs.
-     */
-    fun onNotificationPermissionResult(
-        granted: Boolean,
-        hasGms: Boolean
-    ) {
-        viewModelScope.launch {
-            prefs.notificationPermissionRequested.update(true)
-            if (granted) {
-                prefs.backgroundUpdateNotifications.update(true)
-                val useManagerPrereleases = prefs.useManagerPrereleases.get()
-                val usePatchesPrereleases = prefs.bundlePrereleasesEnabled.get()
-                    .contains(DEFAULT_SOURCE_UID.toString())
-                syncFcmTopics(
-                    notificationsEnabled = true,
-                    useManagerPrereleases = useManagerPrereleases,
-                    usePatchesPrereleases = usePatchesPrereleases
-                )
-                if (!hasGms) UpdateCheckWorker.schedule(app, prefs.updateCheckInterval.get())
-            }
-        }
+        if (saved) postPatchPrompts.trigger()
     }
 
     fun rejectInteraction() {
@@ -1145,7 +1070,7 @@ class PatcherViewModel(
 
     private fun scheduleSuccessScreen() = viewModelScope.launch {
         delay(successScreenDelay)
-        if (successScreenDeferred) successScreenHeldBack = true else showSuccessScreen = true
+        if (successScreenDeferred) successScreenHeldBack = true else showSuccess()
     }
 
     /** Called once the installer has taken the auto-install over. */
@@ -1168,9 +1093,15 @@ class PatcherViewModel(
             ?: packageName
         if (!installerManager.autoInstallAllowed(target)) return@launch
         autoInstallPending = true
-        // Held for the same beat as the success screen: an install starting sooner puts the
-        // system dialog over a run the progress screen is still drawing as unfinished
-        delay(successScreenDelay)
+        // Started by the success screen rather than on a timer of its own: an install starting
+        // sooner puts the system dialog over a run still drawn as unfinished, or over a game
+        autoInstallQueued = true
+        if (showSuccessScreen) startQueuedAutoInstall()
+    }
+
+    private fun startQueuedAutoInstall() {
+        if (!autoInstallQueued) return
+        autoInstallQueued = false
         _autoInstallChannel.trySend(Unit)
     }
 

@@ -148,9 +148,8 @@ private const val UNGROUPED_GROUP_KEY = "ungrouped"
  * The tail keeps the universal patches with no category of their own. Those apply to every app and
  * would otherwise bury the handful written for this one, so they stay last and folded. Categories
  * start out open instead, since folding a block that hides an enabled patch is only worth it for
- * the one the user is least likely to have picked from. With grouping off the categories are
- * ignored and only that tail is split off, which is also what a bundle that declares no categories
- * at all comes out as.
+ * the one the user is least likely to have picked from. A bundle that declares no categories at
+ * all comes out as the plain list with only that tail split off.
  *
  * Order within a block is the order [patches] came in, so callers keep the sorting they want.
  */
@@ -218,10 +217,10 @@ internal fun rememberPatchGroupingOptions(
 }
 
 /**
- * The blocks [patches] is drawn as, following the user's grouping preference.
+ * The blocks [patches] is drawn as.
  *
- * Categories are whatever the bundle declares, so a bundle that declares none, and a user who
- * turned grouping off, both end up with the plain list plus its universal tail.
+ * Categories are whatever the bundle declares, so a bundle that declares none ends up with the
+ * plain list plus its universal tail.
  */
 @Composable
 internal fun <T> rememberPatchGroups(

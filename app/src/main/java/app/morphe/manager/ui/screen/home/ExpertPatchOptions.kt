@@ -721,7 +721,7 @@ private fun PathInputOption(
                 Text(if (required) "$title *" else title)
             },
             placeholder = {
-                Text("/storage/emulated/0/folder")
+                Text("/storage/emulated/0/folder", maxLines = 1, overflow = TextOverflow.Ellipsis)
             },
             isError = isInvalid,
             showClearButton = true,
@@ -814,7 +814,7 @@ private fun FilePathInputOption(
             value = value,
             onValueChange = onValueChange,
             label = { Text(if (required) "$title *" else title) },
-            placeholder = { Text("/storage/emulated/0/file") },
+            placeholder = { Text("/storage/emulated/0/file", maxLines = 1, overflow = TextOverflow.Ellipsis) },
             isError = isInvalid,
             showClearButton = true,
             onFilePickerClick = { filePicker() }
@@ -877,7 +877,7 @@ private fun PathWithPresetsOption(
             dropdownItems = dropdownItems,
             label = if (required) ({ Text("$title *") }) else null,
             placeholder = {
-                Text("/storage/emulated/0/folder")
+                Text("/storage/emulated/0/folder", maxLines = 1, overflow = TextOverflow.Ellipsis)
             },
             showClearButton = true,
             onFolderPickerClick = { folderPicker() }

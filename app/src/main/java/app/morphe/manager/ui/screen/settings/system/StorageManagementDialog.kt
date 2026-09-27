@@ -5,11 +5,6 @@
 
 package app.morphe.manager.ui.screen.settings.system
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Launch
@@ -28,6 +23,7 @@ import app.morphe.manager.domain.repository.StorageStats
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.StorageManagementViewModel
 import app.morphe.manager.util.formatBytes
+import app.morphe.manager.util.openAppDetailsSettings
 import app.morphe.manager.util.toast
 import org.koin.androidx.compose.koinViewModel
 
@@ -174,7 +170,7 @@ fun StorageManagementDialog(
 
             SettingsGroup {
                 SettingsItem(
-                    onClick = { openAndroidAppStorage(context) },
+                    onClick = { context.openAppDetailsSettings() },
                     title = stringResource(R.string.settings_system_storage_open_app_info_title),
                     subtitle = stringResource(R.string.settings_system_storage_open_app_info_description),
                     leadingContent = { ThemedIcon(icon = Icons.AutoMirrored.Outlined.Launch) }
@@ -182,16 +178,6 @@ fun StorageManagementDialog(
             }
         }
     }
-}
-
-private fun openAndroidAppStorage(context: Context) {
-    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-        data = Uri.fromParts("package", context.packageName, null)
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-    try {
-        context.startActivity(intent)
-    } catch (_: ActivityNotFoundException) { /* OEM without the standard app info screen */ }
 }
 
 @Composable

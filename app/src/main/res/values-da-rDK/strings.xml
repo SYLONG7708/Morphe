@@ -140,10 +140,14 @@
     <string name="sources_management_open_in_browser">Åbn links i browser</string>
     <string name="sources_management_report_issue">Rapportér et problem</string>
     <string name="sources_management_failed_to_open_url">Kunne ikke åbne URL</string>
-    <string name="sources_hidden_apps">Skjult for</string>
-    <string name="sources_hidden_apps_title">Apps skjult for %1$s</string>
-    <string name="sources_hidden_apps_description">Disse apps får ikke tilbudt denne kilde, når de bliver patchet. Selve kilden forbliver aktiveret for alt andet</string>
-    <string name="sources_hidden_apps_hint">Tryk for at tilbyde denne kilde igen</string>
+    <string name="sources_apps">Apps</string>
+    <string name="sources_apps_title">Apps fra %1$s</string>
+    <string name="sources_apps_description">Tryk på en app for at udelade den fra denne kilde eller tage den tilbage, eller tryk og hold for at vælge flere. En app forlader startskærmen, når ingen kilde bringer den.</string>
+    <string name="sources_apps_brought">Leveret af denne kilde</string>
+    <string name="sources_apps_left_out">Udeladt fra denne kilde</string>
+    <string name="sources_apps_leave_out">Udelad</string>
+    <string name="sources_apps_leave_out_done">Udeladt</string>
+    <string name="sources_apps_bring_back">Bring tilbage</string>
     <string name="sources_management_prerelease_toggle">Pre-release patches</string>
     <string name="sources_management_prerelease_toggle_description">Få tidlig adgang til nye eksperimentelle patch versioner</string>
     <string name="sources_prerelease_warning_title">Aktivér præ-release-patcher?</string>
@@ -187,6 +191,8 @@
     <string name="sources_dialog_local_change_file">Ændre fil</string>
     <string name="sources_dialog_preinstalled">Forhåndsinstalleret</string>
     <string name="sources_dialog_community">Fællesskabets patches</string>
+    <string name="sources_dialog_choose_apps">Vælg apps</string>
+    <string name="sources_dialog_choose_apps_description">Vælg, hvilke af dens apps der skal beholdes, når kilden er indlæst.</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">Tredjeparts patch-kilder</string>
     <string name="sources_dialog_community_notice_message">"Fællesskabets patch-kilder er lavet og vedligeholdt af deres egne forfattere. Morphe gennemgår eller verificerer ikke tredjeparts patches og er ikke ansvarlig for deres indhold eller for hvad de gør på din enhed.
@@ -712,12 +718,9 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="settings_appearance_greeting_phrases">Hilsenfraser</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Vis en hilsenbesked på startskærmen</string>
     <string name="settings_appearance_app_grouping">App-gruppering</string>
-    <string name="settings_appearance_app_grouping_description">Vis en hjemmeskærms-skifter til at gruppere apps efter kilde eller dine egne kategorier, og bevar udvælgelsen, når den er slået fra</string>
-    <string name="settings_appearance_patch_list">Patchliste</string>
-    <string name="settings_appearance_patch_categories">Gruppér efter kategori</string>
-    <string name="settings_appearance_patch_categories_description">Inddel patchlister efter de kategorier, som en kilde angiver, og lad kilder uden angivne kategorier fremstå som en almindelig liste.</string>
+    <string name="settings_appearance_app_grouping_description">Vis en vælger til at gruppere apps efter kilde eller kategori</string>
     <string name="settings_appearance_repatch_notice">Meddelelse om gen-patch</string>
-    <string name="settings_appearance_repatch_notice_description">Vis et banner på startskærmen, når patchede apps kan gen-patches</string>
+    <string name="settings_appearance_repatch_notice_description">Vis et banner når patchede apps kan genpatches</string>
     <string name="settings_appearance_sort_button">Sorterings- og filterknap</string>
     <string name="settings_appearance_sort_button_description">Vis sorterings- og filterknappen på hjemmeskærmen</string>
     <string name="settings_appearance_app_card_colors">App-kort farver</string>
@@ -762,6 +765,8 @@ Patcher er ikke påvirket: aktivér præ-release-patcher for hver kilde i patch-
     <string name="settings_advanced_updates_background_notifications">Baggrundsopdateringsmeddelelser</string>
     <string name="settings_advanced_updates_background_notifications_description">Tjek periodisk for opdateringer i baggrunden og informér når de er tilgængelige.</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Modtag push-beskeder om nye udgivelser, selvom appen er lukket</string>
+    <string name="settings_system_notifications_categories">Notifikationskategorier</string>
+    <string name="settings_system_notifications_categories_description">Vælg i systemindstillingerne, hvilke opdateringer der skal underrette dig</string>
     <string name="settings_advanced_update_interval">Opdateringsfrekvens</string>
     <string name="settings_advanced_update_interval_dialog_title">Søg efter opdateringer</string>
     <string name="settings_advanced_update_interval_hourly">En gang i timen</string>
@@ -771,7 +776,7 @@ Patcher er ikke påvirket: aktivér præ-release-patcher for hver kilde i patch-
     <string name="settings_advanced_update_interval_chip_subtitle">Baggrundsopdateringsfrekvens</string>
     <string name="settings_advanced_update_interval_battery_warning">Baggrundsopdateringer fungerer muligvis ikke på visse enheder. Mærker som Xiaomi, Huawei, Samsung og OnePlus begrænser ofte baggrundsprocesser aggressivt for at spare batteri</string>
     <string name="settings_advanced_external_batch_patch">Tillad eksterne triggere</string>
-    <string name="settings_advanced_external_batch_patch_description">Lader automatiseringsapps starte batch patching med et intent. Enhver anmodning bekræftes, før noget køres</string>
+    <string name="settings_advanced_external_batch_patch_description">Lader automatiseringsapps starte batch-patching via en intent</string>
     <string name="external_batch_patch_title">Start batch patching?</string>
     <string name="external_batch_patch_description">%s vil have Morphe til at patche og installere apps</string>
     <string name="external_batch_patch_trust_caller">Tillad altid denne app</string>
@@ -784,8 +789,10 @@ Patcher er ikke påvirket: aktivér præ-release-patcher for hver kilde i patch-
     <string name="notification_permission_dialog_title">Tillad notifikationer</string>
     <string name="notification_permission_dialog_description">Morphe skal bruge notifikationstilladelse for at advare dig når opdateringer er tilgængelige i baggrunden</string>
     <string name="notification_post_patch_dialog_title">Vil du gerne blive notificeret, når opdateringer er tilgængelige?</string>
-    <string name="notification_channel_fcm_updates">Opdateringer af notifikationer</string>
-    <string name="notification_channel_fcm_updates_description">Notifikationer om nye Morphe- og patchudgivelser</string>
+    <string name="notification_channel_manager_updates">Morphe-opdateringer</string>
+    <string name="notification_channel_manager_updates_description">Notifikationer om nye Morphe-udgivelser</string>
+    <string name="notification_channel_patch_updates">Patch-opdateringer</string>
+    <string name="notification_channel_patch_updates_description">Notifikationer om nye patch-udgivelser</string>
     <string name="notification_channel_patcher">Patching</string>
     <string name="notification_channel_patcher_description">Vises mens Morphe patcher en app i baggrunden</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -796,23 +803,19 @@ Patcher er ikke påvirket: aktivér præ-release-patcher for hver kilde i patch-
     <string name="settings_advanced_expert_mode_dialog_message">Eksperttilstand giver mere kontrol over hvordan patches bliver anvendt, men en forkert konfiguration af indstillinger i eksperttilstand kan resultere i en ikke-funktionel app</string>
     <string name="settings_advanced_strip_unused_libs">Optimer for enhedens arkitektur</string>
     <string name="settings_advanced_strip_unused_libs_description">Fjerner ubrugte CPU-arkitekturbiblioteker og splittede APK-moduler</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">Bytecodetilstand</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">Styrer, hvordan bytecode behandles under patching. Påvirker patching-hastighed, hukommelsesforbrug og output APK-størrelse</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">Hurtig (Anbefalet)</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">Hurtig</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">Hurtigere patching og lavere hukommelsesforbrug, på bekostning af en større APK. Anbefales til enheder med lav RAM eller ældre enheder</string>
-    <string name="settings_advanced_bytecode_mode_full">Fuld</string>
-    <string name="settings_advanced_bytecode_mode_full_description">Langsommere patching, replikerer ældre adfærd. Anbefales kun, hvis hurtig tilstand forårsager problemer</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">GitHub PAT</string>
     <string name="settings_advanced_github_pat_description">Nødvendigt for pull request-kilder</string>
     <string name="settings_advanced_github_pat_configured">Token konfigureret</string>
     <string name="settings_advanced_github_pat_how_to_get">Hvordan får man en token</string>
-    <string name="settings_advanced_github_pat_dialog_title">Angiv GitHub-personal adgangstoken</string>
-    <string name="settings_advanced_github_pat_dialog_description">"Angiv en GitHub Personal Access Token for at kunne tilføje pull requests som eksterne kilder. Opret en PAT med adgangsområde public_repo på %s"</string>
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <string name="settings_advanced_github_pat_dialog_title">Angiv %s</string>
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <string name="settings_advanced_github_pat_dialog_description">"Angiv en %3$s for at kunne tilføje pull requests som eksterne kilder. Opret en PAT med scope %2$s på
+%1$s"</string>
     <string name="settings_advanced_github_pat_export_include_label">Inkluder i eksport af indstillinger</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">Tilføjer denne PAT til eksporterede Morphe-indstillinger</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">Del ikke dit PAT. Hvis du inkluderer det i en eksportering af indstillinger, så hold filen hemmelig, da den indeholder din token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Patchvalg</string>
@@ -971,6 +974,7 @@ Detaljer: %2$s"</string>
     <string name="settings_system_process_runtime_memory_limit_description">Højere grænser fremskynder patching på kompatible enheder</string>
     <string name="settings_system_process_runtime_enable">Aktiver proces runtime</string>
     <string name="settings_system_memory_limit_subtitle">Hukommelse tilgængelig til patching</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">Denne enhed ignorerede hukommelsesgrænsen ved sidste kørsel, så patching kan falde tilbage til at køre inde i Morphe</string>
     <string name="settings_system_memory_limit_warning">En lav hukommelsesbegrænsning kan medføre at patching af store apps fejler</string>
     <string name="settings_system_memory_limit_high_warning">En høj hukommelsesgrænse kan gøre patching meget langsommere på nogle enheder. Hæv den kun, hvis patching fortsat fejler ved lavere grænser.</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB grænse</string>
@@ -991,8 +995,20 @@ Detaljer: %2$s"</string>
     <string name="settings_system_notifications_ringtone_picker_title">Vælg en tone</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">Importér &amp; eksportér</string>
-    <string name="settings_system_keystore">Keystore</string>
-    <string name="settings_system_import_keystore_description">Importerer eller eksporterer din signaturkeystore</string>
+    <string name="settings_system_signing_key">Signeringsnøgle</string>
+    <string name="settings_system_signing_key_description">Sikkerhedskopierer og gendanner nøglen, som dine patchede apps er signeret med.</string>
+    <string name="settings_system_signing_key_dialog_description">Hver app, som Morphe patcher, er signeret med denne nøgle. Gem en kopi: uden den kan patchede apps kun opdateres efter at have afinstalleret dem.</string>
+    <string name="settings_system_signing_key_missing">Morphe opretter en med din første patch.</string>
+    <string name="settings_system_signing_key_created">Oprettet %s</string>
+    <string name="settings_system_signing_key_fingerprint">SHA-256-fingeraftryk</string>
+    <string name="settings_system_backup_appearance_description">Tema, farver og sprog</string>
+    <string name="settings_system_backup_home_description">Grupper, skjulte apps, sortering og til/fra-knapper</string>
+    <string name="settings_system_backup_patching">Patching og installation</string>
+    <string name="settings_system_backup_patching_description">Installer, patcher og gemte APK\'er</string>
+    <string name="settings_system_backup_updates_description">Prereleases og opdateringstjek</string>
+    <string name="settings_system_backup_sources_description">Brugerdefinerede kilder og GitHub-token</string>
+    <string name="settings_system_backup_patch_selections_description">Valgte patches for hver app</string>
+    <string name="settings_system_backup_signing_key_note">Signeringsnøglen sikkerhedskopieres separat.</string>
     <string name="settings_system_import_keystore_dialog_title">Indtast keystore legitimationsoplysninger</string>
     <string name="settings_system_import_keystore_dialog_description">Du skal indtaste keystore\'ens legitimationsoplysninger for at importere den</string>
     <string name="settings_system_import_keystore_dialog_alias_field">Brugernavn (Alias)</string>
@@ -1001,7 +1017,6 @@ Detaljer: %2$s"</string>
     <string name="settings_system_import_keystore_wrong_credentials">Forkerte keystore legitimationsoplysninger</string>
     <string name="settings_system_import_keystore_success">Keystone importeret</string>
     <string name="settings_system_import_keystore_failed">Importering af Keystone mislykkedes</string>
-    <string name="settings_system_export_keystore_unavailable">Ingen keystore tilgængelig til eksportering</string>
     <string name="settings_system_export_keystore_success">Keystore blev eksporteret</string>
     <string name="settings_system_export_keystore_failed">Fejl under eksport af nøglelager</string>
     <string name="settings_system_show_password_field">Vis adgangskode</string>
@@ -1020,7 +1035,7 @@ Detaljer: %2$s"</string>
     <string name="import_mode_merge_description">Tilføj manglende elementer fra sikkerhedskopien. Eksisterende elementer bevares uændret</string>
     <string name="settings_system_export_manager_settings_fail">Fejl ved eksport af Morphe-indstillinger: %s</string>
     <string name="settings_system_export_manager_settings_success">Morphe-indstillinger eksporteret</string>
-    <string name="settings_system_debug">Fejlfinding</string>
+    <string name="settings_system_export_debug_logs">Eksportér fejlsøgningslogge</string>
     <string name="settings_system_export_debug_logs_description">Gemmer systemlogfiler til fejlfinding</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Kunne ikke læse log (udgangskode %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Kunne ikke eksportere logge</string>
@@ -1108,7 +1123,11 @@ Detaljer: %2$s"</string>
     <string name="settings_system_custom_file_picker_description">Brug Morphes indbyggede filvælger i stedet for systemstandardindstillingen</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">APK download hjælper</string>
-    <string name="settings_system_apk_download_helper_description">Lad en installeret hjælpeapp hente originale APK\'er for dig. Filen kommer fra denne app, så aktiver kun dette, hvis du stoler på den</string>
+    <string name="settings_system_apk_download_helper_trusted_count">Pålidelige: %1$d ud af %2$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">Hjælpeapps kan downloade originale APK\'er for dig. Kun dem, du har tillid til her, tilbydes i downloadinstruktionerne.</string>
+    <string name="settings_system_apk_download_helper_warning">APK\'en kommer fra hjælpeappen, så stol kun på apps, du kender. Morphe kontrollerer stadig pakken, versionen og signaturen for hver fil, før den patcher.</string>
+    <string name="settings_system_apk_download_helper_installed_by">Installeret af %s</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">Installeret af ukendt</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Forrige mappe</string>
     <string name="file_picker_no_files">Ingen filer her</string>
@@ -1125,8 +1144,6 @@ Detaljer: %2$s"</string>
     <string name="file_picker_show_hidden_files">Vis skjulte filer</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Om</string>
-    <string name="settings_system_share_website">Del hjemmeside</string>
-    <string name="settings_system_share_website_description">Del den officielle Morphe hjemmeside</string>
     <string name="settings_system_manager_description">Et open source-projekt til moderne, strømlinet patching af populære Android-apps, drevet af community-feedback og -bidrag</string>
     <string name="credits">Credits</string>
     <string name="credits_current_development">Current development</string>
@@ -1215,6 +1232,7 @@ Detaljer: %2$s"</string>
     <string name="import_">Importer</string>
     <string name="export">Eksportér</string>
     <string name="copy">Kopiér</string>
+    <string name="copied_to_clipboard">Kopieret til udklipsholderen</string>
     <string name="download">Download</string>
     <string name="less">Mindre</string>
     <string name="expand">Udvid</string>
@@ -1261,7 +1279,7 @@ Detaljer: %2$s"</string>
     <string name="changelog_for_app">Ændringer for %s</string>
     <string name="changelog_general_changes">Generelle ændringer</string>
     <string name="whats_new">Hvad er nyt</string>
-    <string name="changelog_description">Se de seneste ændringer i denne opdatering</string>
+    <string name="changelog_description">Hvad er nyt i denne version</string>
     <string name="changelog_download_fail">Kunne ikke downloade ændringslog: %s</string>
     <string name="changelog_empty">Ingen ændringslog tilgængelig</string>
     <string name="changelog_show_older">Vis ældre udgivelser</string>
@@ -1308,5 +1326,8 @@ Vil du stadig fortsætte?"</string>
     <string name="tour_prompt_desc">Vil du have en hurtig rundvisning i Morph’s vigtigste funktioner?</string>
     <string name="tour_prompt_confirm">Vis mig rundt</string>
     <string name="onboarding_restart_title">Funktionstur</string>
-    <string name="onboarding_restart_desc">Tag en guidet rundvisning i Morph’s vigtigste funktioner</string>
+    <string name="onboarding_restart_desc">En guidet rundvisning i de vigtigste funktioner</string>
+    <string name="settings_appearance_patch_list">Patchliste</string>
+    <string name="settings_appearance_patch_categories">Gruppér efter kategori</string>
+    <string name="settings_appearance_patch_categories_description">Inddel patchlister efter de kategorier, som en kilde angiver, og lad kilder uden angivne kategorier fremstå som en almindelig liste.</string>
 </resources>

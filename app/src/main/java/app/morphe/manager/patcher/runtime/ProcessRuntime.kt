@@ -15,6 +15,7 @@ import app.morphe.manager.patcher.split.SplitApkPreparer
 import app.morphe.manager.patcher.split.SplitPreparationEvent
 import app.morphe.manager.patcher.worker.ProgressEventHandler
 import app.morphe.manager.ui.model.State
+import app.morphe.manager.util.AppCoroutineScope
 import app.morphe.manager.util.Options
 import app.morphe.manager.util.PM
 import app.morphe.manager.util.PatchSelection
@@ -25,7 +26,9 @@ import com.github.pgreze.process.process
 import kotlinx.coroutines.*
 import org.koin.core.component.inject
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 // Memory value that is safe everywhere. Slightly higher values may work for some devices
@@ -55,6 +58,10 @@ const val PROCESS_RUNTIME_MEMORY_MAX_RETRIES = 2
 // Sentinel value indicating the memory limit has never been set
 // triggers adaptive calculation on first use
 const val PROCESS_RUNTIME_MEMORY_NOT_SET = -1
+
+// ART grants the overridden heap limit to the megabyte, so a clear shortfall means the firmware
+// read the props some other way and the process runs with the device default instead
+private const val HEAP_LIMIT_IGNORED_RATIO = 0.9
 
 /**
  * The share of total device RAM the patcher may take, rounded down to a whole
@@ -143,6 +150,7 @@ class ProcessRuntime(
     private val skipMemoryRetry: Boolean = Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
 ) : Runtime(context) {
     private val pm: PM by inject()
+    private val appScope: AppCoroutineScope by inject()
 
     private suspend fun awaitBinderConnection(): IPatcherProcess {
         val binderFuture = CompletableDeferred<IPatcherProcess>()
@@ -159,10 +167,11 @@ class ProcessRuntime(
             addAction(CONNECT_TO_APP_ACTION)
         }, ContextCompat.RECEIVER_NOT_EXPORTED)
 
+        // Not withTimeout: its CancellationException would end the calling coroutine without failing
+        // the run, which then waits forever on a process that never connected
         return try {
-            withTimeout(10.seconds) {
-                binderFuture.await()
-            }
+            withTimeoutOrNull(BINDER_CONNECTION_TIMEOUT) { binderFuture.await() }
+                ?: throw ProcessConnectTimeoutException(BINDER_CONNECTION_TIMEOUT)
         } finally {
             context.unregisterReceiver(receiver)
         }
@@ -208,7 +217,7 @@ class ProcessRuntime(
                         retries < PROCESS_RUNTIME_MEMORY_MAX_RETRIES &&
                         nextMemoryMB < memoryMB
 
-                if (!retry) throw e.withHeapExhaustionReported(memoryMB)
+                if (!retry) throw e
 
                 memoryMB = nextMemoryMB
                 retries++
@@ -235,13 +244,11 @@ class ProcessRuntime(
      * Restates a heap the patcher filled on its own as [HeapExhaustedException]. Shrinking that
      * heap only reaches the same wall sooner, so it is reported rather than retried.
      */
-    private fun Exception.withHeapExhaustionReported(memoryMB: Int) =
-        if (this is RemoteFailureException &&
-            originalStackTrace.contains("OutOfMemoryError", ignoreCase = true)
-        ) {
-            HeapExhaustedException(memoryMB, originalStackTrace)
+    private fun remoteFailure(stackTrace: String, heapLimitMb: Int) =
+        if (stackTrace.contains("OutOfMemoryError", ignoreCase = true)) {
+            HeapExhaustedException(heapLimitMb, stackTrace)
         } else {
-            this
+            RemoteFailureException(stackTrace)
         }
 
     private suspend fun executeWithMemory(
@@ -285,6 +292,11 @@ class ProcessRuntime(
             null
         }
 
+        // Listening before app_process starts, so a process that connects quickly is not missed
+        val connection = async(Dispatchers.IO, start = CoroutineStart.UNDISPATCHED) {
+            awaitBinderConnection()
+        }
+
         launch(Dispatchers.IO) {
             val result = process(
                 appProcessBin,
@@ -308,11 +320,13 @@ class ProcessRuntime(
 
         val patching = CompletableDeferred<Unit>()
         val scope = this
+        // What ART actually granted, reported by the process once it is up. Zero until then
+        val grantedHeapMb = AtomicInteger(0)
         // Held outside the launch so cancel() can tell app_process to exit and release its wakelock
         val binderRef = AtomicReference<IPatcherProcess?>()
 
         launch(Dispatchers.IO) {
-            val binder = awaitBinderConnection()
+            val binder = connection.await()
             binderRef.set(binder)
 
             // Android Studio's fast deployment feature causes an issue where the other process will be running older code compared to the main process.
@@ -344,11 +358,35 @@ class ProcessRuntime(
                     onProgress(message, State.RUNNING, null)
                 }
 
+                override fun heapLimit(megabytes: Int) {
+                    grantedHeapMb.set(megabytes)
+                    // Without the override the process is meant to run with the device default
+                    if (propOverride == null) return
+
+                    val ignored = megabytes < memoryLimit * HEAP_LIMIT_IGNORED_RATIO
+                    // Kept past this run, which may be torn down right below
+                    appScope.launch { prefs.patcherHeapLimitIgnored.update(ignored) }
+                    if (!ignored) return
+
+                    // The app's own process gets its large heap the regular way, so a patcher
+                    // left with less than that is better off patching there
+                    if (megabytes < heapLimitMebibytes()) {
+                        runCatching { binder.exit() }
+                        patching.completeExceptionally(HeapLimitIgnoredException(memoryLimit, megabytes))
+                    } else {
+                        logger.warn(
+                            "Patcher process got a ${megabytes}MB heap instead of ${memoryLimit}MB, " +
+                                    "still more than the app's own"
+                        )
+                    }
+                }
+
                 override fun finished(exceptionStackTrace: String?) {
                     runCatching { binder.exit() }
 
                     exceptionStackTrace?.let {
-                        patching.completeExceptionally(RemoteFailureException(it))
+                        val heapLimitMb = grantedHeapMb.get().takeIf { mb -> mb > 0 } ?: memoryLimit
+                        patching.completeExceptionally(remoteFailure(it, heapLimitMb))
                         return
                     }
                     patching.complete(Unit)
@@ -369,8 +407,7 @@ class ProcessRuntime(
                     )
                 },
                 skipUnneededSplits = skipUnneededSplits,
-                mergedInputFile = mergedInputPath,
-                bytecodeMode = prefs.bytecodeModePreference.get()
+                mergedInputFile = mergedInputPath
             )
 
             binder.start(parameters, eventHandler)
@@ -406,6 +443,11 @@ class ProcessRuntime(
         // which firmware can drag in on its own, so such a run belongs in the app's own process
         const val SIGSYS_EXIT_CODE = 159
 
+        // How long app_process gets to start and connect back to the app. Generous because a slow
+        // device on a cold start can take many seconds, and giving up moves the run to the app's
+        // own process, where the heap is usually smaller
+        private val BINDER_CONNECTION_TIMEOUT = 30.seconds
+
         const val CONNECT_TO_APP_ACTION = "CONNECT_TO_APP_ACTION"
         const val INTENT_BUNDLE_KEY = "BUNDLE"
         const val BUNDLE_BINDER_KEY = "BINDER"
@@ -433,12 +475,32 @@ class ProcessRuntime(
         Exception("Process exited with nonzero exit code $exitCode")
 
     /**
-     * The patcher ran out of the heap it was given, which no smaller heap can fix. Carries the
-     * limit that was in effect so the failure can name the number the user set.
+     * The patcher process never connected back to the app, which slow devices have been seen to
+     * do on a cold start, so the run cannot be handed to it.
      *
-     * @param heapLimitMb The heap limit the run was given, in megabytes.
+     * @param timeout How long the process was given to connect.
+     */
+    class ProcessConnectTimeoutException(timeout: Duration) :
+        Exception("Patcher process did not connect within $timeout")
+
+    /**
+     * The patcher ran out of the heap it was given, which no smaller heap can fix. Carries the
+     * heap the process actually had, since firmware that ignores the configured limit leaves it
+     * with less than the number the user set.
+     *
+     * @param heapLimitMb The heap the run had, in megabytes.
      * @param originalStackTrace The stack trace of the [OutOfMemoryError].
      */
     class HeapExhaustedException(val heapLimitMb: Int, val originalStackTrace: String) :
         Exception("Patcher exhausted its ${heapLimitMb}MB heap")
+
+    /**
+     * The firmware ignored the heap limit the patcher process was started with and left it with
+     * less memory than the app's own process has, so the run belongs there instead.
+     *
+     * @param requestedHeapMb The limit the process was started with, in megabytes.
+     * @param grantedHeapMb The heap ART actually granted, in megabytes.
+     */
+    class HeapLimitIgnoredException(val requestedHeapMb: Int, val grantedHeapMb: Int) :
+        Exception("Patcher process got a ${grantedHeapMb}MB heap instead of ${requestedHeapMb}MB")
 }

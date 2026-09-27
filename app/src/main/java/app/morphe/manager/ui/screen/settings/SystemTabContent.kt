@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.InstallMobile
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -50,10 +49,8 @@ fun SystemTabContent(
     onFilePickerPositioned: ((Rect) -> Unit)? = null,
     onFilePickerScrollTarget: ((Int) -> Unit)? = null
 ) {
-    val useExpertMode by settingsViewModel.prefs.useExpertMode.getAsState()
     val showNotificationsDialog = remember { mutableStateOf(false) }
 
-    val contentPadding = rememberWindowSize().contentPadding
 
     if (showNotificationsDialog.value) {
         NotificationsDialog(
@@ -65,7 +62,7 @@ fun SystemTabContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(horizontal = contentPadding, vertical = Defaults.ContentPadding),
+            .padding(settingsTabPadding()),
         verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
     ) {
         // Installers
@@ -89,17 +86,15 @@ fun SystemTabContent(
         // Background execution & notifications
         BackgroundSection(onNotificationsClick = { showNotificationsDialog.value = true })
 
-        // Import & Export (Expert mode only)
-        if (useExpertMode) {
-            ImportExportSection(
-                importExportViewModel = importExportViewModel,
-                onImportKeystore = onImportKeystore,
-                onExportKeystore = onExportKeystore,
-                onImportSettings = onImportSettings,
-                onExportSettings = onExportSettings,
-                onExportDebugLogs = onExportDebugLogs
-            )
-        }
+        // Import & Export: the signing key is the one thing a lost install cannot recreate, so
+        // backing it up is offered in simple mode too
+        ImportExportSection(
+            importExportViewModel = importExportViewModel,
+            onImportKeystore = onImportKeystore,
+            onExportKeystore = onExportKeystore,
+            onImportSettings = onImportSettings,
+            onExportSettings = onExportSettings
+        )
 
         // Files & Storage
         FilesAndStorageSection(
@@ -121,6 +116,7 @@ fun SystemTabContent(
             AboutSection(
                 onAboutClick = onAboutClick,
                 onChangelogClick = onChangelogClick,
+                onExportDebugLogs = onExportDebugLogs,
                 onStartTour = onStartTour
             )
         }

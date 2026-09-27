@@ -1,3 +1,8 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
 package app.morphe.manager.ui.viewmodel
 
 import androidx.compose.material.icons.Icons
@@ -6,11 +11,11 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Translate
 import androidx.lifecycle.ViewModel
+import app.morphe.manager.util.MORPHE_WEBSITE_URL
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Brands
 import compose.icons.fontawesomeicons.brands.Github
 import compose.icons.fontawesomeicons.brands.RedditAlien
-import compose.icons.fontawesomeicons.brands.XTwitter
 
 data class SocialLink(
     val name: String,
@@ -23,12 +28,12 @@ class AboutViewModel : ViewModel() {
         val socials: List<SocialLink> = listOf(
             SocialLink(
                 name = "Website",
-                url = "https://morphe.software",
+                url = MORPHE_WEBSITE_URL,
                 preferred = true
             ),
             SocialLink(
                 name = "Changelog",
-                url = "https://morphe.software/changelog"
+                url = "$MORPHE_WEBSITE_URL/changelog"
             ),
             SocialLink(
                 name = "GitHub",
@@ -40,7 +45,7 @@ class AboutViewModel : ViewModel() {
             ),
             SocialLink(
                 name = "Crowdin",
-                url = "https://morphe.software/translate"
+                url = "$MORPHE_WEBSITE_URL/translate"
             )
         )
 

@@ -21,16 +21,20 @@ class OfficialSyncTest(unittest.TestCase):
         self.identity(self.upstream)
         (self.upstream / ".github/workflows").mkdir(parents=True)
         (self.upstream / ".github/workflows/release.yml").write_text("official old\n")
+        (self.upstream / ".github/actions/setup-toolchain").mkdir(parents=True)
+        (self.upstream / ".github/actions/setup-toolchain/action.yml").write_text("official old action\n")
         (self.upstream / "app.txt").write_text("base\n")
         self.commit(self.upstream, "base")
         self.cmd(self.root, "clone", "-q", str(self.upstream), str(self.fork))
         self.identity(self.fork)
         (self.fork / ".github/workflows/release.yml").write_text("signed SyMorphe\n")
+        (self.fork / ".github/actions/setup-toolchain/action.yml").write_text("signed SyMorphe action\n")
         (self.fork / "config").mkdir()
         (self.fork / "config/profile.txt").write_text("custom profile\n")
         self.commit(self.fork, "derivative")
         (self.upstream / ".github/workflows/release.yml").write_text("official new\n")
         (self.upstream / ".github/workflows/new-publish.yml").write_text("upstream signing job\n")
+        (self.upstream / ".github/actions/setup-toolchain/action.yml").write_text("official new action\n")
         (self.upstream / "app.txt").write_text("upstream improvement\n")
         self.commit(self.upstream, "stable update")
         self.cmd(self.upstream, "tag", "v1.31.0")
@@ -72,6 +76,7 @@ class OfficialSyncTest(unittest.TestCase):
         self.prepare()
         self.assertEqual("upstream improvement\n", (self.fork / "app.txt").read_text())
         self.assertEqual("signed SyMorphe\n", (self.fork / ".github/workflows/release.yml").read_text())
+        self.assertEqual("signed SyMorphe action\n", (self.fork / ".github/actions/setup-toolchain/action.yml").read_text())
         self.assertFalse((self.fork / ".github/workflows/new-publish.yml").exists())
         self.assertIn("changed=true", (self.root / "output").read_text())
         self.commit(self.fork, "verified merge")
@@ -82,13 +87,14 @@ class OfficialSyncTest(unittest.TestCase):
         (self.fork / "app.txt").write_text("custom behavior\n")
         self.commit(self.fork, "custom behavior")
         before = self.cmd(self.fork, "rev-parse", "HEAD").stdout
-        with self.assertRaisesRegex(RuntimeError, "current release retained"):
-            self.prepare()
+        self.prepare()
         self.assertEqual(before, self.cmd(self.fork, "rev-parse", "HEAD").stdout)
         self.assertEqual("", self.cmd(self.fork, "status", "--porcelain", "--untracked-files=no").stdout)
         status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
         self.assertEqual("blocked", status["state"])
         self.assertEqual(["app.txt"], status["conflicts"])
+        self.assertIn("changed=false", (self.root / "output").read_text())
+        self.assertIn("blocked=true", (self.root / "output").read_text())
 
     def reviewed_rule(self):
         local = "custom behavior\n"
@@ -123,18 +129,18 @@ class OfficialSyncTest(unittest.TestCase):
         self.reviewed_rule()
         (self.fork / "app.txt").write_text("newer local behavior\n")
         self.commit(self.fork, "local changed")
-        with self.assertRaisesRegex(RuntimeError, "current release retained"):
-            self.prepare()
+        self.prepare()
         self.assertEqual("newer local behavior\n", (self.fork / "app.txt").read_text())
+        self.assertEqual("blocked", json.loads((self.fork / "verification/upstream-sync.json").read_text())["state"])
 
     def test_changed_upstream_blob_is_not_silently_accepted(self):
         self.reviewed_rule()
         (self.upstream / "app.txt").write_text("new upstream behavior\n")
         self.commit(self.upstream, "upstream changed")
         self.cmd(self.upstream, "tag", "-f", "v1.31.0")
-        with self.assertRaisesRegex(RuntimeError, "current release retained"):
-            self.prepare()
+        self.prepare()
         self.assertEqual("custom behavior\n", (self.fork / "app.txt").read_text())
+        self.assertEqual("blocked", json.loads((self.fork / "verification/upstream-sync.json").read_text())["state"])
 
     def test_corrupt_patch_is_rejected_and_merge_is_aborted(self):
         self.reviewed_rule()

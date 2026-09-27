@@ -8,12 +8,14 @@ package app.morphe.manager.ui.screen.shared
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -197,6 +199,43 @@ fun SelectionCheckIndicator(state: ToggleableState, enabled: Boolean = true) {
         contentColor = if (enabled) colors.onPrimaryContainer
         else colors.onPrimaryContainer.copy(alpha = 0.38f)
     )
+}
+
+/**
+ * Standalone checkbox row for a secondary choice under a dialog's main content. Draws the same
+ * [SelectionCheckIndicator] the cards carry, so every checkbox in the app looks alike.
+ */
+@Composable
+fun SelectionCheckRow(
+    text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .toggleable(
+                value = checked,
+                enabled = enabled,
+                role = Role.Checkbox,
+                onValueChange = onCheckedChange
+            )
+            .padding(Defaults.ContentPaddingSmall),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Defaults.ItemSpacing, Alignment.CenterHorizontally)
+    ) {
+        SelectionCheckIndicator(
+            state = if (checked) ToggleableState.On else ToggleableState.Off,
+            enabled = enabled
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = LocalDialogSecondaryTextColor.current
+        )
+    }
 }
 
 @Composable

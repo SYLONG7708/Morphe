@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Files & storage settings section. Owns the entry into the full storage-management screen,
- * the expert-mode patch selection dialog, and the file picker and download helper toggles.
+ * the expert-mode patch selection dialog, the file picker toggle and the download helper trust list.
  */
 @Composable
 fun FilesAndStorageSection(
@@ -43,20 +43,31 @@ fun FilesAndStorageSection(
     val isTV = remember { context.isAndroidTv() }
     val useExpertMode by settingsViewModel.prefs.useExpertMode.getAsState()
     val useCustomFilePicker by settingsViewModel.prefs.useCustomFilePicker.getAsState()
-    val useApkDownloadHelper by settingsViewModel.prefs.useApkDownloadHelper.getAsState()
+    val trustedApkDownloadHelpers by settingsViewModel.prefs.trustedApkDownloadHelpers.getAsState()
     val showStorageDialog = remember { mutableStateOf(false) }
     val showPatchSelectionDialog = remember { mutableStateOf(false) }
+    val showApkDownloadHelpersDialog = remember { mutableStateOf(false) }
 
-    // Keeps the toggle hidden until a helper is installed, so it never advertises a third-party app
-    var apkDownloadHelperInstalled by remember { mutableStateOf(false) }
+    // Keeps the entry hidden until a helper is installed, so it never advertises a third-party app
+    var apkDownloadHelpers by remember { mutableStateOf(emptyList<ApkDownloadHelperApp>()) }
     LaunchedEffect(Unit) {
-        apkDownloadHelperInstalled = withContext(Dispatchers.IO) {
-            ApkDownloadHelperContract.findHelpers(context).isNotEmpty()
+        apkDownloadHelpers = withContext(Dispatchers.IO) {
+            ApkDownloadHelperContract.findHelpers(context)
+                .distinctBy { it.componentName.packageName }
+                .map { ApkDownloadHelperApp(packageName = it.componentName.packageName, label = it.label) }
         }
     }
 
     if (showStorageDialog.value) {
         StorageManagementDialog(onDismissRequest = { showStorageDialog.value = false })
+    }
+
+    if (showApkDownloadHelpersDialog.value) {
+        ApkDownloadHelpersDialog(
+            settingsViewModel = settingsViewModel,
+            helpers = apkDownloadHelpers,
+            onDismiss = { showApkDownloadHelpersDialog.value = false }
+        )
     }
 
     if (showPatchSelectionDialog.value) {
@@ -98,31 +109,39 @@ fun FilesAndStorageSection(
         }
 
         // TV always uses the custom picker regardless of this toggle, so hide it to avoid confusion
-        if (!isTV) {
-            SettingsGroup(
-                modifier = if (onFilePickerPositioned != null)
-                    Modifier.onGloballyPositioned { coords -> onFilePickerPositioned(coords.boundsInWindow()) }
-                else Modifier
-            ) {
-                SettingsSwitchItem(
-                    checked = useCustomFilePicker,
-                    onToggle = { settingsViewModel.setUseCustomFilePicker(!useCustomFilePicker) },
-                    icon = Icons.Outlined.FolderOpen,
-                    title = stringResource(R.string.settings_system_custom_file_picker),
-                    subtitle = stringResource(R.string.settings_system_custom_file_picker_description)
-                )
-            }
-        }
+        val showFilePicker = !isTV
+        val showApkDownloadHelpers = apkDownloadHelpers.isNotEmpty()
 
-        if (useApkDownloadHelper || apkDownloadHelperInstalled) {
+        // Both are ways of getting hold of the original APK, so they share a card
+        if (showFilePicker || showApkDownloadHelpers) {
             SettingsGroup {
-                SettingsSwitchItem(
-                    checked = useApkDownloadHelper,
-                    onToggle = { settingsViewModel.setUseApkDownloadHelper(!useApkDownloadHelper) },
-                    icon = Icons.Outlined.Download,
-                    title = stringResource(R.string.settings_system_apk_download_helper),
-                    subtitle = stringResource(R.string.settings_system_apk_download_helper_description)
-                )
+                if (showFilePicker) {
+                    SettingsSwitchItem(
+                        checked = useCustomFilePicker,
+                        onToggle = { settingsViewModel.setUseCustomFilePicker(!useCustomFilePicker) },
+                        modifier = if (onFilePickerPositioned != null)
+                            Modifier.onGloballyPositioned { coords -> onFilePickerPositioned(coords.boundsInWindow()) }
+                        else Modifier,
+                        icon = Icons.Outlined.FolderOpen,
+                        title = stringResource(R.string.settings_system_custom_file_picker),
+                        subtitle = stringResource(R.string.settings_system_custom_file_picker_description)
+                    )
+                }
+
+                if (showFilePicker && showApkDownloadHelpers) SettingsDivider()
+
+                if (showApkDownloadHelpers) {
+                    SettingsItem(
+                        onClick = { showApkDownloadHelpersDialog.value = true },
+                        title = stringResource(R.string.settings_system_apk_download_helper),
+                        subtitle = stringResource(
+                            R.string.settings_system_apk_download_helper_trusted_count,
+                            apkDownloadHelpers.count { it.packageName in trustedApkDownloadHelpers },
+                            apkDownloadHelpers.size
+                        ),
+                        leadingContent = { ThemedIcon(icon = Icons.Outlined.Download) }
+                    )
+                }
             }
         }
     }

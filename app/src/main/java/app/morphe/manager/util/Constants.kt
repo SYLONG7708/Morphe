@@ -56,9 +56,9 @@ object KnownApps {
      *
      * @param packageName The app's package name.
      * @param isPinnedByDefault Whether this app appears pinned on the home screen by default.
-     * @param brandColor App brand color used for the home screen button gradient start and
-     *   shimmer placeholder. Should match the appIconColor value shipped in the bundle's
-     *   Compatibility declaration. Null means fall back to [DEFAULT_COLORS].
+     * @param brandColor App brand color for the shimmer placeholder shown before any bundle loads.
+     *   Should match the appIconColor value shipped in the bundle's Compatibility declaration.
+     *   Null means fall back to [DEFAULT_COLORS].
      */
     data class Entry(
         val packageName: String,

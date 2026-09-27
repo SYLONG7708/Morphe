@@ -97,14 +97,12 @@ class InstalledAppInfoViewModel(
 
                 if (app != null) {
                     // Run all checks in parallel
-                    val deferredMounted = async { rootInstaller.isDeviceRooted() && rootInstaller.isAppMounted(app.currentPackageName) }
                     val deferredOriginalApk = async { originalApkRepository.get(app.originalPackageName) != null }
                     val deferredSiblings = async { installedAppRepository.hasSiblingRecords(app) }
                     val deferredAppState = async { refreshAppState(app) }
                     val deferredPatches = async { resolveAppliedSelection(app) }
 
                     // Wait for all to complete
-                    isMounted = deferredMounted.await()
                     hasOriginalApk = deferredOriginalApk.await()
                     deletesOriginalApk = hasOriginalApk && !deferredSiblings.await()
                     deferredAppState.await()
@@ -293,8 +291,9 @@ class InstalledAppInfoViewModel(
 
         canRemoveRecord = canRemoveTrackedRecord(app.installType, trackedPatchState, hasSavedCopy)
 
-        // Update mounted state
-        isMounted = rootInstaller.isDeviceRooted() && rootInstaller.isAppMounted(app.currentPackageName)
+        // Update mounted state, which a mount install already read for its patch state
+        isMounted = snapshot.mounted
+            ?: (rootInstaller.isDeviceRooted() && rootInstaller.isAppMounted(app.currentPackageName))
     }
 
     /** Manually refresh app state (e.g., after app installation/uninstallation) */

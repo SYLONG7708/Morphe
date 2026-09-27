@@ -58,6 +58,7 @@ class PairsGameState(
     var strikes by mutableIntStateOf(PAIRS_STRIKES)
         private set
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
     override val score get() = points.value
     override val highScore get() = points.high
     override var isGameOver by mutableStateOf(false)
@@ -92,7 +93,7 @@ class PairsGameState(
             matched = matched.copyOf().also { it[first] = true; it[second] = true }
             points.value += PAIRS_MATCH_POINTS
             strikes = (strikes + 1).coerceAtMost(PAIRS_STRIKES)
-            if (matched.all { it }) dealNextBoard()
+            if (matched.all { it }) dealNextBoard() else haptics.tick()
         } else {
             strikes--
             if (strikes <= 0) {
@@ -123,6 +124,7 @@ class PairsGameState(
     // running for as long as the strikes hold out
     private fun dealNextBoard() {
         points.value += PAIRS_BOARD_BONUS
+        haptics.reward()
         cards = deal()
         matched = BooleanArray(PAIRS_GRID * PAIRS_GRID)
     }

@@ -6,27 +6,27 @@
 package app.morphe.manager.ui.screen.home
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.util.withToast
+
+/**
+ * Reorder mode of a [MultiSelectBar]: whether it is on, and what its pills do. The mode is
+ * entered through one of the bar's actions.
+ */
+internal class MultiSelectReorder(
+    val isActive: Boolean,
+    val onSave: () -> Unit,
+    val onReset: () -> Unit,
+    val onCancel: () -> Unit
+)
 
 /**
  * Everything [MultiSelectBar] renders from state its own actions clear, kept together so it
@@ -36,23 +36,14 @@ import app.morphe.manager.util.withToast
 private data class MultiSelectDisplay(
     val count: Int,
     val total: Int,
-    val inReorderMode: Boolean,
-    val contextIcon: ImageVector?,
-    val contextDescription: String?,
-    val contextColors: IconButtonColors,
-    val onContextAction: (() -> Unit)?
-)
-
-/** The same, for [CategoryActionBar]. */
-private data class CategoryDisplay(
-    val title: String?,
-    val inReorderMode: Boolean,
-    val showEditActions: Boolean
+    val reorder: MultiSelectReorder?,
+    val actions: List<SelectionAction>
 )
 
 /**
- * Animated confirmation bar that slides up from the bottom of the card list
- * when the user is in multi-select mode.
+ * Home screen's selection panel, which slides up while cards are being selected and turns into
+ * the reorder panel while [reorder] is on. Back leaves whichever of the two is showing, the
+ * reorder without saving.
  */
 @Composable
 internal fun MultiSelectBar(
@@ -61,216 +52,69 @@ internal fun MultiSelectBar(
     visible: Boolean,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
-    onAction: () -> Unit,
-    actionIcon: ImageVector,
-    actionContentDescription: String,
-    actionDoneMessage: String,
     onCancel: () -> Unit,
-    onEnterReorder: () -> Unit,
-    onSaveOrder: () -> Unit,
-    onResetOrder: () -> Unit,
-    onCancelReorder: () -> Unit,
+    actions: List<SelectionAction>,
     modifier: Modifier = Modifier,
-    isReorderMode: Boolean = false,
-    showReorderButton: Boolean = true,
-    actionColors: IconButtonColors = IconButtonDefaults.filledTonalIconButtonColors(
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer
-    ),
-    onContextAction: (() -> Unit)? = null,
-    contextActionIcon: ImageVector? = null,
-    contextActionContentDescription: String? = null,
-    contextActionColors: IconButtonColors = IconButtonDefaults.filledTonalIconButtonColors(),
-    onMoveToCategory: (() -> Unit)? = null,
-    onPatchSelected: (() -> Unit)? = null,
-    onPatchSources: (() -> Unit)? = null
+    reorder: MultiSelectReorder? = null
 ) {
     val context = LocalContext.current
-
-    val cancelLabel = stringResource(android.R.string.cancel)
-    val reorderListLabel = stringResource(R.string.reorder_list)
-    val reorderListHint = stringResource(R.string.reorder_list_hint)
     val reorderDone = stringResource(R.string.reorder_done)
-    val resetOrderLabel = stringResource(R.string.reset_order)
     val resetOrderDone = stringResource(R.string.reset_order_done)
-    val doneLabel = stringResource(R.string.done)
-    val moveToCategoryLabel = stringResource(R.string.home_category_move_to)
-    val selectAllLabel = stringResource(R.string.select_all)
-    val selectAllDone = stringResource(R.string.select_all_done)
-    val deselectAllLabel = stringResource(R.string.deselect_all)
-    val deselectAllDone = stringResource(R.string.deselect_all_done)
-    val selectedLabel = stringResource(R.string.selected).lowercase()
-    val patchSelectedLabel = stringResource(R.string.batch_patch_action)
-    val patchSourcesLabel = stringResource(R.string.sources_management_title)
 
     val selection = rememberWhileVisible(
         visible,
         MultiSelectDisplay(
             count = selectedCount,
             total = totalCount,
-            inReorderMode = isReorderMode && showReorderButton,
-            contextIcon = contextActionIcon,
-            contextDescription = contextActionContentDescription,
-            contextColors = contextActionColors,
-            onContextAction = onContextAction
+            reorder = reorder,
+            actions = actions
         )
     )
 
-    val allSelected = selection.total in 1..selection.count
-    val selectionToggleLabel = if (allSelected) deselectAllLabel else selectAllLabel
-    val selectionToggleDone = if (allSelected) deselectAllDone else selectAllDone
-
-    MultiSelectShell(visible = visible, modifier = modifier) {
+    MultiSelectShell(
+        visible = visible,
+        modifier = modifier,
+        onBack = { if (reorder?.isActive == true) reorder.onCancel() else onCancel() }
+    ) {
         AnimatedContent(
-            targetState = selection.inReorderMode,
+            targetState = selection.reorder?.isActive == true,
             transitionSpec = Animations.fadeCrossfade(200),
             label = "multibar_mode"
         ) { inReorder ->
-            if (inReorder) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = reorderListHint,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    ActionPillRow {
-                        ActionPillButton(
-                            onClick = context.withToast(resetOrderDone, onResetOrder),
-                            icon = Icons.Outlined.Restore,
-                            contentDescription = resetOrderLabel,
-                            tooltip = resetOrderLabel
-                        )
-                        ActionPillButton(
-                            onClick = onCancelReorder,
-                            icon = Icons.Outlined.Close,
-                            contentDescription = cancelLabel,
-                            tooltip = cancelLabel
-                        )
-                        ActionPillButton(
-                            onClick = context.withToast(reorderDone, onSaveOrder),
-                            icon = Icons.Outlined.Check,
-                            contentDescription = doneLabel,
-                            tooltip = doneLabel
-                        )
-                    }
-                }
+            val activeReorder = selection.reorder
+            if (inReorder && activeReorder != null) {
+                ReorderPanel(
+                    onDone = context.withToast(reorderDone, activeReorder.onSave),
+                    onReset = context.withToast(resetOrderDone, activeReorder.onReset),
+                    onCancel = activeReorder.onCancel
+                )
             } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    AnimatedContent(
-                        targetState = selection.count,
-                        transitionSpec = Animations.compactCounterTransitionSpec,
-                        label = "multibar_count"
-                    ) { count ->
-                        Text(
-                            text = "$count $selectedLabel",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    ActionPillRow {
-                        ActionPillButton(
-                            onClick = context.withToast(selectionToggleDone) {
-                                if (allSelected) onDeselectAll() else onSelectAll()
-                            },
-                            icon = if (allSelected) Icons.Outlined.RemoveDone else Icons.Outlined.DoneAll,
-                            contentDescription = selectionToggleLabel,
-                            tooltip = selectionToggleLabel,
-                            enabled = selection.total > 0
-                        )
-                        if (onPatchSelected != null) {
-                            ActionPillButton(
-                                onClick = onPatchSelected,
-                                icon = Icons.Outlined.AutoFixHigh,
-                                contentDescription = patchSelectedLabel,
-                                tooltip = patchSelectedLabel,
-                                enabled = selection.count > 0,
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                            )
-                        }
-                        if (onPatchSources != null) {
-                            // Next to "Patch selected" rather than next to "Hide": both answer
-                            // what patching these apps does, while "Hide" is about this screen
-                            ActionPillButton(
-                                onClick = onPatchSources,
-                                icon = Icons.Outlined.Source,
-                                contentDescription = patchSourcesLabel,
-                                tooltip = patchSourcesLabel,
-                                enabled = selection.count > 0,
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                            )
-                        }
-                        if (onMoveToCategory != null) {
-                            ActionPillButton(
-                                onClick = onMoveToCategory,
-                                icon = Icons.Outlined.FolderOpen,
-                                contentDescription = moveToCategoryLabel,
-                                tooltip = moveToCategoryLabel,
-                                enabled = selection.count > 0
-                            )
-                        }
-                        val contextIcon = selection.contextIcon
-                        val contextDescription = selection.contextDescription
-                        val contextAction = selection.onContextAction
-                        if (contextIcon != null && contextDescription != null && contextAction != null) {
-                            ActionPillButton(
-                                onClick = contextAction,
-                                icon = contextIcon,
-                                contentDescription = contextDescription,
-                                tooltip = contextDescription,
-                                enabled = selection.count > 0,
-                                colors = selection.contextColors
-                            )
-                        }
-                        ActionPillButton(
-                            onClick = context.withToast(actionDoneMessage, onAction),
-                            icon = actionIcon,
-                            contentDescription = actionContentDescription,
-                            tooltip = actionContentDescription,
-                            enabled = selection.count > 0,
-                            colors = actionColors
-                        )
-                        if (showReorderButton) {
-                            ActionPillButton(
-                                onClick = onEnterReorder,
-                                icon = Icons.Outlined.Reorder,
-                                contentDescription = reorderListLabel,
-                                tooltip = reorderListLabel,
-                                enabled = selection.count > 0
-                            )
-                        }
-                        ActionPillButton(
-                            onClick = onCancel,
-                            icon = Icons.Outlined.Close,
-                            contentDescription = cancelLabel,
-                            tooltip = cancelLabel
-                        )
-                    }
-                }
+                SelectionActionBar(
+                    selectedCount = selection.count,
+                    totalCount = selection.total,
+                    onSelectAll = onSelectAll,
+                    onDeselectAll = onDeselectAll,
+                    onCancel = onCancel,
+                    actions = selection.actions
+                )
             }
         }
     }
 }
 
+/** What [CategoryActionBar] renders, frozen as one value while the bar slides out. */
+private data class CategoryDisplay(
+    val title: String?,
+    val inReorderMode: Boolean,
+    val showEditActions: Boolean
+)
+
 /**
- * Slide-up bar for the currently long-pressed category header.
+ * Slide-up panel for the long-pressed category or source header, which turns into the reorder
+ * panel while the headers are being dragged into a new order. A source group only offers
+ * reordering: its name and its apps come from the source, not from the user.
+ *
+ * @param onBack Closes the panel from either mode, dropping a reorder that was not saved.
  */
 @Composable
 internal fun CategoryActionBar(
@@ -282,20 +126,14 @@ internal fun CategoryActionBar(
     onEnterReorder: () -> Unit,
     onExitReorder: () -> Unit,
     onCancel: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     showEditActions: Boolean = true
 ) {
     val cancelLabel = stringResource(android.R.string.cancel)
     val renameLabel = stringResource(R.string.rename)
-    val deleteLabel = stringResource(R.string.delete)
     val reorderListLabel = stringResource(R.string.reorder_list)
-    val reorderListHint = stringResource(R.string.reorder_list_hint)
-    val doneLabel = stringResource(R.string.done)
-
-    val destructiveColors = IconButtonDefaults.filledTonalIconButtonColors(
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer
-    )
+    val deleteLabel = stringResource(R.string.delete)
 
     val category = rememberWhileVisible(
         visible,
@@ -306,77 +144,82 @@ internal fun CategoryActionBar(
         )
     )
 
-    MultiSelectShell(visible = visible, modifier = modifier) {
+    MultiSelectShell(visible = visible, modifier = modifier, onBack = onBack) {
         AnimatedContent(
             targetState = category.inReorderMode,
             transitionSpec = Animations.fadeCrossfade(200),
             label = "category_bar_mode"
         ) { inReorder ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (inReorder) {
-                    Text(
-                        text = reorderListHint,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+            if (inReorder) {
+                ReorderPanel(onDone = onExitReorder)
+            } else {
+                Column {
+                    PanelHeader(title = { category.title?.let { PanelTitle(text = it) } }) {
+                        TitleAction(icon = Icons.Outlined.Close, contentDescription = cancelLabel, onClick = onCancel)
+                    }
+                    PanelActions(
+                        actions = buildList {
+                            if (category.showEditActions) {
+                                add(SelectionAction(Icons.Outlined.Edit, renameLabel, onRename))
+                            }
+                            add(SelectionAction(Icons.Outlined.Reorder, reorderListLabel, onEnterReorder))
+                            if (category.showEditActions) {
+                                add(
+                                    SelectionAction(
+                                        icon = Icons.Outlined.Delete,
+                                        label = deleteLabel,
+                                        onClick = onDelete,
+                                        tone = ActionTone.Destructive
+                                    )
+                                )
+                            }
+                        }
                     )
-                    ActionPillRow {
-                        ActionPillButton(
-                            onClick = onExitReorder,
-                            icon = Icons.Outlined.Check,
-                            contentDescription = doneLabel,
-                            tooltip = doneLabel
-                        )
-                    }
-                } else {
-                    val title = category.title
-                    if (title != null) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    ActionPillRow {
-                        if (category.showEditActions) {
-                            ActionPillButton(
-                                onClick = onRename,
-                                icon = Icons.Outlined.Edit,
-                                contentDescription = renameLabel,
-                                tooltip = renameLabel
-                            )
-                        }
-                        ActionPillButton(
-                            onClick = onEnterReorder,
-                            icon = Icons.Outlined.Reorder,
-                            contentDescription = reorderListLabel,
-                            tooltip = reorderListLabel
-                        )
-                        if (category.showEditActions) {
-                            ActionPillButton(
-                                onClick = onDelete,
-                                icon = Icons.Outlined.Delete,
-                                contentDescription = deleteLabel,
-                                tooltip = deleteLabel,
-                                colors = destructiveColors
-                            )
-                        }
-                        ActionPillButton(
-                            onClick = onCancel,
-                            icon = Icons.Outlined.Close,
-                            contentDescription = cancelLabel,
-                            tooltip = cancelLabel
-                        )
-                    }
                 }
             }
         }
+    }
+}
+
+/**
+ * Drag hint over the ways out of a reorder: [onDone] keeps the new order, [onReset] goes back to
+ * the default one, and [onCancel] drops the changes. A reorder without the last two offers only
+ * the first.
+ */
+@Composable
+private fun ReorderPanel(
+    onDone: () -> Unit,
+    onReset: (() -> Unit)? = null,
+    onCancel: (() -> Unit)? = null
+) {
+    val reorderListHint = stringResource(R.string.reorder_list_hint)
+    val doneLabel = stringResource(R.string.done)
+    val resetOrderLabel = stringResource(R.string.reset_order)
+    val cancelLabel = stringResource(android.R.string.cancel)
+
+    Column {
+        PanelHeader(title = { PanelTitle(text = reorderListHint) }) {
+            if (onCancel != null) {
+                TitleAction(icon = Icons.Outlined.Close, contentDescription = cancelLabel, onClick = onCancel)
+            }
+        }
+        PanelActions(
+            actions = listOfNotNull(
+                SelectionAction(
+                    icon = Icons.Outlined.Check,
+                    label = doneLabel,
+                    onClick = onDone,
+                    tone = ActionTone.Primary
+                ),
+                onReset?.let {
+                    SelectionAction(
+                        icon = Icons.Outlined.Restore,
+                        label = resetOrderLabel,
+                        onClick = it,
+                        tone = ActionTone.Destructive
+                    )
+                }
+            )
+        )
     }
 }

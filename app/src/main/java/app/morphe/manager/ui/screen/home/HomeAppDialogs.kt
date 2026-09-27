@@ -19,13 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.foundation.selection.triStateToggleable
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +43,7 @@ import app.morphe.manager.patcher.patch.PatchInfo
 import app.morphe.manager.ui.model.HomeAppItem
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.util.toast
+import app.morphe.manager.util.withToast
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.util.Locale
@@ -316,17 +311,10 @@ fun AppPatchesDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(horizontal = 16.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.filter),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(Modifier.height(8.dp))
+                PanelHeader(title = { PanelTitle(text = stringResource(R.string.filter)) })
                 FlowRow(
-                    modifier = Modifier.padding(bottom = 16.dp),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // "All" chip
@@ -426,6 +414,7 @@ internal fun HiddenAppsDialog(
     onShowPatches: (HomeAppItem) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
     val itemSpacing = rememberWindowSize().itemSpacing
     val isMultiSelectMode = remember { mutableStateOf(false) }
     val selectedPackages = rememberSelectionState<String>()
@@ -466,56 +455,52 @@ internal fun HiddenAppsDialog(
     }
 
     AppDialog(
-        onDismissRequest = {
-            if (isMultiSelectMode.value) {
-                isMultiSelectMode.value = false
-                selectedPackages.clear()
-            } else {
-                onDismiss()
-            }
-        },
+        onDismissRequest = onDismiss,
         dismissOnClickOutside = !isMultiSelectMode.value,
         title = stringResource(R.string.home_app_hidden_apps_title),
         footer = {
-            if (isMultiSelectMode.value) {
-                MultiSelectBar(
-                    selectedCount = selectedPackages.size,
-                    totalCount = hiddenAppItems.size,
-                    visible = true,
-                    showReorderButton = false,
-                    onSelectAll = {
-                        selectedPackages.setAll(hiddenAppItems.map { it.id })
-                    },
-                    onDeselectAll = { selectedPackages.clear() },
-                    onAction = {
-                        onUnhideMultiple(selectedPackages.keys.toSet())
-                        isMultiSelectMode.value = false
-                        selectedPackages.clear()
-                    },
-                    actionIcon = Icons.Outlined.Visibility,
-                    actionContentDescription = stringResource(R.string.unhide),
-                    actionDoneMessage = stringResource(R.string.unhide_done),
-                    actionColors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                    ),
-                    onCancel = {
-                        isMultiSelectMode.value = false
-                        selectedPackages.clear()
-                    },
-                    onEnterReorder = {},
-                    onSaveOrder = {},
-                    onResetOrder = {},
-                    onCancelReorder = {}
-                )
-            } else {
-                AppDialogOutlinedButton(
-                    text = stringResource(R.string.close),
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            AppDialogOutlinedButton(
+                text = stringResource(R.string.close),
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            )
         },
+        bottomBar = if (isMultiSelectMode.value) {
+            {
+                MultiSelectShell(
+                    visible = true,
+                    onBack = {
+                        isMultiSelectMode.value = false
+                        selectedPackages.clear()
+                    }
+                ) {
+                    SelectionActionBar(
+                        selectedCount = selectedPackages.size,
+                        totalCount = hiddenAppItems.size,
+                        onSelectAll = {
+                            selectedPackages.setAll(hiddenAppItems.map { it.id })
+                        },
+                        onDeselectAll = { selectedPackages.clear() },
+                        actions = listOf(
+                            SelectionAction(
+                                icon = Icons.Outlined.Visibility,
+                                label = stringResource(R.string.unhide),
+                                onClick = context.withToast(stringResource(R.string.unhide_done)) {
+                                    onUnhideMultiple(selectedPackages.keys.toSet())
+                                    isMultiSelectMode.value = false
+                                    selectedPackages.clear()
+                                },
+                                tone = ActionTone.Tertiary
+                            )
+                        ),
+                        onCancel = {
+                            isMultiSelectMode.value = false
+                            selectedPackages.clear()
+                        }
+                    )
+                }
+            }
+        } else null,
         padding = DialogPadding.Compact,
         scrollable = false
     ) {
@@ -653,13 +638,13 @@ fun AppPatchSourcesDialog(
     }
 
     // Read the other way round for the list, and named the way the source list names them
-    val titles = remember(sources) { sources.associate { it.uid to it.displayTitle } }
-    val rows = remember(coveredBy, keptFrom, titles, packages) {
+    val sourcesByUid = remember(sources) { sources.associateBy { it.uid } }
+    val rows = remember(coveredBy, keptFrom, sourcesByUid, packages) {
         coveredBy.values.flatten().distinct()
             .map { uid ->
                 val reaches = packages.filter { uid in coveredBy[it].orEmpty() }
                 val held = reaches.count { uid in keptFrom[it].orEmpty() }
-                Triple(uid, titles[uid] ?: uid.toString(), held to reaches.size)
+                Triple(uid, sourcesByUid[uid]?.displayTitle ?: uid.toString(), held to reaches.size)
             }
             .sortedBy { (_, title, _) -> title.lowercase(Locale.ROOT) }
     }
@@ -724,31 +709,39 @@ fun AppPatchSourcesDialog(
                             }
                         }
                     },
-                    title = title,
-                    // Two things the box alone cannot say: that the selected apps disagree, and
-                    // that a source only has patches for some of them, which is what decides how
-                    // far a tap on it reaches
-                    description = when {
-                        state == ToggleableState.Indeterminate -> stringResource(
-                            R.string.home_app_patch_sources_mixed,
-                            (reaches - held).toString(),
-                            reaches.toString()
-                        )
-
-                        reaches < packages.size -> stringResource(
-                            R.string.home_app_patch_sources_covers,
-                            reaches.toString(),
-                            packages.size.toString()
-                        )
-
-                        else -> null
-                    },
                     role = Role.Checkbox,
                     leadingContent = { SelectionCheckIndicator(state) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .animatedListItem(this)
-                )
+                ) {
+                    IconTextRow(
+                        modifier = Modifier.weight(1f),
+                        // Drawn the way the source list draws it, so a source is recognized at a glance
+                        leadingContent = sourcesByUid[uid]?.let { source ->
+                            { BundleIcon(bundle = source, modifier = Modifier.size(40.dp)) }
+                        },
+                        title = title,
+                        // Two things the box alone cannot say: that the selected apps disagree, and
+                        // that a source only has patches for some of them, which is what decides how
+                        // far a tap on it reaches
+                        description = when {
+                            state == ToggleableState.Indeterminate -> stringResource(
+                                R.string.home_app_patch_sources_mixed,
+                                (reaches - held).toString(),
+                                reaches.toString()
+                            )
+
+                            reaches < packages.size -> stringResource(
+                                R.string.home_app_patch_sources_covers,
+                                reaches.toString(),
+                                packages.size.toString()
+                            )
+
+                            else -> null
+                        }
+                    )
+                }
             }
         }
     }

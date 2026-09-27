@@ -2,10 +2,11 @@ name: Sync official stable Manager
 on:
   workflow_dispatch:
   schedule:
-    - cron: '37 1,7,13,19 * * *'
+    - cron: '37 1 * * *'
 permissions:
   contents: write
   actions: write
+  issues: write
 concurrency:
   group: official-manager-sync
   cancel-in-progress: false
@@ -28,6 +29,11 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           python3 tools/ci_retry.py -- python3 tools/sync_upstream.py
+      - name: Track a release that needs reviewed integration
+        if: steps.upstream.outputs.blocked == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/report_upstream_block.py
       - uses: actions/setup-java@v5
         if: steps.upstream.outputs.changed == 'true'
         with:
@@ -61,7 +67,7 @@ jobs:
           SYNC_RESULT: ${{ job.status }}
         run: |
           echo "Official source sync: $SYNC_RESULT" >> "$GITHUB_STEP_SUMMARY"
-          echo 'Only merges passing both editions are published. Conflicts and failed checks retain the current release.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Only merges passing both editions are published. Conflicts retain the current release and are tracked once per upstream tag.' >> "$GITHUB_STEP_SUMMARY"
           if [ -f verification/upstream-sync.json ]; then
             echo '```json' >> "$GITHUB_STEP_SUMMARY"
             cat verification/upstream-sync.json >> "$GITHUB_STEP_SUMMARY"

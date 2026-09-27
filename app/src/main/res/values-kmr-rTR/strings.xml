@@ -644,7 +644,6 @@ Neqişandin dê hemî daneyên serîlêdanê bi awayê daîmî tune bike"</strin
     <string name="settings_appearance_greeting_phrases">Frazey şahê</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Nîşanekê bi xêrhatinê li ser mîna malê nîşan bide</string>
     <string name="settings_appearance_app_grouping">Komkirina sepanan</string>
-    <string name="settings_appearance_app_grouping_description">Nîşanekê bike ku sepanan bi çavkanî an kategoriyên te kom bike, hilbijarkirina xwe jî dema ku neçalak e parastin</string>
     <string name="settings_appearance_sort_button">Bişkoka rêzkirin û parzûnkirinê</string>
     <string name="settings_appearance_sort_button_description">Bişkoka rêzkirin û parzûnkirinê li ser ekrana malê nîşan bide</string>
     <string name="settings_appearance_app_card_colors">Rengên karta sepanê</string>
@@ -698,7 +697,6 @@ Patch ne bandor in: ji bo her çavkaniyê di lîsteya çavkaniyên patch de patc
     <string name="settings_advanced_update_interval_chip_subtitle">Rêjeya kontrolê paşîn</string>
     <string name="settings_advanced_update_interval_battery_warning">Kontrolên paşîn dibin sedem ku hin alavkêm nekar in. Hilberîneran weke Xiaomi, Huawei, Samsung, û OnePlus gelek caran pêvajeyên paşîn ji bo parastina bataryayê asteng dikin.</string>
     <string name="settings_advanced_external_batch_patch">Têkirina ji derve bidê dest</string>
-    <string name="settings_advanced_external_batch_patch_description">Dê sepanên otomatîk bidê dest bi patchkirina batchê bi niyetek. Her daxwazê berî her tiştê tê pejirandin</string>
     <string name="external_batch_patch_title">Dest bi patchkirina batchê bike?</string>
     <string name="external_batch_patch_description">%s dixwaze Morphe sepanan patch bike û saz bike</string>
     <string name="external_batch_patch_trust_caller">Her gav bidê vê sepayê</string>
@@ -711,8 +709,6 @@ Patch ne bandor in: ji bo her çavkaniyê di lîsteya çavkaniyên patch de patc
     <string name="notification_permission_dialog_title">Îznayê ragahdaniyê</string>
     <string name="notification_permission_dialog_description">Morphe ji bo domandina ragihînan destûrê divê ku we ji ber ku nûvekirinên li ser were agahdar kirin.</string>
     <string name="notification_post_patch_dialog_title">Ma tu bistîyê ku dema ku nûvekirinan zafîn, ji bo te ragahdaniyê bike?</string>
-    <string name="notification_channel_fcm_updates">Nûvekarî notîfîkasyonan</string>
-    <string name="notification_channel_fcm_updates_description">Notîfîkasyonên derbarê vebûna Morphe ya din û bernameyên çêkirî</string>
     <string name="notification_channel_patcher">Çêkirin</string>
     <string name="notification_channel_patcher_description">Di dema ku Morphe bernameyekê di rewşê de çêdike</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -723,24 +719,16 @@ Patch ne bandor in: ji bo her çavkaniyê di lîsteya çavkaniyên patch de patc
     <string name="settings_advanced_expert_mode_dialog_message">Moda pispor kontrola zêdetir ser bernameyên ku meriv pêdike, lê çêkirina bêreng di moda pispor de dikare bibe sedem ku sepan bibe nekar.</string>
     <string name="settings_advanced_strip_unused_libs">Ji arîkek cihazê ve saz bike</string>
     <string name="settings_advanced_strip_unused_libs_description">Lîbêrên mîmarîya CPU’yê yên ne-heqî u modûlên APK’êyê yên parvekirî qedide bike</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">Fêrqa pêşdaraziyê kodê</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">Kontrol dike ka kod çawa di dema guhertinê de pêşdarêzê. Bandor li ser leza guhertinê, karanîna bîr û mezinahiya APK ya derveyî dike.</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">Lez (Pêşnebîr)</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">Çav</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">Bitşik pêşandan û mêjiyê kêmtir, lê APK mezintir e. Ji bo alavên RAM kêm an kevnar tê pêşniyar.</string>
-    <string name="settings_advanced_bytecode_mode_full">Tam</string>
-    <string name="settings_advanced_bytecode_mode_full_description">Qeyik kirina hêdî, tevavîya tomaran dubare bike. Tenê hekî modê zû pêşkêş dike pirsgirêk çê bibe, pêşnîyar kirin</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">PAT GitHub</string>
     <string name="settings_advanced_github_pat_description">Ragrapha qebul, pêvir be jibo seyarê ber dom</string>
     <string name="settings_advanced_github_pat_configured">Token sazkirin</string>
     <string name="settings_advanced_github_pat_how_to_get">Meriv token çawa bidestxistin</string>
-    <string name="settings_advanced_github_pat_dialog_title">Token Personal Access ya GitHub saz kîn</string>
-    <string name="settings_advanced_github_pat_dialog_description">"Ji bo ku bikaribe daxwazên hilbigire wekî çavkaniyên derve, tokena gihîştina kesane ya GitHub'ê têne çêkirin. Tokenek bi scope public_repo li
-%s çêbikin"</string>
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
     <string name="settings_advanced_github_pat_export_include_label">Di qeyrek sazî de zêde bike</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">Ev PAT bi danan Morphe sazkirina xwe vekirî</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">PAT xwe veqêtin neyê. Ger ew di qeyrek sazî de zêde kirin, wê qeyrê têr çaveke rê bibe ji ber ew token hegirdê</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Selekîyên rayekê</string>
@@ -911,8 +899,6 @@ Detay: %2$s"</string>
     <string name="settings_system_notifications_ringtone_picker_title">Toneyek hilbijêre</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">Import &amp; export</string>
-    <string name="settings_system_keystore">Keystore</string>
-    <string name="settings_system_import_keystore_description">Kilîdên îmzeyê yên we yên kişînê importê an exportê bike</string>
     <string name="settings_system_import_keystore_dialog_title">Sernameyê (Alias) dafîne</string>
     <string name="settings_system_import_keystore_dialog_description">Hûn dê pêwist be serdanan kredensiyelên keystorê bidin da ku ew sazkirin</string>
     <string name="settings_system_import_keystore_dialog_alias_field">Karanbera (Alias)</string>
@@ -921,7 +907,6 @@ Detay: %2$s"</string>
     <string name="settings_system_import_keystore_wrong_credentials">Nivîsandina parçehuyê xeṭî ye</string>
     <string name="settings_system_import_keystore_success">Parçehuyê zafortir hate kirin</string>
     <string name="settings_system_import_keystore_failed">Ji kirina parçehuyê neçîbe</string>
-    <string name="settings_system_export_keystore_unavailable">Parçehuyek ku were derxistin tune</string>
     <string name="settings_system_export_keystore_success">Parçehuy derxist</string>
     <string name="settings_system_export_keystore_failed">Destûr neda exportkirina keystore\'ê</string>
     <string name="settings_system_show_password_field">Şifreyê nîşana bîne</string>
@@ -940,7 +925,6 @@ Detay: %2$s"</string>
     <string name="import_mode_merge_description">Hêmanên winda ji paşgirtinê zêde bike. Hêmanên heyî nehatin guhertin</string>
     <string name="settings_system_export_manager_settings_fail">Ne serketî sawekirina sazkirina Morphe: %s</string>
     <string name="settings_system_export_manager_settings_success">Sawekirina sazkirina Morphe serketî</string>
-    <string name="settings_system_debug">Debug</string>
     <string name="settings_system_export_debug_logs_description">Pelên loga sîstemê ji bo çareserkirina pirsgirêkan tomar bike</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Serketina xwendina logan (koda qedandina %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Logan derxistina xeṭî ye</string>
@@ -1028,7 +1012,6 @@ Detay: %2$s"</string>
     <string name="settings_system_custom_file_picker_description">Li şûna hilbijêrkê pelan yê serî yê sîstemê, hilbijêrkê pelan yê têne çêkirin yê Morphe bikar bîne</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">Arîkareka dakêşina APK-yê</string>
-    <string name="settings_system_apk_download_helper_description">Bi serlêdanek arîkar ku hatiye saz kirin, APK-yên orjînal ji bo we bistîne. Pel ji wê serlêdanê tê, ji ber vê yekê tenê wê pêşkeve heke te wê bawer bikî</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Pêşîya rêgehê</string>
     <string name="file_picker_no_files">Li vir pel nehatine dîtin</string>
@@ -1045,8 +1028,6 @@ Detay: %2$s"</string>
     <string name="file_picker_show_hidden_files">Pelên dosyayên veşartî</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Derbarê</string>
-    <string name="settings_system_share_website">Malperê parve bike</string>
-    <string name="settings_system_share_website_description">Malpera fermî ya Morphe’yê parve bike</string>
     <string name="settings_system_manager_description">Projektek ferman-çavkanî ji bo nûjenkirin, sazkirina bingeş an sepanên popûler ên Android, bi bandora vegerandinên dîmen û ji bo beşdarîyên civakê ve girêdayî ye.</string>
     <string name="credits">Kredît</string>
     <string name="credits_current_development">Gelişîna heyî</string>
@@ -1175,7 +1156,6 @@ Detay: %2$s"</string>
     <string name="importing_ellipsis">Gihîştin…</string>
     <string name="imported_successfully">Sergûha xweş</string>
     <string name="changelog">Bixweyne guhezgarîyan</string>
-    <string name="changelog_description">Guherînên dawî ti vê nûvekirinê binêrin</string>
     <string name="changelog_download_fail">Degerandina guhezgarîyan ji destûr ve çû: %s</string>
     <string name="changelog_empty">Nê ji ber ku wê bigihîne</string>
     <string name="changelog_show_older">Nîşan bide berhemên keviner</string>
@@ -1221,5 +1201,4 @@ Ma hûn hê jî dixwazin dom bikevin?"</string>
     <string name="tour_prompt_desc">Dixwazî gerîşka taybetmendiyên sereke yên Morphe bikî?</string>
     <string name="tour_prompt_confirm">Min li dora te bîne</string>
     <string name="onboarding_restart_title">Gerîşka taybetmendiyan</string>
-    <string name="onboarding_restart_desc">Gerîşka taybetmendiyên sereke yên Morphe bikî</string>
 </resources>

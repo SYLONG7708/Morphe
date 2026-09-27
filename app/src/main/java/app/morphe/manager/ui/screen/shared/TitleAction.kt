@@ -17,9 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 
-/** Opacity of a [TitleAction] that is present but out of reach. */
-private const val DisabledAlpha = 0.38f
-
 /** Visual style of a [TitleAction]. */
 enum class TitleActionStyle {
     /** Flat [IconButton] with the surrounding text tint. Use for info and reset actions */
@@ -92,7 +89,7 @@ fun TitleAction(
                 imageVector = icon,
                 contentDescription = contentDescription,
                 modifier = Modifier.size(Defaults.IconSize),
-                tint = LocalDialogTextColor.current.copy(alpha = if (enabled) 1f else DisabledAlpha)
+                tint = LocalDialogTextColor.current.copy(alpha = if (enabled) 1f else Defaults.DISABLED_ALPHA)
             )
         }
     } else {
@@ -103,8 +100,8 @@ fun TitleAction(
             interactionSource = interactionSource,
             colors = IconButtonDefaults.filledTonalIconButtonColors(
                 containerColor = containerColor,
-                disabledContainerColor = containerColor.copy(alpha = DisabledAlpha),
-                disabledContentColor = LocalDialogTextColor.current.copy(alpha = DisabledAlpha)
+                disabledContainerColor = containerColor.copy(alpha = Defaults.DISABLED_ALPHA),
+                disabledContentColor = LocalDialogTextColor.current.copy(alpha = Defaults.DISABLED_ALPHA)
             )
         ) {
             Icon(

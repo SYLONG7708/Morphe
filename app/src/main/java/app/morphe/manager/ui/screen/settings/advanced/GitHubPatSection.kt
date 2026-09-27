@@ -24,6 +24,11 @@ import app.morphe.manager.ui.screen.shared.*
 import kotlinx.coroutines.launch
 
 /**
+ * Kept in English because GitHub has no localized UI and users look for this exact name there.
+ */
+private const val GITHUB_PAT_NAME = "GitHub Personal Access Token"
+
+/**
  * GitHub PAT settings item for Advanced tab.
  */
 @Composable
@@ -90,7 +95,7 @@ private fun GitHubPatDialog(
 
     AppDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.settings_advanced_github_pat_dialog_title),
+        title = stringResource(R.string.settings_advanced_github_pat_dialog_title, GITHUB_PAT_NAME),
         footer = {
             AppDialogButtonRow(
                 primaryText = stringResource(R.string.save),
@@ -171,7 +176,7 @@ private fun GitHubPatDialog(
     if (showInfoDialog.value) {
         AppDialogWithLinks(
             title = stringResource(R.string.settings_advanced_github_pat_how_to_get),
-            message = stringResource(R.string.settings_advanced_github_pat_dialog_description, "github.com"),
+            message = stringResource(R.string.settings_advanced_github_pat_dialog_description, "github.com", "public_repo", GITHUB_PAT_NAME),
             urlLink = generatePatLink,
             onDismiss = { showInfoDialog.value = false }
         )

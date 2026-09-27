@@ -7,15 +7,12 @@ package app.morphe.manager.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +22,7 @@ import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.LocalDialogSecondaryTextColor
 import app.morphe.manager.ui.screen.shared.AppDialog
 import app.morphe.manager.ui.screen.shared.AppDialogButtonRow
+import app.morphe.manager.ui.screen.shared.SelectionCheckRow
 
 /**
  * Confirmation for a batch patch run requested by another app.
@@ -79,21 +77,11 @@ fun ExternalBatchPatchDialog(
             )
 
             if (callerPackage != null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Checkbox(
-                        checked = trustCaller,
-                        onCheckedChange = { trustCaller = it }
-                    )
-                    Text(
-                        text = stringResource(R.string.external_batch_patch_trust_caller),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = LocalDialogSecondaryTextColor.current
-                    )
-                }
+                SelectionCheckRow(
+                    text = stringResource(R.string.external_batch_patch_trust_caller),
+                    checked = trustCaller,
+                    onCheckedChange = { trustCaller = it }
+                )
             }
         }
     }

@@ -18,13 +18,43 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.*
 
 /**
+ * Lays [items] out [columns] to a row, padding a short last row so every tile keeps one width.
+ */
+@Composable
+fun <T> OptionGrid(
+    items: List<T>,
+    columns: Int,
+    modifier: Modifier = Modifier,
+    spacing: Dp = 8.dp,
+    item: @Composable (item: T, modifier: Modifier) -> Unit
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(spacing)) {
+        items.chunked(columns).forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing)
+            ) {
+                row.forEach { item(it, Modifier.weight(1f)) }
+                repeat(columns - row.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+/**
  * Standard icon-based option card for appearance settings.
  * Used for backgrounds, themes, and other icon-based selections.
+ *
+ * @param compact Shorter, with a smaller icon, for a row of choices that sits inline on the tab
+ *        rather than in a picker of its own.
  */
 @Composable
 fun ModernIconOptionCard(
@@ -33,17 +63,22 @@ fun ModernIconOptionCard(
     icon: ImageVector,
     label: String,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    compact: Boolean = false
 ) {
     val windowSize = rememberWindowSize()
-    val iconSize = when (windowSize.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> 32.dp
-        WindowWidthSizeClass.Medium -> 36.dp
-        WindowWidthSizeClass.Expanded -> 40.dp
+    val iconSize = when {
+        compact -> 22.dp
+        windowSize.widthSizeClass == WindowWidthSizeClass.Compact -> 32.dp
+        windowSize.widthSizeClass == WindowWidthSizeClass.Medium -> 36.dp
+        else -> 40.dp
     }
 
     // Increase height in landscape to prevent text clipping
-    val cardHeight = if (isLandscape()) 92.dp else 80.dp
+    val cardHeight = when {
+        compact -> if (isLandscape()) 72.dp else 64.dp
+        else -> if (isLandscape()) 92.dp else 80.dp
+    }
 
     SelectionTile(
         selected = selected,
@@ -87,63 +122,6 @@ fun ModernIconOptionCard(
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
                 textAlign = TextAlign.Center,
                 lineHeight = MaterialTheme.typography.bodySmall.fontSize * 1.2
-            )
-        }
-    }
-}
-
-/**
- * Compact horizontal card for a single-row selection, typically the full-width option
- * closing a grid of [ModernIconOptionCard] tiles.
- */
-@Composable
-fun CompactOptionCard(
-    selected: Boolean,
-    onClick: () -> Unit,
-    icon: ImageVector,
-    label: String,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
-) {
-    SelectionTile(
-        selected = selected,
-        onClick = onClick,
-        enabled = enabled,
-        stateDescription = stringResource(
-            if (selected) R.string.selected else R.string.not_selected
-        ),
-        modifier = modifier.height(Defaults.MinTouchTarget)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    horizontal = Defaults.ContentPadding,
-                    vertical = Defaults.ContentPaddingSmall
-                ),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ThemedIcon(
-                icon = icon,
-                tint = if (selected) {
-                    LocalContentColor.current
-                } else {
-                    MaterialTheme.colorScheme.primary
-                }.copy(alpha = if (enabled) 1f else 0.5f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (selected) {
-                    LocalContentColor.current
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }.copy(alpha = if (enabled) 1f else 0.5f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
             )
         }
     }

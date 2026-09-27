@@ -9,5 +9,16 @@
       "morphe-patcher-1.14.0.pom": "a4aa7662c581671c10e92069200c74af0430f3922a0bd5baf144277953dedd9d"
     },
     "tag": "v1.14.0"
+  },
+  "morphe-patcher:1.14.1": {
+    "commit": "6f189f9ffb448ae32ceaf6c136c9d84d9a7ed274",
+    "repository": "MorpheApp/morphe-patcher",
+    "sha256": {
+      "morphe-patcher-1.14.1-sources.jar": "ac7d5de7688e20b063cdc88d531783e1144400f148fb5b06eddd4493e2351ab6",
+      "morphe-patcher-1.14.1.jar": "51fbb8956ada50aa366f79ba072ae8fdb9ff9de91a63de405c5c773e30a68f75",
+      "morphe-patcher-1.14.1.module": "b7ec03fef724d6f2bf0bd26ec97d254b83c2510658a0d5cd3decc4c515305fa6",
+      "morphe-patcher-1.14.1.pom": "926b6c215df9a0fdfe8a6700c4cf426ba0033950031cacaa1660a5dc12007079"
+    },
+    "tag": "v1.14.1"
   }
 }

@@ -25,13 +25,19 @@ The badge stands for either of two things:
 When that newer version is short enough to fit on the card, the badge prints it, otherwise it
 just says **Update**. The app's info dialog spells both versions out either way.
 
-Morphe checks your sources in the background on a schedule you set in
-**Settings → Advanced → Updates**:
+Morphe can tell you about new releases while it is closed. **Settings → System →
+Notifications** controls that:
 
-- **Check frequency** - hourly, daily, weekly, or monthly.
-- **Background update notifications** - notifies you about new releases even when Morphe is
-  closed.
-- **Mobile data updates** - allows those downloads over mobile data. With this off and no
+- **Background update notifications** - notifies you about new Morphe and patch releases.
+  They arrive as two separate notification categories, **Morphe updates** and **Patch
+  updates**, so either can be silenced in Android's settings without the other.
+  **Notification categories** opens them.
+- **Check frequency** - hourly, daily, weekly, or monthly. Only shown on devices without
+  Google Play services, where Morphe checks on a schedule instead of receiving a push.
+
+**Settings → Advanced → Updates** holds the rest:
+
+- **Mobile data updates** - allows update downloads over mobile data. With this off and no
   Wi-Fi, checks are skipped, and Morphe warns you if you patch with sources it could not
   refresh.
 - **Pre-release updates** - early access to new Morphe versions. Pre-release for individual
@@ -71,7 +77,8 @@ settings inside the patched app survive.
 > That only holds while the keystore stays the same. Reinstalling Morphe or clearing its data
 > generates a new one, and then patched builds no longer match what is installed, Android
 > reports a signature conflict and the only way forward is uninstalling the patched app.
-> Export your keystore from **Settings → System → Keystore** and keep it somewhere safe, see
+> Export your keystore from **Settings → System → Import & export → Signing key** and keep it
+> somewhere safe, see
 > [Backing up Morphe and your keystore](backup-and-keystore.md).
 
 ### Root mount installs

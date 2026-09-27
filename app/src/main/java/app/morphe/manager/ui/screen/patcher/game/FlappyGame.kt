@@ -64,6 +64,7 @@ class FlappyGameState(
     var pipes by mutableStateOf<List<FlappyPipe>>(emptyList())
         private set
     private val points = GameScore(initialHighScore, onHighScoreUpdated)
+    override val haptics = GameHaptics()
     override val score get() = points.value
     override val highScore get() = points.high
     override var isGameOver by mutableStateOf(false)
@@ -106,7 +107,10 @@ class FlappyGameState(
             val nx = pipe.x - PIPE_SPEED * dt
             if (nx + PIPE_WIDTH < 0f) return@mapNotNull null
             val nowPassed = !pipe.passed && (nx + PIPE_WIDTH) < BIRD_X
-            if (nowPassed) points.value++
+            if (nowPassed) {
+                points.value++
+                haptics.tick()
+            }
             if (BIRD_X + hitR > nx && BIRD_X - hitR < nx + PIPE_WIDTH) {
                 val gapTop = pipe.gapCenter - PIPE_GAP / 2f
                 val gapBottom = pipe.gapCenter + PIPE_GAP / 2f

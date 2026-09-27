@@ -21,14 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.ColorPickerDialog
-import app.morphe.manager.ui.screen.shared.SectionCard
 import app.morphe.manager.ui.screen.shared.colorpicker.ColorPresetGrid
 import app.morphe.manager.ui.screen.shared.colorpicker.THEME_PRESET_COLORS
 import app.morphe.manager.util.toColorOrNull
 import app.morphe.manager.util.toHexString
 
 /**
- * Accent color selector with adaptive color grid.
+ * Accent color grid, drawn without a card of its own so it can open the group it sits in.
  */
 @Composable
 fun AccentColorSelector(
@@ -40,26 +39,24 @@ fun AccentColorSelector(
     val isEnabled = !dynamicColorEnabled
     var showPicker by rememberSaveable { mutableStateOf(false) }
 
-    SectionCard {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.settings_appearance_accent_color),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.settings_appearance_accent_color),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
 
-            ColorPresetGrid(
-                colors = THEME_PRESET_COLORS,
-                selected = selected,
-                onSelect = onColorSelected,
-                enabled = isEnabled,
-                onClear = { onColorSelected(null) },
-                onCustomClick = { showPicker = true }
-            )
-        }
+        ColorPresetGrid(
+            colors = THEME_PRESET_COLORS,
+            selected = selected,
+            onSelect = onColorSelected,
+            enabled = isEnabled,
+            onClear = { onColorSelected(null) },
+            onCustomClick = { showPicker = true }
+        )
     }
 
     if (showPicker) {

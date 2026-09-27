@@ -32,6 +32,12 @@ private const val TILT_TARGET_THRESHOLD = 0.02f
 internal const val BACKGROUND_STEP_INTERVAL_MS = 16f
 
 /**
+ * True for a background drawn inside a full-screen dialog as its own backdrop, such as the preview
+ * of the background picker. Nothing covers that one, so it keeps animating while the dialog is up.
+ */
+val LocalBackdropInDialog = staticCompositionLocalOf { false }
+
+/**
  * Runs [frameLoop] for as long as the host stays resumed and nothing opaque covers it, cancelling
  * the moment either stops holding. A background left ticking behind the lock screen, another
  * activity or a full-screen dialog keeps the frame clock awake and repaints the canvas for nobody.
@@ -41,7 +47,7 @@ internal const val BACKGROUND_STEP_INTERVAL_MS = 16f
 @Composable
 fun AnimationFrameEffect(frameLoop: suspend CoroutineScope.() -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val covered = FullscreenDialogs.anyOpen
+    val covered = FullscreenDialogs.anyOpen && !LocalBackdropInDialog.current
 
     LaunchedEffect(lifecycleOwner, covered) {
         if (covered) return@LaunchedEffect
@@ -77,7 +83,7 @@ fun rememberAnimatedTime(speedMultiplier: Float): State<Float> {
             withInfiniteAnimationFrameMillis { frameMs ->
                 val delta = (frameMs - lastFrameMs).coerceIn(0L, 64L).toFloat()
                 lastFrameMs = frameMs
-                // Smooth lerp: 2.5/sec ramp — ~0.8s to reach target speed.
+                // Smooth lerp: 2.5/sec ramp, ~0.8s to reach target speed.
                 // High enough to feel reactive, low enough to avoid jarring jumps.
                 currentSpeed += (targetSpeed.floatValue - currentSpeed) * (delta / 1000f) * 2.5f
 

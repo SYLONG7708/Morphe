@@ -13,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -22,7 +20,6 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.settings.advanced.GitHubPatSettingsItem
 import app.morphe.manager.ui.screen.settings.advanced.PatchOptionsSection
@@ -50,7 +47,6 @@ fun AdvancedTabContent(
 ) {
     val prefs = settingsViewModel.prefs
     val useExpertMode by prefs.useExpertMode.getAsState()
-    val stripUnusedNativeLibs by prefs.stripUnusedNativeLibs.getAsState()
 
     // Notify VM on expert mode changes so it can derive showExpertModeNotice
     LaunchedEffect(useExpertMode) {
@@ -73,13 +69,12 @@ fun AdvancedTabContent(
         )
     }
 
-    val contentPadding = rememberWindowSize().contentPadding
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
             .animateContentSize()
-            .padding(horizontal = contentPadding, vertical = Defaults.ContentPadding),
+            .padding(settingsTabPadding()),
         verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
     ) {
         // Updates section
@@ -148,19 +143,6 @@ fun AdvancedTabContent(
                                 settingsViewModel.setGitHubPat(pat, include)
                             }
                         )
-
-                        SettingsDivider()
-
-                        // Strip unused native libraries + filter split APKs for device
-                        SettingsSwitchItem(
-                            checked = stripUnusedNativeLibs,
-                            onToggle = {
-                                settingsViewModel.setStripUnusedNativeLibs(!stripUnusedNativeLibs)
-                            },
-                            icon = Icons.Outlined.LayersClear,
-                            title = stringResource(R.string.settings_advanced_strip_unused_libs),
-                            subtitle = stringResource(R.string.settings_advanced_strip_unused_libs_description)
-                        )
                     }
 
                     // Expert mode notice shown once after enabling
@@ -198,26 +180,10 @@ fun AdvancedTabContent(
 private fun ExpertModeConfirmationDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
-) {
-    AppDialog(
-        onDismissRequest = onDismiss,
-        title = stringResource(R.string.settings_advanced_expert_mode_dialog_title),
-        footer = {
-            AppDialogButtonRow(
-                primaryText = stringResource(R.string.enable),
-                onPrimaryClick = onConfirm,
-                isPrimaryDestructive = true,
-                secondaryText = stringResource(android.R.string.cancel),
-                onSecondaryClick = onDismiss
-            )
-        }
-    ) {
-        Text(
-            text = stringResource(R.string.settings_advanced_expert_mode_dialog_message),
-            style = MaterialTheme.typography.bodyLarge,
-            color = LocalDialogTextColor.current,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
+) = ConfirmDialog(
+    title = stringResource(R.string.settings_advanced_expert_mode_dialog_title),
+    message = stringResource(R.string.settings_advanced_expert_mode_dialog_message),
+    primaryText = stringResource(R.string.enable),
+    onConfirm = onConfirm,
+    onDismiss = onDismiss
+)

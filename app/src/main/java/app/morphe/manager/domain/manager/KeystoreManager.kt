@@ -10,12 +10,29 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.*
 import java.nio.file.Files
+import java.security.KeyStore
 import java.security.MessageDigest
 import java.security.UnrecoverableKeyException
+import java.security.cert.Certificate
+import java.security.cert.X509Certificate
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
+
+/**
+ * What tells one signing key from another at a glance.
+ *
+ * @param sha256 Fingerprint of the key's certificate in lowercase hex, the same form the package
+ *        manager reports for an installed package.
+ * @param createdAt When the certificate became valid, which for a key Morphe generated is when
+ *        it was made. Null when the certificate does not say.
+ */
+data class SigningKeyInfo(
+    val alias: String,
+    val sha256: String,
+    val createdAt: Long?
+)
 
 class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
     companion object Constants {
@@ -25,7 +42,7 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
         private const val TAG = "Morphe Keystore"
 
         // apksig reaches the manager only through the patcher, so the format failures it raises
-        // for a malformed archive are recognised by name rather than by type
+        // for a malformed archive are recognized by name rather than by type
         private val ARCHIVE_FORMAT_EXCEPTIONS = setOf("ApkFormatException", "ZipFormatException")
     }
 
@@ -53,9 +70,9 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
     /**
      * Signs [input] into [output].
      *
-     * Repackaging the archive first fixes the malformed headers some third-party APKs carry, but it
-     * means inflating and re-deflating every entry of the archive, which is wasted whenever the
-     * archive was already well-formed - as it is for anything the patcher itself just wrote. So sign
+     * Repackaging the archive first fixes the malformed headers some third-party APKs carry. But it
+     * means inflating and re-deflating every entry of the archive. That work is wasted whenever the
+     * archive was already well-formed, as it is for anything the patcher itself just wrote. So sign
      * directly and fall back to [sanitizeZipIfNeeded] only if the signer rejects the archive itself.
      */
     suspend fun sign(input: File, output: File) = withContext(Dispatchers.Default) {
@@ -84,7 +101,7 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
 
     /**
      * Whether repackaging stands a chance, meaning the signer rejected the archive rather than the
-     * keystore or the write.
+     * keystore or the output file.
      */
     private fun Throwable.isMalformedArchive() = generateSequence(this, Throwable::cause).any {
         it is ZipException || it.javaClass.simpleName in ARCHIVE_FORMAT_EXCEPTIONS
@@ -146,8 +163,6 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
         return true
     }
 
-    fun hasKeystore() = keystorePath.exists()
-
     /**
      * SHA-256 fingerprints of every certificate the signing keystore holds, in the same form the
      * package manager reports for an installed package.
@@ -162,19 +177,12 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
         }
 
         val hashes = try {
-            val keyStorePassword = prefs.keystorePassword.get().ifEmpty { null }
-            val keyStore = keystorePath.inputStream().use {
-                ApkSigner.readKeyStore(it, keyStorePassword)
-            }
-            val digest = MessageDigest.getInstance("SHA-256")
+            val keyStore = readKeyStore()
 
             // Every alias is read, because an imported keystore can hold the key an earlier
             // patched build was signed with next to the one patching uses now
             keyStore.aliases().asSequence().mapNotNullTo(mutableSetOf()) { alias ->
-                keyStore.getCertificate(alias)?.encoded?.let { encoded ->
-                    digest.reset()
-                    digest.digest(encoded).joinToString("") { byte -> "%02x".format(byte) }
-                }
+                keyStore.getCertificate(alias)?.sha256()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to read signing certificates", e)
@@ -184,6 +192,31 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
         cachedCertificateHashes = stamp.cacheKey to hashes
         hashes
     }
+
+    /** The key patching signs with. Null until the first patch creates one, and when it cannot be read. */
+    suspend fun signingKeyInfo(): SigningKeyInfo? = withContext(Dispatchers.IO) {
+        if (!keystorePath.exists()) return@withContext null
+        try {
+            val alias = prefs.keystoreAlias.get()
+            val certificate = readKeyStore().getCertificate(alias) ?: return@withContext null
+            SigningKeyInfo(
+                alias = alias,
+                sha256 = certificate.sha256(),
+                createdAt = (certificate as? X509Certificate)?.notBefore?.time
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to read the signing key", e)
+            null
+        }
+    }
+
+    private suspend fun readKeyStore(): KeyStore {
+        val keyStorePassword = prefs.keystorePassword.get().ifEmpty { null }
+        return keystorePath.inputStream().use { ApkSigner.readKeyStore(it, keyStorePassword) }
+    }
+
+    private fun Certificate.sha256(): String =
+        MessageDigest.getInstance("SHA-256").digest(encoded).joinToString("") { byte -> "%02x".format(byte) }
 
     suspend fun export(target: OutputStream) {
         withContext(Dispatchers.IO) {

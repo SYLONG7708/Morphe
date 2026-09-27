@@ -140,10 +140,14 @@
     <string name="sources_management_open_in_browser">在浏览器中打开链接</string>
     <string name="sources_management_report_issue">报告问题</string>
     <string name="sources_management_failed_to_open_url">无法打开URL</string>
-    <string name="sources_hidden_apps">隐藏于</string>
-    <string name="sources_hidden_apps_title">对 %1$s 隐藏的应用</string>
-    <string name="sources_hidden_apps_description">修补这些应用时，不会提供此来源。该来源本身对其它所有内容仍保持开启。</string>
-    <string name="sources_hidden_apps_hint">Tap to offer this source again</string>
+    <string name="sources_apps">应用</string>
+    <string name="sources_apps_title">来自 %1$s 的应用</string>
+    <string name="sources_apps_description">点按应用可将其从该来源中排除或恢复，长按可选择多个应用。当没有来源提供某个应用时，该应用将从主屏幕移除。</string>
+    <string name="sources_apps_brought">由该来源提供</string>
+    <string name="sources_apps_left_out">已从该来源中排除</string>
+    <string name="sources_apps_leave_out">排除</string>
+    <string name="sources_apps_leave_out_done">已排除</string>
+    <string name="sources_apps_bring_back">恢复</string>
     <string name="sources_management_prerelease_toggle">预发布补丁</string>
     <string name="sources_management_prerelease_toggle_description">接收新实验性补丁版本的早期访问权限</string>
     <string name="sources_prerelease_warning_title">启用预发布补丁？</string>
@@ -187,6 +191,8 @@
     <string name="sources_dialog_local_change_file">更改文件</string>
     <string name="sources_dialog_preinstalled">预安装</string>
     <string name="sources_dialog_community">社区补丁</string>
+    <string name="sources_dialog_choose_apps">选择应用</string>
+    <string name="sources_dialog_choose_apps_description">在来源加载后，选择要保留该来源中的哪些应用。</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">第三方补丁来源</string>
     <string name="sources_dialog_community_notice_message">"社区补丁源由其作者自行制作和维护。Morphe 不审查或验证第三方补丁，也不对其内容或对您设备造成的影响负责。
@@ -713,12 +719,9 @@
     <string name="settings_appearance_greeting_phrases">问候语</string>
     <string name="settings_appearance_greeting_phrases_subtitle">在主屏幕上显示问候消息</string>
     <string name="settings_appearance_app_grouping">应用分组</string>
-    <string name="settings_appearance_app_grouping_description">显示主屏幕切换器，按来源或您自己的分类对应用进行分组，并在关闭时保持选择</string>
-    <string name="settings_appearance_patch_list">补丁列表</string>
-    <string name="settings_appearance_patch_categories">按类别分组</string>
-    <string name="settings_appearance_patch_categories_description">按源声明的类别对补丁列表进行分区，未声明任何类别的源则保留为普通列表。</string>
+    <string name="settings_appearance_app_grouping_description">显示一个开关，用于按来源或类别对应用进行分组</string>
     <string name="settings_appearance_repatch_notice">重新打补丁通知</string>
-    <string name="settings_appearance_repatch_notice_description">在主页面上显示可重新打补丁的应用的横幅</string>
+    <string name="settings_appearance_repatch_notice_description">当已修补的应用可以重新修补时显示横幅</string>
     <string name="settings_appearance_sort_button">排序和筛选按钮</string>
     <string name="settings_appearance_sort_button_description">在主屏幕上显示排序和筛选按钮</string>
     <string name="settings_appearance_app_card_colors">应用卡片颜色</string>
@@ -763,6 +766,8 @@
     <string name="settings_advanced_updates_background_notifications">后台更新通知</string>
     <string name="settings_advanced_updates_background_notifications_description">定期在后台检查更新并通知可用</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">即使应用已关闭，也推送新版本的通知</string>
+    <string name="settings_system_notifications_categories">通知类别</string>
+    <string name="settings_system_notifications_categories_description">在系统设置中选择要通知您的更新</string>
     <string name="settings_advanced_update_interval">检查频率</string>
     <string name="settings_advanced_update_interval_dialog_title">检查更新</string>
     <string name="settings_advanced_update_interval_hourly">每小时一次</string>
@@ -772,7 +777,7 @@
     <string name="settings_advanced_update_interval_chip_subtitle">后台检查频率</string>
     <string name="settings_advanced_update_interval_battery_warning">后台检查在某些设备上可能无法可靠工作。制造商如小米、华为、三星和一加经常积极限制后台进程以节省电池</string>
     <string name="settings_advanced_external_batch_patch">允许外部触发器</string>
-    <string name="settings_advanced_external_batch_patch_description">允许自动化应用程序使用意图启动批量修补。每个请求在任何操作开始之前都会被确认</string>
+    <string name="settings_advanced_external_batch_patch_description">允许自动化应用通过 Intent 开始批量修补</string>
     <string name="external_batch_patch_title">开始批量修补？</string>
     <string name="external_batch_patch_description">%s 想要 Morphe 修补和安装应用程序</string>
     <string name="external_batch_patch_trust_caller">始终允许此应用程序</string>
@@ -785,8 +790,10 @@
     <string name="notification_permission_dialog_title">允许通知</string>
     <string name="notification_permission_dialog_description">Morphe needs notification permission to alert you when updates are available in the background</string>
     <string name="notification_post_patch_dialog_title">您是否希望在有更新时收到通知？</string>
-    <string name="notification_channel_fcm_updates">更新通知</string>
-    <string name="notification_channel_fcm_updates_description">关于 Morphe 新版本和补丁的通知</string>
+    <string name="notification_channel_manager_updates">Morphe 更新</string>
+    <string name="notification_channel_manager_updates_description">有关新 Morphe 版本的通知</string>
+    <string name="notification_channel_patch_updates">补丁更新</string>
+    <string name="notification_channel_patch_updates_description">有关新补丁版本的通知</string>
     <string name="notification_channel_patcher">修补中</string>
     <string name="notification_channel_patcher_description">当 Morphe 在后台为应用打补丁时显示</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -797,24 +804,19 @@
     <string name="settings_advanced_expert_mode_dialog_message">专家模式提供了更多控制如何应用补丁的选项，但如果错误配置专家模式设置，可能会导致应用程序无法使用</string>
     <string name="settings_advanced_strip_unused_libs">为设备架构优化</string>
     <string name="settings_advanced_strip_unused_libs_description">删除未使用的 CPU 架构库和分体 APK 模块</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">字节码处理模式</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">控制打补丁期间字节码的处理方式。影响打补丁的速度、内存使用情况和输出 APK 大小</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">快速（推荐）</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">快速</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">更快地进行补丁，且内存占用更低，但 APK 文件会更大。 推荐用于内存较低或较旧的设备</string>
-    <string name="settings_advanced_bytecode_mode_full">完整</string>
-    <string name="settings_advanced_bytecode_mode_full_description">较慢的修补速度，复制旧版行为。仅当快速模式导致问题时才推荐使用</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">GitHub访问令牌</string>
     <string name="settings_advanced_github_pat_description">用于拉取请求源所需</string>
     <string name="settings_advanced_github_pat_configured">已配置令牌</string>
     <string name="settings_advanced_github_pat_how_to_get">如何获取令牌</string>
-    <string name="settings_advanced_github_pat_dialog_title">设置 GitHub 个人访问令牌</string>
-    <string name="settings_advanced_github_pat_dialog_description">"为了能够添加来自外部资源的 pull request，请设置 GitHub 个人访问令牌 (Personal Access Token)。在
-%s 上创建一个具有 public_repo 权限的 PAT"</string>
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <string name="settings_advanced_github_pat_dialog_title">设置 %s</string>
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <string name="settings_advanced_github_pat_dialog_description">"设置 %3$s，以便能够将拉取请求添加为外部来源。在
+%1$s 上创建具有 %2$s 作用域的 PAT。"</string>
     <string name="settings_advanced_github_pat_export_include_label">包含在设置导出中</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">在导出 Morphe 设置时也导出令牌</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">请勿共享您的 PAT。如果您在设置导出中包含它，请将该文件保持为私有，因为它包含令牌</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">补丁选项</string>
@@ -973,6 +975,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime_memory_limit_description">更高的限制可以加速在兼容设备上的修补</string>
     <string name="settings_system_process_runtime_enable">启用独立进程</string>
     <string name="settings_system_memory_limit_subtitle">修补程序可用的内存大小</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">此设备在上次运行中忽略了内存限制，因此修补可能会回退到在 Morphe 内运行。</string>
     <string name="settings_system_memory_limit_warning">较低的内存限制可能会导致修补较大应用时失败</string>
     <string name="settings_system_memory_limit_high_warning">高内存限制可能会在某些设备上使修补速度慢很多。仅在较低限制下修补持续失败时才提高该限制。</string>
     <string name="settings_system_process_runtime_enabled_description">%s MB限制</string>
@@ -993,8 +996,20 @@ morphe_header_custom_dark.png
     <string name="settings_system_notifications_ringtone_picker_title">选择铃声</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">导入 &amp; 导出</string>
-    <string name="settings_system_keystore">密钥库</string>
-    <string name="settings_system_import_keystore_description">导入或导出您的签名密钥库</string>
+    <string name="settings_system_signing_key">签名密钥</string>
+    <string name="settings_system_signing_key_description">备份并恢复用于签署修补后应用的密钥</string>
+    <string name="settings_system_signing_key_dialog_description">Morphe 修补的每个应用都使用此密钥签名。请保存一份副本：没有它，修补后的应用只能先卸载再更新。</string>
+    <string name="settings_system_signing_key_missing">Morphe 会在首次修补时自动创建一个。</string>
+    <string name="settings_system_signing_key_created">创建于 %s</string>
+    <string name="settings_system_signing_key_fingerprint">SHA-256 指纹</string>
+    <string name="settings_system_backup_appearance_description">主题、颜色和语言</string>
+    <string name="settings_system_backup_home_description">分组、隐藏的应用、排序和开关</string>
+    <string name="settings_system_backup_patching">修补和安装</string>
+    <string name="settings_system_backup_patching_description">安装器、修补器和已保存的 APK</string>
+    <string name="settings_system_backup_updates_description">预发布版本和更新检查</string>
+    <string name="settings_system_backup_sources_description">自定义来源和 GitHub 令牌</string>
+    <string name="settings_system_backup_patch_selections_description">为每个应用选择的修补</string>
+    <string name="settings_system_backup_signing_key_note">签名密钥会单独备份</string>
     <string name="settings_system_import_keystore_dialog_title">输入密钥库凭据</string>
     <string name="settings_system_import_keystore_dialog_description">您需要输入密钥库的凭据才能导入它</string>
     <string name="settings_system_import_keystore_dialog_alias_field">用户名 (别名)</string>
@@ -1003,7 +1018,6 @@ morphe_header_custom_dark.png
     <string name="settings_system_import_keystore_wrong_credentials">密钥库凭据错误</string>
     <string name="settings_system_import_keystore_success">密钥库已导入</string>
     <string name="settings_system_import_keystore_failed">导入密钥库失败</string>
-    <string name="settings_system_export_keystore_unavailable">无可用密钥库可导出</string>
     <string name="settings_system_export_keystore_success">密钥库已导出</string>
     <string name="settings_system_export_keystore_failed">密钥库导出失败</string>
     <string name="settings_system_show_password_field">显示密码</string>
@@ -1022,7 +1036,7 @@ morphe_header_custom_dark.png
     <string name="import_mode_merge_description">添加备份中缺失的项目。现有项目保持不变</string>
     <string name="settings_system_export_manager_settings_fail">导出 Morphe 设置失败：%s</string>
     <string name="settings_system_export_manager_settings_success">Morphe 设置已导出</string>
-    <string name="settings_system_debug">调试</string>
+    <string name="settings_system_export_debug_logs">导出调试日志</string>
     <string name="settings_system_export_debug_logs_description">保存系统日志以便进行故障排除</string>
     <string name="settings_system_export_debug_logs_export_read_failed">读取日志失败 (退出代码 %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">导出日志失败</string>
@@ -1110,7 +1124,11 @@ morphe_header_custom_dark.png
     <string name="settings_system_custom_file_picker_description">使用Morphe内置的文件选择器代替系统默认的文件选择器</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">APK 下载助手</string>
-    <string name="settings_system_apk_download_helper_description">让已安装的辅助应用程序为您获取原始 APK。该文件来自该应用程序，因此只有在您信任它时才启用此选项</string>
+    <string name="settings_system_apk_download_helper_trusted_count">受信任：%1$d / %2$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">辅助应用可以为你下载原始 APK。只有你在此处信任的应用才会在下载说明中提供。</string>
+    <string name="settings_system_apk_download_helper_warning">APK 来自辅助应用，因此只信任你了解的应用。Morphe 在修补前仍会检查每个文件的软件包、版本和签名。</string>
+    <string name="settings_system_apk_download_helper_installed_by">由 %s 安装</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">安装来源未知</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">上一级目录</string>
     <string name="file_picker_no_files">这里没有文件</string>
@@ -1127,8 +1145,6 @@ morphe_header_custom_dark.png
     <string name="file_picker_show_hidden_files">显示隐藏的文件</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">关于</string>
-    <string name="settings_system_share_website">分享网站</string>
-    <string name="settings_system_share_website_description">分享官方 Morphe 网站</string>
     <string name="settings_system_manager_description">一个开源项目，用于现代化的、流线型的流行 Android 应用补丁，由社区反馈和贡献驱动</string>
     <string name="credits">功劳簿</string>
     <string name="credits_current_development">当前开发</string>
@@ -1217,6 +1233,7 @@ morphe_header_custom_dark.png
     <string name="import_">导入</string>
     <string name="export">导出</string>
     <string name="copy">复制</string>
+    <string name="copied_to_clipboard">已复制到剪贴板</string>
     <string name="download">下载</string>
     <string name="less">更少</string>
     <string name="expand">展开</string>
@@ -1263,7 +1280,7 @@ morphe_header_custom_dark.png
     <string name="changelog_for_app">%s 的更改</string>
     <string name="changelog_general_changes">一般更改</string>
     <string name="whats_new">新功能</string>
-    <string name="changelog_description">查看此更新中的最新更改</string>
+    <string name="changelog_description">此版本的新内容</string>
     <string name="changelog_download_fail">下载更新日志失败：%s</string>
     <string name="changelog_empty">无可用更新日志</string>
     <string name="changelog_show_older">显示旧版本</string>
@@ -1308,5 +1325,8 @@ morphe_header_custom_dark.png
     <string name="tour_prompt_desc">您想快速了解 Morphe 的主要功能吗？</string>
     <string name="tour_prompt_confirm">带我参观</string>
     <string name="onboarding_restart_title">功能导览</string>
-    <string name="onboarding_restart_desc">获取 Morphe 主要功能的指导导览</string>
+    <string name="onboarding_restart_desc">主要功能导览</string>
+    <string name="settings_appearance_patch_list">补丁列表</string>
+    <string name="settings_appearance_patch_categories">按类别分组</string>
+    <string name="settings_appearance_patch_categories_description">按源声明的类别对补丁列表进行分区，未声明任何类别的源则保留为普通列表。</string>
 </resources>

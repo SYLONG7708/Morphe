@@ -140,10 +140,14 @@
     <string name="sources_management_open_in_browser">ব্রাউজারে ওপেন করুন</string>
     <string name="sources_management_report_issue">একটি সমস্যা রিপোর্ট করুন</string>
     <string name="sources_management_failed_to_open_url">URL খুলতে ব্যর্থ হয়েছে</string>
-    <string name="sources_hidden_apps">এর জন্য লুকানো</string>
-    <string name="sources_hidden_apps_title">%1$s থেকে লুকানো অ্যাপগুলো</string>
-    <string name="sources_hidden_apps_description">এই অ্যাপগুলো প্যাচ করা হলে এই সোর্স থেকে অফার করা হয় না। সোর্সটি নিজে বাকি সবকিছুর জন্য চালু থাকে</string>
-    <string name="sources_hidden_apps_hint">এই সোর্সটি আবার অফার করতে ট্যাপ করুন</string>
+    <string name="sources_apps">অ্যাপস</string>
+    <string name="sources_apps_title">%1$s থেকে অ্যাপসমূহ</string>
+    <string name="sources_apps_description">কোনো অ্যাপকে এই সোর্স থেকে বাদ দিতে বা ফিরিয়ে আনতে এটিতে আলতো চাপুন, বা একাধিক বাছতে দীর্ঘ চাপ দিন। কোনো সোর্স আর অ্যাপটি না আনলে অ্যাপটি হোম স্ক্রিন থেকে চলে যায়।</string>
+    <string name="sources_apps_brought">এই সোর্স থেকে আনা</string>
+    <string name="sources_apps_left_out">এই সোর্স থেকে বাদ দেওয়া</string>
+    <string name="sources_apps_leave_out">বাদ দিন</string>
+    <string name="sources_apps_leave_out_done">বাদ দেওয়া হয়েছে</string>
+    <string name="sources_apps_bring_back">ফিরিয়ে আনুন</string>
     <string name="sources_management_prerelease_toggle">প্রি-রিলিজ প্যাচ</string>
     <string name="sources_management_prerelease_toggle_description">নতুন পরীক্ষামূলক প্যাচ সংস্করণে প্রাথমিক অ্যাক্সেস গ্রহণ করে</string>
     <string name="sources_prerelease_warning_title">প্রি-রিলিজ প্যাচ সক্রিয় করবেন?</string>
@@ -187,6 +191,8 @@
     <string name="sources_dialog_local_change_file">ফাইল পরিবর্তন করুন</string>
     <string name="sources_dialog_preinstalled">প্র-ইনস্টল করা হয়েছে</string>
     <string name="sources_dialog_community">কমিউনিটি প্যাচ</string>
+    <string name="sources_dialog_choose_apps">অ্যাপ নির্বাচন করুন</string>
+    <string name="sources_dialog_choose_apps_description">সোর্স লোড হয়ে গেলে তার কোন অ্যাপগুলো রাখতে চান তা বেছে নিন।</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">তৃতীয় পক্ষের প্যাচ উৎস</string>
     <string name="sources_dialog_community_notice_message">"কমিউনিটি প্যাচ সোর্স তাদের নিজ নিজ লেখকগণ দ্বারা তৈরি ও রক্ষণাবেক্ষণ করা হয়। Morphe তৃতীয় পক্ষের প্যাচগুলো পর্যালোচনা বা যাচাই করে না, এবং তাদের বিষয়বস্তু বা আপনার ডিভাইসে যা করে তার জন্য দায়ী নয়।
@@ -713,12 +719,9 @@
     <string name="settings_appearance_greeting_phrases">শুভেচ্ছা বার্তা</string>
     <string name="settings_appearance_greeting_phrases_subtitle">হোম স্ক্রিনে একটি শুভেচ্ছা বার্তা দেখান</string>
     <string name="settings_appearance_app_grouping">অ্যাপ grouping</string>
-    <string name="settings_appearance_app_grouping_description">উৎস অথবা আপনার নিজের বিভাগ অনুসারে অ্যাপ grouping করার জন্য একটি হোম স্ক্রিন সুইচ দেখান, বন্ধ থাকা অবস্থায় নির্বাচন ধরে রাখুন।</string>
-    <string name="settings_appearance_patch_list">প্যাচ তালিকা</string>
-    <string name="settings_appearance_patch_categories">বিভাগ অনুযায়ী গ্রুপ করুন</string>
-    <string name="settings_appearance_patch_categories_description">উৎস ঘোষিত বিভাগ অনুযায়ী প্যাচ তালিকাগুলি সেকশন করুন, যেসব উৎস কোনো বিভাগ ঘোষণা করে না সেগুলোকে একটি সাধারণ তালিকা হিসেবে রেখে দিন।</string>
+    <string name="settings_appearance_app_grouping_description">উৎস বা বিভাগ অনুসারে অ্যাপগুলো গ্রুপ করতে একটি সুইচার দেখান</string>
     <string name="settings_appearance_repatch_notice">পুনরায় প্যাচ বিজ্ঞপ্তি</string>
-    <string name="settings_appearance_repatch_notice_description">হোম স্ক্রিনে একটি ব্যানার দেখান যখন প্যাচ করা অ্যাপগুলি পুনরায় প্যাচ করা যেতে পারে</string>
+    <string name="settings_appearance_repatch_notice_description">প্যাচ করা অ্যাপগুলো পুনরায় প্যাচ করা গেলে একটি ব্যানার দেখান</string>
     <string name="settings_appearance_sort_button">সাজানো ও ফিল্টার বাটন</string>
     <string name="settings_appearance_sort_button_description">হোম স্ক্রিনে সাজানো ও ফিল্টার বাটন দেখান</string>
     <string name="settings_appearance_app_card_colors">অ্যাপ কার্ডের রং</string>
@@ -763,6 +766,8 @@
     <string name="settings_advanced_updates_background_notifications">ব্যাকগ্রাউন্ড আপডেট নোটিফিকেশন</string>
     <string name="settings_advanced_updates_background_notifications_description">ব্যাকগ্রাউন্ডে আপডেটের জন্য পর্যায়ক্রমে চেক করুন এবং উপলব্ধ হলে বিজ্ঞপ্তি দিন।</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">অ্যাপটি বন্ধ থাকা অবস্থায়ও নতুন রিলিজের জন্য পুশ বিজ্ঞপ্তি।</string>
+    <string name="settings_system_notifications_categories">বিজ্ঞপ্তি বিভাগ</string>
+    <string name="settings_system_notifications_categories_description">সিস্টেম সেটিংসে বেছে নিন কোন আপডেট আপনাকে বিজ্ঞপ্তি দেবে</string>
     <string name="settings_advanced_update_interval">আপডেট ফিক্সারির সময়</string>
     <string name="settings_advanced_update_interval_dialog_title">আপডেট চেক করুন</string>
     <string name="settings_advanced_update_interval_hourly">এক ঘণ্টা অন্তরে</string>
@@ -772,7 +777,7 @@
     <string name="settings_advanced_update_interval_chip_subtitle">ব্যাকগ্রাউন্ড চেকের সময়</string>
     <string name="settings_advanced_update_interval_battery_warning">কিছু ডিভাইসে ব্যাকগ্রাউন্ড চেকগুলি সঠিকভাবে কাজ করতে পারে না। ব্যাটারি সংরক্ষণের জন্য ম্যানুফ্যাকচারাররা যেমন এক্সিয়োমি, হুয়াওয়েই, স্যামসাং এবং অনেপ্লাস ব্যাকগ্রাউন্ড প্রসেসগুলি সীমিত করে।</string>
     <string name="settings_advanced_external_batch_patch">বাহ্যিক ট্রিগার করার অনুমতি দিন</string>
-    <string name="settings_advanced_external_batch_patch_description">স্বয়ংক্রিয়তা অ্যাপ্লিকেশনগুলিকে একটি অভিপ্রায় দিয়ে ব্যাচ প্যাচিং শুরু করতে দেয়। কোনো কিছু চালানোর আগে প্রতিটি অনুরোধ নিশ্চিত করা হবে</string>
+    <string name="settings_advanced_external_batch_patch_description">অটোমেশন অ্যাপগুলোকে একটি ইন্টেন্টের মাধ্যমে ব্যাচ প্যাচিং শুরু করতে দেয়</string>
     <string name="external_batch_patch_title">ব্যাচ প্যাচিং শুরু করবেন?</string>
     <string name="external_batch_patch_description">%s Morphe কে অ্যাপগুলি প্যাচ এবং ইনস্টল করতে চায়</string>
     <string name="external_batch_patch_trust_caller">সর্বদা এই অ্যাপটিকে অনুমতি দিন</string>
@@ -785,8 +790,10 @@
     <string name="notification_permission_dialog_title">নোটিফিকেশন অনুমতি দিন</string>
     <string name="notification_permission_dialog_description">আপডেট উপলব্ধ হলে Morphe আপনাকে সতর্ক করার জন্য বিজ্ঞপ্তি অনুমতির প্রয়োজন</string>
     <string name="notification_post_patch_dialog_title">আপনি আপডেটের उपलब्धতা সম্পর্কে জানতে চান?</string>
-    <string name="notification_channel_fcm_updates">আপডেট বিজ্ঞপ্তি</string>
-    <string name="notification_channel_fcm_updates_description">নতুন Morphe এবং প্যাচ রিলিজ সম্পর্কিত বিজ্ঞপ্তি</string>
+    <string name="notification_channel_manager_updates">Morphe আপডেট</string>
+    <string name="notification_channel_manager_updates_description">নতুন Morphe রিলিজ সম্পর্কে বিজ্ঞপ্তি</string>
+    <string name="notification_channel_patch_updates">প্যাচ আপডেট</string>
+    <string name="notification_channel_patch_updates_description">নতুন প্যাচ রিলিজ সম্পর্কে বিজ্ঞপ্তি</string>
     <string name="notification_channel_patcher">প্যাচিং</string>
     <string name="notification_channel_patcher_description">Morphe ব্যাকগ্রাউন্ডে কোনো অ্যাপ প্যাচ করার সময় দেখানো হয়</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -797,23 +804,19 @@
     <string name="settings_advanced_expert_mode_dialog_message">এক্সপার্ট মোড অ্যাপ্লিকেশনগুলিতে প্যাচগুলি কীভাবে প্রয়োগ করা হবে তার উপর বেশি নিয়ন্ত্রণ প্রদান করে, কিন্তু এক্সপার্ট মোডে সেটিংস মিসকনফিগার করলে অ্যাপ্লিকেশনটি কাজ না করবে এমন অবস্থা হতে পারে</string>
     <string name="settings_advanced_strip_unused_libs">যন্ত্রের আর্কিটেকচারের জন্য অপ্টিমাইজ করুন</string>
     <string name="settings_advanced_strip_unused_libs_description">অব্যবহৃত CPU আর্কিটেকচার লাইব এবং বিভক্ত APK মডিউলগুলি সরিয়ে দেয়।</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">বাইটকোর্ট প্রক্রিয়াকরণ মোড</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">প্যাচিং করার সময় বাইটকোর্ট কীভাবে প্রক্রিয়া করা হবে তা নিয়ন্ত্রণ করে। এটি প্যাচিং গতি, মেমরি ব্যবহার এবং আউটপুট APK আকারের উপর প্রভাব ফেলে</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">দ্রুত (সুপারিশ করা)</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">দ্রুত</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">ধীর প্যাচিং এবং কম মেমরি ব্যবহার, তবে APK-এর আকার বড় হবে। কম RAM বা পুরোনো ডিভাইসের জন্য এটি উপযুক্ত</string>
-    <string name="settings_advanced_bytecode_mode_full">সম্পূর্ণ</string>
-    <string name="settings_advanced_bytecode_mode_full_description">ধীর প্যাচিং, পুরনো আচরণ অনুকরণ করে। শুধুমাত্র তখনই প্রস্তাবিত যদি দ্রুত মোড সমস্যা সৃষ্টি করে।</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">গিটহাব PAT</string>
     <string name="settings_advanced_github_pat_description">পুল অনুরোধ উৎসের জন্য প্রয়োজনীয়</string>
     <string name="settings_advanced_github_pat_configured">টোকেন কনফিগার করা হয়েছে</string>
     <string name="settings_advanced_github_pat_how_to_get">কিভাবে একটি টোকেন পেতে পারেন</string>
-    <string name="settings_advanced_github_pat_dialog_title">গিটহাব ব্যক্তিগত অ্যাক্সেস টোকেন সেট করুন</string>
-    <string name="settings_advanced_github_pat_dialog_description">"বাহ্যিক উৎস হিসাবে পুল অনুরোধ যোগ করতে সক্ষম হওয়ার জন্য একটি GitHub ব্যক্তিগত অ্যাক্সেস টোকেন সেট করুন। %s এ public_repo সুযোগ সহ একটি PAT তৈরি করুন।"</string>
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <string name="settings_advanced_github_pat_dialog_title">%s সেট করুন</string>
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <string name="settings_advanced_github_pat_dialog_description">"pull requests-কে বাহ্যিক উৎস হিসেবে যোগ করতে সক্ষম হওয়ার জন্য একটি %3$s সেট করুন। scope %2$s সহ একটি PAT তৈরি করুন
+%1$s-এ"</string>
     <string name="settings_advanced_github_pat_export_include_label">সেটিংসে অন্তর্ভুক্ত করুন</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">এই PAT-কে রপ্ত করা Morphe সেটিংস-এ যুক্ত করুন</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">আপনার PAT কে শেয়ার করবেন না। যদি আপনি এটি সেটিংসে অন্তর্ভুক্ত করেন, তাহলে সেই ফাইলটি বেসিক রাখুন, কারণ এটি টোকেন ধারণ করে</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">প্যাচ বিকল্পগুলি</string>
@@ -962,6 +965,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_process_runtime_memory_limit_description">উচ্চতর সীমা সক্ষম ডিভাইসে প্যাচিংকে দ্রুত করে।</string>
     <string name="settings_system_process_runtime_enable">প্রক্রিয় রান্টাইম সক্রিয় করুন</string>
     <string name="settings_system_memory_limit_subtitle">মেমরি সীমিত</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">এই ডিভাইসটি শেষবার চালানোর সময় মেমরির সীমা উপেক্ষা করেছে, তাই প্যাচিং Morphe-এর ভিতরে চালানোর বিকল্পে ফিরে যেতে পারে</string>
     <string name="settings_system_memory_limit_warning">পুরাতন মেমরি সীমিত উচ্চ মেমরি সীমিতগুলি পুরাতন ডিভাইসের জন্য অকার্যকার হতে পারে</string>
     <string name="settings_system_memory_limit_high_warning">উচ্চ মেমরি সীমা কিছু ডিভাইসে প্যাচিং অনেক ধীর করে দিতে পারে। কম সীমায় প্যাচিং ব্যর্থ হতে থাকলেই কেবল এটি বাড়ান।</string>
     <string name="settings_system_process_runtime_enabled_description">%s এমবি সীমা</string>
@@ -982,8 +986,20 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_notifications_ringtone_picker_title">একটি সুর নির্বাচন করুন</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">ইমপোর্ট &amp; এক্সপোর্ট </string>
-    <string name="settings_system_keystore">কীস্টোর</string>
-    <string name="settings_system_import_keystore_description">আপনার সাইনিং কীস্টোর আমদানি বা রপ্তানি করে।</string>
+    <string name="settings_system_signing_key">স্বাক্ষর কী</string>
+    <string name="settings_system_signing_key_description">আপনার প্যাচ করা অ্যাপগুলো যে কী দিয়ে স্বাক্ষরিত হয় তা ব্যাকআপ এবং পুনরুদ্ধার করে</string>
+    <string name="settings_system_signing_key_dialog_description">Morphe প্যাচ করা প্রতিটি অ্যাপ এই কী দিয়ে স্বাক্ষরিত হয়। একটি কপি রাখুন: এটি ছাড়া, প্যাচ করা অ্যাপগুলো কেবল আনইনস্টল করার পরে আপডেট করা যাবে।</string>
+    <string name="settings_system_signing_key_missing">Morphe আপনার প্রথম প্যাচ করার সময় একটি তৈরি করে দেয়</string>
+    <string name="settings_system_signing_key_created">তৈরি হয়েছে %s</string>
+    <string name="settings_system_signing_key_fingerprint">SHA-256 ফিঙ্গারপ্রিন্ট</string>
+    <string name="settings_system_backup_appearance_description">থিম, রঙ এবং ভাষা</string>
+    <string name="settings_system_backup_home_description">গ্রুপ, লুকানো অ্যাপ, সাজানো এবং টগল</string>
+    <string name="settings_system_backup_patching">প্যাচিং এবং ইনস্টল করা</string>
+    <string name="settings_system_backup_patching_description">ইনস্টলার, প্যাচার এবং সংরক্ষিত APK</string>
+    <string name="settings_system_backup_updates_description">প্রি-রিলিজ এবং আপডেট পরীক্ষা</string>
+    <string name="settings_system_backup_sources_description">কাস্টম সোর্স এবং GitHub টোকেন</string>
+    <string name="settings_system_backup_patch_selections_description">প্রতিটি অ্যাপের জন্য নির্বাচিত প্যাচ</string>
+    <string name="settings_system_backup_signing_key_note">স্বাক্ষর কী আলাদাভাবে ব্যাকআপ করা হয়</string>
     <string name="settings_system_import_keystore_dialog_title">মরফে একটি পরীক্ষামূল, খোল-উৎসাহা প্রকল্প যা আপনার ফিডব্যাকের ফিডব্যাক ও অবদানকে ভিত্ত করে ভবিষ্যতা ও উন্নতরনের জন্য সম্প্রদিত হয়।
 
 মরফে খোল-উৎসাহা প্রকল্পের ভিত্তে, এটি সম্প্রদিত সম্প্রদনের ও অবদানের উপর নির্ভরিত।</string>
@@ -994,7 +1010,6 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_import_keystore_wrong_credentials">কী-স্টোর নাম (এলিয়াস) ভুলে</string>
     <string name="settings_system_import_keystore_success">কী-স্টোর নাম (এলিয়াস) ভুলে</string>
     <string name="settings_system_import_keystore_failed">কী-স্টোর আমদানি ব্যর্থ হয়েছে</string>
-    <string name="settings_system_export_keystore_unavailable">এক্সপোর্ট করার জন্য কী-স্টোর পাওয়া যায়নি</string>
     <string name="settings_system_export_keystore_success">কী-স্টোর এক্সপোর্ট হয়েছে</string>
     <string name="settings_system_export_keystore_failed">কীস্টোর এক্সপোর্ট করা যায়নি</string>
     <string name="settings_system_show_password_field">পাসওয়ার্ড দেখান</string>
@@ -1013,7 +1028,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="import_mode_merge_description">ব্যাকআপ থেকে অনুপস্থিত আইটেমগুলি যোগ করুন। বিদ্যমান আইটেমগুলি অপরিবর্তিত থাকবে</string>
     <string name="settings_system_export_manager_settings_fail">Morphe সেটিংস রপ্তানি করতে ব্যর্থ হয়েছে: %s</string>
     <string name="settings_system_export_manager_settings_success">Morphe সেটিংস রপ্তানি করা হয়েছে</string>
-    <string name="settings_system_debug">ডিবাগ</string>
+    <string name="settings_system_export_debug_logs">ডিবাগ লগগুলি রফতানি করুন</string>
     <string name="settings_system_export_debug_logs_description">সমস্যা সমাধানের জন্য সিস্টেম লগ সংরক্ষণ করে।</string>
     <string name="settings_system_export_debug_logs_export_read_failed">লগ পড়তে ব্যর্থ হয়েছে (ব্যবহার করা কোড %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">স্টোর ম্যানেজমেন্ট</string>
@@ -1101,7 +1116,11 @@ morphe_adaptive_monochrome_custom.xml
     <string name="settings_system_custom_file_picker_description">সিস্টেম ডিফল্টের পরিবর্তে Morphe-এর বিল্ট-ইন ফাইল পিকার দিয়ে স্টোরেজ ব্রাউজ করুন</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">APK ডাউনলোড সহায়ক</string>
-    <string name="settings_system_apk_download_helper_description">একটি ইনস্টল করা সহায়ক অ্যাপকে আপনার জন্য মূল APK আনতে দিন। ফাইলটি সেই অ্যাপ থেকে আসে, তাই আপনি যদি এটিকে বিশ্বাস করেন তবেই এটি সক্ষম করুন</string>
+    <string name="settings_system_apk_download_helper_trusted_count">বিশ্বস্ত: %2$d-এর মধ্যে %1$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">সহায়ক অ্যাপগুলো আপনার জন্য মূল APK ডাউনলোড করতে পারে। ডাউনলোডের নির্দেশাবলীতে কেবলমাত্র এখানে যাদের আপনি বিশ্বাস করেন সেগুলোই দেওয়া হয়।</string>
+    <string name="settings_system_apk_download_helper_warning">APK সহায়ক অ্যাপ থেকে আসে, তাই শুধুমাত্র আপনার জানা অ্যাপগুলোকেই বিশ্বাস করুন। Morphe এখনও প্যাচ করার আগে প্রতিটি ফাইলের প্যাকেজ, সংস্করণ এবং স্বাক্ষর যাচাই করে।</string>
+    <string name="settings_system_apk_download_helper_installed_by">%s দ্বারা ইনস্টল করা হয়েছে</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">ইনস্টলকারী অজানা</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">আগের ডিরেক্টরি</string>
     <string name="file_picker_no_files">এখানে কোন ফাইল নেই</string>
@@ -1118,8 +1137,6 @@ morphe_adaptive_monochrome_custom.xml
     <string name="file_picker_show_hidden_files">লুকানো ফাইল দেখান</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">মর্ফ সম্পর্কে</string>
-    <string name="settings_system_share_website">ওয়েবসাইট শেয়ার করুন</string>
-    <string name="settings_system_share_website_description">অফিসিয়াল Morphe ওয়েবসাইট শেয়ার করে।</string>
     <string name="settings_system_manager_description">এটি একটি ওপেন-সোর্স প্রকল্প, যা জনপ্রিয় অ্যান্ড্রয়েড অ্যাপগুলির আধুনিক, সরলীকৃত প্যাচিংয়ের জন্য তৈরি করা হয়েছে, এবং এটি কমিউনিটির প্রতিক্রিয়া ও অবদানের মাধ্যমে পরিচালিত।</string>
     <string name="credits">ক্রেডিট</string>
     <string name="credits_current_development">চলমান উন্নয়ন</string>
@@ -1208,6 +1225,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="import_">আমদানি করুন</string>
     <string name="export">এক্সপোর্ট করুন</string>
     <string name="copy">অনুলিপি করুন</string>
+    <string name="copied_to_clipboard">ক্লিপবোর্ডে কপি করা হয়েছে</string>
     <string name="download">ডাউনলোড</string>
     <string name="less">কম</string>
     <string name="expand">বিস্তারিত দেখুন</string>
@@ -1254,7 +1272,7 @@ morphe_adaptive_monochrome_custom.xml
     <string name="changelog_for_app">%s এর জন্য পরিবর্তন</string>
     <string name="changelog_general_changes">সাধারণ পরিবর্তন</string>
     <string name="whats_new">নতুন কী</string>
-    <string name="changelog_description">এই আপডেটে সর্বশেষ পরিবর্তনের জন্য চেক করুন</string>
+    <string name="changelog_description">এই সংস্করণে নতুন কী আছে</string>
     <string name="changelog_download_fail">চেঞ্জলগ ডাউনলোড করা যায়নি: %s</string>
     <string name="changelog_empty">কোনো চ্যাঞলগ উপলব্ধ নেই</string>
     <string name="changelog_show_older">পুরোনো রিলিজগুলো দেখান</string>
@@ -1301,5 +1319,8 @@ morphe_adaptive_monochrome_custom.xml
     <string name="tour_prompt_desc">আপনি কি Morphe-এর মূল বৈশিষ্ট্যগুলির একটি দ্রুত ভ্রমণ চান?</string>
     <string name="tour_prompt_confirm">আমাকে দেখাও</string>
     <string name="onboarding_restart_title">বৈশিষ্ট্য ভ্রমণ</string>
-    <string name="onboarding_restart_desc">Morphe-এর মূল বৈশিষ্ট্যগুলির একটি নির্দেশিত ভ্রমণ নিন</string>
+    <string name="onboarding_restart_desc">মূল বৈশিষ্ট্যগুলির একটি গাইডেড ট্যুর</string>
+    <string name="settings_appearance_patch_list">প্যাচ তালিকা</string>
+    <string name="settings_appearance_patch_categories">বিভাগ অনুযায়ী গ্রুপ করুন</string>
+    <string name="settings_appearance_patch_categories_description">উৎস ঘোষিত বিভাগ অনুযায়ী প্যাচ তালিকাগুলি সেকশন করুন, যেসব উৎস কোনো বিভাগ ঘোষণা করে না সেগুলোকে একটি সাধারণ তালিকা হিসেবে রেখে দিন।</string>
 </resources>

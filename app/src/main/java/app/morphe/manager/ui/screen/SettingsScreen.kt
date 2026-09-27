@@ -42,9 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
+import app.morphe.manager.domain.manager.SettingsSection
 import app.morphe.manager.ui.screen.home.GlobalOnboardingState
 import app.morphe.manager.ui.screen.settings.AdvancedTabContent
 import app.morphe.manager.ui.screen.settings.AppearanceTabContent
+import app.morphe.manager.ui.screen.settings.LocalSettingsTabBottomPadding
 import app.morphe.manager.ui.screen.settings.SystemTabContent
 import app.morphe.manager.ui.screen.settings.system.*
 import app.morphe.manager.ui.screen.shared.*
@@ -190,12 +192,21 @@ fun SettingsScreen(
         onResult = { uri -> uri?.let { importExportViewModel.startKeystoreImport(it) } }
     )
 
-    // Import goes through a mode dialog so the user chooses between Replace and Merge
+    // Replace and Merge only differ for sources and patch selections, so the mode is asked only
+    // when one of them is taken
     var pendingSettingsImportUri by remember { mutableStateOf<Uri?>(null) }
     val importSettingsLauncher = rememberAdaptiveFilePicker(
         mimeTypes = arrayOf(JSON_MIMETYPE, TEXT_MIMETYPE),
         customPickerMimeTypes = arrayOf(JSON_MIMETYPE),
-        onResult = { uri -> uri?.let { pendingSettingsImportUri = it } }
+        onResult = { uri ->
+            uri ?: return@rememberAdaptiveFilePicker
+            val sections = importExportViewModel.settingsSections
+            if (SettingsSection.SOURCES in sections || SettingsSection.PATCH_SELECTIONS in sections) {
+                pendingSettingsImportUri = uri
+            } else {
+                importExportViewModel.importManagerSettings(uri)
+            }
+        }
     )
 
     // Export launchers
@@ -374,10 +385,15 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier.fillMaxSize()
-                    ) { page -> TabContent(SettingsTab.entries[page]) }
+                    // The bottom navigation's own padding already sits under each tab
+                    CompositionLocalProvider(
+                        LocalSettingsTabBottomPadding provides Defaults.ContentPadding - Defaults.ItemSpacing
+                    ) {
+                        HorizontalPager(
+                            state = pagerState,
+                            modifier = Modifier.fillMaxSize()
+                        ) { page -> TabContent(SettingsTab.entries[page]) }
+                    }
 
                     ListScrollbar(scrollState = currentScrollState)
                 }

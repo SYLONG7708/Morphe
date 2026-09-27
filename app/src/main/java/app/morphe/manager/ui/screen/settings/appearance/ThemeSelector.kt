@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
@@ -20,81 +21,37 @@ import app.morphe.manager.ui.theme.Theme
 import app.morphe.manager.ui.theme.ThemeStyle
 
 /**
- * Theme mode selector with adaptive grid.
+ * Theme mode and color style, each a single row of compact tiles in one card, since both are a
+ * pick of at most three.
  */
 @Composable
 fun ThemeSelector(
     theme: Theme,
-    onThemeSelected: (Theme) -> Unit
-) {
-    val columns = 3
-
-    val themeOptions = buildList {
-        add(
-            Triple(
-                Theme.SYSTEM,
-                Icons.Outlined.PhoneAndroid,
-                stringResource(R.string.settings_appearance_system)
-            )
-        )
-        add(
-            Triple(
-                Theme.LIGHT,
-                Icons.Outlined.LightMode,
-                stringResource(R.string.settings_appearance_light)
-            )
-        )
-        add(
-            Triple(
-                Theme.DARK,
-                Icons.Outlined.DarkMode,
-                stringResource(R.string.settings_appearance_dark)
-            )
-        )
-    }
-
-    SectionCard {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.settings_appearance_theme_mode),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            themeOptions.chunked(columns).forEach { row ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    row.forEach { (mode, icon, label) ->
-                        ModernIconOptionCard(
-                            selected = theme == mode,
-                            onClick = { onThemeSelected(mode) },
-                            icon = icon,
-                            label = label,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    repeat(columns - row.size) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ThemeStyleSelector(
+    onThemeSelected: (Theme) -> Unit,
     style: ThemeStyle,
     supportsDynamicColor: Boolean,
     onStyleSelected: (ThemeStyle) -> Unit
 ) {
+    val themeOptions = listOf(
+        ThemeOption(
+            Theme.SYSTEM,
+            Icons.Outlined.PhoneAndroid,
+            stringResource(R.string.settings_appearance_system)
+        ),
+        ThemeOption(
+            Theme.LIGHT,
+            Icons.Outlined.LightMode,
+            stringResource(R.string.settings_appearance_light)
+        ),
+        ThemeOption(
+            Theme.DARK,
+            Icons.Outlined.DarkMode,
+            stringResource(R.string.settings_appearance_dark)
+        )
+    )
     val styleOptions = buildList {
         add(
-            Triple(
+            ThemeOption(
                 ThemeStyle.MORPHE,
                 Icons.Outlined.Palette,
                 stringResource(R.string.settings_appearance_style_morphe)
@@ -102,7 +59,7 @@ fun ThemeStyleSelector(
         )
         if (supportsDynamicColor) {
             add(
-                Triple(
+                ThemeOption(
                     ThemeStyle.MATERIAL_YOU,
                     Icons.Outlined.AutoAwesome,
                     stringResource(R.string.settings_appearance_dynamic)
@@ -110,44 +67,59 @@ fun ThemeStyleSelector(
             )
         }
         add(
-            Triple(
+            ThemeOption(
                 ThemeStyle.MONOCHROME,
                 Icons.Outlined.Contrast,
                 stringResource(R.string.settings_appearance_monochrome)
             )
         )
     }
-    val columns = styleOptions.size.coerceAtMost(3)
 
     SectionCard {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = stringResource(R.string.settings_appearance_color_style),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface
+            ThemeOptionRow(
+                title = stringResource(R.string.settings_appearance_theme_mode),
+                options = themeOptions,
+                selected = theme,
+                onSelected = onThemeSelected
             )
-            styleOptions.chunked(columns).forEach { row ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    row.forEach { (themeStyle, icon, label) ->
-                        ModernIconOptionCard(
-                            selected = style == themeStyle,
-                            onClick = { onStyleSelected(themeStyle) },
-                            icon = icon,
-                            label = label,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    repeat(columns - row.size) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
+            ThemeOptionRow(
+                title = stringResource(R.string.settings_appearance_color_style),
+                options = styleOptions,
+                selected = style,
+                onSelected = onStyleSelected
+            )
+        }
+    }
+}
+
+private data class ThemeOption<T>(val value: T, val icon: ImageVector, val label: String)
+
+@Composable
+private fun <T> ThemeOptionRow(
+    title: String,
+    options: List<ThemeOption<T>>,
+    selected: T,
+    onSelected: (T) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        OptionGrid(items = options, columns = options.size) { option, itemModifier ->
+            ModernIconOptionCard(
+                selected = option.value == selected,
+                onClick = { onSelected(option.value) },
+                icon = option.icon,
+                label = option.label,
+                modifier = itemModifier,
+                compact = true
+            )
         }
     }
 }

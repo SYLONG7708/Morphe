@@ -67,7 +67,7 @@ enum class DialogPadding {
     Normal,
     /** Compact 16dp outer padding with system bar insets. */
     Compact,
-    /** No padding and no insets — caller handles layout entirely. */
+    /** No padding and no insets, the caller handles layout entirely. */
     None
 }
 
@@ -78,11 +78,17 @@ enum class DialogPadding {
  * @param title Optional title displayed at the top.
  * @param titleTrailingContent Optional actions displayed after the title, laid out in a row.
  * @param footer Optional footer content.
+ * @param bottomBar Optional bar docked to the bottom edge of the screen, edge to edge, such as a
+ * [MultiSelectShell] while a selection is being made. While there is one it takes the place of
+ * the [footer], clears the navigation bar and the keyboard itself, and the content ends right
+ * above it.
  * @param dismissOnClickOutside Whether clicking outside dismisses the dialog.
  * @param scrollable Whether to wrap content in verticalScroll and draw a [ListScrollbar] and [ScrollToTopButton] over it.
  * Set to false for LazyColumn, where the caller wires up its own scroll state, scrollbar and button. Default is true.
  * @param padding Outer padding mode. Default is [DialogPadding.Normal].
  * @param contentArrangement Vertical arrangement of the dialog content.
+ * @param backdrop Drawn over the dialog's own background and under its content, for a dialog
+ * that previews something full screen, such as the background picker.
  * @param fillContentHeight Whether the content area claims the free space, which pins the footer
  * to the bottom of the dialog. Set to true for list dialogs, where the buttons belong at the
  * bottom however short the list is. Compact dialogs leave it false so their content and buttons
@@ -95,11 +101,13 @@ fun AppDialog(
     title: String? = null,
     titleTrailingContent: (@Composable RowScope.() -> Unit)? = null,
     footer: (@Composable () -> Unit)? = null,
+    bottomBar: (@Composable () -> Unit)? = null,
     dismissOnClickOutside: Boolean = false,
     scrollable: Boolean = true,
     padding: DialogPadding = DialogPadding.Normal,
     contentArrangement: Arrangement.Vertical = Arrangement.Center,
     fillContentHeight: Boolean = false,
+    backdrop: (@Composable BoxScope.() -> Unit)? = null,
     onEntered: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -146,6 +154,7 @@ fun AppDialog(
                     } else Modifier
                 )
         ) {
+            backdrop?.invoke(this)
 
             AnimatedVisibility(
                 visible = visible,
@@ -157,6 +166,7 @@ fun AppDialog(
                     title = title,
                     titleTrailingContent = titleTrailingContent,
                     footer = footer,
+                    bottomBar = bottomBar,
                     isDarkTheme = isDarkTheme,
                     scrollable = scrollable,
                     padding = padding,
@@ -276,6 +286,7 @@ private fun DialogContent(
     title: String?,
     titleTrailingContent: (@Composable RowScope.() -> Unit)?,
     footer: (@Composable () -> Unit)?,
+    bottomBar: (@Composable () -> Unit)?,
     isDarkTheme: Boolean,
     scrollable: Boolean,
     padding: DialogPadding,
@@ -302,6 +313,7 @@ private fun DialogContent(
                     .pointerInput(Unit) { detectTapGestures { /* Consume clicks */ } }
             ) {
                 content()
+                bottomBar?.invoke()
             }
         }
         return
@@ -320,111 +332,135 @@ private fun DialogContent(
         DialogPadding.Compact -> if (title != null) Defaults.ContentPadding else 0.dp
         else -> Defaults.ContentPaddingExpanded
     }
-    val bottomPadding = if (padding == DialogPadding.Compact) {
-        Defaults.ContentPadding
-    } else {
-        Defaults.ContentPaddingExpanded
+    // A docked bar takes the bottom edge, so the content stops right above it
+    val bottomPadding = when {
+        bottomBar != null -> 0.dp
+        padding == DialogPadding.Compact -> Defaults.ContentPadding
+        else -> Defaults.ContentPaddingExpanded
     }
+    // The keyboard is one more thing the dialog has to fit above, and its inset already spans the
+    // navigation bar, so the two are taken together rather than stacked. A docked bar clears both
+    // itself, from the edge it sits on
+    val contentInsets = if (bottomBar != null) {
+        WindowInsets.systemBars.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+    } else {
+        WindowInsets.systemBars.union(WindowInsets.ime)
+    }
+    val maxContentWidth = if (isLandscape) 600.dp else 450.dp
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            // The keyboard is one more thing the dialog has to fit above, and its inset already
-            // spans the navigation bar, so the two are taken together rather than stacked
-            .windowInsetsPadding(WindowInsets.systemBars.union(WindowInsets.ime))
-            .padding(top = topPadding, bottom = bottomPadding)
-            .pointerInput(Unit) {
-                detectTapGestures { /* Consume clicks */ }
-            },
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CompositionLocalProvider(
-            LocalDialogTextColor provides textColor,
-            LocalDialogSecondaryTextColor provides secondaryTextColor,
-            LocalContentColor provides textColor,
-            LocalDialogHorizontalInset provides horizontalPadding
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .windowInsetsPadding(contentInsets)
+                .padding(top = topPadding, bottom = bottomPadding)
+                .pointerInput(Unit) {
+                    detectTapGestures { /* Consume clicks */ }
+                },
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = if (isLandscape) 600.dp else 450.dp)
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = contentArrangement
+            CompositionLocalProvider(
+                LocalDialogTextColor provides textColor,
+                LocalDialogSecondaryTextColor provides secondaryTextColor,
+                LocalContentColor provides textColor,
+                LocalDialogHorizontalInset provides horizontalPadding
             ) {
-                // Title section
-                if (title != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = horizontalPadding, end = horizontalPadding, bottom = Defaults.ContentPadding),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Dialogs whose title tracks a state (download, install, result) swap
-                        // it in step with their content instead of snapping a new string in
-                        AnimatedContent(
-                            targetState = title,
-                            transitionSpec = Animations.fadeCrossfade(),
-                            modifier = Modifier.weight(1f),
-                            label = "dialogTitle"
-                        ) { currentTitle ->
-                            Text(
-                                text = currentTitle,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = if (titleTrailingContent != null) TextAlign.Start else TextAlign.Center,
-                                color = textColor,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                        if (titleTrailingContent != null) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall),
-                                verticalAlignment = Alignment.CenterVertically,
-                                content = titleTrailingContent
-                            )
-                        }
-                    }
-                }
-
-                // Content area, wrapped in a Box so ListScrollbar can anchor to the true dialog
-                // edge while the scrollable column keeps its own horizontal inset.
-                // Scrollable variant wraps the content in verticalScroll, which is what carries a
-                // focused field up into the room the keyboard inset leaves above it
-                // LazyColumn callers pass scrollable=false and wire up their own scrollbar
-                val scrollState = if (scrollable) rememberScrollState() else null
-                Box(
-                    modifier = Modifier.weight(1f, fill = fillContentHeight)
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = maxContentWidth)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = contentArrangement
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = horizontalPadding)
-                            .then(
-                                if (scrollState != null) {
-                                    Modifier.verticalScroll(scrollState)
-                                } else Modifier
-                            )
-                    ) {
-                        content()
+                    // Title section
+                    if (title != null) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = horizontalPadding, end = horizontalPadding, bottom = Defaults.ContentPadding),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Dialogs whose title tracks a state (download, install, result) swap
+                            // it in step with their content instead of snapping a new string in
+                            AnimatedContent(
+                                targetState = title,
+                                transitionSpec = Animations.fadeCrossfade(),
+                                modifier = Modifier.weight(1f),
+                                label = "dialogTitle"
+                            ) { currentTitle ->
+                                Text(
+                                    text = currentTitle,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = if (titleTrailingContent != null) TextAlign.Start else TextAlign.Center,
+                                    color = textColor,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            if (titleTrailingContent != null) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    content = titleTrailingContent
+                                )
+                            }
+                        }
                     }
 
-                    if (scrollState != null) {
-                        ListScrollbar(scrollState = scrollState)
-                        ScrollToTopButton(scrollState = scrollState)
-                    }
-                }
-
-                // Footer section
-                if (footer != null) {
+                    // Content area, wrapped in a Box so ListScrollbar can anchor to the true dialog
+                    // edge while the scrollable column keeps its own horizontal inset.
+                    // Scrollable variant wraps the content in verticalScroll, which is what carries a
+                    // focused field up into the room the keyboard inset leaves above it
+                    // LazyColumn callers pass scrollable=false and wire up their own scrollbar
+                    val scrollState = if (scrollable) rememberScrollState() else null
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = horizontalPadding, end = horizontalPadding, top = Defaults.ContentPadding)
+                        modifier = Modifier.weight(1f, fill = fillContentHeight)
                     ) {
-                        footer()
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = horizontalPadding)
+                                .then(
+                                    if (scrollState != null) {
+                                        Modifier.verticalScroll(scrollState)
+                                    } else Modifier
+                                )
+                        ) {
+                            content()
+                        }
+
+                        if (scrollState != null) {
+                            ListScrollbar(scrollState = scrollState)
+                            ScrollToTopButton(scrollState = scrollState)
+                        }
+                    }
+
+                    // Footer section, which a bottom bar stands in for while there is one
+                    if (footer != null && bottomBar == null) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = horizontalPadding, end = horizontalPadding, top = Defaults.ContentPadding)
+                        ) {
+                            footer()
+                        }
                     }
                 }
+            }
+        }
+        if (bottomBar != null) {
+            Box(
+                modifier = Modifier
+                    .widthIn(max = maxContentWidth)
+                    .fillMaxWidth()
+                    .imePadding()
+            ) {
+                bottomBar()
             }
         }
     }

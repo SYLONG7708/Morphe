@@ -126,6 +126,8 @@ fun CustomBrandingDialog(
                     description = stringResource(R.string.settings_advanced_patch_options_custom_branding_app_icon_description),
                     value = appIconStyle.value,
                     presets = appIconStyles,
+                    // The patch builds only the icon styles it ships
+                    allowCustomValue = false,
                     onValueChange = { appIconStyle.value = it?.toString().orEmpty() }
                 )
 

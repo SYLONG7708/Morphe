@@ -5,10 +5,7 @@
 
 package app.morphe.manager.ui.screen.settings.system
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.PowerManager
-import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
@@ -17,19 +14,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.*
+import app.morphe.manager.util.requestIgnoreBatteryOptimizations
 
 /**
  * Background-execution settings: battery optimization exemption and the notifications hub.
  * Patcher-runtime tuning lives in the Advanced tab because it is only useful when troubleshooting
  * patching.
  */
-@SuppressLint("BatteryLife")
 @Composable
 fun BackgroundSection(
     onNotificationsClick: () -> Unit
@@ -54,12 +50,7 @@ fun BackgroundSection(
         SettingsGroup {
             SettingsItem(
                 onClick = {
-                    context.startActivity(
-                        Intent(
-                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                            "package:${context.packageName}".toUri()
-                        )
-                    )
+                    context.requestIgnoreBatteryOptimizations()
                 },
                 title = stringResource(R.string.settings_system_battery_optimization),
                 subtitle = stringResource(R.string.settings_system_battery_optimization_description),

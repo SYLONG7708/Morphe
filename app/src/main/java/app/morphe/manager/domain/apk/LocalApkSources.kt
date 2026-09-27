@@ -10,6 +10,7 @@ import android.util.Log
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.data.room.apps.installed.InstallType
 import app.morphe.manager.data.room.apps.installed.InstalledApp
+import app.morphe.manager.domain.installer.RootInstaller
 import app.morphe.manager.domain.manager.KeystoreManager
 import app.morphe.manager.domain.repository.InstalledAppRepository
 import app.morphe.manager.domain.repository.OriginalApkRepository
@@ -72,13 +73,15 @@ enum class InstalledPatchState {
  *
  * [patchState] is null exactly when nothing is installed under the tracked package name, and
  * [savedPatchedApkInfo] is the archive parse behind [savedPatchedApk] so callers can read the
- * label or version without opening the file again.
+ * label or version without opening the file again. [mounted] is only known for a mount install
+ * whose mount table could be read.
  */
 data class TrackedAppSnapshot(
     val installedPackageInfo: PackageInfo?,
     val savedPatchedApk: File?,
     val savedPatchedApkInfo: PackageInfo?,
-    val patchState: InstalledPatchState?
+    val patchState: InstalledPatchState?,
+    val mounted: Boolean? = null
 )
 
 /**
@@ -150,6 +153,7 @@ class LocalApkSources(
     private val appDataResolver: AppDataResolver,
     private val filesystem: Filesystem,
     private val keystoreManager: KeystoreManager,
+    private val rootInstaller: RootInstaller,
     private val pm: PM
 ) {
     // Keyed by the tracked package, kept only while the evidence behind it is unchanged
@@ -252,12 +256,26 @@ class LocalApkSources(
             pm.getInstallerPackageName(app.currentPackageName)
         }
         val signingHashes = keystoreManager.signingCertificateHashes()
-        val fingerprint = trackedAppFingerprint(app, installedPackageInfo, installer, signingHashes)
+        val mounted = mountState(app, installedPackageInfo)
+        val fingerprint = trackedAppFingerprint(app, installedPackageInfo, installer, signingHashes, mounted)
         cachedSnapshot(app.currentPackageName, fingerprint)?.let { return@withContext it }
 
-        val snapshot = resolveTrackedAppSnapshot(app, installedPackageInfo, installer, signingHashes)
+        val snapshot = resolveTrackedAppSnapshot(app, installedPackageInfo, installer, signingHashes, mounted)
         cacheSnapshot(app.currentPackageName, fingerprint, snapshot)
         snapshot
+    }
+
+    /**
+     * Whether the bind mount behind a mount install is active, read from the global mount table
+     * through root. Morphe's own namespace is not asked, because root managers can hide module
+     * mounts from it while the patched app still runs. Null when root is unavailable.
+     */
+    private suspend fun mountState(app: InstalledApp, installedPackageInfo: PackageInfo?): Boolean? {
+        if (app.installType != InstallType.MOUNT || installedPackageInfo == null) return null
+        if (!rootInstaller.hasRootAccess()) return null
+        return runCatching { rootInstaller.isAppMounted(app.currentPackageName) }
+            .onFailure { Log.e(tag, "Failed to read the mount table", it) }
+            .getOrNull()
     }
 
     /** Drops the remembered snapshot of [packageName] so the next read inspects the disk again. */
@@ -269,7 +287,8 @@ class LocalApkSources(
         app: InstalledApp,
         installedPackageInfo: PackageInfo?,
         installer: String?,
-        signingHashes: Set<String>
+        signingHashes: Set<String>,
+        mounted: Boolean?
     ): TrackedAppSnapshot {
         val savedPatched = validatedPatchedApk(app)
         val savedPatchedApk: File? = savedPatched?.first
@@ -279,26 +298,46 @@ class LocalApkSources(
             return TrackedAppSnapshot(null, savedPatchedApk, savedPatchedInfo, null)
         }
 
-        val patchState = resolveTrackedPatchState(
-            installedHashes = pm.getInstalledSignatureHashes(app.currentPackageName),
-            savedPatchedHashes = savedPatchedApk?.let(pm::getApkFileSignatureHashes).orEmpty(),
-            originalHashes = referenceSignatureHashes(app.originalPackageName),
-            managerSigningHashes = signingHashes,
-            installedByPatchManager = pm.isPatchManagerInstaller(installer),
-            installerAttributionMatches = installerMatchesRecord(app.installType, installer),
-            installedAfterPatching = installedAfterPatching(app, installedPackageInfo)
-        )
+        val patchState = if (app.installType == InstallType.MOUNT) {
+            // The package manager reports the stock certificate whether the overlay is
+            // active, so certificates say nothing here and only the mount itself decides
+            when (mounted) {
+                true -> InstalledPatchState.Patched
+                false -> InstalledPatchState.NotPatched
+                null -> if (pm.hasSourceApkSignatureMismatch(app.currentPackageName)) {
+                    InstalledPatchState.Patched
+                } else {
+                    InstalledPatchState.Unknown
+                }
+            }
+        } else {
+            val verdict = resolveTrackedPatchState(
+                installedHashes = pm.getInstalledSignatureHashes(app.currentPackageName),
+                savedPatchedHashes = savedPatchedApk?.let(pm::getApkFileSignatureHashes).orEmpty(),
+                originalHashes = referenceSignatureHashes(app.originalPackageName),
+                managerSigningHashes = signingHashes,
+                installedByPatchManager = pm.isPatchManagerInstaller(installer),
+                installerAttributionMatches = installerMatchesRecord(app.installType, installer),
+                installedAfterPatching = installedAfterPatching(app, installedPackageInfo)
+            )
 
-        // A mounted install reports the stock certificate while sourceDir points at the patched
-        // APK, so it overrides the verdict, and is only read while that verdict is still open
-        val mounted = patchState != InstalledPatchState.Patched &&
+            // A mounted install reports the stock certificate while sourceDir points at the
+            // patched APK, so it overrides the verdict, and is only read while that is still open
+            if (verdict != InstalledPatchState.Patched &&
                 pm.hasSourceApkSignatureMismatch(app.currentPackageName)
+            ) {
+                InstalledPatchState.Patched
+            } else {
+                verdict
+            }
+        }
 
         return TrackedAppSnapshot(
             installedPackageInfo = installedPackageInfo,
             savedPatchedApk = savedPatchedApk,
             savedPatchedApkInfo = savedPatchedInfo,
-            patchState = if (mounted) InstalledPatchState.Patched else patchState
+            patchState = patchState,
+            mounted = mounted
         )
     }
 
@@ -323,7 +362,8 @@ class LocalApkSources(
         app: InstalledApp,
         installedPackageInfo: PackageInfo?,
         installer: String?,
-        signingHashes: Set<String>
+        signingHashes: Set<String>,
+        mounted: Boolean?
     ): String {
         val installedApk = installedPackageInfo?.applicationInfo?.sourceDir?.let(::File)
         val originalApk = originalApkRepository.get(app.originalPackageName)
@@ -342,6 +382,7 @@ class LocalApkSources(
             append(installedPackageInfo?.lastUpdateTime).append('|')
             append(installer).append('|')
             append(fileStamp(installedApk)).append('|')
+            append(mounted).append('|')
             savedPatchedApkCandidates(app).joinTo(this, ";") { fileStamp(it) }
             append('|').append(originalApk?.version).append('|')
             append(originalFile?.absolutePath).append(':').append(fileStamp(originalFile)).append('|')

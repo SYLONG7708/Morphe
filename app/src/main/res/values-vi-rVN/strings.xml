@@ -140,10 +140,14 @@
     <string name="sources_management_open_in_browser">Mở trong trình duyệt</string>
     <string name="sources_management_report_issue">Báo cáo sự cố</string>
     <string name="sources_management_failed_to_open_url">Không thể mở URL</string>
-    <string name="sources_hidden_apps">Đã ẩn cho</string>
-    <string name="sources_hidden_apps_title">Các ứng dụng bị ẩn khỏi %1$s</string>
-    <string name="sources_hidden_apps_description">Các ứng dụng này không được cung cấp nguồn này khi chúng được vá. Bản thân nguồn vẫn bật cho mọi thứ khác.</string>
-    <string name="sources_hidden_apps_hint">Chạm để cung cấp lại nguồn này</string>
+    <string name="sources_apps">Ứng dụng</string>
+    <string name="sources_apps_title">Ứng dụng từ %1$s</string>
+    <string name="sources_apps_description">Chạm vào một ứng dụng để loại ứng dụng đó khỏi nguồn này hoặc đưa nó trở lại, hoặc nhấn và giữ để chọn nhiều ứng dụng. Một ứng dụng sẽ rời khỏi màn hình chính khi không còn nguồn nào đưa nó vào.</string>
+    <string name="sources_apps_brought">Được nguồn này đưa vào</string>
+    <string name="sources_apps_left_out">Đã loại khỏi nguồn này</string>
+    <string name="sources_apps_leave_out">Loại ra</string>
+    <string name="sources_apps_leave_out_done">Đã loại ra</string>
+    <string name="sources_apps_bring_back">Đưa trở lại</string>
     <string name="sources_management_prerelease_toggle">Bản vá phát hành trước</string>
     <string name="sources_management_prerelease_toggle_description">Trải nghiệm sớm các bản vá thử nghiệm mới</string>
     <string name="sources_prerelease_warning_title">Bật các bản vá trước khi phát hành?</string>
@@ -187,6 +191,8 @@
     <string name="sources_dialog_local_change_file">Đổi tệp</string>
     <string name="sources_dialog_preinstalled">Được cài đặt sẵn</string>
     <string name="sources_dialog_community">Các bản vá cộng đồng</string>
+    <string name="sources_dialog_choose_apps">Chọn ứng dụng</string>
+    <string name="sources_dialog_choose_apps_description">Chọn ứng dụng nào của nguồn này để giữ lại sau khi nguồn đã được tải.</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">Nguồn vá bên thứ ba</string>
     <string name="sources_dialog_community_notice_message">"Các nguồn vá cộng đồng được tạo và duy trì bởi chính các tác giả của họ. Morphe không xem xét hoặc xác minh các bản vá của bên thứ ba, và không chịu trách nhiệm về nội dung của chúng hoặc về những gì chúng thực hiện trên thiết bị của bạn.
@@ -517,8 +523,8 @@ Nếu không, APK đã vá và được gắn có thể sẽ không hoạt độ
     <string name="patcher_field_value_kept">giữ lại</string>
     <string name="patcher_tab_logs">Nhật ký trình vá</string>
     <string name="patcher_tab_game">Trò chơi</string>
-    <string name="patcher_logs_waiting">Đang chờ đầu ra nhật ký…</string>
-    <string name="patcher_logs_lost">Đầu ra nhật ký không được giữ lại sau khi khởi động lại ứng dụng</string>
+    <string name="patcher_logs_waiting">Đang chờ nhật ký đầu ra…</string>
+    <string name="patcher_logs_lost">Nhật ký đầu ra sẽ không được giữ lại sau khi khởi động lại ứng dụng</string>
     <string name="patcher_long_step_warning">Bước này có thể hơi lâu một chút. Vui lòng chờ…</string>
     <string name="patcher_installing_subtitle">Gần xong rồi, chuẩn bị quẩy thôi! 🎸</string>
     <string name="patcher_success_title">Hoàn tất! 🎉</string>
@@ -556,6 +562,7 @@ Gỡ cài đặt sẽ xóa vĩnh viễn toàn bộ dữ liệu ứng dụng"</st
     <string name="patcher_storage_permission_open_settings">Mở cài đặt truy cập bộ nhớ</string>
     <string name="patcher_storage_badge_denied">Quyền truy cập bị từ chối</string>
     <string name="patcher_storage_badge_missing">Không tìm thấy gì</string>
+    <string name="batch_patch_option_paths_skipped">Các tệp tùy chọn bản vá bị thiếu và sẽ bị bỏ qua: %1$s</string>
     <string name="patcher_missing_patches_title">Không còn được cung cấp</string>
     <string name="patcher_missing_patches_description">Các tệp tùy chọn vá bị thiếu</string>
     <string name="patcher_missing_patches_label">Một hoặc nhiều tùy chọn vá trỏ đến các tệp không còn ở đó. Hãy xóa các đường dẫn để vá mà không có chúng, hoặc đặt lại các tệp và thử lại.</string>
@@ -714,12 +721,9 @@ Gỡ cài đặt sẽ xóa vĩnh viễn toàn bộ dữ liệu ứng dụng"</st
     <string name="settings_appearance_greeting_phrases">Thông điệp</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Hiện thông điệp trên trang chủ</string>
     <string name="settings_appearance_app_grouping">Nhóm ứng dụng</string>
-    <string name="settings_appearance_app_grouping_description">Hiển thị tùy chọn trên màn hình chính để nhóm ứng dụng theo nguồn hoặc danh mục của bạn, đồng thời giữ nguyên lựa chọn khi tắt</string>
-    <string name="settings_appearance_patch_list">Danh sách bản vá</string>
-    <string name="settings_appearance_patch_categories">Nhóm theo danh mục</string>
-    <string name="settings_appearance_patch_categories_description">Chia danh sách bản vá theo các danh mục mà nguồn khai báo, để các nguồn không khai báo danh mục nào thành một danh sách thường.</string>
+    <string name="settings_appearance_app_grouping_description">Hiển thị bộ chuyển đổi để nhóm ứng dụng theo nguồn hoặc danh mục</string>
     <string name="settings_appearance_repatch_notice">Thông báo vá lại</string>
-    <string name="settings_appearance_repatch_notice_description">Hiển thị biểu ngữ trên màn hình chính khi các ứng dụng đã vá có thể được vá lại</string>
+    <string name="settings_appearance_repatch_notice_description">Hiển thị biểu ngữ khi các ứng dụng đã vá có thể được vá lại</string>
     <string name="settings_appearance_sort_button">Nút sắp xếp và lọc</string>
     <string name="settings_appearance_sort_button_description">Hiển thị nút sắp xếp và lọc trên màn hình chính</string>
     <string name="settings_appearance_app_card_colors">Màu thẻ ứng dụng</string>
@@ -764,6 +768,8 @@ Các bản vá không bị ảnh hưởng: bật các bản vá trước khi ph�
     <string name="settings_advanced_updates_background_notifications">Thông báo cập nhật nền</string>
     <string name="settings_advanced_updates_background_notifications_description">Kiểm tra cập nhật định kỳ khi ứng dụng chạy nền và báo cho bạn khi có phiên bản mới.</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Nhận ngay thông báo khi có phiên bản mới, kể cả khi ứng dụng đang tắt</string>
+    <string name="settings_system_notifications_categories">Danh mục thông báo</string>
+    <string name="settings_system_notifications_categories_description">Chọn trong cài đặt hệ thống những bản cập nhật nào sẽ thông báo cho bạn</string>
     <string name="settings_advanced_update_interval">Tần suất kiểm tra</string>
     <string name="settings_advanced_update_interval_dialog_title">Kiểm tra cập nhật</string>
     <string name="settings_advanced_update_interval_hourly">1 giờ/lần</string>
@@ -773,7 +779,7 @@ Các bản vá không bị ảnh hưởng: bật các bản vá trước khi ph�
     <string name="settings_advanced_update_interval_chip_subtitle">Tần suất kiểm tra trong nền</string>
     <string name="settings_advanced_update_interval_battery_warning">Tính năng này có thể không hoạt động trên một số thiết bị như Xiaomi, Huawei, Samsung và OnePlus, vì chúng thường giới hạn ứng dụng chạy nền để tiết kiệm pin</string>
     <string name="settings_advanced_external_batch_patch">Cho phép kích hoạt từ bên ngoài</string>
-    <string name="settings_advanced_external_batch_patch_description">Cho phép các ứng dụng tự động hóa bắt đầu vá hàng loạt thông qua Intent. Tất cả yêu cầu sẽ được xác nhận trước khi chạy</string>
+    <string name="settings_advanced_external_batch_patch_description">Cho phép các ứng dụng tự động hóa bắt đầu vá hàng loạt thông qua intent</string>
     <string name="external_batch_patch_title">Bắt đầu vá hàng loạt?</string>
     <string name="external_batch_patch_description">%s muốn Morphe vá và cài đặt ứng dụng</string>
     <string name="external_batch_patch_trust_caller">Luôn cho phép ứng dụng này</string>
@@ -786,8 +792,10 @@ Các bản vá không bị ảnh hưởng: bật các bản vá trước khi ph�
     <string name="notification_permission_dialog_title">Cho phép nhận thông báo</string>
     <string name="notification_permission_dialog_description">Để thông báo cho bạn về các bản cập nhật mới khi ứng dụng chạy nền, Morphe cần được cấp quyền thông báo</string>
     <string name="notification_post_patch_dialog_title">Bạn có muốn nhận thông báo khi có bản cập nhật mới không?</string>
-    <string name="notification_channel_fcm_updates">Cập nhật thông báo</string>
-    <string name="notification_channel_fcm_updates_description">Thông báo về các bản cập nhật Morphe và bản vá mới</string>
+    <string name="notification_channel_manager_updates">Cập nhật Morphe</string>
+    <string name="notification_channel_manager_updates_description">Thông báo về các bản phát hành Morphe mới</string>
+    <string name="notification_channel_patch_updates">Cập nhật bản vá</string>
+    <string name="notification_channel_patch_updates_description">Thông báo về các bản phát hành bản vá mới</string>
     <string name="notification_channel_patcher">Đang vá</string>
     <string name="notification_channel_patcher_description">Hiển thị khi Morphe đang vá ứng dụng trong nền</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
@@ -798,24 +806,19 @@ Các bản vá không bị ảnh hưởng: bật các bản vá trước khi ph�
     <string name="settings_advanced_expert_mode_dialog_message">Chế độ chuyên gia cho phép bạn tùy chỉnh sâu hơn về cách các bản vá được áp dụng, nhưng nếu bạn chỉnh không đúng có thể khiến ứng dụng không hoạt động</string>
     <string name="settings_advanced_strip_unused_libs">Tối ưu theo kiến trúc thiết bị</string>
     <string name="settings_advanced_strip_unused_libs_description">Xóa các thư viện CPU và mô-đun APK chia nhỏ không cần thiết</string>
-    <!-- Bytecode mode -->
-    <string name="settings_advanced_bytecode_mode">Chế độ xử lý bytecode</string>
-    <string name="settings_advanced_bytecode_mode_dialog_description">Quy định cách xử lý bytecode trong quá trình vá. Ảnh hưởng đến tốc độ vá, mức dùng bộ nhớ và kích thước APK đầu ra</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_label">Nhanh (khuyên dùng)</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast">Nhanh</string>
-    <string name="settings_advanced_bytecode_mode_strip_fast_description">Vá nhanh hơn và dùng ít bộ nhớ hơn, đổi lại APK sẽ lớn hơn. Khuyến nghị cho thiết bị RAM thấp hoặc đời cũ</string>
-    <string name="settings_advanced_bytecode_mode_full">Đầy đủ</string>
-    <string name="settings_advanced_bytecode_mode_full_description">Vá chậm hơn, mô phỏng lại cơ chế cũ. Chỉ dùng nếu chế độ nhanh bị lỗi</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat">Mã PAT GitHub</string>
     <string name="settings_advanced_github_pat_description">Bắt buộc đối với các nguồn pull request</string>
     <string name="settings_advanced_github_pat_configured">Đã cấu hình token</string>
     <string name="settings_advanced_github_pat_how_to_get">Cách lấy token</string>
-    <string name="settings_advanced_github_pat_dialog_title">Thiết lập Personal Access Token của GitHub</string>
-    <string name="settings_advanced_github_pat_dialog_description">"Thiết lập GitHub Personal Access Token để có thể thêm Pull Request làm nguồn. Hãy tạo một PAT với quyền public_repo tại
-%s"</string>
+    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
+    <string name="settings_advanced_github_pat_dialog_title">Thiết lập %s</string>
+    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
+    <string name="settings_advanced_github_pat_dialog_description">"Thiết lập %3$s để có thể thêm các pull request làm nguồn bên ngoài. Tạo một PAT với phạm vi %2$s trên
+%1$s"</string>
     <string name="settings_advanced_github_pat_export_include_label">Thêm vào khi xuất cài đặt</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">Thêm PAT vào khi xuất cài đặt Morphe</string>
+    <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_warning">Đừng chia sẻ PAT. Nếu bạn xuất cài đặt có chứa nó, hãy giữ tệp đó thật kín vì bên trong có token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Tùy chỉnh</string>
@@ -833,6 +836,8 @@ Các bản vá không bị ảnh hưởng: bật các bản vá trước khi ph�
     <string name="settings_advanced_patch_options_custom_branding_app_name_hint">Nhập tên tùy chỉnh</string>
     <string name="settings_advanced_patch_options_path_gone">Biểu tượng ứng dụng tùy chỉnh cần một thư mục chứa hình ảnh biểu tượng.</string>
     <string name="settings_advanced_patch_options_custom_branding_app_icon">Biểu tượng</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_description">Vietnamese</string>
+    <string name="settings_advanced_patch_options_custom_branding_app_icon_needs_folder">Biểu tượng ứng dụng tùy chỉnh cần một thư mục chứa hình ảnh biểu tượng.</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon">Biểu tượng tùy chỉnh</string>
     <string name="settings_advanced_patch_options_custom_branding_custom_icon_instruction">"Thư mục chứa ảnh dùng làm biểu tượng tuỳ chỉnh.
 
@@ -869,7 +874,7 @@ Có thể thêm icon thông báo theo một trong các cách sau:
   drawable-xxxhdpi/morphe_notification_icon_custom.png (96x96 px)"</string>
     <!-- Settings - Advanced Tab - Patch Options Section: Custom Header -->
     <string name="settings_advanced_patch_options_custom_header">Logo đầu trang</string>
-    <string name="settings_advanced_patch_options_custom_header_description">Đổi logo đầu trang</string>
+    <string name="settings_advanced_patch_options_custom_header_description">Tùy chỉnh logo đầu trang</string>
     <string name="settings_advanced_patch_options_custom_header_instruction">"Thư mục chứa hình ảnh sử dụng làm logo đầu trang tùy chỉnh.
 
 Thư mục này phải chứa một hoặc nhiều thư mục sau, tùy theo DPI của thiết bị:
@@ -975,6 +980,7 @@ Chi tiết: %2$s"</string>
     <string name="settings_system_process_runtime_memory_limit_description">Tăng giới hạn có thể giúp vá nhanh hơn nếu thiết bị đủ mạnh</string>
     <string name="settings_system_process_runtime_enable">Bật tiến trình riêng</string>
     <string name="settings_system_memory_limit_subtitle">Bộ nhớ cho quá trình vá</string>
+    <string name="settings_system_process_runtime_heap_limit_ignored">Thiết bị này đã bỏ qua giới hạn bộ nhớ trong lần chạy trước, vì vậy việc vá có thể sẽ chuyển sang chạy bên trong Morphe</string>
     <string name="settings_system_memory_limit_warning">Nếu bộ nhớ quá thấp có thể khiến bạn gặp lỗi trong quá trình vá ứng dụng lớn</string>
     <string name="settings_system_memory_limit_high_warning">Giới hạn bộ nhớ cao có thể khiến việc vá chậm hơn nhiều trên một số thiết bị. Chỉ tăng giới hạn này nếu việc vá liên tục thất bại ở các mức giới hạn thấp hơn.</string>
     <string name="settings_system_process_runtime_enabled_description">Giới hạn %s MB</string>
@@ -995,8 +1001,20 @@ Chi tiết: %2$s"</string>
     <string name="settings_system_notifications_ringtone_picker_title">Chọn âm báo</string>
     <!-- Settings - System Tab - Import and Export Section -->
     <string name="settings_system_import_export">Xuất &amp; Nhập</string>
-    <string name="settings_system_keystore">Kho khoá</string>
-    <string name="settings_system_import_keystore_description">Nhập hoặc xuất kho khóa dùng để ký của bạn</string>
+    <string name="settings_system_signing_key">Khóa ký</string>
+    <string name="settings_system_signing_key_description">Sao lưu và khôi phục khóa được dùng để ký các ứng dụng đã vá của bạn</string>
+    <string name="settings_system_signing_key_dialog_description">Mọi ứng dụng mà Morphe vá đều được ký bằng khóa này. Hãy giữ một bản sao: nếu không có nó, các ứng dụng đã vá chỉ có thể được cập nhật sau khi gỡ cài đặt chúng</string>
+    <string name="settings_system_signing_key_missing">Morphe tạo một khóa trong lần vá đầu tiên của bạn</string>
+    <string name="settings_system_signing_key_created">Đã tạo %s</string>
+    <string name="settings_system_signing_key_fingerprint">Dấu vân tay SHA-256</string>
+    <string name="settings_system_backup_appearance_description">Chủ đề, màu sắc và ngôn ngữ</string>
+    <string name="settings_system_backup_home_description">Nhóm, ứng dụng ẩn, sắp xếp và công tắc</string>
+    <string name="settings_system_backup_patching">Vá và cài đặt</string>
+    <string name="settings_system_backup_patching_description">Trình cài đặt, trình vá và các APK đã lưu</string>
+    <string name="settings_system_backup_updates_description">Bản phát hành trước và kiểm tra cập nhật</string>
+    <string name="settings_system_backup_sources_description">Các nguồn tùy chỉnh và mã thông báo GitHub</string>
+    <string name="settings_system_backup_patch_selections_description">Các bản vá đã chọn cho từng ứng dụng</string>
+    <string name="settings_system_backup_signing_key_note">Khóa ký được sao lưu riêng biệt</string>
     <string name="settings_system_import_keystore_dialog_title">Nhập thông tin xác thực kho khoá</string>
     <string name="settings_system_import_keystore_dialog_description">Bạn sẽ cần điền thông tin xác thực của kho khóa để nhập chúng</string>
     <string name="settings_system_import_keystore_dialog_alias_field">Tên người dùng (Alias)</string>
@@ -1005,7 +1023,6 @@ Chi tiết: %2$s"</string>
     <string name="settings_system_import_keystore_wrong_credentials">Thông tin xác thực kho khóa không đúng</string>
     <string name="settings_system_import_keystore_success">Đã nhập kho khóa</string>
     <string name="settings_system_import_keystore_failed">Khổng thể nhập kho khóa</string>
-    <string name="settings_system_export_keystore_unavailable">Không có kho khóa nào để xuất</string>
     <string name="settings_system_export_keystore_success">Đã xuất kho khóa</string>
     <string name="settings_system_export_keystore_failed">Không thể xuất kho khóa</string>
     <string name="settings_system_show_password_field">Hiện mật khẩu</string>
@@ -1024,7 +1041,7 @@ Chi tiết: %2$s"</string>
     <string name="import_mode_merge_description">Chỉ thêm các mục còn thiếu từ bản sao lưu. Các mục hiện tại sẽ không bị ảnh hưởng</string>
     <string name="settings_system_export_manager_settings_fail">Không thể xuất cài đặt Morphe: %s</string>
     <string name="settings_system_export_manager_settings_success">Đã xuất cài đặt Morphe</string>
-    <string name="settings_system_debug">Gỡ lỗi</string>
+    <string name="settings_system_export_debug_logs">Nhật ký gỡ lỗi</string>
     <string name="settings_system_export_debug_logs_description">Lưu nhật ký hệ thống giúp sửa lỗi</string>
     <string name="settings_system_export_debug_logs_export_read_failed">Không thể đọc nhật ký (mã thoát %s)</string>
     <string name="settings_system_export_debug_logs_export_failed">Không thể xuất nhật ký</string>
@@ -1112,7 +1129,11 @@ Chi tiết: %2$s"</string>
     <string name="settings_system_custom_file_picker_description">Duyệt bộ nhớ bằng trình chọn tệp tích hợp của Morphe thay vì trình chọn mặc định của hệ thống</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">Trình hỗ trợ tải xuống APK</string>
-    <string name="settings_system_apk_download_helper_description">Để ứng dụng hỗ trợ đã cài đặt tìm nạp các APK gốc cho bạn. Tệp đến từ ứng dụng đó, vì vậy chỉ bật tính năng này nếu bạn tin tưởng ứng dụng đó</string>
+    <string name="settings_system_apk_download_helper_trusted_count">Đã tin cậy: %1$d trên %2$d</string>
+    <string name="settings_system_apk_download_helper_dialog_description">Các ứng dụng trợ giúp có thể tải APK gốc cho bạn. Chỉ những ứng dụng bạn tin cậy ở đây mới được đề xuất trong hướng dẫn tải xuống.</string>
+    <string name="settings_system_apk_download_helper_warning">APK đến từ ứng dụng trợ giúp, vì vậy chỉ tin cậy những ứng dụng bạn biết. Morphe vẫn kiểm tra gói, phiên bản và chữ ký của mọi tệp trước khi vá.</string>
+    <string name="settings_system_apk_download_helper_installed_by">Được cài đặt bởi %s</string>
+    <string name="settings_system_apk_download_helper_installed_by_unknown">Không rõ trình cài đặt</string>
     <!-- File Picker -->
     <string name="file_picker_previous_directory">Thư mục trước</string>
     <string name="file_picker_no_files">Chẳng có gì ở đây cả</string>
@@ -1129,8 +1150,6 @@ Chi tiết: %2$s"</string>
     <string name="file_picker_show_hidden_files">Hiện tệp ẩn</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Giới thiệu</string>
-    <string name="settings_system_share_website">Chia sẻ</string>
-    <string name="settings_system_share_website_description">Chia sẻ trang web chính chủ của Morphe</string>
     <string name="settings_system_manager_description">Một dự án mã nguồn mở, mang đến trải nghiệm vá ứng dụng Android hiệu quả với giao diện hiện đại, được phát triển dựa trên phản hồi và đóng góp từ cộng đồng</string>
     <string name="credits">Đóng góp</string>
     <string name="credits_current_development">Hiện tại</string>
@@ -1219,6 +1238,7 @@ Chi tiết: %2$s"</string>
     <string name="import_">Nhập</string>
     <string name="export">Xuất</string>
     <string name="copy">Sao chép</string>
+    <string name="copied_to_clipboard">Đã sao chép vào bảng tạm</string>
     <string name="download">Tải về</string>
     <string name="less">Thu gọn</string>
     <string name="expand">Mở rộng</string>
@@ -1265,7 +1285,7 @@ Chi tiết: %2$s"</string>
     <string name="changelog_for_app">Thay đổi cho %s</string>
     <string name="changelog_general_changes">Các thay đổi chung</string>
     <string name="whats_new">Có gì mới</string>
-    <string name="changelog_description">Xem những thay đổi mới nhất trong bản cập nhật này</string>
+    <string name="changelog_description">Có gì mới trong phiên bản này</string>
     <string name="changelog_download_fail">Không thể tải lịch sử cập nhật: %s</string>
     <string name="changelog_empty">Không có lịch sử cập nhật</string>
     <string name="changelog_show_older">Các bản phát hành cũ</string>
@@ -1279,7 +1299,7 @@ Chi tiết: %2$s"</string>
     <string name="downloading_manager_update">Đang tải bản cập nhật…</string>
     <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
     <string name="manager_update_progress_downloaded">Đã tải xuống %1$s MB</string>
-    <string name="manager_update_not_ready">Bản phát hành này vẫn đang được đăng tải. Vui lòng thử lại sau vài phút</string>
+    <string name="manager_update_not_ready">Bản phát hành này vẫn đang được triển khai. Hãy thử lại sau vài phút</string>
     <string name="update_download_missing">Bản cập nhật đã tải không còn khả dụng. Hãy tải lại</string>
     <string name="download_manager_failed">Không thể tải bản cập nhật: %s</string>
     <string name="failed_to_check_updates">Không thể kiểm tra cập nhật: %s</string>
@@ -1310,5 +1330,8 @@ Chi tiết: %2$s"</string>
     <string name="tour_prompt_desc">Bạn muốn xem qua các tính năng nổi bật của Morphe không? Nhanh thôi</string>
     <string name="tour_prompt_confirm">Cho tôi xem</string>
     <string name="onboarding_restart_title">Khám phá tính năng</string>
-    <string name="onboarding_restart_desc">Xem hướng dẫn nhanh về các tính năng nổi bật của Morphe</string>
+    <string name="onboarding_restart_desc">Chuyến tham quan có hướng dẫn về các tính năng chính</string>
+    <string name="settings_appearance_patch_list">Danh sách bản vá</string>
+    <string name="settings_appearance_patch_categories">Nhóm theo danh mục</string>
+    <string name="settings_appearance_patch_categories_description">Chia danh sách bản vá theo các danh mục mà nguồn khai báo, để các nguồn không khai báo danh mục nào thành một danh sách thường.</string>
 </resources>

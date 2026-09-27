@@ -6,8 +6,6 @@
 package app.morphe.manager.ui.screen.shared
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,11 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 
@@ -255,12 +256,17 @@ fun AppDialogSearchHeader(
  * Styled [OutlinedTextField] with dropdown menu support for dialogs.
  * Combines text input, folder picker, clear button, and dropdown selection.
  *
- * Tap behavior:
- *  - 1st tap: opens dropdown list (field stays read-only, no keyboard).
- *  - 2nd tap (after closing dropdown without selecting): opens keyboard for manual input.
- *  - Selecting an item or dismissing resets back to 1st-tap behavior.
+ * The field takes typed input and the arrow opens the presets, each announced on its own to a
+ * screen reader. With [allowCustomValue] off the field is read-only and opens the presets itself.
+ *
+ * Until the field is focused it shows the name of the preset its value matches. Focusing it on a
+ * preset starts an empty input, so a custom value replaces the preset rather than being typed
+ * onto it, and an empty field shows the value in effect as its placeholder. A caller may turn an
+ * empty value back into a default, so the typed text is kept by the field rather than read back
+ * from [value], and clearing it leaves it empty.
  *
  * @param dropdownItems Map of display name to value shown in the dropdown menu.
+ * @param allowCustomValue Whether a value besides [dropdownItems] can be typed in.
  */
 @Composable
 fun AppDialogDropdownTextField(
@@ -268,6 +274,7 @@ fun AppDialogDropdownTextField(
     value: String,
     onValueChange: (String) -> Unit,
     dropdownItems: Map<String, String>,
+    allowCustomValue: Boolean = true,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -278,34 +285,40 @@ fun AppDialogDropdownTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
-    var dropdownExpanded by remember { mutableStateOf(false) }
-    // true = first tap opens dropdown; false = second tap opens keyboard
-    var readOnly by remember { mutableStateOf(true) }
-    val focusRequester = remember { FocusRequester() }
+    var expanded by remember { mutableStateOf(false) }
+    // Text typed while the field is focused, null otherwise
+    var input by remember { mutableStateOf<String?>(null) }
+    val focusManager = LocalFocusManager.current
     val textColor = LocalDialogTextColor.current
 
-    // Show display name from map only if value exists in map, otherwise show raw value
-    val displayValue = dropdownItems.entries.find { it.value == value }?.key ?: value
-
-    // When readOnly becomes false the field is now editable - request focus so
-    // the system knows to show the keyboard on the next tap (or immediately)
-    LaunchedEffect(readOnly) {
-        if (!readOnly) {
-            focusRequester.requestFocus()
-        }
+    val presetName = dropdownItems.entries.find { it.value == value }?.key
+    val typed = input
+    val displayValue = when {
+        typed == null -> presetName ?: value
+        // A cleared field the caller filled back with a preset stays cleared
+        value == typed || (typed.isBlank() && presetName != null) -> typed
+        // Set from outside while typing, such as by the folder picker
+        else -> value
+    }
+    val inEffect = value.takeIf { it.isNotBlank() && it != displayValue } ?: presetName
+    val changeInput: (String) -> Unit = { text ->
+        if (input != null) input = text
+        onValueChange(text)
     }
 
-    Box(modifier = modifier.fillMaxWidth()) {
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier.fillMaxWidth()
+    ) {
         OutlinedTextField(
             value = displayValue,
-            onValueChange = { newDisplayValue ->
-                // If user is editing, pass the raw input value
-                val newValue = dropdownItems[newDisplayValue] ?: newDisplayValue
-                onValueChange(newValue)
-            },
-            readOnly = readOnly,
+            onValueChange = changeInput,
+            readOnly = !allowCustomValue,
             label = label,
-            placeholder = placeholder,
+            placeholder = placeholder ?: inEffect?.let { text ->
+                { Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            },
             leadingIcon = leadingIcon,
             singleLine = singleLine,
             trailingIcon = {
@@ -328,10 +341,10 @@ fun AppDialogDropdownTextField(
                         }
                     }
 
-                    // Clear button
-                    if (showClearButton && value.isNotBlank()) {
+                    // Clear button, hidden while the field already shows nothing
+                    if (showClearButton && displayValue.isNotBlank()) {
                         IconButton(
-                            onClick = { onValueChange("") },
+                            onClick = { changeInput("") },
                             modifier = Modifier.size(40.dp)
                         ) {
                             Icon(
@@ -342,23 +355,27 @@ fun AppDialogDropdownTextField(
                         }
                     }
 
-                    // Dropdown arrow
-                    IconButton(
-                        onClick = {
-                            dropdownExpanded = !dropdownExpanded
-                            if (!dropdownExpanded) readOnly = true
-                        },
-                        modifier = Modifier.size(40.dp)
+                    // Dropdown arrow. On an editable field it is the only anchor, so opening the
+                    // presets leaves the field unfocused and the keyboard closed
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .then(
+                                if (allowCustomValue) {
+                                    Modifier.menuAnchor(
+                                        ExposedDropdownMenuAnchorType.SecondaryEditable,
+                                        enabled
+                                    )
+                                } else Modifier
+                            )
                     ) {
                         Icon(
-                            imageVector = if (dropdownExpanded)
+                            imageVector = if (expanded)
                                 Icons.Outlined.ExpandLess
                             else
                                 Icons.Outlined.ExpandMore,
-                            contentDescription = if (dropdownExpanded)
-                                stringResource(R.string.collapse)
-                            else
-                                stringResource(R.string.expand),
+                            contentDescription = null,
                             tint = textColor.copy(alpha = 0.7f)
                         )
                     }
@@ -369,40 +386,36 @@ fun AppDialogDropdownTextField(
             keyboardActions = keyboardActions,
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .then(
+                    if (allowCustomValue) {
+                        Modifier.onFocusChanged { state ->
+                            input = when {
+                                !state.isFocused -> null
+                                input != null -> input
+                                presetName != null -> ""
+                                else -> value
+                            }
+                        }
+                    } else {
+                        Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled)
+                    }
+                ),
             shape = RoundedCornerShape(Defaults.CompactCornerRadius),
             colors = morpheDialogTextFieldColors(textColor)
         )
 
-        // Invisible overlay that captures the first tap to open dropdown,
-        // then removes itself so the second tap reaches the real TextField.
-        if (readOnly) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        dropdownExpanded = true
-                    }
-            )
-        }
-
-        DropdownMenu(
-            expanded = dropdownExpanded,
-            onDismissRequest = {
-                dropdownExpanded = false
-                readOnly = false // dismissed without selecting -> unlock keyboard
-            }
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
         ) {
             dropdownItems.forEach { (displayName, itemValue) ->
                 DropdownMenuItem(
                     text = { Text(displayName) },
                     onClick = {
                         onValueChange(itemValue)
-                        dropdownExpanded = false
-                        readOnly = true // selected -> reset to dropdown-first behavior
+                        expanded = false
+                        // A picked preset ends any typing, so the field shows its name again
+                        focusManager.clearFocus()
                     },
                     leadingIcon = if (itemValue == value) {
                         {

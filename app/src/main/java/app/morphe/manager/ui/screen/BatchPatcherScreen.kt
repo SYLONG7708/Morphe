@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Launch
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -41,6 +40,7 @@ import app.morphe.manager.ui.screen.home.*
 import app.morphe.manager.ui.screen.patcher.ExpertPatchingInProgress
 import app.morphe.manager.ui.screen.patcher.PatcherErrorDialog
 import app.morphe.manager.ui.screen.patcher.PatcherErrorInfo
+import app.morphe.manager.ui.screen.patcher.PostPatchPromptDialogs
 import app.morphe.manager.ui.screen.patcher.SimplePatchingInProgress
 import app.morphe.manager.ui.screen.patcher.game.MiniGameState
 import app.morphe.manager.ui.screen.settings.system.InstallerFlowDialogs
@@ -63,6 +63,8 @@ fun BatchPatcherScreen(
     targets: List<BatchTarget>,
     useMount: Boolean,
     onBackClick: () -> Unit,
+    onStartTour: () -> Unit = {},
+    onDeclineTour: () -> Unit = {},
     viewModel: BatchPatcherViewModel = koinViewModel(),
     installViewModel: InstallViewModel = koinViewModel(),
     prefs: PreferencesManager = koinInject(),
@@ -77,6 +79,8 @@ fun BatchPatcherScreen(
         viewModel.ensurePlan(targets, useMount)
     }
 
+    KeepScreenOn(state?.isActive == true)
+
     val openApkPicker = rememberAdaptiveFilePicker(
         mimeTypes = APK_FILE_MIME_TYPES,
         onResult = viewModel::onApkPicked
@@ -84,10 +88,18 @@ fun BatchPatcherScreen(
 
     val startInstallQueue = rememberInstallQueue(
         installViewModel = installViewModel,
-        completedPluralRes = R.plurals.batch_install_summary
+        completedPluralRes = R.plurals.batch_install_summary,
+        onDrained = { installed -> if (installed > 0) viewModel.postPatchPrompts.trigger() }
     )
 
     InstallerFlowDialogs(installViewModel = installViewModel)
+
+    PostPatchPromptDialogs(
+        prompts = viewModel.postPatchPrompts,
+        onStartTour = onStartTour,
+        onDeclineTour = onDeclineTour,
+        onLeave = onBackClick
+    )
 
     val current = state
     // Apps already on the device drop out, so "Install all" means what is left and a card
@@ -144,12 +156,11 @@ fun BatchPatcherScreen(
     }
 
     val useExpertMode by prefs.useExpertMode.getAsState()
-    val apkDownloadHelperEnabled by prefs.useApkDownloadHelper.getAsState()
 
     // Kept outside the dialog so the picker state survives the download dialog's exit animation
     val openApkDownloadHelper = rememberApkDownloadHelperAction(
         host = viewModel,
-        enabled = apkDownloadHelperEnabled && viewModel.apkSearch != null
+        enabled = viewModel.apkSearch != null
     )
 
     // Opened straight from the actions that need it rather than by watching state: the target
@@ -310,6 +321,7 @@ fun BatchPatcherScreen(
         if (file != null && uri != null) {
             installViewModel.export(file, uri) { success ->
                 context.toast(if (success) exportSuccessMessage else exportFailedMessage)
+                if (success) viewModel.postPatchPrompts.trigger()
             }
         }
     }
@@ -843,10 +855,7 @@ private fun BatchItemCard(
                                 icon = Icons.Outlined.Warning,
                                 contentDescription = forceLabel,
                                 tooltip = forceLabel,
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
+                                colors = ActionPillColors.secondary()
                             )
                         }
 
@@ -859,10 +868,7 @@ private fun BatchItemCard(
                                 icon = Icons.Outlined.GppBad,
                                 contentDescription = acceptLabel,
                                 tooltip = acceptLabel,
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
+                                colors = ActionPillColors.secondary()
                             )
                         }
 
@@ -874,14 +880,7 @@ private fun BatchItemCard(
                             icon = if (excluded) Icons.Outlined.AddCircleOutline else Icons.Outlined.RemoveCircleOutline,
                             contentDescription = toggleLabel,
                             tooltip = toggleLabel,
-                            colors = if (excluded) {
-                                IconButtonDefaults.filledTonalIconButtonColors()
-                            } else {
-                                IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                            }
+                            colors = if (excluded) ActionPillColors.neutral() else ActionPillColors.destructive()
                         )
                     }
                 }
@@ -907,10 +906,7 @@ private fun BatchItemCard(
                                 icon = Icons.Outlined.ErrorOutline,
                                 contentDescription = errorLabel,
                                 tooltip = errorLabel,
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                )
+                                colors = ActionPillColors.destructive()
                             )
                         }
 
@@ -921,10 +917,7 @@ private fun BatchItemCard(
                                 icon = Icons.Outlined.InstallMobile,
                                 contentDescription = installLabel,
                                 tooltip = installLabel,
-                                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
+                                colors = ActionPillColors.primary()
                             )
                         }
 

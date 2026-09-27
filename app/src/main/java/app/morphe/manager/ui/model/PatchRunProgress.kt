@@ -176,6 +176,8 @@ class PatchRunProgress(
             steps.clear()
             steps.addAll(generatePatchSteps(appContext, requiresSplitPreparation))
             patchesPercentage = max(0.0, 1.0 - steps.sumOf { it.progressPercentage })
+            // A memory retry reports its own limit, and a fallback to the app's process has the app's heap
+            heapLimitMb = 0
             heapSamples.clear()
             ioSamples.clear()
             cpuCoreLoads = emptyList()

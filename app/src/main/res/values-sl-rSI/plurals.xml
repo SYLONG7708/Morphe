@@ -9,7 +9,7 @@
     <plurals name="option_count">
         <item quantity="one">%s možnost</item>
         <item quantity="two">%s možnosti popravka</item>
-        <item quantity="few">%s Možnosti popravkov</item>
+        <item quantity="few">%s možnosti popravka</item>
         <item quantity="other">%s možnosti popravka</item>
     </plurals>
     <plurals name="home_app_patch_sources_title">
@@ -58,47 +58,47 @@
         <item quantity="one">Nameščena %s aplikacija</item>
         <item quantity="two">Nameščeni %s aplikaciji</item>
         <item quantity="few">Nameščene %s aplikacije</item>
-        <item quantity="other">Nameščene %s aplikacije</item>
+        <item quantity="other">Nameščenih %s aplikacij</item>
     </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Ponovno nameščena %s aplikacija</item>
         <item quantity="two">Ponovno nameščeni %s aplikaciji</item>
         <item quantity="few">Ponovno nameščene %s aplikacije</item>
-        <item quantity="other">Ponovno nameščene %s aplikacije</item>
+        <item quantity="other">Ponovno nameščenih %s aplikacij</item>
     </plurals>
     <plurals name="batch_uninstall_summary">
         <item quantity="one">Odnameščena %s aplikacija</item>
         <item quantity="two">Odnameščeni %s aplikaciji</item>
         <item quantity="few">Odnameščene %s aplikacije</item>
-        <item quantity="other">Odnameščene %s aplikacije</item>
+        <item quantity="other">Odnameščenih %s aplikacij</item>
     </plurals>
     <plurals name="batch_uninstall_confirm_title">
         <item quantity="one">Odnamestim %s aplikacijo?</item>
         <item quantity="two">Odnamestim %s aplikaciji?</item>
         <item quantity="few">Odnamestim %s aplikacije?</item>
-        <item quantity="other">Odnamestim %s aplikacije?</item>
+        <item quantity="other">Odnamestim %s aplikacij?</item>
     </plurals>
     <plurals name="batch_patch_ready_count">
-        <item quantity="one">%s aplikacija je pripravljena za popravek</item>
-        <item quantity="two">%s aplikaciji sta pripravljeni za popravek</item>
-        <item quantity="few">%s aplikacije so pripravljene za popravek</item>
-        <item quantity="other">%s aplikacije so pripravljene za popravek</item>
+        <item quantity="one">%s aplikacija je pripravljena za popravljanje</item>
+        <item quantity="two">%s aplikaciji sta pripravljeni za popravljanje</item>
+        <item quantity="few">%s aplikacije so pripravljene za popravljanje</item>
+        <item quantity="other">%s aplikacij je pripravljenih za popravljanje</item>
     </plurals>
     <plurals name="repatch_available_count">
-        <item quantity="one">%s aplikacija se lahko ponovno zakrpa</item>
-        <item quantity="two">%s aplikaciji se lahko ponovno zakrpata</item>
-        <item quantity="few">%s aplikacije se lahko ponovno zakrpajo</item>
-        <item quantity="other">%s aplikacij se lahko ponovno zakrpa</item>
+        <item quantity="one">%s aplikacija se lahko ponovno popravi</item>
+        <item quantity="two">%s aplikaciji se lahko ponovno popravita</item>
+        <item quantity="few">%s aplikacije se lahko ponovno popravijo</item>
+        <item quantity="other">%s aplikacij se lahko ponovno popravi</item>
     </plurals>
     <plurals name="batch_skipped_summary">
         <item quantity="one">Preskočena %s aplikacija</item>
         <item quantity="two">Preskočeni %s aplikaciji</item>
         <item quantity="few">Preskočene %s aplikacije</item>
-        <item quantity="other">Preskočene %s aplikacije</item>
+        <item quantity="other">Preskočenih %s aplikacij</item>
     </plurals>
     <plurals name="home_app_info_repatch_cleaned_invalid_data">
         <item quantity="one">Odstranjena %s zastarela posodobitev iz shranjenega izbora</item>
-        <item quantity="two">Odstranjena %s zastarela popravka iz shranjene izbire</item>
+        <item quantity="two">Odstranjena %s zastarela popravka iz shranjenega izbora</item>
         <item quantity="few">Odstranjenih %s zastarelih popravkov iz shranjene izbire</item>
         <item quantity="other">Odstranjenih %s zastarelih popravkov iz shranjene izbire</item>
     </plurals>
@@ -121,9 +121,9 @@
         <item quantity="other">%s aplikacije</item>
     </plurals>
     <plurals name="expert_mode_selected_count">
-        <item quantity="one">%s izbrano</item>
-        <item quantity="two">%s izbrani</item>
-        <item quantity="few">%s izbrana</item>
+        <item quantity="one">%s izbran</item>
+        <item quantity="two">%s izbrana</item>
+        <item quantity="few">%s izbrani</item>
         <item quantity="other">%s izbranih</item>
     </plurals>
     <plurals name="expert_mode_copy_from_bundle_done">

@@ -45,9 +45,9 @@ class ThemeSettingsViewModel(
      * Resolves the effective background type when [BackgroundType.RANDOM] is selected.
      * Called once on app start and again whenever the interval preference changes.
      *
-     * - [RandomInterval.ON_LAUNCH] — picks a new random type each time.
-     * - [RandomInterval.DAILY] — uses today's epoch day as a stable index.
-     * - [RandomInterval.EVERY_3_DAYS] — uses epoch day ÷ 3 as a stable index.
+     * - [RandomInterval.ON_LAUNCH]: picks a new random type each time.
+     * - [RandomInterval.DAILY]: uses today's epoch day as a stable index.
+     * - [RandomInterval.EVERY_3_DAYS]: uses epoch day ÷ 3 as a stable index.
      */
     suspend fun resolveRandomBackground(interval: RandomInterval) {
         val pool = BackgroundType.randomizable(prefs.matrixBackgroundUnlocked.get())

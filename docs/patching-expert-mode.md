@@ -103,8 +103,7 @@ once you change something, so a patch you tuned is easy to find again. Newly add
 are highlighted with a **New** badge.
 
 Sources that sort their patches into categories get a sectioned list rather than one long
-one. Turn that off under **Settings → Appearance → Patch list** if you prefer the flat list,
-sources that declare no categories are shown flat either way.
+one. Sources that declare no categories are shown as a flat list.
 
 The counter in the header doubles as a filter: tap it to narrow the list to the patches you
 have enabled, which is the quickest way to look over a selection before patching, and tap it
