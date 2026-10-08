@@ -1,0 +1,14 @@
+/build/
+/inputs/
+/evidence/
+/tools/*.jar
+/fixture/
+/security-cases/
+/dist/
+/desktop-data/
+/__pycache__/
+*.log
+*.pid
+*.jks
+*.p12
+*-secrets.json

@@ -11,6 +11,9 @@ on:
       - patches-bundle.json
       - "*.md"
       - docs/**
+      - bluem/**
+      - channels/**
+      - .github/workflows/blue-m-stable.yml
 
 permissions:
   contents: write

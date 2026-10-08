@@ -1,0 +1,9 @@
+{
+  "policy": "morphe-recommended-stable",
+  "patches_version": "1.46.0",
+  "youtube_version": "21.16.256",
+  "prerelease": false,
+  "experimental": false,
+  "source": "MorpheApp/morphe-patches",
+  "default_patch_support_count": 92
+}

@@ -1,0 +1,4 @@
+# Detached signatures cover the exact JSON bytes, including line endings.
+test-fixtures/*.json -text whitespace=cr-at-eol
+test-fixtures/*.sig -text whitespace=cr-at-eol
+assets/*.der -text
