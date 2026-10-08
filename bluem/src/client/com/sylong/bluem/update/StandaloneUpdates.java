@@ -400,8 +400,9 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         dialog.show();
     }
     @Override public void onActivityResumed(Activity a) {
-        if (!a.getClass().getName().equals("com.google.android.apps.youtube.app.watchwhile.MainActivity")) return;
+        if (!PlaybackSignals.watchActivity(a.getClass().getName())) return;
         current = new WeakReference<>(a); resumed = true;
+        Log.i(TAG, "WATCH_ACTIVITY_RESUMED " + a.getClass().getSimpleName());
         PlaybackRecovery.resume(a);
         if (prefs.getBoolean("waiting_permission", false)) nextCheck = 0;
         if (downloading) showProgress();

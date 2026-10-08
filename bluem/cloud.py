@@ -97,7 +97,7 @@ def fingerprint(selection, assets):
 def next_code(current):
     previous = max((p['version_code'] for p in current.get('packages', [])
                     if p['package'] == 'app.morphe.android.youtube'), default=0)
-    result = max(2026100804, previous + 1, current.get('sequence', 0) + 1)
+    result = max(2026100901, previous + 1, current.get('sequence', 0) + 1)
     if result > 2147483647:
         raise ValueError('Android versionCode exhausted')
     return result

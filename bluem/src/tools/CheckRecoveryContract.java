@@ -19,8 +19,11 @@ public final class CheckRecoveryContract {
             method(classes, video, "getVideoTime", "J");
             method(classes, video, "getVideoLength", "J");
             method(classes, video, "getVideoId", "Ljava/lang/String;");
+            method(classes, video, "getPlayerResponseVideoId", "Ljava/lang/String;");
+            method(classes, video, "getPlaylistId", "Ljava/lang/String;");
             method(classes, video, "lastVideoIdIsShort", "Z");
             method(classes, "youtube/patches/LoadVideoPatch", "initializeReloadVideo", "V");
+            method(classes, "youtube/patches/LoadVideoPatch", "openVideoIntent", "V", "Ljava/lang/String;", "Z");
             method(classes, "youtube/shared/VideoState", "getCurrent", "Lapp/morphe/extension/youtube/shared/VideoState;");
             method(classes, "youtube/shared/PlayerType", "getCurrent", "Lapp/morphe/extension/youtube/shared/PlayerType;");
             method(classes, "shared/spoof/SpoofVideoStreamsPatch", "setClientsToUse", "V",

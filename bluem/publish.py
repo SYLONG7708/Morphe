@@ -76,7 +76,7 @@ def prepare(local=False):
         manifest = {'schema':1, 'channel':'blue-m-stable', 'sequence':plan['code'],
             'published_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'upstream':plan['selection'], 'packages':packages,
-            'client':{'revision':3,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
+            'client':{'revision':4,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
             'playback':{'schema':1,'buffering_ms':6000,'clients':['TV_SABR','ANDROID_CREATOR','TV_SIMPLY']}}
         write(READY/'blue-m-stable.json', manifest)
         # Compile only our small standard-library signer in the secret-bearing job.
@@ -84,7 +84,7 @@ def prepare(local=False):
         build.run([build.jtool('javac'), '-d', ROOT/'build/tools', ROOT/'src/tools/SignManifest.java'], log)
         build.sign_manifest(READY/'blue-m-stable.json', READY/'blue-m-stable.json.sig', log)
     write(READY/'plan.json', plan)
-    notes = f'''藍色 M 自動恢復與穩定更新\n\nYouTube {plan['selection']['youtube_version']} / Morphe patches {plan['selection']['patches_version']} / 官方 MicroG {plan['microg_version']}。\n\n- 初始使用 TV，記住持續正常播放的串流；連續緩衝停滯約 6 秒後自動換來源並保留影片與進度。\n- 排除暫停、斷網、拖曳及 Shorts；每支影片最多切換 2 次，避免無限重試。\n- 每 6 小時檢查簽章驗證的穩定更新，播放閒置後才原地更新，保留資料。Android 系統需要的首次安裝授權仍須允許。\n- 上游版本、原始 APK 簽章、套件、架構及恢復 API 不符合時停止發布並保留目前版本。\n\n安裝 BlueM APK 以更新既有藍色 M；已有相同版本 MicroG 無須重裝。相容 Android 9 以上、arm64-v8a / armeabi-v7a / x86 / x86_64。\n\n任何第三方串流都無法保證永久不中斷；持續維護取決於 YouTube、Morphe、網路與 GitHub 服務。\n'''
+    notes = f'''藍色 M 播放錯誤自動恢復\n\nYouTube {plan['selection']['youtube_version']} / Morphe patches {plan['selection']['patches_version']} / 官方 MicroG {plan['microg_version']}。\n\n- 持續追蹤各播放入口，直接辨識「播放時發生問題／輕觸以重試」、播放器錯誤及緩衝停滯。\n- 明確錯誤約 2 秒後先重新取流，一般緩衝停滯約 6 秒；失敗再換來源，保留影片與進度。\n- 長影片恢復正常 90 秒後可處理後續新故障；網路恢復後自動接續，所有来源失敗後冷卻重試，十分鐘最多六次。\n- 使用 App 自己的媒體狀態排除使用者暫停；登入、私人／移除／地區限制影片保留原提示，停止無效重試。\n- 每六小時檢查簽章驗證的穩定更新，播放閒置後原地更新，保留資料。Android 首次安裝授權仍須允許。\n\n相容 Android 9 以上及四種 ABI。已有同版 MicroG 無須重装。原始 APK、簽章、版本、修補或恢復 API 不符合時停止發布並保留穩定頻道。\n\n第三方服務、帳號權限與網路變動無法保證永久自動修復；不清除帳號或全部 App 資料。\n'''
     (READY/'release-notes.txt').write_text(notes, encoding='utf-8')
     print(json.dumps({'prepared':plan['tag'],'sequence':plan['code'],'packages':packages}, ensure_ascii=False))
 
