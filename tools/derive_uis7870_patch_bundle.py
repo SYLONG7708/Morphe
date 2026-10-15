@@ -15,6 +15,7 @@ from derive_microg_runtime import derive_runtime
 
 
 GMS_CLASS = "app/morphe/patches/shared/misc/gms/GmsCoreSupportPatchKt.class"
+GMS_QUERIES_CLASS = "app/morphe/patches/all/misc/gms/GmsCorePackageQueriesPatchKt.class"
 YOUTUBE_GMS_CLASS = "app/morphe/patches/youtube/misc/gms/GmsCoreSupportPatchKt.class"
 YOUTUBE_GMS_CONSTANTS_CLASS = "app/morphe/patches/youtube/misc/gms/Constants.class"
 MANIFEST = "META-INF/MANIFEST.MF"
@@ -179,6 +180,27 @@ def derive_bundle(
             GMS_CLASS: derived_class,
             **derived_youtube_classes,
         }
+        # Official 1.47 adds Android package visibility queries separately from
+        # GmsCore support. The derived app must query its own MicroG package.
+        # Keep this optional for older bundles and scoped to the reviewed class.
+        if GMS_QUERIES_CLASS in names:
+            queries, count = transform_class_utf8(
+                source_zip.read(GMS_QUERIES_CLASS),
+                b"app.revanced.android.gms",
+                f"{vendor}.android.gms".encode("ascii"),
+            )
+            if count != 1:
+                raise ValueError(f"Expected one GmsCore package query, found {count}")
+            transformed_classes[GMS_QUERIES_CLASS] = queries
+
+        class_entries = {
+            name: transformed_classes.get(name, source_zip.read(name))
+            for name in names if name.endswith(".class")
+        }
+        unresolved = sorted(name for name, data in class_entries.items()
+                            if b"app.revanced" in data or b"app.morphe.android.youtube" in data)
+        if unresolved:
+            raise ValueError("Unreviewed package identities remain in classes: " + ", ".join(unresolved))
         derived_dex: bytes | None = None
         if "classes.dex" in names:
             if d8_path is None:
@@ -186,11 +208,6 @@ def derive_bundle(
                     "Official Android bundle contains classes.dex; --d8 is required "
                     "so runtime bytecode cannot retain old package identities"
                 )
-            class_entries = {
-                name: transformed_classes.get(name, source_zip.read(name))
-                for name in names
-                if name.endswith(".class")
-            }
             derived_dex = rebuild_dex(class_entries, d8_path)
             if vendor.encode("ascii") not in derived_dex:
                 raise ValueError("Derived vendor group is absent from rebuilt classes.dex")

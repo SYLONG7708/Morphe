@@ -19,7 +19,8 @@ PERMANENT = re.compile(
     r"status code[^\n]*(?:401|403)|"
     r"requires morphe-patcher|keystore was tampered|password was incorrect|"
     r"Upstream merge needs a code change|Reviewed resolution.*(?:mismatch|did not apply)|"
-    r"requires a clean checkout|CONFLICT \(",
+    r"requires a clean checkout|CONFLICT \(|"
+    r"ValueError:|AssertionError:|TypeError:|Unreviewed package identities",
     re.IGNORECASE,
 )
 

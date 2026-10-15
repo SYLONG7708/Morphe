@@ -7,7 +7,7 @@ import re
 import subprocess
 import time
 
-from ci_retry import PERMANENT
+from ci_retry import PERMANENT, TRANSIENT
 
 WORKFLOWS = {".github/workflows/upstream-sync.yml", ".github/workflows/release.yml"}
 HARD_FAILURE = re.compile(
@@ -32,7 +32,7 @@ def failure_output(logs: str) -> str:
     return logs
 
 
-def decision(run: dict, repository: str, current_sha: str, logs: str) -> dict:
+def decision(run: dict, repository: str, current_sha: str, logs: str | None) -> dict:
     result = {"run_id": run["id"], "attempt": run.get("run_attempt", 1),
               "workflow": run.get("path"), "action": "retain", "reason": ""}
     if (run.get("repository", {}).get("full_name") != repository or
@@ -44,10 +44,13 @@ def decision(run: dict, repository: str, current_sha: str, logs: str) -> dict:
         result["reason"] = "Run does not need recovery."
     elif run.get("head_sha") != current_sha:
         result["reason"] = "A newer main exists; obsolete code will not be rerun."
-    elif PERMANENT.search(logs) or HARD_FAILURE.search(logs):
+    elif PERMANENT.search(logs or "") or HARD_FAILURE.search(logs or ""):
         result["reason"] = "Code, compatibility, credentials or verification needs attention; current release retained."
     elif result["attempt"] >= 3:
         result["reason"] = "Three attempts exhausted; current release retained until the next scheduled check."
+    elif (logs is not None and run.get("conclusion") not in {"timed_out", "startup_failure"}
+          and not TRANSIENT.search(logs)):
+        result["reason"] = "No evidence of a transient infrastructure failure; diagnosis required, current release retained."
     else:
         result.update(action="retry", reason="Retry on a fresh runner within the three-attempt budget.")
     return result
@@ -59,6 +62,25 @@ def api(endpoint: str, *, post: bool = False):
         command += ["--method", "POST"]
     output = subprocess.check_output(command + [endpoint], text=True, encoding="utf-8")
     return json.loads(output) if output.strip() else None
+
+
+def request_retry(repository: str, run_id: int, attempt: int, call=None) -> dict:
+    call = call or api
+    endpoint = f"repos/{repository}/actions/runs/{run_id}"
+    try:
+        call(endpoint + "/rerun-failed-jobs", post=True)
+        return {"action": "retry_requested"}
+    except (subprocess.CalledProcessError, json.JSONDecodeError):
+        # A failed/empty HTTP response can follow an accepted POST. Read back
+        # state instead of submitting a duplicate or losing the diagnostic report.
+        try:
+            fresh = call(endpoint)
+            if (fresh.get("run_attempt", 1) > attempt or
+                    fresh.get("status") in {"queued", "in_progress", "pending", "waiting", "requested"}):
+                return {"action": "retry_requested", "reason": "Retry confirmed by run readback after an ambiguous response."}
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            pass
+        return {"action": "retry_uncertain", "reason": "Retry response could not be confirmed; no duplicate request sent, current release retained."}
 
 
 def main() -> None:
@@ -73,7 +95,7 @@ def main() -> None:
         run_id = int(event["workflow_run"]["id"])
     run = api(f"repos/{repository}/actions/runs/{run_id}")
     current = api(f"repos/{repository}/git/ref/heads/main")["object"]["sha"]
-    check = decision(run, repository, current, "")
+    check = decision(run, repository, current, None)
     # Logs are classified, never executed or printed. Do not consume failed-run artifacts/code.
     log_text = ""
     if check["action"] == "retry":
@@ -92,8 +114,7 @@ def main() -> None:
         else:
             check = decision(fresh, repository, current, log_text)
             if check["action"] == "retry":
-                api(f"repos/{repository}/actions/runs/{run_id}/rerun-failed-jobs", post=True)
-                check["action"] = "retry_requested"
+                check.update(request_retry(repository, run_id, fresh.get("run_attempt", 1)))
     report = Path("verification/cloud-recovery.json")
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps(check, indent=2) + "\n", encoding="utf-8")

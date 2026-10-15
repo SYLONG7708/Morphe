@@ -7,6 +7,7 @@ from pathlib import Path
 
 from derive_uis7870_patch_bundle import (
     GMS_CLASS,
+    GMS_QUERIES_CLASS,
     GMS_EXTENSION,
     MANIFEST,
     YOUTUBE_GMS_CLASS,
@@ -25,6 +26,60 @@ def minimal_class(*values: bytes) -> bytes:
 
 
 class DeriveUis7870PatchBundleTest(unittest.TestCase):
+    def fixture_bundle(self, root, extra):
+        source = root / "official.mpp"
+        with zipfile.ZipFile(source, "w") as bundle:
+            bundle.writestr(GMS_CLASS, minimal_class(b"app.revanced", b"app.revanced.android.gms"))
+            for name in (YOUTUBE_GMS_CLASS, YOUTUBE_GMS_CONSTANTS_CLASS):
+                bundle.writestr(name, minimal_class(b"app.morphe.android.youtube"))
+            bundle.writestr(MANIFEST, "Name: Morphe Patches\nDescription: Patches for Morphe\nVersion: 1.47.0\nSource: git@github.com:MorpheApp/morphe-patches.git\n")
+            bundle.writestr(GMS_EXTENSION, b"official-extension")
+            for name, content in extra.items():
+                bundle.writestr(name, content)
+        return source
+
+    @patch("derive_uis7870_patch_bundle.derive_runtime", return_value=b"derived-extension")
+    def test_new_package_visibility_query_matches_derived_microg_and_dex(self, runtime):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = self.fixture_bundle(root, {
+                GMS_QUERIES_CLASS: minimal_class(b"app.revanced.android.gms", b"com.mgoogle.android.gms", b"org.microg.gms"),
+                "classes.dex": b"original-dex",
+            })
+            def rebuild(classes, d8):
+                query = classes[GMS_QUERIES_CLASS]
+                self.assertIn(b"com.sylong.autopatch.android.gms", query)
+                self.assertIn(b"com.mgoogle.android.gms", query)
+                self.assertIn(b"org.microg.gms", query)
+                self.assertNotIn(b"app.revanced", query)
+                return b"dex\ncom.sylong.autopatch\0com.sylong.autopatch.android.youtube\0"
+            with patch("derive_uis7870_patch_bundle.rebuild_dex", side_effect=rebuild) as rebuild_mock:
+                derive_bundle(source, root / "derived.mpp", "1.47.0",
+                              {"vendorGroup": "com.sylong.autopatch", "profileRevision": "2", "microgSignerSha256": "test-pin"},
+                              d8_path=root / "d8")
+            rebuild_mock.assert_called_once()
+            with zipfile.ZipFile(root / "derived.mpp") as bundle:
+                self.assertIn(b"com.sylong.autopatch.android.gms", bundle.read(GMS_QUERIES_CLASS))
+
+    @patch("derive_uis7870_patch_bundle.derive_runtime", return_value=b"derived-extension")
+    def test_unreviewed_new_classes_remain_blocked_and_identified(self, runtime):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = self.fixture_bundle(root, {"unreviewed/NewPatch.class": minimal_class(b"app.revanced.android.gms")})
+            with self.assertRaisesRegex(ValueError, "Unreviewed.*unreviewed/NewPatch.class"):
+                derive_bundle(source, root / "derived.mpp", "1.47.0",
+                              {"vendorGroup": "com.sylong.autopatch", "profileRevision": "2", "microgSignerSha256": "test-pin"})
+            self.assertFalse((root / "derived.mpp").exists())
+
+    @patch("derive_uis7870_patch_bundle.derive_runtime", return_value=b"derived-extension")
+    def test_changed_query_structure_fails_closed(self, runtime):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = self.fixture_bundle(root, {GMS_QUERIES_CLASS: minimal_class(b"different.vendor.android.gms")})
+            with self.assertRaisesRegex(ValueError, "Expected one GmsCore package query"):
+                derive_bundle(source, root / "derived.mpp", "1.47.0",
+                              {"vendorGroup": "com.sylong.autopatch", "profileRevision": "2", "microgSignerSha256": "test-pin"})
+
     @patch("derive_uis7870_patch_bundle.derive_runtime", return_value=b"derived-extension")
     def test_derives_vendor_group_and_manifest(self, runtime) -> None:
         with tempfile.TemporaryDirectory() as directory:

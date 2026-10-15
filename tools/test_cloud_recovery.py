@@ -1,6 +1,8 @@
 import copy
 import unittest
-from cloud_recovery import decision, failure_output
+import subprocess
+from unittest.mock import Mock
+from cloud_recovery import decision, failure_output, request_retry
 
 
 class CloudRecoveryTest(unittest.TestCase):
@@ -66,3 +68,18 @@ class CloudRecoveryTest(unittest.TestCase):
         logs = ("##[group]Run gradlew assemble\nHTTP 503\nCompilation error\n"
                 "##[error]Process completed with exit code 1.\n")
         self.assertEqual("retain", self.choose(failure_output(logs))["action"])
+
+    def test_package_derivation_and_unknown_errors_are_not_blindly_retried(self):
+        for message in ("ValueError: Old GmsCore vendor remains in rebuilt classes.dex",
+                        "HTTP 503\nValueError: Unreviewed package identities remain",
+                        "unexpected unknown tool failure", ""):
+            self.assertEqual("retain", self.choose(message)["action"])
+
+    def test_ambiguous_retry_response_reads_back_without_duplicate_post(self):
+        for fresh, expected in (({"run_attempt": 2, "status": "queued"}, "retry_requested"),
+                                ({"run_attempt": 1, "status": "completed"}, "retry_uncertain")):
+            call = Mock(side_effect=[subprocess.CalledProcessError(1, ["gh"]), fresh])
+            self.assertEqual(expected, request_retry(self.repo, 123, 1, call)["action"])
+            self.assertEqual(2, call.call_count)
+            self.assertEqual({"post": True}, call.call_args_list[0].kwargs)
+            self.assertEqual({}, call.call_args_list[1].kwargs)
