@@ -10,7 +10,7 @@ import time
 from ci_retry import PERMANENT, TRANSIENT
 
 WORKFLOWS = {".github/workflows/upstream-sync.yml", ".github/workflows/release.yml",
-             ".github/workflows/blue-m-stable.yml"}
+             ".github/workflows/blue-m-stable.yml", ".github/workflows/build.yml"}
 HARD_FAILURE = re.compile(
     r"Upstream merge needs a code change|Reviewed resolution.*(?:mismatch|did not apply)|"
     r"Official merge failed|requires a clean checkout|CONFLICT \(|"
@@ -117,6 +117,18 @@ def main() -> None:
             if check["action"] == "retry":
                 check.update(request_retry(repository, run_id, fresh.get("run_attempt", 1)))
     report = Path("verification/cloud-recovery.json")
+    # Local Codex also watches the source runs directly, so losing this diagnostic
+    # artifact cannot lose a repair request. A green diagnosis is not a green release.
+    check["needs_codex"] = (
+        check["action"] in {"retain", "retry_uncertain"}
+        and run.get("repository", {}).get("full_name") == repository
+        and run.get("head_repository", {}).get("full_name") == repository
+        and run.get("head_branch") == "main" and run.get("path") in WORKFLOWS
+        and run.get("event") in {"push", "schedule", "workflow_dispatch"}
+        and run.get("status") == "completed"
+        and run.get("conclusion") in {"failure", "timed_out", "startup_failure"}
+        and run.get("head_sha") == current
+    )
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps(check, indent=2) + "\n", encoding="utf-8")
     summary = f"Run {run_id}, attempt {check['attempt']}: {check['action']}. {check['reason']}"
