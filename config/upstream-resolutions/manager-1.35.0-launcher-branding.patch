@@ -1,0 +1,15 @@
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -531,9 +531,9 @@
+  * of that icon would lose it on update. A background's color can change freely.
+  */
+ val launcherIconMarks = linkedMapOf(
+-    "color" to "ic_launcher_foreground",
+-    "white" to "ic_launcher_foreground_white",
+-    "black" to "ic_launcher_foreground_black"
++    "color" to "ic_symorphe_foreground",
++    "white" to "ic_symorphe_foreground",
++    "black" to "ic_symorphe_foreground"
+ )
+ 
+ val launcherIconBackgrounds = listOf(

@@ -1,0 +1,682 @@
+--- a/app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt
++++ b/app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt
+@@ -22,6 +22,7 @@
+ import androidx.lifecycle.ViewModel
+ import androidx.lifecycle.viewModelScope
+ import app.morphe.manager.R
++import app.morphe.manager.BuildConfig
+ import app.morphe.manager.data.platform.Filesystem
+ import app.morphe.manager.data.platform.NetworkInfo
+ import app.morphe.manager.data.room.apps.installed.InstallType
+@@ -31,11 +32,26 @@
+ import app.morphe.manager.domain.batch.BatchRunState
+ import app.morphe.manager.domain.batch.mergeNewlyAdded
+ import app.morphe.manager.domain.bundles.*
++import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.asRemoteOrNull
++import app.morphe.manager.domain.installer.InstallResult
++import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.avatarUrls
+ import app.morphe.manager.domain.installer.InstallerManager
+ import app.morphe.manager.domain.installer.RootInstaller
+ import app.morphe.manager.domain.installer.UninstallCancelledException
+ import app.morphe.manager.domain.manager.*
+ import app.morphe.manager.domain.repository.*
++import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
++import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
++import app.morphe.manager.domain.update.InstallableUpdate
++import app.morphe.manager.domain.update.OneTapSourcePolicy
++import app.morphe.manager.domain.update.OneTapYouTubeMode
++import app.morphe.manager.domain.update.SafeIntegrationProfile
++import app.morphe.manager.domain.update.UpdateStatus
++import app.morphe.manager.domain.update.VerifiedYouTubeSourceDownloader
++import app.morphe.manager.domain.update.YouTubeSourceDownloadResult
++import app.morphe.manager.domain.update.YouTubeSourceResolver
++import app.morphe.manager.domain.update.YouTubeVersionBuild
++import app.morphe.manager.network.api.MorpheAPI
+ import app.morphe.manager.domain.repository.PatchBundleRepository.LocalFileCheck
+ import app.morphe.manager.patcher.patch.*
+ import app.morphe.manager.patcher.patch.PatchBundleInfo.Extensions.toPatchSelection
+@@ -112,6 +128,29 @@
+     val appName: String,
+ )
+ 
++/** Device inspection shown before starting either one-tap YouTube workflow. */
++data class OneTapHubUiState(
++    val checking: Boolean = true,
++    val working: Boolean = false,
++    val localYouTubeVersion: String? = null,
++    val localYouTubeVersionCode: Long? = null,
++    val localYouTubeCompatible: Boolean = false,
++    val recommendedYouTubeVersion: String? = null,
++    val microgInstalledVersion: String? = null,
++    val microgAvailableVersion: String? = null,
++    val microgStatus: UpdateStatus? = null,
++    val existingPatchedYouTubePackage: String? = null,
++    val existingPatchedYouTubeVersion: String? = null,
++    val existingPatchedMicrogVersion: String? = null,
++    val errorMessage: String? = null,
++)
++
++private data class ExistingPatchedPair(
++    val youtubePackage: String,
++    val youtubeVersion: String?,
++    val microgVersion: String?,
++)
++
+ /** An installed app entry shown in the universal-patch app picker. */
+ data class InstalledAppPickerItem(
+     val packageName: String,
+@@ -141,6 +180,8 @@
+     private val filesystem: Filesystem,
+     private val homeAppButtonPrefs: HomeAppButtonPreferences,
+     private val appDataResolver: AppDataResolver,
++    private val ecosystemUpdateCoordinator: EcosystemUpdateCoordinator,
++    private val verifiedYouTubeSourceDownloader: VerifiedYouTubeSourceDownloader,
+     private val batchPatchCoordinator: BatchPatchCoordinator,
+     private val downloadUrlResolver: DownloadUrlResolver,
+     versionCatalog: AppVersionCatalog,
+@@ -176,6 +217,7 @@
+ 
+     // Dialog visibility states
+     var showAndroid11Dialog by mutableStateOf(false)
++    private var resumeOneTapAfterInstallPermission: OneTapYouTubeMode? = null
+     var showBundleManagementSheet by mutableStateOf(false)
+     var showAddSourceDialog by mutableStateOf(false)
+     var bundleToRename by mutableStateOf<PatchBundleSource?>(null)
+@@ -372,6 +414,12 @@
+     var installedAppsForPicker by mutableStateOf<List<InstalledAppPickerItem>>(emptyList())
+     // True while APK loading/processing runs in the background
+     var processingApkSelection by mutableStateOf(false)
++    var automaticYouTubeDownloadProgressPercent by mutableStateOf<Int?>(null)
++        private set
++    var oneTapHubUiState by mutableStateOf(OneTapHubUiState())
++        private set
++    var showOneTapYouTubeDialog by mutableStateOf(false)
++        private set
+ 
+     // Error/warning dialogs
+     var showUnsupportedVersionDialog by mutableStateOf<UnsupportedVersionDialogState?>(null)
+@@ -667,6 +715,9 @@
+ 
+     // Callback for starting patch
+     var onStartQuickPatch: ((Patcher.ViewModelParams) -> Unit)? = null
++    private var oneTapHubInspectionHandled = false
++    private var automaticYouTubeSourceSelection = false
++    private var automaticYouTubeMode: OneTapYouTubeMode? = null
+ 
+     init {
+         observeManagerUpdate()
+@@ -1279,21 +1330,36 @@
+      * @param repatchedPackageName The tracked install to rebuild. Null starts an install of its
+      *   own, which is how an app that is already patched gets a second, cloned copy.
+      */
+-    fun showPatchDialog(packageName: String, repatchedPackageName: String? = null) {
+-        preparePendingFlow(packageName, repatchedPackageName)
+-
++    fun showPatchDialog(packageName: String, repatchedPackageName: String? = null) =
++        showPatchDialog(packageName, repatchedPackageName, automaticMode = null)
++
++    private fun showPatchDialog(
++        packageName: String,
++        repatchedPackageName: String? = null,
++        automaticMode: OneTapYouTubeMode?,
++    ) {
++        preparePendingFlow(packageName, repatchedPackageName, automaticMode)
++        if (packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE) {
++            automaticYouTubeSourceSelection = automaticMode != null
++            automaticYouTubeMode = automaticMode
++        }
+         // Guard: if there is a pending bundle update on metered data, show the outdated-patches
+         // dialog before proceeding with the actual APK selection flow.
+         guardPatching { showPatchDialogInternal(packageName) }
+     }
+ 
+     /** Seeds the pending APK selection state for [packageName] from the current bundle data. */
+-    private fun preparePendingFlow(packageName: String, repatchedPackageName: String? = null) {
++    private fun preparePendingFlow(
++        packageName: String,
++        repatchedPackageName: String? = null,
++        automaticMode: OneTapYouTubeMode? = null,
++    ) {
+         pendingPackageName = packageName
+         pendingRepatchPackageName = repatchedPackageName
+         pendingAppName = bundleAppMetadataFlow.value[packageName]?.displayName
+             ?: KnownApps.getAppName(packageName)
+         pendingRecommendedVersion = recommendedVersions[packageName]
++            .takeUnless { automaticMode == OneTapYouTubeMode.LOCAL_INSTALLED }
+         pendingCompatibleVersions = compatibleVersions[packageName] ?: emptyList()
+         pendingSelectedDownloadVersion = pendingRecommendedVersion
+         // Reset per-package cached state so a new flow always loads fresh data
+@@ -1303,6 +1369,227 @@
+         pendingStockAppInstalled = null
+     }
+ 
++    private data class LocalYouTubeInspection(
++        val version: String?,
++        val versionCode: Long?,
++        val compatible: Boolean,
++    )
++
++    /**
++     * Inspects the installed YouTube, current Morphe recommendation, and matching MicroG.
++     * No browser or file picker is opened; the result is presented as two one-tap choices.
++     */
++    fun inspectOneTapHubOptions(showDialog: Boolean = true, force: Boolean = false) {
++        if (oneTapHubInspectionHandled && !force) {
++            if (showDialog) showOneTapYouTubeDialog = true
++            return
++        }
++        oneTapHubInspectionHandled = true
++        if (showDialog) showOneTapYouTubeDialog = true
++
++        viewModelScope.launch {
++            oneTapHubUiState = oneTapHubUiState.copy(
++                checking = true,
++                working = false,
++                errorMessage = null,
++            )
++            val snapshotResult = runCatching {
++                ecosystemUpdateCoordinator.refresh(downloadAssets = false)
++            }
++            val snapshot = snapshotResult.getOrNull()
++            val local = inspectInstalledYouTube()
++            val recommended = recommendedVersions[EcosystemUpdateCoordinator.YOUTUBE_PACKAGE]
++                ?.version
++                ?: snapshot?.youtube?.availableVersion
++                ?: BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION
++                    .takeIf { BuildConfig.BUNDLED_ECOSYSTEM_ENABLED && it.isNotBlank() }
++            val installedMicrog = pm.getPackageInfo(EcosystemUpdateCoordinator.MICROG_PACKAGE)
++                ?.versionName
++            val existingPair = SafeIntegrationProfile.compatiblePackagePairs
++                .asSequence()
++                .filter { (youtubePackage, _) ->
++                    youtubePackage != SafeIntegrationProfile.patchedYouTubePackage
++                }
++                .mapNotNull { (youtubePackage, microgPackage) ->
++                    val youtube = pm.getPackageInfo(youtubePackage) ?: return@mapNotNull null
++                    ExistingPatchedPair(
++                        youtubePackage = youtubePackage,
++                        youtubeVersion = youtube.versionName,
++                        microgVersion = pm.getPackageInfo(microgPackage)?.versionName,
++                    )
++                }
++                .firstOrNull()
++
++            oneTapHubUiState = OneTapHubUiState(
++                checking = false,
++                localYouTubeVersion = local.version,
++                localYouTubeVersionCode = local.versionCode,
++                localYouTubeCompatible = local.compatible,
++                recommendedYouTubeVersion = recommended,
++                microgInstalledVersion = snapshot?.microg?.installedVersion ?: installedMicrog,
++                microgAvailableVersion = snapshot?.microg?.availableVersion,
++                microgStatus = snapshot?.microg?.status
++                    ?: if (installedMicrog == null) UpdateStatus.NOT_INSTALLED else UpdateStatus.UP_TO_DATE,
++                existingPatchedYouTubePackage = existingPair?.youtubePackage,
++                existingPatchedYouTubeVersion = existingPair?.youtubeVersion,
++                existingPatchedMicrogVersion = existingPair?.microgVersion,
++                errorMessage = snapshotResult.exceptionOrNull()?.message,
++            )
++        }
++    }
++
++    fun openOneTapHubDialog() {
++        showOneTapYouTubeDialog = true
++        inspectOneTapHubOptions(showDialog = true, force = true)
++    }
++
++    fun dismissOneTapHubDialog() {
++        if (!oneTapHubUiState.working) {
++            showOneTapYouTubeDialog = false
++        }
++    }
++
++    fun startOneTapLocalYouTubePatch() =
++        startOneTapYouTube(OneTapYouTubeMode.LOCAL_INSTALLED)
++
++    fun startOneTapRecommendedYouTubePatch() =
++        startOneTapYouTube(OneTapYouTubeMode.MORPHE_RECOMMENDED)
++
++    private fun startOneTapYouTube(mode: OneTapYouTubeMode) {
++        if (oneTapHubUiState.working || onStartQuickPatch == null) return
++        showOneTapYouTubeDialog = true
++        viewModelScope.launch {
++            oneTapHubUiState = oneTapHubUiState.copy(working = true, errorMessage = null)
++            runCatching {
++                runOneTapYouTubeWorkflow(mode)
++            }.onFailure { error ->
++                Log.e(tag, "AutoPatch: one-tap workflow failed", error)
++                oneTapHubUiState = oneTapHubUiState.copy(
++                    checking = false,
++                    working = false,
++                    errorMessage = error.message
++                        ?: app.getString(R.string.one_tap_workflow_failed),
++                )
++                showOneTapYouTubeDialog = true
++            }
++        }
++    }
++
++    /**
++     * Explicit one-tap actions always prepare the verified update assets. This intentionally
++     * bypasses the background-update preference, while keeping signature, package, version,
++     * SDK, and hash verification in the coordinator.
++     */
++    private suspend fun runOneTapYouTubeWorkflow(mode: OneTapYouTubeMode) {
++        var snapshot = ecosystemUpdateCoordinator.refresh(
++            downloadAssets = true,
++            allowUnsafeNetwork = true,
++            forcePrepareMicrog = true,
++        )
++
++        if (snapshot.microg.status == UpdateStatus.DOWNLOADED) {
++            if (!pm.canInstallPackages() && !rootInstaller.isDeviceRooted()) {
++                Log.i(tag, "AutoPatch: waiting for install-unknown-apps permission")
++                resumeOneTapAfterInstallPermission = mode
++                oneTapHubUiState = oneTapHubUiState.copy(working = false)
++                showAndroid11Dialog = true
++                return
++            }
++
++            Log.i(
++                tag,
++                "AutoPatch: installing verified MicroG ${snapshot.microg.availableVersion}",
++            )
++            val installResult = ecosystemUpdateCoordinator.installPrepared(InstallableUpdate.MICROG)
++            check(installResult is InstallResult.Success) {
++                app.getString(R.string.one_tap_microg_install_incomplete)
++            }
++            snapshot = ecosystemUpdateCoordinator.refresh(downloadAssets = false)
++        }
++
++        check(snapshot.microg.status == UpdateStatus.UP_TO_DATE) {
++            snapshot.microg.detail
++                ?: app.getString(R.string.one_tap_microg_prepare_failed)
++        }
++
++        val local = inspectInstalledYouTube()
++        if (mode == OneTapYouTubeMode.LOCAL_INSTALLED) {
++            check(local.version != null) {
++                app.getString(R.string.one_tap_local_not_found)
++            }
++            check(local.compatible) {
++                app.getString(
++                    R.string.one_tap_local_incompatible,
++                    local.version,
++                )
++            }
++        }
++
++        oneTapHubUiState = oneTapHubUiState.copy(
++            checking = false,
++            working = false,
++            localYouTubeVersion = local.version,
++            localYouTubeVersionCode = local.versionCode,
++            localYouTubeCompatible = local.compatible,
++            microgInstalledVersion = snapshot.microg.installedVersion,
++            microgAvailableVersion = snapshot.microg.availableVersion,
++            microgStatus = snapshot.microg.status,
++            errorMessage = null,
++        )
++        showPatchDialog(
++            EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
++            automaticMode = mode,
++        )
++    }
++
++    private suspend fun inspectInstalledYouTube(): LocalYouTubeInspection {
++        val packageInfo = pm.getPackageInfo(EcosystemUpdateCoordinator.YOUTUBE_PACKAGE)
++            ?: return LocalYouTubeInspection(null, null, compatible = false)
++        val version = packageInfo.versionName?.takeUnless(String::isBlank)
++            ?: return LocalYouTubeInspection(null, null, compatible = false)
++        val versionCode = pm.getVersionCode(packageInfo)
++        val sourceExists = packageInfo.applicationInfo
++            ?.sourceDir
++            ?.let(::File)
++            ?.isFile == true
++        val expectedSignatures =
++            bundleAppMetadataFlow.value[EcosystemUpdateCoordinator.YOUTUBE_PACKAGE]
++                ?.signatures
++                .orEmpty()
++        val actualSignatures =
++            pm.getInstalledSignatureHashes(EcosystemUpdateCoordinator.YOUTUBE_PACKAGE)
++        val signatureMatches = expectedSignatures.isEmpty() ||
++            actualSignatures.any(expectedSignatures::contains)
++        val compatible = sourceExists && signatureMatches &&
++            patchBundleRepository
++                .scopedBundleInfoFlow(
++                    EcosystemUpdateCoordinator.YOUTUBE_PACKAGE,
++                    version,
++                    versionCode,
++                )
++                .first()
++                .any { it.enabled && it.compatible.isNotEmpty() }
++        return LocalYouTubeInspection(version, versionCode, compatible)
++    }
++
++    /**
++     * Continues the selected one-tap sequence after Android returns from unknown-apps settings.
++     */
++    fun onInstallAppsPermissionResult(granted: Boolean) {
++        showAndroid11Dialog = false
++        val mode = resumeOneTapAfterInstallPermission ?: return
++        resumeOneTapAfterInstallPermission = null
++        if (!granted) {
++            Log.w(tag, "AutoPatch: install-unknown-apps permission was not granted")
++            oneTapHubUiState = oneTapHubUiState.copy(
++                working = false,
++                errorMessage = app.getString(R.string.one_tap_install_permission_required),
++            )
++            return
++        }
++        startOneTapYouTube(mode)
++    }
++
+     private suspend fun showPatchDialogInternal(packageName: String) {
+         val savedInfo = withContext(Dispatchers.IO) {
+             localApkSources.saved(packageName)
+@@ -1315,6 +1602,45 @@
+         if (allIncompatible) {
+             showNoCompatibleVersionsDialog = packageName
+             return
++        }
++
++        // The local one-tap path is deliberately pinned to the installed Google YouTube.
++        // Resolve its exact bundle before the normal multi-bundle chooser can appear.
++        if (
++            automaticYouTubeMode == OneTapYouTubeMode.LOCAL_INSTALLED &&
++            packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE
++        ) {
++            val source = withContext(Dispatchers.IO) {
++                localApkSources.installed(packageName)
++            }
++            applyInstalledAppSource(source)
++            val compatibleInfo = pendingInstalledApkInfo
++            if (compatibleInfo == null) {
++                oneTapHubUiState = oneTapHubUiState.copy(
++                    working = false,
++                    errorMessage = if (source.hasStockInstall) {
++                        app.getString(
++                            R.string.one_tap_local_incompatible,
++                            source.version ?: oneTapHubUiState.localYouTubeVersion.orEmpty(),
++                        )
++                    } else {
++                        app.getString(R.string.one_tap_local_not_found)
++                    },
++                )
++                cleanupPendingData()
++                showOneTapYouTubeDialog = true
++                return
++            }
++            pendingSelectedBundleUid = pendingCompatibleVersions
++                .firstOrNull { entry ->
++                    entry.target.version == compatibleInfo.version &&
++                        (
++                            entry.buildCodes == null ||
++                                compatibleInfo.versionCode == null ||
++                                compatibleInfo.versionCode.toInt() in entry.buildCodes
++                            )
++                }
++                ?.bundleUid
+         }
+ 
+         // In simple mode: if multiple bundles cover this package, ask the user to pick one
+@@ -1336,6 +1662,22 @@
+                 .filter { (_, patches) -> patches.isNotEmpty() }
+ 
+             if (candidates.size > 1) {
++                if (automaticYouTubeSourceSelection) {
++                    val preferredUid = pendingCompatibleVersions
++                        .firstOrNull { it.target.version == pendingRecommendedVersion?.version }
++                        ?.bundleUid
++                        ?: candidates.first().first.uid
++                    pendingSelectedBundleUid = preferredUid
++                    pendingCompatibleVersions
++                        .filter { it.bundleUid == preferredUid }
++                        .recommended()
++                        ?.let { recommended ->
++                            pendingRecommendedVersion = recommended
++                            pendingSelectedDownloadVersion = recommended
++                        }
++                    continueApkSelectionFlow(packageName)
++                    return
++                }
+                 simpleBundleSelectCandidates = candidates
+                 showSimpleBundleSelectDialog = true
+                 return
+@@ -1361,22 +1703,191 @@
+             } else null
+             val installedJob = async(Dispatchers.IO) { localApkSources.installed(packageName) }
+             savedJob?.await()?.let { pendingSavedApkInfo = it }
+-            applyInstalledAppSource(installedJob.await(), offersApk = expertMode)
++            applyInstalledAppSource(
++                installedJob.await(),
++                offersApk = expertMode || automaticYouTubeSourceSelection,
++            )
+         }
+ 
+         val recommendedVersion = pendingRecommendedVersion
+-
++        val automaticMode = automaticYouTubeMode
++        val mayAutoUseYouTubeSource = automaticYouTubeSourceSelection &&
++            packageName == EcosystemUpdateCoordinator.YOUTUBE_PACKAGE
++
++        val shouldAutoUseInstalled = !expertMode &&
++            OneTapSourcePolicy.useInstalled(
++                mode = automaticMode,
++                installedVersion = pendingInstalledApkInfo?.version,
++                recommendedVersion = recommendedVersion?.version,
++            )
+         val shouldAutoUseSaved = !expertMode &&
+-                pendingSavedApkInfo != null &&
+-                recommendedVersion != null &&
+-                pendingSavedApkInfo!!.version == recommendedVersion.version
+-
+-        if (shouldAutoUseSaved) {
+-            // Skip dialog and use saved APK directly
+-            handleSavedApkSelection()
+-        } else {
+-            // Show dialog
+-            showApkAvailabilityDialog = true
++            OneTapSourcePolicy.useSaved(
++                mode = automaticMode,
++                savedVersion = pendingSavedApkInfo?.version,
++                recommendedVersion = recommendedVersion?.version,
++            )
++
++        when {
++            shouldAutoUseInstalled -> {
++                showOneTapYouTubeDialog = false
++                handleInstalledApkSelection()
++            }
++            shouldAutoUseSaved -> {
++                showOneTapYouTubeDialog = false
++                handleSavedApkSelection()
++            }
++            automaticMode == OneTapYouTubeMode.LOCAL_INSTALLED && !expertMode -> {
++                oneTapHubUiState = oneTapHubUiState.copy(
++                    working = false,
++                    errorMessage = app.getString(R.string.one_tap_local_not_found),
++                )
++                cleanupPendingData()
++                showOneTapYouTubeDialog = true
++            }
++            mayAutoUseYouTubeSource &&
++                OneTapSourcePolicy.downloadRecommended(automaticMode) &&
++                !expertMode -> {
++                showOneTapYouTubeDialog = false
++                if (!downloadAndProcessAutomaticYouTubeSource()) {
++                    oneTapHubUiState = oneTapHubUiState.copy(
++                        working = false,
++                        errorMessage = app.getString(R.string.one_tap_download_failed),
++                    )
++                    cleanupPendingData()
++                    showOneTapYouTubeDialog = true
++                }
++            }
++            else -> showApkAvailabilityDialog = true
++        }
++    }
++
++    /**
++     * Resolves, downloads, verifies, and stores the exact YouTube build declared by the
++     * currently loaded patch bundle. Returns false so callers can expose the manual fallback.
++     */
++    private suspend fun downloadAndProcessAutomaticYouTubeSource(): Boolean {
++        val sourceTargets = pendingCompatibleVersions.map { entry ->
++            YouTubeVersionBuild(
++                version = entry.target.version,
++                bundleUid = entry.bundleUid,
++                versionCodes = entry.buildCodes,
++                codesByAbi = entry.target.versionCodes.orEmpty().mapKeys {
++                    YouTubeSourceResolver.abiName(it.key.name)
++                },
++            )
++        }
++        var candidates = YouTubeSourceResolver.resolveWithPinnedFallback(
++            deviceAbis = Build.SUPPORTED_ABIS.toList(),
++            recommendedVersion = pendingRecommendedVersion?.version,
++            selectedBundleUid = pendingSelectedBundleUid,
++            compatibleVersions = sourceTargets,
++            allowPinnedFallback = isInstalledVersionCompatible(
++                BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION,
++                BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE.toLong(),
++            ),
++            pinnedVersion = BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION,
++            pinnedVersionCode = BuildConfig.BUNDLED_YOUTUBE_SOURCE_VERSION_CODE,
++            pinnedSha256 = BuildConfig.BUNDLED_YOUTUBE_SOURCE_SHA256,
++        )
++        if (candidates.isEmpty() && YouTubeSourceResolver.mayDiscoverBuildCodes(
++                pendingRecommendedVersion?.version, pendingSelectedBundleUid, sourceTargets,
++            )) {
++            try {
++                candidates = verifiedYouTubeSourceDownloader.discoverCandidates(
++                    requireNotNull(pendingRecommendedVersion?.version),
++                )
++            } catch (error: CancellationException) {
++                throw error
++            } catch (error: Exception) {
++                Log.w(tag, "AutoPatch: compatible source discovery unavailable", error)
++            }
++        }
++        val bundleExpectedSignatures =
++            bundleAppMetadataFlow.value[EcosystemUpdateCoordinator.YOUTUBE_PACKAGE]?.signatures
++                .orEmpty()
++        val expectedSignatures = bundleExpectedSignatures.ifEmpty {
++            setOf(BuildConfig.BUNDLED_YOUTUBE_SIGNER_SHA256)
++        }
++        if (candidates.isEmpty() || expectedSignatures.isEmpty()) {
++            Log.w(
++                tag,
++                "AutoPatch: exact YouTube versionCode or trusted signer metadata is unavailable; " +
++                    "using the manual source flow"
++            )
++            return false
++        }
++
++        processingApkSelection = true
++        automaticYouTubeDownloadProgressPercent = 0
++        try {
++            for (candidate in candidates) {
++                Log.i(
++                    tag,
++                    "AutoPatch: downloading original YouTube ${candidate.version} " +
++                        "(${candidate.versionCode})"
++                )
++                val result = verifiedYouTubeSourceDownloader.download(
++                    candidate = candidate,
++                    expectedSignerSha256 = expectedSignatures,
++                    onProgress = { bytesRead, contentLength ->
++                        val percent = contentLength
++                            ?.takeIf { it > 0L }
++                            ?.let { ((bytesRead * 100L) / it).coerceIn(0L, 100L).toInt() }
++                        if (percent != null) {
++                            viewModelScope.launch(Dispatchers.Main.immediate) {
++                                automaticYouTubeDownloadProgressPercent = percent
++                            }
++                        }
++                    },
++                )
++                when (result) {
++                    is YouTubeSourceDownloadResult.Failure -> {
++                        Log.w(
++                            tag,
++                            "AutoPatch: rejected YouTube ${candidate.version} " +
++                                "(${candidate.versionCode}): ${result.reason}",
++                            result.cause,
++                        )
++                    }
++
++                    is YouTubeSourceDownloadResult.Success -> {
++                        val source = result.source
++                        Log.i(
++                            tag,
++                            "AutoPatch: verified YouTube ${source.version} " +
++                                "(${source.versionCode}) sha256=${source.sha256}"
++                        )
++                        val savedFile = originalApkRepository.saveOriginalApk(
++                            packageName = source.packageName,
++                            version = source.version,
++                            sourceFile = source.file,
++                        )
++                        val patchInput = savedFile ?: source.file
++                        val temporary = savedFile == null
++                        processingApkSelection = false
++                        automaticYouTubeDownloadProgressPercent = null
++                        processSelectedApp(
++                            SelectedApp.Local(
++                                packageName = source.packageName,
++                                version = source.version,
++                                versionCode = source.versionCode,
++                                file = patchInput,
++                                temporary = temporary,
++                            ),
++                            skipSplitCheck = true,
++                        )
++                        if (savedFile != null) {
++                            source.file.delete()
++                        }
++                        return true
++                    }
++                }
++            }
++            app.toast(app.getString(R.string.one_tap_download_failed))
++            return false
++        } finally {
++            processingApkSelection = false
++            automaticYouTubeDownloadProgressPercent = null
+         }
+     }
+ 
+@@ -1388,9 +1899,17 @@
+     private fun applyInstalledAppSource(source: InstalledAppSource, offersApk: Boolean = true) {
+         pendingStockAppInstalled = source.hasStockInstall
+         pendingInstalledAppVersion = source.version
+-        pendingInstalledApkInfo = source.apk
+-            .takeIf { offersApk }
+-            .patchableBy(pendingCompatibleVersions)
++        pendingInstalledApkInfo = source.apk.takeIf { offersApk }?.takeIf {
++            isInstalledVersionCompatible(it.version, it.versionCode)
++        }
++    }
++
++    /** Applies the selected patch source to exact version/build compatibility checks. */
++    private fun isInstalledVersionCompatible(version: String, versionCode: Long?): Boolean {
++        val compatible = pendingCompatibleVersions.filter {
++            pendingSelectedBundleUid == null || it.bundleUid == pendingSelectedBundleUid
++        }
++        return compatible.patchableAt(version, versionCode)
+     }
+ 
+     /**
+@@ -2220,6 +2739,11 @@
+         // This ensures there is never a gap between the info dialog closing and the next screen appearing
+         dismissInstalledAppInfo()
+ 
++        showOneTapYouTubeDialog = false
++        oneTapHubUiState = oneTapHubUiState.copy(working = false, errorMessage = null)
++        automaticYouTubeSourceSelection = false
++        automaticYouTubeMode = null
++
+         onStartQuickPatch?.invoke(
+             Patcher.ViewModelParams(
+                 selectedApp = selectedApp,

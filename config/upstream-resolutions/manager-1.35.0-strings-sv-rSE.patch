@@ -1,0 +1,10 @@
+--- a/app/src/main/res/values-sv-rSE/strings.xml
++++ b/app/src/main/res/values-sv-rSE/strings.xml
+@@ -1428,4 +1428,7 @@
+     <string name="tour_prompt_confirm">Visa mig runt</string>
+     <string name="onboarding_restart_title">Funktionsgenomgång</string>
+     <string name="onboarding_restart_desc">En guidad genomgång av de grundläggande funktionerna</string>
++    <string name="settings_appearance_patch_list">Tilläggslista</string>
++    <string name="settings_appearance_patch_categories">Gruppera efter kategori</string>
++    <string name="settings_appearance_patch_categories_description">Indela tilläggslistor efter de kategorier som källor deklarerar, och lämna källor som inte deklarerar några kategorier som en vanlig lista</string>
+ </resources>

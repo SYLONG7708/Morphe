@@ -1,0 +1,62 @@
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -61,7 +61,7 @@
+ 
+     <application
+         android:name="app.morphe.manager.ManagerApplication"
+-        android:allowBackup="true"
++        android:allowBackup="false"
+         android:dataExtractionRules="@xml/data_extraction_rules"
+         android:enableOnBackInvokedCallback="true"
+         android:fullBackupContent="@xml/backup_rules"
+@@ -70,7 +70,7 @@
+         android:label="@string/app_name"
+         android:largeHeap="true"
+         android:supportsRtl="true"
+-        android:theme="@style/Theme.MorpheManager"
++        android:theme="@style/Theme.AutoPatchHub"
+         android:requestLegacyExternalStorage="true"
+         tools:targetApi="34"
+         tools:ignore="MissingTvBanner">
+@@ -89,7 +89,7 @@
+             android:exported="true"
+             android:launchMode="singleTask"
+             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
+-            android:theme="@style/Theme.MorpheManager">
++            android:theme="@style/Theme.AutoPatchHub">
+ 
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+@@ -140,6 +140,11 @@
+             </intent-filter>
+         </activity>
+ 
++        <activity
++            android:name="app.morphe.manager.license.DeviceActivationActivity"
++            android:exported="false"
++            android:theme="@style/Theme.AutoPatchHub" />
++
+         <service
+             android:name="androidx.work.impl.foreground.SystemForegroundService"
+             android:foregroundServiceType="specialUse"
+@@ -167,20 +172,6 @@
+                 tools:node="remove" />
+         </provider>
+ 
+-        <!-- Firebase Cloud Messaging - receives push notifications bypassing Doze mode -->
+-        <service
+-            android:name="app.morphe.manager.service.MorpheFcmService"
+-            android:exported="false">
+-            <intent-filter>
+-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+-            </intent-filter>
+-        </service>
+-
+-        <!-- Disable Firebase Analytics -->
+-        <meta-data
+-            android:name="firebase_analytics_collection_enabled"
+-            android:value="false" />
+-
+         <!-- Told by a mount module at boot that the mounted app was replaced -->
+         <receiver
+             android:name="app.morphe.manager.receiver.MountReplacedReceiver"

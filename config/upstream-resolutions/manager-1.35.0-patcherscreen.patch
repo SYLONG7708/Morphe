@@ -1,0 +1,114 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/PatcherScreen.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/PatcherScreen.kt
+@@ -5,6 +5,9 @@
+ 
+ package app.morphe.manager.ui.screen
+ 
++import android.app.Activity
++import android.os.Build
++import android.util.Log
+ import android.view.HapticFeedbackConstants
+ import androidx.activity.compose.BackHandler
+ import androidx.activity.compose.rememberLauncherForActivityResult
+@@ -15,10 +18,14 @@
+ import androidx.compose.animation.togetherWith
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
+ import androidx.compose.foundation.layout.statusBarsPadding
++import androidx.compose.material3.Text
++import androidx.compose.material3.TextButton
+ import androidx.compose.runtime.*
+ import androidx.compose.runtime.saveable.rememberSaveable
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.platform.LocalView
+ import androidx.compose.ui.res.stringResource
+ import androidx.lifecycle.compose.collectAsStateWithLifecycle
+@@ -40,6 +47,8 @@
+ import app.morphe.manager.ui.viewmodel.PatcherViewModel
+ import app.morphe.manager.util.APK_MIMETYPE
+ import app.morphe.manager.util.EventEffect
++import app.morphe.manager.util.RequestInstallAppsContract
++import app.morphe.manager.util.tag
+ import kotlinx.coroutines.delay
+ import kotlinx.coroutines.isActive
+ import kotlinx.coroutines.launch
+@@ -100,6 +109,7 @@
+     onDeclineTour: () -> Unit,
+     onChangePatches: () -> Unit
+ ) {
++    val context = LocalContext.current
+     val view = LocalView.current
+ 
+     val patcherSucceeded by patcherViewModel.patcherSucceeded.collectAsStateWithLifecycle()
+@@ -153,6 +163,16 @@
+     val autoInstallAfterPatching by prefs.autoInstallAfterPatching.getAsState()
+     val autoUninstallWithShizuku by prefs.autoUninstallWithShizuku.getAsState()
+     val promptInstallerOnInstall by prefs.promptInstallerOnInstall.getAsState()
++
++    val installAppsPermissionLauncher = rememberLauncherForActivityResult(
++        contract = RequestInstallAppsContract,
++        onResult = installViewModel::onInstallPermissionResult
++    )
++    LaunchedEffect(installViewModel.installPermissionRequestPending) {
++        if (installViewModel.installPermissionRequestPending) {
++            installAppsPermissionLauncher.launch(context.packageName)
++        }
++    }
+ 
+     // A build that answers to a package name of its own installs beside the app instead of
+     // updating it, so every install path waits here until the user has been told once
+@@ -245,6 +265,39 @@
+         ActivityResultContracts.CreateDocument(APK_MIMETYPE)
+     ) { uri ->
+         uri?.let { patcherViewModel.export(it) }
++    }
++    var showExportDestination by rememberSaveable { mutableStateOf(false) }
++    if (showExportDestination) {
++        AppDialog(
++            title = stringResource(R.string.save_apk_destination_title),
++            onDismissRequest = { showExportDestination = false },
++            footer = {
++                TextButton(onClick = { showExportDestination = false }) {
++                    Text(stringResource(android.R.string.cancel))
++                }
++            },
++        ) {
++            Column {
++                TextButton(
++                    modifier = Modifier.fillMaxWidth(),
++                    onClick = {
++                        showExportDestination = false
++                        patcherViewModel.exportToDownloads()
++                    },
++                ) {
++                    Text(stringResource(R.string.save_apk_to_downloads))
++                }
++                TextButton(
++                    modifier = Modifier.fillMaxWidth(),
++                    onClick = {
++                        showExportDestination = false
++                        exportApkLauncher.launch(patcherViewModel.exportFileName)
++                    },
++                ) {
++                    Text(stringResource(R.string.save_apk_choose_location))
++                }
++            }
++        }
+     }
+ 
+     // Post-patch prompts follow a successful install
+@@ -650,7 +703,11 @@
+                         onHomeClick = onBackClick,
+                         onSaveClick = {
+                             if (!isSaving) {
+-                                exportApkLauncher.launch(patcherViewModel.exportFileName)
++                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
++                                    showExportDestination = true
++                                } else {
++                                    exportApkLauncher.launch(patcherViewModel.exportFileName)
++                                }
+                             }
+                         },
+                         isSaving = isSaving

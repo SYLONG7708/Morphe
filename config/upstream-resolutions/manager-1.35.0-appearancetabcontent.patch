@@ -1,0 +1,78 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceTabContent.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceTabContent.kt
+@@ -21,6 +21,7 @@
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.geometry.Rect
+ import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.graphics.vector.ImageVector
+ import androidx.compose.ui.layout.boundsInParent
+ import androidx.compose.ui.layout.boundsInWindow
+ import androidx.compose.ui.layout.onGloballyPositioned
+@@ -76,6 +77,7 @@
+     val customAppCardColors by themeViewModel.prefs.customAppCardColors.getAsState()
+     val showAppGroupingSwitcher by homeAppButtonPrefs.showCategoryViewSwitcher.collectAsStateWithLifecycle()
+     val showSortButton by homeAppButtonPrefs.showSortButton.collectAsStateWithLifecycle()
++    val groupPatchesByCategory by themeViewModel.prefs.groupPatchesByCategory.getAsState()
+     val backgroundType by themeViewModel.prefs.backgroundType.getAsState()
+     val enableParallax by themeViewModel.prefs.enableBackgroundParallax.getAsState()
+     val randomInterval by themeViewModel.prefs.randomBackgroundInterval.getAsState()
+@@ -162,6 +164,13 @@
+             onRepatchNoticeToggle = { themeViewModel.toggleShowRepatchNotice(showRepatchNotice) },
+             onSortButtonToggle = { homeAppButtonPrefs.setShowSortButton(!showSortButton) },
+             onAppGroupingToggle = { homeAppButtonPrefs.setShowCategoryViewSwitcher(!showAppGroupingSwitcher) }
++        )
++
++        PatchListSection(
++            groupByCategory = groupPatchesByCategory,
++            onGroupByCategoryToggle = {
++                themeViewModel.toggleGroupPatchesByCategory(groupPatchesByCategory)
++            }
+         )
+     }
+ 
+@@ -259,7 +268,6 @@
+         )
+     }
+ }
+-
+ /**
+  * How the app presents itself before any styling: the language it speaks and the scale it is
+  * drawn at.
+@@ -523,3 +531,37 @@
+         )
+     }
+ }
++
++/**
++ * Patch list display options.
++ */
++@Composable
++private fun PatchListSection(
++    groupByCategory: Boolean,
++    onGroupByCategoryToggle: () -> Unit
++) {
++    SectionHeader(
++        text = stringResource(R.string.settings_appearance_patch_list),
++        icon = Icons.Outlined.Extension
++    )
++
++    SettingsGroup(modifier = Modifier.padding(bottom = Defaults.ContentPadding)) {
++        SettingsSwitchItem(
++            title = stringResource(R.string.settings_appearance_patch_categories),
++            subtitle = stringResource(R.string.settings_appearance_patch_categories_description),
++            icon = Icons.Outlined.Category,
++            checked = groupByCategory,
++            onToggle = onGroupByCategoryToggle
++        )
++    }
++}
++
++/**
++ * [SectionTitle] with the spacing every section on this tab uses.
++ */
++@Composable
++private fun SectionHeader(text: String, icon: ImageVector) {
++    Box(Modifier.padding(bottom = Defaults.ContentPadding).fillMaxWidth()) {
++        SectionTitle(text = text, icon = icon)
++    }
++}

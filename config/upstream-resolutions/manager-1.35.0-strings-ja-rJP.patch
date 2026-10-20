@@ -1,0 +1,10 @@
+--- a/app/src/main/res/values-ja-rJP/strings.xml
++++ b/app/src/main/res/values-ja-rJP/strings.xml
+@@ -1429,4 +1429,7 @@
+     <string name="tour_prompt_confirm">ガイドを開始</string>
+     <string name="onboarding_restart_title">機能ガイド</string>
+     <string name="onboarding_restart_desc">主な機能をガイド付きでご紹介します</string>
++    <string name="settings_appearance_patch_list">パッチリスト</string>
++    <string name="settings_appearance_patch_categories">カテゴリごとにグループ化</string>
++    <string name="settings_appearance_patch_categories_description">ソースが宣言するカテゴリに基づいてパッチリストをセクション分けします。カテゴリを宣言しないソースは、プレーンリストのまま表示されます。</string>
+ </resources>

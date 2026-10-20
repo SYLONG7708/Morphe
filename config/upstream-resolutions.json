@@ -12,6 +12,558 @@
       "patch": "config/upstream-resolutions/manager-1.31.1-home.patch",
       "patch_sha256": "18e5dc3f0720ffadd349d74af156b81801257d7826eb95c374293b7f81d06f12",
       "result_sha256": "19b37bdff29c38c68b7820d9a11188296fae3e119526b2a4f90e00f2c7366d14"
+    },
+    {
+      "id": "manager-1.35.0-androidmanifest",
+      "path": "app/src/main/AndroidManifest.xml",
+      "inputs": {
+        "base": "61f3b0f6ec00c33b7233fe47e762c1b45da53bafbdeed29a70600a90a4f062a7",
+        "local": "20ac942e66c047481791885f6ee951e6c56e34c3b8afb7ad33cab1793695f8ae",
+        "upstream": "ea584bfaf21204d790bc4ed894f2845cf0a0eb5517e6e7e00b560cff57530283"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-androidmanifest.patch",
+      "patch_sha256": "85861620f2b58a642e07a5f9384b1031304a6cc20ff61dea3e23fb29609fa948",
+      "result_sha256": "d557df717be0e595b8a6abfd314324422062b9e7c60c69e8d64d8afdb01468dd",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-mainactivity",
+        "manager-1.35.0-managerapplication",
+        "manager-1.35.0-managermodule",
+        "manager-1.35.0-remotepatchbundle",
+        "manager-1.35.0-patchbundlerepository",
+        "manager-1.35.0-morpheapi",
+        "manager-1.35.0-patcherworker",
+        "manager-1.35.0-patcherscreen",
+        "manager-1.35.0-patcheslistshared",
+        "manager-1.35.0-appearancetabcontent",
+        "manager-1.35.0-homeviewmodel",
+        "manager-1.35.0-pm",
+        "manager-1.35.0-updatenotificationmanager",
+        "manager-1.35.0-ic-launcher",
+        "manager-1.35.0-ic-launcher-dark-1",
+        "manager-1.35.0-ic-launcher-dark-2",
+        "manager-1.35.0-ic-launcher-dark-3",
+        "manager-1.35.0-ic-launcher-light-2",
+        "manager-1.35.0-ic-launcher-light-3",
+        "manager-1.35.0-strings-fa-rIR",
+        "manager-1.35.0-strings-hi-rIN",
+        "manager-1.35.0-strings-ja-rJP",
+        "manager-1.35.0-strings-mr-rIN",
+        "manager-1.35.0-strings-sv-rSE",
+        "manager-1.35.0-strings-uz-rUZ",
+        "manager-1.35.0-libs-versions",
+        "manager-1.35.0-settings-gradle",
+        "manager-1.35.0-launcher-branding",
+        "manager-1.35.0-verifiedyoutubesourcedownloader",
+        "manager-1.35.0-preferencesmanager",
+        "manager-1.35.0-installviewmodel",
+        "manager-1.35.0-patchgroupingtest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-mainactivity",
+      "path": "app/src/main/java/app/morphe/manager/MainActivity.kt",
+      "inputs": {
+        "base": "fc2669a57b12047cad30efa50f0a55190c06459ae953df3133de9c2af99f0068",
+        "local": "eb14cb61207010b24c16bc37c8b3661af7a72a016c6fcc3785f21100c0e1689c",
+        "upstream": "3621a221b5b22cc814c4a92c30c373905f9248fa480671f782804b6e046b8ebe"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-mainactivity.patch",
+      "patch_sha256": "b144a0da3b4a8eabcc8a46ef9744d464eff7d390ce810ee1f4b97e8079c342eb",
+      "result_sha256": "389f18e2d4df8215dee1df52e97147af982d5df075f7a13b6eb6d602a20715f5",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-managerapplication",
+      "path": "app/src/main/java/app/morphe/manager/ManagerApplication.kt",
+      "inputs": {
+        "base": "36619a6c1b0045b5c418d1528f22adb08b71478e54839500903c79447a20d523",
+        "local": "cd58eb62be0caa6042be5f48920f92bf7f303a19925fe0819adcb2ae6b79b33d",
+        "upstream": "a0e650110aa490ff7ba0a23f825bbe1d1ef023ef2d9e83823462f39772aa833b"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-managerapplication.patch",
+      "patch_sha256": "a4f0c219f8c4f1d7ac3e02074c92f5a94ffef3b06a55bdfa4726f796bb4457b4",
+      "result_sha256": "f0dd3ff0e7eceec0be6295b12ff54db32993224e83187e43f1f68ab0b128c732",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-managermodule",
+      "path": "app/src/main/java/app/morphe/manager/di/ManagerModule.kt",
+      "inputs": {
+        "base": "ad3ddc049fabf8d6a9a028d75e00fca63d2d46299b7b27a7241111577a038f60",
+        "local": "41bc1a45b6d8801a79c332249bb1fae39321f0998e4fc2bf1bff6b4e83b288df",
+        "upstream": "4a455d0d5df22e2c0c8f50f4373745b9000cefea1915240f90bc584cafaab1d0"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-managermodule.patch",
+      "patch_sha256": "3e19f76b47ebd1a04acd4ca3ed3e45dfc8af98a40fbb4e766fe29e5ec9c3ab79",
+      "result_sha256": "e3d52915fd206dfa0f9aa9c86a2a0bb5b5a6f5bd8a63970e1f3895cb7eab64a3",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-remotepatchbundle",
+      "path": "app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt",
+      "inputs": {
+        "base": "d496526f538e49598c03867c348d47b7c7976c877046e0831503e1be74281dde",
+        "local": "9e70cc02193a99dc1a54b10e16991eaef554c11cc6a07292e84cf10156e10b6a",
+        "upstream": "394d787f24b2b479f1434cdae291e4e948ba82c5454802114937ff72afbd7961"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-remotepatchbundle.patch",
+      "patch_sha256": "69a8570995cf3733f9ea4db62eed8059afbf064f89c374bf938fb3f545d31c73",
+      "result_sha256": "9f93d7ad18b9412f72808caac7c9e87e9ba1c851444cfe2f6b1026b201c08bc0",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-patchbundlerepository",
+      "path": "app/src/main/java/app/morphe/manager/domain/repository/PatchBundleRepository.kt",
+      "inputs": {
+        "base": "db04bad5859021897bd47bdb1b3cb16fd4ac1ec5a230fea6554fb6bcc0531b4d",
+        "local": "55ee6840d3c1e3bbcc43ae959ef88a2de0b8c62b2ef12834081dd58ee1711523",
+        "upstream": "85d8e9dfe2e19ab206112e3abfaa428481430e13a54257e0650ab5ff4bc59f49"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-patchbundlerepository.patch",
+      "patch_sha256": "a75345c8a38cd44dc36409c2c0158d84a7b34b57149fa5e0d6e1219c6ade0fd0",
+      "result_sha256": "642396a1b72e3ab9421cc1021122144ded9c3858e71065afdeca0b343c3fa7b9",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-morpheapi",
+      "path": "app/src/main/java/app/morphe/manager/network/api/MorpheAPI.kt",
+      "inputs": {
+        "base": "886fbbbf0b8507c52ecfae8631ec28f5b919516355d6169615ffb6e32327877e",
+        "local": "64cdb276e25633d72d8319fdf0a955387580f8b1783d4b08de5d3557d04ef92d",
+        "upstream": "e1ea5d2de34728eefc90b004a54f1db12098f0ca90d107b85ce7a495fed41b09"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-morpheapi.patch",
+      "patch_sha256": "0d155a108c0271362e7d89137c0719eb165ce17a95737e6aefb1d6c6ccac45e0",
+      "result_sha256": "08590e1fa8afd59e8bf1bcd5935f965e71fd7e23dc0459805e59760c3a906e17",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-patcherworker",
+      "path": "app/src/main/java/app/morphe/manager/patcher/worker/PatcherWorker.kt",
+      "inputs": {
+        "base": "e343711cf803bac4a1720e84f3bd89cef9d3814e8f563c1dee27d9f142a1e4a4",
+        "local": "f99ab91a12731e7484ab752b2899e95fae1e0f56e462ed0bc8a4a08abd30765c",
+        "upstream": "ad7516cf89a0dd0f3893ff8b3cadd03c842bbac563fbe3dbbda65d7c029a3b94"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-patcherworker.patch",
+      "patch_sha256": "af6f430a5df1344871ea4158fead437304383d4535123f9bb9ea2af8efbcfdc4",
+      "result_sha256": "e5b728b13210cc56da6063157439f5a5ffa6e0c43ef5fd1e04724d8b78ad7371",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-patcherscreen",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/PatcherScreen.kt",
+      "inputs": {
+        "base": "cde32a24f6994f883b40c35b88d5627e55376003675bb3401ddf7a779bca6713",
+        "local": "934f656446273f3294bb36b4e61f61f6c56713589003df21cd162695e64123bd",
+        "upstream": "bb85d78aff2419a654177bf76bb5b4e887ac08fd97d50106fb1f01ef30a709e8"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-patcherscreen.patch",
+      "patch_sha256": "3721beb69328680e8797924f40f3abd89f2e8e909b2234e533226664e5fe1d2e",
+      "result_sha256": "a8ed44bb29ea93173cc88af7a18f9fd127c039a4897c9bba777e8d5a86f71e1c",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-patcheslistshared",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/home/PatchesListShared.kt",
+      "inputs": {
+        "base": "a129c980089839f51c95997d6b16769eb914d5caf52abe69112039cc7268049e",
+        "local": "fbc371e0aa3492c4d7604aa96c8ea871ff87b8946d6722061a93d31c62e496aa",
+        "upstream": "603cd7972cdf908d1917240387f6259d86f3b062826e9afaf52ca2e8cbb921af"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-patcheslistshared.patch",
+      "patch_sha256": "361e01c1d1f9846ce26be614ae9d4c9a4fc145aca952cd53dcccefb7c4ed5832",
+      "result_sha256": "c1996384576a7078d4657747ec23bac71d81034aaa4288944775db1e541df085",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-appearancetabcontent",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceTabContent.kt",
+      "inputs": {
+        "base": "fb12f6227e16ac253d1b7060aba21831c99ef2d63dba9a38051c0a19840c9e89",
+        "local": "45ac3d9c88e2e0f62787edaf36be5e437608132fb4cd9601bb428dce6a3bc7cd",
+        "upstream": "50d269f8f75c91afea6a32d543c56770a3fd8cb83b85b16c0eaeb5fa797b5928"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-appearancetabcontent.patch",
+      "patch_sha256": "a12ee3baacc8658e5b6423ecd54136a572bbd770ae27540dfb96df9c23cf79ca",
+      "result_sha256": "1666bb4213f7cf305e904d1aa3df72ca7a81760b5c292122335cfd638f2484ee",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-homeviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt",
+      "inputs": {
+        "base": "ac179ff7a68bb474aacc1f90f95db7d7a22bccb3f14659a081284b3022d4fe4f",
+        "local": "9afdf85e39bd6869c96da6f06734404b488497ff963c105d59fb98a2baf22a0b",
+        "upstream": "4c811bf85fef0e3cc94efd2fd3c9f25e434e0fdc30b533919cc39fcab5aa6c89"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-homeviewmodel.patch",
+      "patch_sha256": "d7746e3a96f7912cc3c30f7a614268ef62607c546ccfb44d16a345d7263c6b86",
+      "result_sha256": "49af9e8c0c737b1db4c6dcc9ff155ff7aa1496e2d584949130e5d90386f9a2d7",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-pm",
+      "path": "app/src/main/java/app/morphe/manager/util/PM.kt",
+      "inputs": {
+        "base": "aedbb9c82ce9d3287255114a6437e867627000f7d1ab8a66fb99befae01c4968",
+        "local": "e029ab8f8b685b7abcd1dbdcbbe340d89ce32d888da24b5feebdb2cded178456",
+        "upstream": "43b161a260eb8fe9437de5254c5f532d60a3828257067f894cab8861edb89624"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-pm.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "43b161a260eb8fe9437de5254c5f532d60a3828257067f894cab8861edb89624",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-updatenotificationmanager",
+      "path": "app/src/main/java/app/morphe/manager/util/UpdateNotificationManager.kt",
+      "inputs": {
+        "base": "3a748382b2935546b5e33d1b156d03d064d19e6438075d7080106630b7141dd3",
+        "local": "8c748b3f68fd1f15e5455669cbbf282b1ba8046f14a358542f28a4a34f7f5e82",
+        "upstream": "8553f12961d76ca9b4859badee0a4c4d7d23b564c88ce87d1cc6f56c82f85e9f"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-updatenotificationmanager.patch",
+      "patch_sha256": "71490b89f9193cc94508eb4116688715f2e7fefea523658c8893f8a4ea594351",
+      "result_sha256": "d6c4b6c97a5ff889270081d1bd0e465e0ade61f447b7d01c679741c0c122688e",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-ic-launcher",
+      "path": "app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "inputs": {
+        "base": "6d0988175971f41bdc83eadb144af3d84c40052fa125e90edbe7d89227be4b25",
+        "local": "2cbccf652d038b0c14c52d56cd0b8b20fbf797cc0d9001bb2798314af61e5503",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-ic-launcher.patch",
+      "patch_sha256": "6ac3bc2f224784b0fb30c1ac3acb662d47175f94413c369a4f5610021257f68d",
+      "result_sha256": null,
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-ic-launcher-dark-1",
+      "path": "app/src/main/res/mipmap-anydpi-v26/ic_launcher_dark_1.xml",
+      "inputs": {
+        "base": "2a57746d3af24fba4a3f174c211535fcbf30a72c3ff3d25c31378a0a0f1e5bf0",
+        "local": "d9cced2fd525b2e225728e277aa08f94d4077c6c2b6d16415270b516c56ec055",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-ic-launcher-dark-1.patch",
+      "patch_sha256": "ff390708f657332f849839b0d96aa81a4d2bbbac8c4b33a91adeb7e8b51ad1a5",
+      "result_sha256": null,
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-ic-launcher-dark-2",
+      "path": "app/src/main/res/mipmap-anydpi-v26/ic_launcher_dark_2.xml",
+      "inputs": {
+        "base": "a7a63679d2475aa302129b0630bfa9e38638170e935f9c1f91a3c88e889d64f4",
+        "local": "bf2ca5464378daa69a7f1dfca2ebd99cdcbdcfea3e9d80bf1affb42e4b2920eb",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-ic-launcher-dark-2.patch",
+      "patch_sha256": "0283e4b62ee0b86300a07e3e5934945f3d2d030274c11ad5a87d239f78fd524b",
+      "result_sha256": null,
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-ic-launcher-dark-3",
+      "path": "app/src/main/res/mipmap-anydpi-v26/ic_launcher_dark_3.xml",
+      "inputs": {
+        "base": "a42b1539485fc00d9e43a948f7b4161365a6ed844742cdbb0da056386d87af4b",
+        "local": "aa611c22e42fc7716e6b0d07dbd0e4722e7e5c9589472bc45a154cacd28efb98",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-ic-launcher-dark-3.patch",
+      "patch_sha256": "2ea9cd5eca78ba455187229c4ce7d70af5c3abd176a317927e92255a1eb9ab61",
+      "result_sha256": null,
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-ic-launcher-light-2",
+      "path": "app/src/main/res/mipmap-anydpi-v26/ic_launcher_light_2.xml",
+      "inputs": {
+        "base": "62de69c58cd874b5c26da9894f979c828d75246ef7838ca1a6bbbe29ee199f65",
+        "local": "e8094ee5b059b9236b59435c5cbd1a1ca0838045574e856b46fca24de8748e16",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-ic-launcher-light-2.patch",
+      "patch_sha256": "c70e93af6e7a2bcdfa0f396c7983cc50eaf9a05e3a6decd9f840821ef88862c0",
+      "result_sha256": null,
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-ic-launcher-light-3",
+      "path": "app/src/main/res/mipmap-anydpi-v26/ic_launcher_light_3.xml",
+      "inputs": {
+        "base": "7161cf9e0ff14314d460bb9ec0170b9955f73f016518b3ae6f4a313e042c724a",
+        "local": "ae5a35e46c44e2398b83511232b92ca2bc7ae545b8ada920b25229e81d8b54fa",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-ic-launcher-light-3.patch",
+      "patch_sha256": "c9e6eb4a0a720a7eefde36e21707af140910f8eb8963589f5efc44406104d61a",
+      "result_sha256": null,
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-strings-fa-rIR",
+      "path": "app/src/main/res/values-fa-rIR/strings.xml",
+      "inputs": {
+        "base": "e9bf564ff82262b5ab94770d6d940b00964ccf7c4abf8bbe9024507abfd133b2",
+        "local": "12a59113e2752c6a7bb97a31c95051b6bd24841666eef95482cd68858dda6c30",
+        "upstream": "fb2d2916252db93cef5f0590ba510e2eaea22fea0676a228e041866a6d0fa8d0"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-strings-fa-rIR.patch",
+      "patch_sha256": "5d3eac52c749bf0d3dccfcf0408f268573f7caf6714381db329beb8a8313a7bf",
+      "result_sha256": "0a46c2fd3a2aa6e8f0f3d567bb3632f3db102b01c0b60a8d88dbe96a642f64fc",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-strings-hi-rIN",
+      "path": "app/src/main/res/values-hi-rIN/strings.xml",
+      "inputs": {
+        "base": "09a32a4ef93cef7b1c186fb33e092d410b5d3163ab92c57d56676676b074268d",
+        "local": "e351ab30c5b686e958b1e5d309797c95fc480a8c1f2345e4acd250f94a8528e5",
+        "upstream": "d62f0614c154c5d27f181dd1eac78aef02aef43c494edf4cdd206de5933ca267"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-strings-hi-rIN.patch",
+      "patch_sha256": "127ba11a9e8df12e942d8431b1156ceb79e2dd2a64e141e032e795b31a9f8bec",
+      "result_sha256": "89bcfcea12676fb07c59d60fedbd60ce704f5e8b1562ae180921d8dfe7ccb003",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-strings-ja-rJP",
+      "path": "app/src/main/res/values-ja-rJP/strings.xml",
+      "inputs": {
+        "base": "33ced75972f40f3f7170f2a4e9a811a9626f7d8907e1fa7a0e05544e6db229fc",
+        "local": "3d48edbd593ee9ccf708fa6a98401c90c57e1af0e863afbfb37a443e8b067266",
+        "upstream": "b892ed2e3ce32e8e275b8548b7043a79e41986f7a44293c985256d1729936d33"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-strings-ja-rJP.patch",
+      "patch_sha256": "9acb36428a44ff07806cbfaeace88b9420a5eae6257a5a35f9ffcb0dd7c15c27",
+      "result_sha256": "bb292f0a15c52560ae69ca7828387280e9affbb49b7153f4208978a75a68a52c",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-strings-mr-rIN",
+      "path": "app/src/main/res/values-mr-rIN/strings.xml",
+      "inputs": {
+        "base": "73a8a376c7fcb06d1f66d5081f14f23188cb76c93c10dbcc1616bc12e1333568",
+        "local": "4c0149840298cec151111de3584ea1536a629004d9f0d6bf448b919061e97520",
+        "upstream": "845a1b4bdaf3f422e92e0c39ebeef693f8816e0368ac073e8793034b24610dff"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-strings-mr-rIN.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "845a1b4bdaf3f422e92e0c39ebeef693f8816e0368ac073e8793034b24610dff",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-strings-sv-rSE",
+      "path": "app/src/main/res/values-sv-rSE/strings.xml",
+      "inputs": {
+        "base": "2f8dcdbf186139e31472a6a519cfe6661dc4d113b5d09fdd081839f5ac6d53b1",
+        "local": "0665db4ecd9d8f23c68cc23153f3fbef0ebe911a6b09fba14b6d6da6fb6a98c4",
+        "upstream": "e384236b010d131ea13a5c70c5ddeae188941a58b18df714597aa32d8444246b"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-strings-sv-rSE.patch",
+      "patch_sha256": "f70755793541b818de469596002d1f9b59731aa3c1541967ed7c0cbd1ff617b2",
+      "result_sha256": "1c21ed00e921373c43dc9a16d4ac3eee786d4721f36d693acbe0a0ca5eab6f9f",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-strings-uz-rUZ",
+      "path": "app/src/main/res/values-uz-rUZ/strings.xml",
+      "inputs": {
+        "base": "8aadce355ce14dfb4d59bb30458195273cb959e219fbd41af2b8c019209fafae",
+        "local": "55de8018b4a49706a2168d65e410b22320602926d60057e63fcdec9ffb44a74d",
+        "upstream": "cb60e68a75f2cb549692166210dd44e97cd630d702a773457ff54784ed33bebe"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-strings-uz-rUZ.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "cb60e68a75f2cb549692166210dd44e97cd630d702a773457ff54784ed33bebe",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-libs-versions",
+      "path": "gradle/libs.versions.toml",
+      "inputs": {
+        "base": "34c7f16c1bf0fc46975db7b951a9d1d060c672a6c26f5c9869d4bae2c64ac199",
+        "local": "196242412046fc6dc64c2d5b07e163057d42f4bf64f803b0e5b38b8b9bd3436c",
+        "upstream": "97aaa29138804e0a01fce89316ba61cee95d2dffa2d0f7063f3bf62a461c375e"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-libs-versions.patch",
+      "patch_sha256": "e667b0ffd89294d0836c67c32442a333b144a196ae9e3ee9250c4c641f44a386",
+      "result_sha256": "a1fe625331c7ee45d4d1459514b4fd96794ed18b1addc3edb5c8bfa41ee72522",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-settings-gradle",
+      "path": "settings.gradle.kts",
+      "inputs": {
+        "base": "930bc48ef88fa91bf10bf186b7d85f90d524af1c8467b21101780b09fc0e2271",
+        "local": "3c4d7df19339446dbe12c14d2db7416823898a9b8a111b9d6d0078224a79644a",
+        "upstream": "e3cbcdd58a014eaa4e2c68ab6bbdabb4023fc38f98cf2a4a192307f095b3cbfe"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-settings-gradle.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "3c4d7df19339446dbe12c14d2db7416823898a9b8a111b9d6d0078224a79644a",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-launcher-branding",
+      "path": "app/build.gradle.kts",
+      "inputs": {
+        "base": "199849df7939822f0d63238b1b63b8001b4c089f4500510817c96db305bcc67c",
+        "local": "d782e50bc6aa10a9c083d4ca3d662e8f7f884a2201a17ffecce643afca66643a",
+        "upstream": "69e4e282945cdec1330f78b4e167adacbb1b3d7c92a4166ba58caae1033ceedb",
+        "merged": "1aafb69b715a503c79e2694794c65fc0d7e60fdc345d8129256ac16cd950ea5a"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-launcher-branding.patch",
+      "patch_sha256": "b9815f70021499be380efff0ed15d7371916ddc583378b6699978efc2d4d09de",
+      "result_sha256": "6121b4ce50d373e3dba6638d3e3a11413340af3d57f9f3152733af3dad67f468",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-verifiedyoutubesourcedownloader",
+      "path": "app/src/main/java/app/morphe/manager/domain/update/VerifiedYouTubeSourceDownloader.kt",
+      "inputs": {
+        "base": null,
+        "local": "99f84f3965c4dad6efbf55ab0b8fedcc2c3b5866b3c98e462e18c31a1df2e54a",
+        "upstream": null,
+        "merged": "99f84f3965c4dad6efbf55ab0b8fedcc2c3b5866b3c98e462e18c31a1df2e54a"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-verifiedyoutubesourcedownloader.patch",
+      "patch_sha256": "fbca9003909ab4a89f45426aa19ac308a9dec9be99aa1fded68f3d31bdccbd18",
+      "result_sha256": "6399ef40b8174ae04f2b3018cece5f2de220751d55c459d981c461fb64253530",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-preferencesmanager",
+      "path": "app/src/main/java/app/morphe/manager/domain/manager/PreferencesManager.kt",
+      "inputs": {
+        "base": "da375b362ff0be7d8f27f958db98e587d4faa5d5160d5fd202e02d68ff84e9a2",
+        "local": "c7ff4d91532ecff56826a095f5ae7ccdc41cf84a6c91603c5afc9e68fba85d22",
+        "upstream": "7865618859af3ba4e273f3f7efab94189e845d35ae9c65b89d31b06056ba99ec",
+        "merged": "0b3a2de478352ed19f89bc1287e699235f37733b490802be613d2dde18f21909"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-preferencesmanager.patch",
+      "patch_sha256": "c90e4c877d6389ead677209181d52f751ee65ff1ca12bb88ba2718ed0549c92a",
+      "result_sha256": "5bf495ef1bb0369347032b3b05a893eef9c21e6a10bb7978856a4e35e844c131",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-installviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/InstallViewModel.kt",
+      "inputs": {
+        "base": "49ec03db2a2cc1e9216148897d8b0035d2b5c9d76b8a51fb6ba236e2abc0fdcb",
+        "local": "4884c7aa9906e7c4d8012799d8af907276fe32b4daa49ea0c24ba6480bd80526",
+        "upstream": "31b8f2786c89adae13d6aa579f27af09aa683526002714ff3c7d7e5b47710d9c",
+        "merged": "50a1cfd8c839b56c3a70c278c9e719e8e963792f2712c2e6303170da27b0b192"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-installviewmodel.patch",
+      "patch_sha256": "04cd27978d454dea2ea451c567639a0e45e3d853f29e0c1a54bb200ef76ee4d0",
+      "result_sha256": "e715a3641b9b447cdc1c4899b4d4646c5393986589078d0f3e8020f243643368",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
+    },
+    {
+      "id": "manager-1.35.0-patchgroupingtest",
+      "path": "app/src/test/java/app/morphe/manager/ui/screen/home/PatchGroupingTest.kt",
+      "inputs": {
+        "base": "9057eae32369ded9a739f2df3ca161834931d3318b114098b5f9a798db7f9cae",
+        "local": "9057eae32369ded9a739f2df3ca161834931d3318b114098b5f9a798db7f9cae",
+        "upstream": "eddee6c466dbf357f3679ee026b0418d1f0e047aeb77093f238f43e2036b8fb4",
+        "merged": "eddee6c466dbf357f3679ee026b0418d1f0e047aeb77093f238f43e2036b8fb4"
+      },
+      "patch": "config/upstream-resolutions/manager-1.35.0-patchgroupingtest.patch",
+      "patch_sha256": "e1b498d70c1a146cebfe2ee47cb9ebff55a135116e3dce60f8b82d9783c9a799",
+      "result_sha256": "9057eae32369ded9a739f2df3ca161834931d3318b114098b5f9a798db7f9cae",
+      "requires": [
+        "manager-1.35.0-androidmanifest"
+      ]
     }
   ]
 }

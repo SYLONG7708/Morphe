@@ -1,0 +1,11 @@
+--- a/app/src/main/java/app/morphe/manager/ui/viewmodel/InstallViewModel.kt
++++ b/app/src/main/java/app/morphe/manager/ui/viewmodel/InstallViewModel.kt
+@@ -506,7 +506,7 @@
+         }
+ 
+         viewModelScope.launch {
+-            installState = InstallState.Installing
++            installState = InstallState.Installing()
+             try {
+                 performStandardInstall(file, originalPackageName, onPersistApp)
+             } catch (e: Exception) {

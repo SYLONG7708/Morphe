@@ -1,0 +1,11 @@
+--- a/app/src/main/java/app/morphe/manager/domain/manager/PreferencesManager.kt
++++ b/app/src/main/java/app/morphe/manager/domain/manager/PreferencesManager.kt
+@@ -172,7 +172,7 @@
+     val automaticEcosystemUpdates = booleanPreference("automatic_ecosystem_updates", true)
+     /** Highest signed manifest sequence accepted; prevents replaying an older release. */
+     val lastAcceptedManifestSequence =
+-        LongPreference(dataStore, "last_accepted_manifest_sequence", 0L)
++        longPreference("last_accepted_manifest_sequence", 0L)
+     val firstLaunch = booleanPreference("first_launch", true)
+ 
+     val installationTime = longPreference("manager_installation_time", 0L)

@@ -1,0 +1,130 @@
+--- a/app/src/main/java/app/morphe/manager/ManagerApplication.kt
++++ b/app/src/main/java/app/morphe/manager/ManagerApplication.kt
+@@ -33,14 +33,14 @@
+ import app.morphe.manager.domain.repository.BlocklistRepository
+ import app.morphe.manager.domain.repository.InstalledAppRepository
+ import app.morphe.manager.domain.repository.PatchBundleRepository
++import app.morphe.manager.domain.update.BundledEcosystemProvisioner
++import app.morphe.manager.license.DeviceLicenseManager
+ import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
+ import app.morphe.manager.ui.screen.shared.AppIconPixels
+ import app.morphe.manager.util.*
+ import app.morphe.manager.worker.UpdateCheckWorker
+ import coil.Coil
+ import coil.ImageLoader
+-import com.google.android.gms.common.ConnectionResult
+-import com.google.android.gms.common.GoogleApiAvailability
+ import com.topjohnwu.superuser.Shell
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.MainScope
+@@ -95,8 +95,10 @@
+         private const val LEGACY_AUTO_PATCH_WORK = "morphe_auto_patch"
+     }
+     private val scope = MainScope()
++    private val licensedRuntimeGate = LicensedRuntimeGate()
+     private val prefs: PreferencesManager by inject()
+     private val patchBundleRepository: PatchBundleRepository by inject()
++    private val bundledEcosystemProvisioner: BundledEcosystemProvisioner by inject()
+     private val blocklistRepository: BlocklistRepository by inject()
+     private val fs: Filesystem by inject()
+     private val updateNotificationManager: UpdateNotificationManager by inject()
+@@ -108,6 +110,11 @@
+ 
+     override fun onCreate() {
+         super.onCreate()
++
++        if (!AppIntegrity.isAuthentic(this)) {
++            Log.e(tag, "SyMorphe signing certificate verification failed")
++            throw SecurityException("SyMorphe installation integrity verification failed")
++        }
+ 
+         startKoin {
+             androidContext(this@ManagerApplication)
+@@ -150,6 +157,23 @@
+ 
+         observeLanguage()
+         observeLauncherShortcuts()
++        registerActivityTracking()
++
++        if (!DeviceLicenseManager.isLicensed(this)) {
++            UpdateCheckWorker.cancel(this)
++            Log.i(tag, "SyMorphe is waiting for device-bound owner authorization")
++        } else {
++            onDeviceLicenseAvailable()
++        }
++    }
++
++    /** Starts all network and patching services immediately after an in-process activation. */
++    fun onDeviceLicenseAvailable() {
++        if (!DeviceLicenseManager.isLicensed(this)) return
++        licensedRuntimeGate.start(::startLicensedRuntime)
++    }
++
++    private fun startLicensedRuntime() {
+ 
+         // Preload preferences and kick off background worker/FCM sync
+         scope.launch {
+@@ -159,22 +183,15 @@
+             // can tell whose it is, so this data starts without one and the user enters theirs
+             if (fs.isFirstRunForThisData) prefs.gitHubPat.update("")
+ 
+-            // Schedule/cancel WorkManager fallback AND sync FCM topic subscriptions.
+-            // FCM is the primary delivery path (bypasses Doze); WorkManager is the fallback
+-            // for non-GMS devices. syncFcmTopics() subscribes to the correct stable/dev
+-            // topics based on user preferences, or unsubscribes from all when disabled.
++            // Use WorkManager on every device; no private Firebase configuration is required.
+             val notificationsEnabled = prefs.backgroundUpdateNotifications.get()
++            val automaticUpdatesEnabled = prefs.automaticEcosystemUpdates.get()
+             val useManagerPrereleases = prefs.useManagerPrereleases.get()
+-            // Patches FCM topic is determined by the default bundle (uid=0) prerelease toggle
+-            val usePatchesPrereleases = prefs.bundlePrereleasesEnabled.get().contains(DEFAULT_SOURCE_UID.toString())
+-
+-            // On GMS devices FCM is the primary delivery channel - WorkManager is not needed.
+-            // Cancel any previously scheduled jobs on GMS devices
+-            val hasGms = GoogleApiAvailability.getInstance()
+-                .isGooglePlayServicesAvailable(this@ManagerApplication) == ConnectionResult.SUCCESS
+-
+-            if (notificationsEnabled && !hasGms) {
++            val usePatchesPrereleases = prefs.bundlePrereleasesEnabled.get()
++                .contains(PatchBundleRepository.DEFAULT_SOURCE_UID.toString())
++            if (notificationsEnabled || automaticUpdatesEnabled) {
+                 UpdateCheckWorker.schedule(this@ManagerApplication, prefs.updateCheckInterval.get())
++                UpdateCheckWorker.runNow(this@ManagerApplication)
+             } else {
+                 UpdateCheckWorker.cancel(this@ManagerApplication)
+             }
+@@ -189,7 +206,15 @@
+         // First touch of the repository builds the Ktor client, which costs seconds on a cold
+         // start, so it happens here on a background dispatcher rather than in the Koin graph
+         scope.launch(Dispatchers.Default) {
+-            patchBundleRepository.reload()
++            with(patchBundleRepository) {
++                reload()
++                if (BuildConfig.BUNDLED_ECOSYSTEM_ENABLED) {
++                    runCatching { bundledEcosystemProvisioner.provision() }
++                        .onFailure { error ->
++                            Log.e(tag, "Bundled UIS7870 ecosystem provisioning failed", error)
++                        }
++                }
++            }
+         }
+ 
+         // Cache first for offline launches, then refresh from the network. Any matches are
+@@ -201,6 +226,9 @@
+             patchBundleRepository.logBlockedSources()
+         }
+ 
++    }
++
++    private fun registerActivityTracking() {
+         // Fresh-start cleanup and the work that waits for a screen
+         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+             private var firstActivityCreated = false
+@@ -376,6 +404,7 @@
+      * broadcast has nobody to show an update check to, and its failures toast over another app.
+      */
+     private fun onFirstScreenCreated() {
++        if (!DeviceLicenseManager.isLicensed(this)) return
+         scope.launch(Dispatchers.Default) {
+             patchBundleRepository.updateCheck()
+         }

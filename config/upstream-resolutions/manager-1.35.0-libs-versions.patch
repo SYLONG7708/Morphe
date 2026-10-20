@@ -1,0 +1,10 @@
+--- a/gradle/libs.versions.toml
++++ b/gradle/libs.versions.toml
+@@ -79,6 +79,7 @@
+ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room-version" }
+ 
+ # Patcher
++apksig = { group = "com.android.tools.build", name = "apksig", version.ref = "android-gradle-plugin" }
+ arsclib = { module = "com.github.MorpheApp:ARSCLib", version.ref = "arsclib" }
+ morphe-patcher = { group = "app.morphe", name = "morphe-patcher", version.ref = "morphe-patcher" }
+ morphe-library = { group = "app.morphe", name = "morphe-library", version.ref = "morphe-library" }

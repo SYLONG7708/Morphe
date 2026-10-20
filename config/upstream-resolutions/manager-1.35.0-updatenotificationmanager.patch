@@ -1,0 +1,164 @@
+--- a/app/src/main/java/app/morphe/manager/util/UpdateNotificationManager.kt
++++ b/app/src/main/java/app/morphe/manager/util/UpdateNotificationManager.kt
+@@ -18,7 +18,7 @@
+ import app.morphe.manager.patcher.worker.PatcherWorker
+ 
+ /**
+- * Manages Android system notifications for Morphe Manager update events.
++ * Manages Android system notifications for SyMorphe ecosystem updates.
+  *
+  * Manager and patch updates post on channels of their own, [CHANNEL_MANAGER_UPDATES] and
+  * [CHANNEL_PATCH_UPDATES] (both IMPORTANCE_HIGH), so either can be muted in system settings
+@@ -105,7 +105,7 @@
+                     R.string.batch_patch_summary,
+                     patched.toString(),
+                     failed.toString(),
+-                    skipped.toString()
++                    skipped.toString(),
+                 )
+             )
+             .setPriority(NotificationCompat.PRIORITY_LOW)
+@@ -147,7 +147,8 @@
+             else
+                 context.getString(R.string.home_update_available),
+             notificationId = NOTIFICATION_ID_MANAGER_UPDATE,
+-            action = NotificationCompat.Action.Builder(
++            openAction = ACTION_MANAGER,
++            notificationAction = NotificationCompat.Action.Builder(
+                 R.drawable.ic_notification,
+                 context.getString(R.string.whats_new),
+                 buildManagerChangelogIntent()
+@@ -174,11 +175,38 @@
+             else
+                 context.getString(R.string.notification_bundle_update_text_unversioned),
+             notificationId = NOTIFICATION_ID_BUNDLE_UPDATE,
+-            action = NotificationCompat.Action.Builder(
++            openAction = ACTION_YOUTUBE,
++            notificationAction = NotificationCompat.Action.Builder(
+                 R.drawable.ic_notification,
+                 context.getString(R.string.whats_new),
+                 buildBundleChangelogIntent(bundleUid)
+-            ).build()
++            ).build(),
++        )
++    }
++
++    fun showYouTubeUpdateNotification(version: String? = null) {
++        postNotification(
++            channelId = CHANNEL_PATCH_UPDATES,
++            title = context.getString(R.string.notification_youtube_update_title),
++            contentText = if (!version.isNullOrBlank())
++                context.getString(R.string.notification_update_text, version)
++            else
++                context.getString(R.string.notification_youtube_update_text),
++            notificationId = NOTIFICATION_ID_YOUTUBE_UPDATE,
++            openAction = ACTION_YOUTUBE,
++        )
++    }
++
++    fun showMicroGUpdateNotification(version: String? = null) {
++        postNotification(
++            channelId = CHANNEL_PATCH_UPDATES,
++            title = context.getString(R.string.notification_microg_update_title),
++            contentText = if (!version.isNullOrBlank())
++                context.getString(R.string.notification_update_text, version)
++            else
++                context.getString(R.string.notification_microg_update_text),
++            notificationId = NOTIFICATION_ID_MICROG_UPDATE,
++            openAction = ACTION_MICROG,
+         )
+     }
+ 
+@@ -227,9 +255,10 @@
+         title: String,
+         contentText: String,
+         notificationId: Int,
+-        action: NotificationCompat.Action? = null,
++        openAction: String? = null,
++        notificationAction: NotificationCompat.Action? = null,
+         tag: String? = null,
+-        contentIntent: PendingIntent = buildOpenAppIntent()
++        contentIntent: PendingIntent = buildOpenAppIntent(openAction, notificationId),
+     ) {
+         val notification = NotificationCompat.Builder(context, channelId)
+             .setSmallIcon(R.drawable.ic_notification)
+@@ -239,7 +268,7 @@
+             .setPriority(NotificationCompat.PRIORITY_HIGH)
+             .setContentIntent(contentIntent)
+             .setAutoCancel(true)
+-            .apply { action?.let { addAction(it) } }
++            .apply { notificationAction?.let { addAction(it) } }
+             .build()
+ 
+         notificationManager.notify(tag, notificationId, notification)
+@@ -269,19 +298,16 @@
+      * The [EXTRA_TRIGGER_UPDATE_CHECK] extra is picked up by [MainActivity] via
+      * [app.morphe.manager.ui.viewmodel.MainViewModel.pendingUpdateCheck].
+      */
+-    private fun buildOpenAppIntent() =
+-        buildActivityIntent(REQUEST_CODE_UPDATE_CHECK) {
+-            putExtra(EXTRA_TRIGGER_UPDATE_CHECK, true)
+-        }
+-
+-    /**
+-     * Wraps an intent onto [MainActivity] as a [PendingIntent] under [requestCode], which has to
+-     * be unique per target: a shared one would rewrite the intent of every notification using it.
+-     */
+-    private fun buildActivityIntent(requestCode: Int, configure: Intent.() -> Unit): PendingIntent {
++    private fun buildOpenAppIntent(
++        action: String? = null,
++        requestCode: Int = REQUEST_CODE_UPDATE_CHECK,
++        triggerUpdateCheck: Boolean = true,
++    ): PendingIntent {
+         val intent = Intent(context, MainActivity::class.java).apply {
+             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+-            configure()
++            if (triggerUpdateCheck) putExtra(EXTRA_TRIGGER_UPDATE_CHECK, true)
++            action?.let { putExtra(EXTRA_UPDATE_ACTION, it) }
++
+         }
+         @SuppressLint("WrongConstant")
+         return PendingIntent.getActivity(
+@@ -292,6 +318,24 @@
+         )
+     }
+ 
++    /**
++     * Wraps an intent onto [MainActivity] as a [PendingIntent] under [requestCode], which has to
++     * be unique per target: a shared one would rewrite the intent of every notification using it.
++     */
++    private fun buildActivityIntent(requestCode: Int, configure: Intent.() -> Unit): PendingIntent {
++        val intent = Intent(context, MainActivity::class.java).apply {
++            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
++            configure()
++        }
++        @SuppressLint("WrongConstant")
++        return PendingIntent.getActivity(
++            context,
++            requestCode,
++            intent,
++            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
++        )
++    }
++
+     companion object {
+         /** Notification channel ID for manager update notifications. */
+         const val CHANNEL_MANAGER_UPDATES = "morphe_manager_updates"
+@@ -310,7 +354,16 @@
+ 
+         private const val NOTIFICATION_ID_MANAGER_UPDATE = 2001
+         private const val NOTIFICATION_ID_BUNDLE_UPDATE  = 2002
+-        private const val NOTIFICATION_ID_BATCH_RESULT   = 2005
++        private const val NOTIFICATION_ID_YOUTUBE_UPDATE = 2003
++        private const val NOTIFICATION_ID_MICROG_UPDATE = 2004
++        private const val NOTIFICATION_ID_AUTO_PATCH = 2010
++        private const val NOTIFICATION_ID_AUTO_PATCH_BLOCKED = 2011
++        private const val NOTIFICATION_ID_BATCH_RESULT = 2012
++
++        const val ACTION_MANAGER = "manager"
++        const val ACTION_YOUTUBE = "youtube"
++        const val ACTION_MICROG = "microg"
++        const val EXTRA_UPDATE_ACTION = "ecosystem_update_action"
+         private const val NOTIFICATION_ID_MOUNT_REPLACED = 2007
+ 
+         private const val REQUEST_CODE_UPDATE_CHECK = 1

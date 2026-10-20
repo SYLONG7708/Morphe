@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-fa-rIR/strings.xml
++++ b/app/src/main/res/values-fa-rIR/strings.xml
+@@ -1401,5 +1401,8 @@
+     <!-- Label of a footer button beside "Skip". Keep it short, a longer one moves the buttons onto two rows -->
+     <string name="tour_prompt_confirm">راهنما را نشانم بده</string>
+     <string name="onboarding_restart_title">تور ویژگی‌ها</string>
++    <string name="settings_appearance_patch_list">فهرست پچ‌ها</string>
++    <string name="settings_appearance_patch_categories">گروه‌بندی بر اساس دسته</string>
++    <string name="settings_appearance_patch_categories_description">فهرست پچ‌ها را بر اساس دسته‌هایی که منبع اعلام کرده بخش‌بندی می‌کند؛ منابعی را که دسته‌ای اعلام نکرده‌اند به‌صورت فهرستی ساده نشان می‌دهد</string>
+     <string name="onboarding_restart_desc">تور راهنمای ویژگی‌های اصلی</string>
+ </resources>

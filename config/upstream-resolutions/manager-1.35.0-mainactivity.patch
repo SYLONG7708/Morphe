@@ -1,0 +1,98 @@
+--- a/app/src/main/java/app/morphe/manager/MainActivity.kt
++++ b/app/src/main/java/app/morphe/manager/MainActivity.kt
+@@ -50,6 +50,10 @@
+ import app.morphe.manager.domain.manager.HomeAppButtonPreferences
+ import app.morphe.manager.domain.manager.PreferencesManager
+ import app.morphe.manager.domain.repository.PatchBundleRepository
++import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
++import app.morphe.manager.domain.update.InstallableUpdate
++import app.morphe.manager.license.DeviceActivationActivity
++import app.morphe.manager.license.DeviceLicenseManager
+ import app.morphe.manager.ui.model.navigation.*
+ import app.morphe.manager.ui.screen.BatchPatcherScreen
+ import app.morphe.manager.ui.screen.HomeScreen
+@@ -114,6 +118,12 @@
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+ 
++        if (!DeviceLicenseManager.isLicensed(this)) {
++            startActivity(Intent(this, DeviceActivationActivity::class.java))
++            finish()
++            return
++        }
++
+         WindowCompat.setDecorFitsSystemWindows(window, false)
+         enableEdgeToEdge()
+         installSplashScreen()
+@@ -134,6 +144,7 @@
+         // Handle deep link on cold start. The task keeps the intent that started it, so a restore
+         // after the process was reclaimed - or any recreate - would replay a link already acted on
+         if (savedInstanceState == null) {
++            handleUpdateIntent(intent, vm)
+             handleDeepLinkIntent(intent, vm)
+         }
+ 
+@@ -180,9 +191,30 @@
+     override fun onNewIntent(intent: Intent) {
+         super.onNewIntent(intent)
+         // Replaces the launch intent, so a later recreate restores this one rather than the
+-        // link the task was originally started from
++        // link or update action the task was originally started from.
+         setIntent(intent)
+-        handleDeepLinkIntent(intent, getActivityViewModel())
++        val vm: MainViewModel = getActivityViewModel()
++        handleUpdateIntent(intent, vm)
++        handleDeepLinkIntent(intent, vm)
++    }
++
++    private fun handleUpdateIntent(intent: Intent?, vm: MainViewModel) {
++        if (intent?.getBooleanExtra(
++                UpdateNotificationManager.EXTRA_TRIGGER_UPDATE_CHECK,
++                false,
++            ) == true
++        ) {
++            vm.pendingUpdateCheck = true
++        }
++        vm.pendingEcosystemAction = intent
++            ?.getStringExtra(UpdateNotificationManager.EXTRA_UPDATE_ACTION)
++            ?.takeIf {
++                it in setOf(
++                    UpdateNotificationManager.ACTION_MANAGER,
++                    UpdateNotificationManager.ACTION_YOUTUBE,
++                    UpdateNotificationManager.ACTION_MICROG,
++                )
++            }
+     }
+ 
+     /**
+@@ -354,6 +386,7 @@
+     val navController = rememberNavController()
+     val scope = rememberCoroutineScope()
+     val prefs: PreferencesManager = koinInject()
++    val updateCoordinator: EcosystemUpdateCoordinator = koinInject()
+     val homeAppButtonPrefs: HomeAppButtonPreferences = koinInject()
+     val backgroundType by prefs.backgroundType.getAsState()
+     val enableParallax by prefs.enableBackgroundParallax.getAsState()
+@@ -372,6 +405,22 @@
+     val homeViewModel: HomeViewModel = koinViewModel(
+         viewModelStoreOwner = LocalActivity.current as ComponentActivity
+     )
++
++    LaunchedEffect(vm.pendingEcosystemAction) {
++        val action = vm.pendingEcosystemAction ?: return@LaunchedEffect
++        vm.pendingEcosystemAction = null
++        navController.popBackStack(HomeScreen, false)
++        when (action) {
++            UpdateNotificationManager.ACTION_YOUTUBE ->
++                homeViewModel.showPatchDialog(EcosystemUpdateCoordinator.YOUTUBE_PACKAGE)
++
++            UpdateNotificationManager.ACTION_MANAGER ->
++                runCatching { updateCoordinator.installPrepared(InstallableUpdate.MANAGER) }
++
++            UpdateNotificationManager.ACTION_MICROG ->
++                runCatching { updateCoordinator.installPrepared(InstallableUpdate.MICROG) }
++        }
++    }
+ 
+     // Handle deep link source
+     LaunchedEffect(vm.pendingDeepLinkSource) {

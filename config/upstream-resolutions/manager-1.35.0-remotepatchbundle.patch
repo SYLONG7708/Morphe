@@ -1,0 +1,92 @@
+--- a/app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt
++++ b/app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt
+@@ -10,12 +10,16 @@
+ 
+ package app.morphe.manager.domain.bundles
+ 
++import app.morphe.manager.BuildConfig
++import app.morphe.manager.domain.bundles.RemotePatchBundle.Companion.CHANGELOG_CACHE_TTL
+ import app.morphe.manager.domain.manager.PreferencesManager
++import app.morphe.manager.domain.update.DetachedSignatureVerifier
+ import app.morphe.manager.network.api.MorpheAPI
+ import app.morphe.manager.network.dto.MorpheAsset
+ import app.morphe.manager.network.service.AssetDownloader
+ import app.morphe.manager.network.service.HttpService
+ import app.morphe.manager.network.utils.getOrThrow
++import app.morphe.manager.patcher.patch.PatchBundle
+ import app.morphe.manager.util.*
+ import io.ktor.client.plugins.HttpTimeoutConfig
+ import io.ktor.client.plugins.timeout
+@@ -59,6 +63,7 @@
+     enabled: Boolean,
+ ) : PatchBundleSource(name, uid, displayName, createdAt, updatedAt, error, directory, enabled), KoinComponent {
+     protected val http: HttpService by inject()
++    private val detachedSignatureVerifier: DetachedSignatureVerifier by inject()
+     protected val api: MorpheAPI by inject()
+     private val assetDownloader: AssetDownloader by inject()
+ 
+@@ -90,6 +95,16 @@
+                     saveLocation = staging,
+                     onProgress = onProgress
+                 )
++                info.signatureDownloadUrl?.let { signatureUrl ->
++                    val detached = http.request<String> {
++                        url(signatureUrl)
++                        header("Cache-Control", "no-cache")
++                    }.getOrThrow()
++                    check(detachedSignatureVerifier.verifyFile(staging, detached)) {
++                        "Patch bundle detached-signature verification failed"
++                    }
++                }
++                validateCandidate(staging)
+             }
+ 
+             PatchBundleDownloadResult(
+@@ -99,6 +114,40 @@
+                 }.getOrNull()
+             )
+         }
++
++    /**
++     * Proves that a downloaded bundle can be consumed by this exact Manager build before it
++     * replaces the last known-good file. Manifest comparison gives a clear diagnostic, while
++     * loading metadata catches binary/API incompatibilities that are not declared correctly.
++     */
++    private fun validateCandidate(candidate: File) {
++        if (!candidate.isFile || candidate.length() < MIN_PATCH_BUNDLE_BYTES) {
++            throw IOException(
++                "Downloading patch bundle produced an empty or truncated file " +
++                    "(size=${candidate.length()})"
++            )
++        }
++
++        // Android 14+ only permits loading dex containers that are read-only.
++        check(candidate.setReadOnly() || !candidate.canWrite()) {
++            "Unable to make downloaded patch bundle read-only"
++        }
++        val bundle = PatchBundle(candidate.absolutePath)
++        val requiredPatcher = bundle.manifestAttributes?.patcherVersion
++        if (
++            requiredPatcher != null &&
++            compareVersions(requiredPatcher, BuildConfig.PATCHER_VERSION) > 0
++        ) {
++            throw IllegalStateException(
++                "Patch bundle requires morphe-patcher $requiredPatcher, " +
++                    "but this Manager provides ${BuildConfig.PATCHER_VERSION}"
++            )
++        }
++
++        check(PatchBundle.Loader.metadata(bundle).isNotEmpty()) {
++            "Patch bundle contains no loadable patches"
++        }
++    }
+ 
+     /**
+      * [getLatestInfo] with the manifest page URL remembered, so [browsePageUrl] can use it without
+@@ -232,5 +281,6 @@
+         const val BRANCH_STABLE = "main"
+         const val BRANCH_DEV = "dev"
+ 
++        private const val MIN_PATCH_BUNDLE_BYTES = 8L
+         /** Bundle file a repository-only link resolves to. */
+         private const val DEFAULT_BUNDLE_FILE = "patches-bundle.json"

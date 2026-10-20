@@ -1,0 +1,49 @@
+--- a/app/src/test/java/app/morphe/manager/ui/screen/home/PatchGroupingTest.kt
++++ b/app/src/test/java/app/morphe/manager/ui/screen/home/PatchGroupingTest.kt
+@@ -19,7 +19,7 @@
+  * plain list it was before categories existed, since that is what every already published bundle is.
+  */
+ class PatchGroupingTest {
+-    private val options = PatchGroupingOptions(universalTitle = "Universal")
++    private val options = PatchGroupingOptions(universalTitle = "Universal", groupByCategory = true)
+ 
+     private fun patch(name: String, category: String? = null, universal: Boolean = false) = PatchInfo(
+         name = name,
+@@ -72,6 +72,20 @@
+     }
+ 
+     @Test
++    fun `grouping switched off leaves the same blocks as a bundle without categories`() {
++        val patches = listOf(
++            patch("A", category = "Ads"),
++            patch("B", category = "Video"),
++            patch("U", universal = true)
++        )
++
++        val groups = group(patches, options.copy(groupByCategory = false))
++
++        assertEquals(listOf(null, "Universal"), groups.map { it.title })
++        assertEquals(listOf("A", "B"), groups[0].items.map { it.name })
++    }
++
++    @Test
+     fun `the selected count is per block, since a folded block hides what it holds`() {
+         val enabled = patch("On", category = "Ads").copy(include = true)
+         val groups = group(listOf(enabled, patch("Off", category = "Ads"), patch("Other", category = "Video")))
+@@ -108,6 +122,16 @@
+     }
+ 
+     @Test
++    fun `grouping switched off puts categorized universal patches back in the tail`() {
++        val groups = group(
++            listOf(patch("Block ads", category = "Ads", universal = true)),
++            options.copy(groupByCategory = false)
++        )
++
++        assertEquals(listOf("Universal"), groups.map { it.title })
++    }
++
++    @Test
+     fun `blocks are keyed by category, so a fold survives the list being filtered around it`() {
+         val first = group(listOf(patch("A", category = "Ads"), patch("B", category = "Video")))
+         val filtered = group(listOf(patch("B", category = "Video")))
