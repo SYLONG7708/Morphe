@@ -183,7 +183,7 @@ jobs:
           chmod +x upstream/microg-re/gradlew
           (
             cd upstream/microg-re
-            python "$GITHUB_WORKSPACE/tools/ci_retry.py" -- ./gradlew clean :play-services-core:assembleDefaultRelease --no-daemon --stacktrace
+            python "$GITHUB_WORKSPACE/tools/ci_retry.py" -- ./gradlew clean :play-services-core:assembleDefaultRelease --no-daemon --no-configuration-cache --refresh-dependencies --stacktrace
           )
           unsigned_microg="$(find upstream/microg-re/play-services-core/build/outputs/apk/default/release \
             -name '*.apk' -type f | head -n1)"
