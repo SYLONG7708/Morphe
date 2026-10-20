@@ -72,5 +72,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/install_morphe_gua
 
 登入項目啟動隱藏監督程序，子程序退出時重啟。若帳號無法建立專用 Windows 排程，
 安裝器會備份既有 Codex 大腦啟動腳本，再加入非同步的隱藏喚醒；不改原排程時間及原維護命令。
+子程序亦關閉 Git／GitHub CLI 的互動提示，並依
+[Git Credential Manager 官方設定](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/environment.md#gcm_interactive)
+禁止憑證登入彈窗；失效登入會留下錯誤紀錄，等帳號恢復後重試。
 需電腦開機、使用者登入、網路及 GitHub／Codex 登入可用。關機期間雲端排程照常，
 本機 Codex 修復會在下次登入後接續。此機制檢查建置與更新發布鏈，不能直接讀取未連線手機的執行錯誤。

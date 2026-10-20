@@ -50,6 +50,11 @@ def hidden_options() -> dict:
     return {"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {}
 
 
+def unattended_env() -> dict:
+    return {**os.environ, "GIT_TERMINAL_PROMPT": "0", "GCM_INTERACTIVE": "never",
+            "GCM_GUI_PROMPT": "0", "GH_PROMPT_DISABLED": "1"}
+
+
 @contextmanager
 def exclusive_lock(path: Path):
     """Kernel lock is released on crash; no stale PID file can suppress recovery."""
@@ -167,7 +172,8 @@ class Guard:
         try:
             process = subprocess.Popen(command, cwd=cwd, stdin=subprocess.PIPE,
                                        stdout=output, stderr=subprocess.STDOUT,
-                                       encoding="utf-8", errors="replace", **hidden_options())
+                                       encoding="utf-8", errors="replace",
+                                       env=unattended_env(), **hidden_options())
             try:
                 text, _ = process.communicate(input_text, timeout=timeout)
             except subprocess.TimeoutExpired:
@@ -205,7 +211,7 @@ class Guard:
             raise RuntimeError("Sync diagnostic artifact exceeds its size limit")
         completed = subprocess.run(
             [self.gh, "api", f"repos/{REPOSITORY}/actions/artifacts/{artifact['id']}/zip"],
-            capture_output=True, timeout=90, **hidden_options())
+            capture_output=True, timeout=90, env=unattended_env(), **hidden_options())
         if completed.returncode:
             raise RuntimeError("Sync diagnostic download failed")
         with zipfile.ZipFile(io.BytesIO(completed.stdout)) as archive:
