@@ -177,6 +177,8 @@ class MorpheGuardTest(unittest.TestCase):
         before = self.fixture_source()
         for scenario in ("build_failed", "main_advanced"):
             instance = guard.Guard(self.config)
+            previous = str(self.root / "previous-attempt")
+            instance.state["incidents"][scenario] = {"last_job": previous}
             commands = []
             committed = False
             def execute(command, **kwargs):
@@ -212,6 +214,8 @@ class MorpheGuardTest(unittest.TestCase):
                 instance.repair(incident)
             self.assertFalse(any("HEAD:refs/heads/main" in command for command in commands))
             self.assertTrue(any(command[:3] == ["gh", "workflow", "run"] for command in commands))
+            saved_job = Path(guard.read_json(instance.state_file)["incidents"][scenario]["last_job"])
+            self.assertIn(previous, (saved_job / "prompt.txt").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
