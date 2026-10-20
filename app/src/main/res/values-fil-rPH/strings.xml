@@ -41,9 +41,6 @@
     <string name="home_update_skipped_metered">Nabigo ang pag-update</string>
     <string name="home_update_skipped_metered_subtitle">Mobile data ay aktibo</string>
     <string name="home_updating_sources">Ina-update ang mga mapagkukunan…</string>
-    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
-         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
-    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s MB (%5$d%%)</string>
     <string name="home_update_success">Nakumpleto ang mga mapagkukunan ng update</string>
     <string name="home_update_success_subtitle">Napapanahon ang iyong mga mapagkukunan</string>
     <string name="home_sources_are_loading">Naglo-load ang iyong mga mapagkukunan, mangyaring maghintay…</string>
@@ -126,6 +123,26 @@
     <string name="home_greeting_super_late_3">Sa puntong ito, magising na lang at mag-patch na lang</string>
     <string name="home_greeting_super_late_4">Ikaw at ang mga server, parehong gising</string>
     <string name="home_greeting_super_late_5">Pang-gabi at produktibo</string>
+    <!-- Halloween greetings, shown instead of the ones above around October 31 -->
+    <!-- Pun on "Trick or treat" -->
+    <string name="home_greeting_halloween_1">Trick o patch?</string>
+    <string name="home_greeting_halloween_2">Walang multo sa mga APK na ito, na-check namin</string>
+    <string name="home_greeting_halloween_3">Panahon ng katatakutan, mga sariwang patch</string>
+    <!-- Pun on "Something wicked this way comes", a line from Shakespeare's Macbeth -->
+    <string name="home_greeting_halloween_4">May isang bagay na masama na nagpapa-patch papunta rito</string>
+    <!-- Winter holiday greetings, shown instead of the ones above from late December to early January -->
+    <string name="home_greeting_winter_1">Maligayang Kapaskuhan, mga sariwang patch</string>
+    <!-- Pun on the song "Let It Snow! Let It Snow! Let It Snow!" -->
+    <string name="home_greeting_winter_2">Hayaang umulan ng niyebe, hayaang mag-patch</string>
+    <string name="home_greeting_winter_3">Bagong Taon, mga bagong patch</string>
+    <!-- Pun on "Dashing through the snow", the opening line of "Jingle Bells" -->
+    <string name="home_greeting_winter_4">Nagpapa-patch sa niyebe</string>
+    <!-- New Year greetings, shown instead of the ones above on December 31 and January 1 -->
+    <string name="home_greeting_new_year_1">Maligayang Bagong Taon!</string>
+    <string name="home_greeting_new_year_2">Nagbibilang pababa sa mga bagong patch</string>
+    <string name="home_greeting_new_year_3">Bagong taon, pareho pa ring walang ad ang mga app</string>
+    <!-- Pun on the saying "Out with the old, in with the new" -->
+    <string name="home_greeting_new_year_4">Wala na ang mga lumang bersyon, narito na ang mga bago</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">I-patch ang mapagkukunan</string>
     <string name="sources_search">Maghanap ng mga source at mga patch</string>
@@ -141,7 +158,6 @@
     <string name="sources_management_report_issue">Mag-ulat ng isyu</string>
     <string name="sources_management_failed_to_open_url">Nabigong buksan ang URL</string>
     <string name="sources_apps">Mga app</string>
-    <string name="sources_apps_title">Mga app mula sa %1$s</string>
     <string name="sources_apps_description">I-tap ang isang app para alisin ito sa source na ito o ibalik, o pindutin nang matagal para pumili ng ilan. Aalis ang isang app sa home screen kapag wala nang source na nagdadala nito.</string>
     <string name="sources_apps_brought">Dala ng source na ito</string>
     <string name="sources_apps_left_out">Hindi kasama sa source na ito</string>
@@ -174,21 +190,22 @@
     <string name="sources_dialog_rename">Baguhin ang mapagkukunan ng patch</string>
     <string name="sources_dialog_duplicate_name_error">Mayroon na isang mapagkukunan ng patch na may ganitong pangalan</string>
     <string name="sources_dialog_missing_error">Hindi ma-update ang mapagkukunang patch na ito</string>
-    <string name="sources_dialog_view_any_version">Anumang bersyon</string>
-    <string name="sources_dialog_view_any_package">Anumang pakete</string>
     <string name="sources_dialog_add_source">Idagdag ang mapagkukunan ng patch</string>
-    <string name="sources_dialog_delete_confirm_message">Tanggalin ang mapagkukunang ito \"%s\"? Hindi na ito maaaring bawiin</string>
+    <string name="sources_dialog_delete_confirm_body">Hindi ito maaaring i-undo</string>
     <string name="sources_dialog_remote">Remote</string>
     <string name="sources_dialog_remote_url">Pinagmulan ng URL</string>
-    <string name="sources_dialog_remote_url_formats_title">Mga Halimbawa:</string>
+    <string name="sources_dialog_remote_url_hint">Isang repository o link sa isang patch bundle .json. I-paste nang sabay-sabay ang ilan upang idagdag ang lahat</string>
+    <string name="sources_dialog_paste_no_links">Walang nakitang link sa clipboard</string>
     <string name="sources_dialog_local">Lokal</string>
-    <string name="sources_dialog_local_file">Piliin ang file ng mapagkukunang patch</string>
+    <string name="sources_dialog_local_files">Pumili ng mga patch source file</string>
+    <!-- Button under the files already picked, which opens the picker again -->
+    <string name="sources_dialog_local_add_more">Magdagdag pa ng mga file</string>
     <string name="sources_dialog_local_file_tap_hint">I-tap para mag-browse ng storage</string>
-    <string name="sources_dialog_local_file_description">Piliin ang isang .mpp file ng mapagkukunang patch mula sa imbakan</string>
     <string name="sources_dialog_local_invalid_extension">Dapat may extension na .mpp ang file</string>
+    <!-- %s is the name of the local source that another version of the same bundle replaces -->
+    <string name="sources_dialog_local_updates">Ina-update ang %s</string>
     <string name="sources_dialog_url_valid">Valid na repository o JSON URL</string>
     <string name="sources_dialog_url_invalid">Dapat tumuro ang URL sa isang GitHub/GitLab repo o .json file</string>
-    <string name="sources_dialog_local_change_file">Baguhin ang file</string>
     <string name="sources_dialog_preinstalled">Naka-install</string>
     <string name="sources_dialog_community">Mga patch ng komunidad</string>
     <string name="sources_dialog_choose_apps">Pumili ng mga app</string>
@@ -218,7 +235,8 @@ Anumang idagdag mo mula sa website na ito ay gagamitin sa iyong sariling pangani
     <string name="home_apk_helper_download">Gumamit ng helper app</string>
     <string name="home_apk_helper_title">I-download gamit ang isang helper app</string>
     <string name="home_apk_helper_description">Hihingi ang Morphe sa helper app sa ibaba na i-download ang orihinal na APK at ibalik ang file</string>
-    <string name="home_apk_helper_continue">Buksan ang helper app</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="home_apk_helper_continue">Buksan ang helper</string>
     <string name="home_apk_helper_warning">Magpatuloy lamang kung pinagkakatiwalaan mo ang helper app na ito. Sinusuri ng Morphe ang package, bersyon at lagda ng anumang matatanggap nito bago i-patch</string>
     <string name="home_apk_helper_warning_unverified">Magpatuloy lamang kung pinagkakatiwalaan mo ang helper app na ito. Hindi maaaring i-verify ng Morphe ang lagda ng APK na ito, kaya ang binagong file ay hindi matutukoy</string>
     <string name="home_apk_helper_no_result">Hindi nagbalik ng APK ang helper app</string>
@@ -240,7 +258,6 @@ Anumang idagdag mo mula sa website na ito ay gagamitin sa iyong sariling pangani
     <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; ay walang sinusuportahang bersyon para sa Android %2$s (API %3$s). Lahat ng idineklarang bersyon ay nangangailangan ng mas mataas na bersyon ng Android.</string>
     <!-- Home Screen - Dialog 2: Download Instructions -->
     <string name="home_download_instructions_title">I-download ang orihinal na APK</string>
-    <string name="home_download_instructions_steps_title">Mga Tagubilin:</string>
     <string name="home_download_instructions_finding">Hinahanap ang pahina ng pag-download…</string>
     <string name="home_download_instructions_step1">Pindutin ang \'%s\' na button sa ibaba</string>
     <string name="home_download_instructions_step2_part1">I-scroll pababa ang webpage at pindutin</string>
@@ -262,6 +279,8 @@ Anumang idagdag mo mula sa website na ito ay gagamitin sa iyong sariling pangani
     <string name="home_download_instructions_step4_mount">Pagkatapos ang pag-install ng orihinal na APK, bumalik sa Morphe</string>
     <string name="home_download_instructions_continue_to">Magpatuloy sa %s</string>
     <string name="home_download_instructions_destination">ang pahina ng pag-download</string>
+    <string name="home_download_instructions_copy_link">Kopyahin ang link</string>
+    <string name="home_download_instructions_link_copied">Nakopya ang link</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Piliin ang na-download na APK</string>
     <string name="home_file_picker_prompt_description">Piliin ang &lt;b&gt;%s&lt;/b&gt; APK file na kakadownload mo lang</string>
@@ -273,17 +292,15 @@ Anumang idagdag mo mula sa website na ito ay gagamitin sa iyong sariling pangani
     <string name="home_use_installed_app">Gamitin ang naka-install na app</string>
     <string name="home_installed_app_picker_title">Mga naka-install na app</string>
     <string name="home_installed_app_picker_empty">Walang aplikasyon na natagpuan</string>
-    <string name="home_installed_app_picker_filter_all">Lahat ng aplikasyon</string>
     <string name="home_installed_app_picker_filter_user">Mga aplikasyon ng gumagamit lamang</string>
     <string name="home_installed_app_picker_filter_system">Mga aplikasyon ng sistema lamang</string>
     <string name="home_invalid_apk_unreadable">Hindi mabasa ang file. Siguraduhing hindi pinagbabawalan ng baterya ang \'External Storage\'</string>
     <string name="home_invalid_apk_not_an_apk">Ang napiling file ay hindi isang valid na APK</string>
+    <string name="home_invalid_apk_already_patched">Ang napiling APK ay naka-patch na. Sa halip, piliin ang orihinal na app</string>
     <string name="home_invalid_apk_io_error">Hindi mabuksan ang file. Pakisubukan muli</string>
     <string name="home_external_apk_expert_mode_required">Ang tampok na ito ay available lamang sa Expert mode</string>
     <!-- Home Screen - Dialog 4: Expert Mode Dialog -->
-    <string name="expert_mode_title">Expert mode</string>
     <string name="expert_mode_search">Maghanap ng mga patch</string>
-    <string name="expert_mode_proceed">Magpatuloy sa pagpa-patch</string>
     <string name="expert_mode_disable_all">Patayin lahat</string>
     <string name="expert_mode_disable_all_done">Lahat ng mga patch ay hindi pinagana</string>
     <string name="expert_mode_enable_all">Paganahin lahat</string>
@@ -325,6 +342,7 @@ Para sa pinakamahusay na resulta, nirerekomenda ng app na ito na i-patch ang isa
     <string name="morphe_experimental_app_version_dialog_message">Ang bersyong ito ng &lt;b&gt;%s&lt;/b&gt; ay may maagang pang-eksperimentong suporta&lt;br/&gt;&lt;br/&gt;🔧 Asahan ang mga kakaibang pag-uugali ng app o hindi natukoy na mga bug habang ang mga patch ay pinino para sa bersyong ito ng app</string>
     <string name="home_dialog_unsupported_version_dialog_title">Hindi suportadong bersyon</string>
     <string name="home_dialog_unsupported_version_dialog_description">Hindi inirerekomenda ang bersyon ng APK na ito. Maaaring maging resulta sa hindi gumaganang aplikasyon kung magpatuloy.</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="home_dialog_unsupported_version_dialog_proceed">Magpatuloy pa rin</string>
     <string name="home_dialog_unsupported_version_compatible_versions">Mga bersyong tutugma:</string>
     <string name="home_dialog_unsupported_version_unsupported_label">Hindi suportado</string>
@@ -360,46 +378,55 @@ Para sa pinakamahusay na resulta, nirerekomenda ng app na ito na i-patch ang isa
     <string name="patch_option_slider_range_end">Hanggang</string>
     <string name="patch_option_list_duplicate">May umiiral na ang halagang ito</string>
     <string name="patch_option_list_empty">Hindi maaaring walang laman ang halaga</string>
-    <string name="patch_option_list_empty_state">Walang idinagdag na halaga pa</string>
     <string name="patch_option_required_missing">%s: punan ang lahat ng kinakailangang pagpipilian</string>
+    <!-- Badge on a patch option whose value differs from the patch's own, which resets it when tapped -->
+    <string name="patch_option_changed">Binago</string>
+    <!-- Badge on a patch option that has to be filled in before patching -->
+    <string name="patch_option_required">Kinakailangan</string>
+    <!-- Hint under an image patch option. "%1$s" is the width and "%2$s" the height in pixels -->
+    <string name="patch_option_recommended_size">Inirerekomenda: %1$s×%2$s</string>
     <!-- Adaptive Icon Creator -->
     <string name="adaptive_icon_create">Gumawa ng iniangkop na icon</string>
     <string name="adaptive_icon_select_image">Piliin ang larawan</string>
     <string name="adaptive_icon_change_image">Baguhin ang larawan</string>
+    <string name="image_load_failed">Hindi ma-load ang larawang ito</string>
+    <!-- Card of the adaptive icon creator where the picture is placed on the icon -->
+    <string name="adaptive_icon_launcher">Icon ng launcher</string>
+    <string name="adaptive_icon_gesture_hint">I-drag upang ilipat, i-pinch upang baguhin ang laki</string>
+    <!-- Card of the adaptive icon creator showing the icons as the device draws them -->
+    <string name="adaptive_icon_preview">Pasilip</string>
+    <!-- Caption under the launcher icon in its own colors -->
+    <string name="adaptive_icon_standard">Karaniwan</string>
+    <!-- Caption under the launcher icon recolored by the system theme -->
+    <string name="adaptive_icon_themed">May tema</string>
     <string name="adaptive_icon_background_color">Likurang kulay</string>
     <string name="adaptive_icon_reset_transform">Ipawalang-bisa ang posisyon at sukat</string>
-    <string name="adaptive_icon_safe_zone_inner">Ligtas na lugar (palaging nakikita)</string>
-    <string name="adaptive_icon_safe_zone_outer">Nakatakip na lugar (maaaring nakabit)</string>
-    <string name="adaptive_icon_no_transparency_warning">Walang transparent pixels ang imahe. Maaaring hindi tama ang resulta.</string>
+    <string name="adaptive_icon_no_transparency_warning">Ang larawang ito ay walang mga transparent na pixel, kaya pinapanatili ng mga icon na themed at notification ang logo ng Morphe</string>
     <string name="adaptive_icon_created_success">Matagumpay na nalikha ang naangkop na icon</string>
     <string name="adaptive_icon_creation_failed">Nabigong maglikha ng inaangkop na icon</string>
-    <string name="adaptive_icon_label">Adaptive</string>
-    <string name="adaptive_icon_monochrome_label">Monokrom</string>
     <string name="adaptive_icon_guide">Gabay sa paggawa ng icon</string>
     <string name="adaptive_icon_guide_png_title">Gumamit ng PNG na may transparent na background</string>
-    <string name="adaptive_icon_guide_png_body">Dapat PNG file ang foreground na may transparent na background. Ang solidong kulay ng background ay magmumukhang mali—ang kulay ng background ay dapat mula sa background picker sa ibaba.</string>
+    <string name="adaptive_icon_guide_png_body">Ang isang logo sa transparent na background ay pinakamahusay na gumagana, na ang kulay ng background ay pinili sa ibaba. Ang isang larawang walang transparency ay pumupuno sa buong icon sa halip, at pinapanatili ng mga icon na themed at notification ang logo ng Morphe.</string>
     <string name="adaptive_icon_guide_safe_zones_title">Mga safe zone</string>
-    <string name="adaptive_icon_guide_safe_zones_body">"Panloob na zone (solid): ang content ay palaging ganap na nakikita sa lahat ng launcher shape.
-Panlabas na zone (dashed): maaaring i-clip ng launcher mask—panatilihin ang mahahalagang detalye sa loob ng panloob na zone."</string>
+    <string name="adaptive_icon_guide_safe_zones_body">Ipinapakita ng balangkas ang hugis ng icon ng iyong launcher, at lahat ng nasa labas nito ay pinuputol. Ang ibang mga launcher ay gumagamit ng ibang mga hugis, kaya panatilihin ang mahahalagang detalye sa loob ng tuldok-tuldok na bilog, na ipinapakita ng bawat hugis.</string>
     <string name="adaptive_icon_guide_notification_title">Pinayagan ang mga abiso</string>
-    <string name="adaptive_icon_guide_notification_body">Awtomatikong nabuo mula sa foreground image. Ayusin ang laki nito gamit ang Notification slider. Ang lahat ng nakikitang content ay lumalabas na puti sa status bar.</string>
-    <string name="adaptive_icon_guide_monochrome_title">Monochrome icon</string>
-    <string name="adaptive_icon_guide_monochrome_body">Awtomatikong nabuo mula sa foreground image gamit ang parehong adaptive icon transforms. Ito ay lumalabas na may kulay mula sa wallpaper accent color sa Android 13 at mas bago.</string>
+    <string name="adaptive_icon_guide_notification_body">Pinutol mula sa nakikitang bahagi ng larawan at may sukat tulad ng ibang mga icon ng status bar, anuman ang margin ng file. Ayusin ito gamit ang slider sa ilalim ng preview. Ipinapakita ito ng Android sa iisang kulay.</string>
+    <string name="adaptive_icon_guide_monochrome_title">May temang icon</string>
+    <string name="adaptive_icon_guide_monochrome_body">Pinutol mula sa larawan na may kaparehong posisyon at sukat ng launcher icon. Sa Android 13 at mas bago, ang mga launcher na may naka-on na themed icon ay kinukulayan ito mula sa wallpaper.</string>
     <string name="notification_icon_preview">Itago ang Mga Abiso</string>
     <!-- Header Creator -->
     <string name="header_creator_create">Gumawa ng isang pasadyang header</string>
     <string name="header_creator_light_theme">Header ng maliwanag na tema</string>
     <string name="header_creator_dark_theme">Header ng madilim na tema</string>
-    <string name="header_creator_no_image">Walang napiling larawan</string>
     <string name="header_creator_success">Matagumpay na nilikha ang header</string>
     <string name="header_creator_failed">Nabigong maglikha ng header</string>
     <string name="header_creator_guide">Gabay sa paggawa ng header</string>
     <string name="header_creator_guide_image_title">Mga kinakailangan sa imahe</string>
-    <string name="header_creator_guide_image_body">Gumamit ng anumang file ng imahe (PNG o JPEG). Para sa pinakamahusay na mga resulta, gumamit ng malawak na format na imahe na may humigit-kumulang 2.7:1 na aspect ratio. Ang mga PNG file na may transparent na background ay natural na magbe-blend sa tema ng app.</string>
+    <string name="header_creator_guide_image_body">Ang isang PNG na may transparent na background ay humahalo sa app bar. Ang mga margin sa paligid ng logo sa file ay binabalewala, kaya nagsisimula ito sa laki at lugar ng stock logo.</string>
     <string name="header_creator_guide_themes_title">Mga light at dark theme</string>
     <string name="header_creator_guide_themes_body">Karamihan sa mga app ay nangangailangan ng hiwalay na mga imahe para sa light at dark theme. Ang ilang app (tulad ng YouTube Music) ay gumagamit lamang ng dark theme, kaya ang seksyong iyon lamang ang ipinapakita.</string>
     <string name="header_creator_guide_positioning_title">Pagpoposisyon at pag-scale</string>
-    <string name="header_creator_guide_positioning_body">Gumamit ng pinch-to-zoom at drag gesture nang direkta sa preview para iposisyon at i-scale ang iyong imahe. Lumalabas ang mga snap guide kapag malapit na ang imahe sa gitna. Maaari mo ring gamitin ang slider sa ibaba ng preview.</string>
+    <string name="header_creator_guide_positioning_body">I-drag at i-pinch ang larawan sa editor, o ayusin ang laki nito gamit ang slider. Ang tuldok-tuldok na kahon ay nagmamarka kung saan nakalagay ang stock logo, at lalabas ang mga gabay kapag ang larawan ay nakahanay dito.</string>
     <!-- Batch patching -->
     <string name="batch_patch_action">Napili na patch</string>
     <string name="batch_patch_title">Batch patching</string>
@@ -417,16 +444,18 @@ Panlabas na zone (dashed): maaaring i-clip ng launcher mask—panatilihin ang ma
     <string name="batch_patch_source_file">Naka-attach na file</string>
     <string name="batch_patch_source_unavailable">Hindi maiprepare ang APK</string>
     <string name="batch_patch_force_version">Mag-patch pa rin</string>
-    <string name="batch_patch_force_version_done">Nakapila pa rin, ang mga patch na ginawa para sa ibang mga bersyon ay maaaring makasira sa app</string>
-    <string name="batch_patch_accept_signature_done">Queued anyway, this APK may not be the original</string>
+    <string name="batch_patch_force_version_done">Nakapila pa rin, maaaring masira ang app</string>
+    <string name="batch_patch_accept_signature_done">Nakapila pa rin, hindi na-verify ang APK</string>
     <string name="batch_patch_edit_patches">Pumili ng mga patch</string>
     <string name="batch_patch_state_no_apk">Walang APK</string>
     <string name="batch_patch_state_no_patches">Walang mga patch</string>
     <string name="batch_patch_policy_install">I-install kapag tapos na</string>
     <string name="batch_patch_policy_install_description">I-i-install ang bawat na-patch na app pagkatapos ng queue. Off ay nagpapanatili sa mga APK para sa ibang pagkakataon</string>
-    <string name="batch_patch_start">Magsimulang mag-patch</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="batch_patch_start">Simula</string>
     <string name="batch_patch_stop_title">Itigil ang batch patching?</string>
     <string name="batch_patch_stop_description">Ang app na kasalukuyang pine-patch at lahat ng naka-queue ay kakanselahin</string>
+    <!-- Label of a footer button beside "Done". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_install_all">I-install lahat</string>
     <string name="batch_patch_install_failed">Nabigong i-install</string>
     <string name="batch_patch_in_progress">Kasulukuyang tumatakbo ang batch patching</string>
@@ -463,9 +492,24 @@ Panlabas na zone (dashed): maaaring i-clip ng launcher mask—panatilihin ang ma
     <string name="home_app_info_app_update_available_description">May mas bagong version ng app na sinusuportahan ng patch sources. I-patch ulit ito para makapag-update sa version na iyon</string>
     <string name="home_app_info_newest_supported_version">Pinakabagong suportado</string>
     <string name="home_app_info_version_move">Naka-install ang %1$s, pinakabagong suportado ang %2$s.</string>
+    <string name="home_app_info_version_restore">Naka-install %1$s, na-patch %2$s</string>
     <string name="home_app_info_app_deleted_warning">Binura ang aplikasyon </string>
     <string name="home_app_info_app_deleted_description">Binura ang aplikasyong ito sa labas ng Morphe. Ire-patch ito upang maibalik ang kanyang punksyonalidad</string>
     <string name="home_app_info_not_patched_description">Naka-install ang hindi na-patch na bersyon ng app na ito. Mayroon pa ring dating patch record ang Morphe</string>
+    <string name="home_app_info_mount_replaced_description">Pinalitan ng ibang bersyon ang naka-mount na app, kaya hindi na naaangkop ang patch. Ibinabalik ng Restore ang na-patch na bersyon</string>
+    <string name="home_app_info_mount_replaced_by_play_store_description">In-update ng Google Play ang naka-mount na app, kaya hindi na naaangkop ang patch. Ibinabalik ng Restore ang na-patch na bersyon. I-off ang auto-update para dito sa Google Play upang manatiling naka-patch</string>
+    <string name="app_links_title">Mga sinusuportahang web link</string>
+    <string name="app_links_description">Sa Android 12+, ang mga link sa mga sinusuportahang domain ay bumubukas sa iyong browser bilang default maliban kung inaprubahan</string>
+    <string name="app_links_unverified_banner_title">Hindi na-verify na mga web link</string>
+    <string name="app_links_unverified_banner_description">Ang mga sinusuportahang web link ay kasalukuyang bumubukas sa iyong browser sa halip na sa app na ito</string>
+    <string name="app_links_enable_auto">I-enable nang awtomatiko</string>
+    <string name="app_links_enable_auto_in_progress">Ini-enable ang mga link…</string>
+    <string name="app_links_open_settings">Buksan ang mga setting ng link</string>
+    <string name="app_links_repair_success">Matagumpay na na-enable ang mga link ng app</string>
+    <string name="app_links_repair_failed">Hindi nagawang paganahin ang mga link ng app nang awtomatiko</string>
+    <string name="app_links_all_verified">Lahat ng suportadong link ay naka-configure upang buksan sa app na ito</string>
+    <string name="app_links_fix">Ayusin ang mga link</string>
+    <string name="configure">I-configure</string>
     <string name="patcher_rename_title">Ito ay mag-i-install ng clone</string>
     <string name="patcher_rename_description">Ang mga patch ay nagbuo ng app na ito sa ilalim ng kanilang sariling package name, kaya ang pag-install nito ay nagdaragdag ng clone sa tabi ng &lt;b&gt;%s&lt;/b&gt; sa halip na i-update ito</string>
     <string name="patcher_rename_result_package">I-install bilang</string>
@@ -493,10 +537,10 @@ Panlabas na zone (dashed): maaaring i-clip ng launcher mask—panatilihin ang ma
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">App</string>
     <string name="patcher_field_package">Package</string>
+    <string name="patcher_field_failed_patch">Nabigong patch</string>
     <string name="patcher_field_source">Pinagmulan</string>
     <string name="patcher_field_split">Hating APK</string>
     <string name="patcher_field_manager">Manager</string>
-    <string name="patcher_field_patcher">Patcher</string>
     <string name="patcher_field_runtime">Runtime</string>
     <!-- Native code libraries (.so files) packed inside the APK -->
     <string name="patcher_field_libraries">Mga library</string>
@@ -527,10 +571,12 @@ Panlabas na zone (dashed): maaaring i-clip ng launcher mask—panatilihin ang ma
     <string name="patcher_installing_subtitle">Halos handa na sa rock! 🎸</string>
     <string name="patcher_success_title">Tapos na lahat! 🎉</string>
     <string name="patcher_success_subtitle">Na-patch at na-install na ang iyong aplikasyon!</string>
+    <string name="patcher_mounted_subtitle">Naka-patch at naka-mount na ang iyong app!</string>
     <string name="patcher_complete_title">Nakumpleto na ang pag-patch! ✨</string>
     <string name="patcher_failed_title">Oops! Nagkaproblema</string>
-    <string name="patcher_failed_hint">I-tap ang %s upang makita kung ano ang naging mali.</string>
     <string name="patcher_failed_dialog_title">Nabigo ang pag-patch</string>
+    <string name="patcher_error_details">Mga detalye ng error</string>
+    <string name="patcher_change_patches">Baguhin ang mga patch</string>
     <string name="patcher_unknown_error">May hindi kilalang pagkakamali na naganap</string>
     <string name="patcher_split_step_extracting">Kinukuha ang mga hati-hati na APK</string>
     <string name="patcher_split_step_merging">Pinagsasama ang %s</string>
@@ -544,15 +590,14 @@ Panlabas na zone (dashed): maaaring i-clip ng launcher mask—panatilihin ang ma
 
 Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="patcher_install_error_title">Pagkakamali sa pag-install</string>
+    <string name="patcher_mount_error_title">Error sa pag-mount</string>
     <string name="patcher_install_error_subtitle">Subukan mong burahin at i-install muli</string>
-    <string name="patcher_ready_to_install_subtitle">Pindutin ang button sa ibaba upang ma-install</string>
     <string name="patcher_ready_to_mount_subtitle">Pindutin ang button sa ibaba upang i-mount</string>
     <string name="patcher_patches_excluded_for_installer">Hindi magagamit para sa paraang ito ng pag-install at hindi kasama: %s</string>
     <string name="patcher_back_to_game_hint">I-tap ang %1$s upang bumalik sa iyong laro</string>
     <string name="patcher_storage_permission_dialog_title">Hindi ma-access ang landas ng imbakan</string>
     <string name="patcher_incompatible_patcher_title">Kinakailangan ang pag-update</string>
-    <string name="patcher_incompatible_patcher_description">Ang bundle &lt;b&gt;%1$s&lt;/b&gt; ay nangangailangan ng bersyon ng patcher na &lt;b&gt;%2$s&lt;/b&gt; o mas bago. Pakisuyong i-update ang Morphe upang i-patch ang app na ito</string>
-    <string name="patcher_incompatible_patcher_update_button">I-download at i-update ang Morphe</string>
+    <string name="patcher_incompatible_patcher_description">Ang source &lt;b&gt;%1$s&lt;/b&gt; ay nangangailangan ng patcher &lt;b&gt;%2$s&lt;/b&gt; o mas bago. I-update ang Morphe upang magamit ito</string>
     <string name="patcher_storage_permission_description_api30">Isa o higit pang mga pagpipilian sa patch ay tumuturo sa mga landas na hindi mabasa ng Morphe. Bigyan ng access sa imbakan at i-tap ang button at pagkatapos ay awtomatikong magsisimula ang pag-patch</string>
     <string name="patcher_storage_permission_description_legacy">Isa o higit pang mga pagpipilian sa patch ay tumuturo sa mga landas na hindi ma-access. I-update ang mga landas sa pagpipilian ng patch at subukan muli</string>
     <string name="patcher_storage_permission_grant">Pahintulutan ang pahintulot sa imbakan</string>
@@ -573,7 +618,6 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="patcher_step_load_patches">Inilo-load ang mga patch</string>
     <string name="patcher_step_prepare_split_apk">Isinasama ang hiniwalay na APK</string>
     <string name="patcher_step_unpack">Basahin ang APK file</string>
-    <string name="patcher_step_group_patching">Nagpa-patch</string>
     <string name="patcher_step_group_saving">Iniimbak</string>
     <string name="patcher_step_write_patched">Isinusulat ang na-patch na APK file</string>
     <string name="patcher_step_sign_apk">Inilalagda ang na-patch na APK file</string>
@@ -585,6 +629,7 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="patcher_memory_adjustment_title">Hindi sapat na memorya</string>
     <string name="patcher_memory_adjustment_description">Ang patcher ay pinahinto ng sistema habang tumatakbo na may %1$d MB na limitasyon sa memorya. Ang pagbaba ng limitasyon sa %2$d MB ay ginagawang mas maliit na target ang patcher at maaaring payagan ang pagtakbo na matapos.</string>
     <string name="patcher_memory_adjustment_description_at_minimum">Ang patcher ay pinahinto ng sistema habang tumatakbo na may %1$d MB na limitasyon sa memorya, na siya nang pinakamababang magagamit. Subukang mag-patch gamit ang mas kaunting mga pinagmumulan ng patch, o pumili ng mas kaunting mga patch.</string>
+    <string name="patcher_memory_adjustment_description_finished">Itinigil ng sistema ang patcher sa limitasyon ng memorya na %1$d MB, at natapos lamang ito sa %2$d MB. Ang pagsisimula sa %2$d MB ay lalaktawan ang nawalang pagtatangka sa susunod na pagkakataon</string>
     <string name="patcher_memory_adjustment_apply">Ibaba sa %1$d MB</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Pinoproseso ang pagpa-patch…</string>
@@ -654,6 +699,8 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="mini_game_try_again">Subukan Muli</string>
     <string name="mini_game_paused">Naka-pause</string>
     <string name="mini_game_resume">Magpatuloy</string>
+    <string name="mini_game_restart">Magsimula muli</string>
+    <string name="mini_game_change">Pumili ng ibang laro</string>
     <string name="mini_game_2048_picker_subtitle">I-slide ang mga tile para pagsamahin</string>
     <string name="mini_game_flappy_picker_subtitle">I-tap para lumipad sa mga tubo</string>
     <string name="mini_game_flappy_tap_to_start">I-tap para lumipad</string>
@@ -673,6 +720,7 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="system">Sistema</string>
     <!-- Settings - Appearance Tab - Background animation -->
     <string name="settings_appearance_background">Likurang animation</string>
+    <string name="settings_appearance_background_description">Ang animation na nagpe-play sa likod ng mga screen ng app</string>
     <string name="settings_appearance_background_circles">Mga bilog</string>
     <string name="settings_appearance_background_rings">Mga singsing</string>
     <string name="settings_appearance_background_mesh">Mata</string>
@@ -681,6 +729,9 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="settings_appearance_background_snow">Niyebe</string>
     <string name="settings_appearance_background_grid">Griyá</string>
     <string name="settings_appearance_background_particles">Partikulo</string>
+    <string name="settings_appearance_background_lava">Lamparang lava</string>
+    <string name="settings_appearance_background_halloween">Undas</string>
+    <string name="settings_appearance_background_fireworks">Paputok</string>
     <string name="settings_appearance_background_none">Wala</string>
     <string name="settings_appearance_background_random">Random</string>
     <string name="settings_appearance_background_random_interval_launch">Sa paglunsad</string>
@@ -688,6 +739,10 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="settings_appearance_background_random_interval_3days">Bawat 3 araw</string>
     <string name="settings_appearance_parallax_effect">Epekto ng parallax</string>
     <string name="settings_appearance_parallax_effect_description">Maayos na paglilipat ng background kapag tinatagilid ang device</string>
+    <string name="settings_appearance_seasonal_themes">Mga temang pana-panahon</string>
+    <string name="settings_appearance_seasonal_themes_description">Mga pampistang background at mga pagbati sa mga pista opisyal</string>
+    <!-- %1$s is a holiday background name, such as Halloween. %2$s is a date, such as November 1 -->
+    <string name="settings_appearance_seasonal_background_notice">Ang background na %1$s ay naka-on hanggang %2$s habang naka-on ang mga temang pana-panahon</string>
     <!-- Settings - Appearance Tab - Theme -->
     <string name="settings_appearance_theme">Tema</string>
     <string name="settings_appearance_theme_mode">Tema</string>
@@ -701,6 +756,10 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="settings_appearance_accent_color">Accent na kulay</string>
     <string name="settings_appearance_pure_black">Purong Itim</string>
     <string name="settings_appearance_pure_black_description">Gamitin ang totoong maitim na mga background</string>
+    <string name="settings_appearance_color_accents">Mga kulay ng app at source</string>
+    <string name="settings_appearance_color_accents_description">Ginagamit ang sariling kulay ng bawat app at source sa halip na ang accent color</string>
+    <string name="settings_appearance_outlines">Mga balangkas</string>
+    <string name="settings_appearance_outlines_description">Gumuguhit ito ng manipis na gilid sa paligid ng mga card, panel, at button.</string>
     <!-- Settings - Appearance Tab - Language Selector -->
     <string name="settings_appearance_language_and_display">Wika &amp; display</string>
     <string name="settings_appearance_app_language">Wika ng aplikasyon</string>
@@ -741,14 +800,31 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="settings_appearance_app_card_colors_bundle_description">Gamitin ang sariling kulay ng bawat app dito, na may lilim na awtomatikong akma</string>
     <!-- Settings - Appearance Tab - App Icon Selector -->
     <string name="settings_appearance_app_icon_selector_title">Icon ng aplikasyon</string>
+    <string name="settings_appearance_app_icon_selector_description">Paano ang hitsura ng Morphe sa iyong home screen at sa app drawer</string>
     <string name="settings_appearance_app_icon_default">Panimula</string>
     <string name="settings_appearance_app_icon_light_2">Langit</string>
     <string name="settings_appearance_app_icon_light_3">Paglubog ng araw</string>
-    <string name="settings_appearance_app_icon_dark_1">Dagat</string>
+    <string name="settings_appearance_app_icon_light_4">Lila</string>
+    <string name="settings_appearance_app_icon_light_5">Glasyer</string>
+    <string name="settings_appearance_app_icon_light_6">Hamog</string>
+    <string name="settings_appearance_app_icon_light_7">Buhangin</string>
+    <string name="settings_appearance_app_icon_dark_1">Asul-berde</string>
     <string name="settings_appearance_app_icon_dark_2">Void</string>
-    <string name="settings_appearance_app_icon_dark_3">Indigo</string>
+    <string name="settings_appearance_app_icon_dark_3">Sirwelas</string>
+    <string name="settings_appearance_app_icon_dark_4">Hatinggabi</string>
+    <string name="settings_appearance_app_icon_dark_5">Abo-asul</string>
+    <string name="settings_appearance_app_icon_accent_1">Bukang-liwayway</string>
+    <string name="settings_appearance_app_icon_accent_2">Tinta</string>
+    <string name="settings_appearance_app_icon_accent_3">Papel</string>
+    <string name="settings_appearance_app_icon_accent_4">Takipsilim</string>
+    <string name="settings_appearance_app_icon_background">Likuran</string>
+    <string name="settings_appearance_app_icon_mark">Tatak</string>
+    <string name="settings_appearance_app_icon_mark_color">Kulay</string>
+    <string name="settings_appearance_app_icon_mark_white">Puti</string>
+    <string name="settings_appearance_app_icon_mark_black">Itim</string>
     <string name="settings_appearance_app_icon_change_dialog_title">Baguhin ang icon ng aplikasyon?</string>
     <string name="settings_appearance_app_icon_change_dialog_message">Baguhin sa &lt;b&gt;%s&lt;/b&gt; at i-restart?</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="settings_appearance_app_icon_change_dialog_confirm">Baguhin ang icon</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Mga update</string>
@@ -783,7 +859,6 @@ Hindi maaapektuhan ang mga patch: paganahin ang mga patch na pre-release para sa
     <string name="external_batch_patch_trust_caller">Payagan ang app na ito palagi</string>
     <string name="external_batch_patch_unknown_caller">Isang hindi kilalang app</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Magagamit ang update ng Morphe</string>
     <string name="notification_bundle_update_title">Magagamit ang mga bagong patch</string>
     <string name="notification_update_text">Handa mag-download ang bersyong %s</string>
     <string name="notification_bundle_update_text_unversioned">I-tap para buksan ang Morphe at i-update</string>
@@ -794,8 +869,11 @@ Hindi maaapektuhan ang mga patch: paganahin ang mga patch na pre-release para sa
     <string name="notification_channel_manager_updates_description">Mga notification tungkol sa mga bagong release ng Morphe</string>
     <string name="notification_channel_patch_updates">Mga update sa patch</string>
     <string name="notification_channel_patch_updates_description">Mga notification tungkol sa mga bagong patch release</string>
-    <string name="notification_channel_patcher">Nagpa-patch</string>
     <string name="notification_channel_patcher_description">Ipinapakita habang ina-patch ng Morphe ang isang app sa background</string>
+    <string name="notification_channel_mounted_apps">Mga naka-mount na app</string>
+    <string name="notification_channel_mounted_apps_description">Kapag pinalitan ng ibang bersyon ang naka-mount na app at hindi na naaangkop ang patch nito</string>
+    <string name="notification_mount_replaced_title">Hindi na naka-patch ang %1$s</string>
+    <string name="notification_mount_replaced_text">Pinalitan ng v%1$s ang naka-patch na v%2$s. Buksan ang Morphe upang maibalik ito</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Expert settings</string>
     <string name="settings_advanced_expert_mode">Expert mode</string>
@@ -1081,7 +1159,6 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_patched_apks_description">Pamahalaan ang mga nakaimbak na naka-patch na mga file ng aplikasyon</string>
     <string name="settings_system_patched_apks_empty">Wala pang naka-patch na APK</string>
     <string name="settings_system_patched_apks_delete_title">Burahin ang naka-patch na APK?</string>
-    <string name="settings_system_patched_apks_delete_confirm">Sigurado ka bang gusto mong burahin ang nakaimbak na naka-patch na APK para sa &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="settings_system_patched_apks_deleted">Matagumpay na nabura ang naka-patch na APK</string>
     <string name="settings_system_patched_apks_delete_all_title">Burahin ang lahat ng naka-patch na APK?</string>
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
@@ -1090,7 +1167,7 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_original_apks_empty">Walang nakaimbak na orihinal na mga APK</string>
     <string name="settings_system_original_apks_deleted">Matagumpay na nabura ang orihinal na APK</string>
     <string name="settings_system_original_apks_delete_title">Burahin ang orihinal na APK?</string>
-    <string name="settings_system_original_apks_delete_confirm">Burahin ang orihinal na APK para sa &lt;b&gt;%s&lt;/b&gt;? Hindi ka makakapag-repatch nang hindi nagbibigay ng bagong APK</string>
+    <string name="settings_system_original_apks_delete_notice">Hindi ka makakapag-repatch nang walang bagong APK</string>
     <string name="settings_system_original_apks_delete_all_title">Burahin ang lahat ng orihinal na APK?</string>
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
     <string name="settings_system_patch_selections_title">Mga pagpipilian ng patch</string>
@@ -1111,7 +1188,6 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_import_source_data_fail">Nabigong ma-import ang pinagmulan ng datos</string>
     <string name="settings_system_import_source_data_success">Matagumpay na na-import ang pinagmulan ng datos</string>
     <string name="settings_system_selected_patches_section">Piniling mga patch</string>
-    <string name="settings_system_patch_options_section">Mga pagpipilian ng patch</string>
     <string name="settings_system_no_patches_or_options">Walang naka-save na mga patch o pagpipilian</string>
     <!-- Copy selection from another bundle -->
     <string name="copy_selection_title">Kopyahin ang pagpili mula…</string>
@@ -1130,12 +1206,12 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_apk_download_helper_installed_by">In-install ng %s</string>
     <string name="settings_system_apk_download_helper_installed_by_unknown">Hindi kilala ang installer</string>
     <!-- File Picker -->
-    <string name="file_picker_previous_directory">Nakaraang direktoryo</string>
     <string name="file_picker_no_files">Walang mga file dito</string>
     <string name="file_picker_read_error">Hindi mabasa ang direktoryong ito</string>
     <string name="file_picker_internal_storage">Imbakan ng telepono</string>
     <string name="file_picker_sd_card">SD card</string>
     <string name="file_picker_root">Root (/)</string>
+    <string name="file_picker_storages">Mga imbakan</string>
     <string name="file_picker_sort_name_asc">Pangalan (A–Z)</string>
     <string name="file_picker_sort_name_desc">Pangalan (Z–A)</string>
     <string name="file_picker_sort_size_desc">Laki (pinakamalaki muna)</string>
@@ -1161,11 +1237,9 @@ Mga Detalye: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">Bumalik sa ulan</string>
     <string name="easter_egg_pill_blue_toast_again">Hindi na nakakonekta. Ang daan ay kung saan ito palaging naroroon</string>
     <!-- Shared strings -->
-    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
-         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
-         how a literal percent sign is written here. -->
-    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">Pumili ng file</string>
+    <string name="select_files">Pumili ng mga file</string>
+    <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="select_folder">Piliin ang folder</string>
     <string name="patches">Mga patch</string>
     <string name="home">Bahay</string>
@@ -1192,6 +1266,7 @@ Mga Detalye: %2$s"</string>
     <string name="done">Tapos na</string>
     <string name="skip">Laktawan</string>
     <string name="clear">Alisin</string>
+    <string name="paste">Idikit</string>
     <string name="delete">Burahin</string>
     <string name="delete_all">Burahin lahat</string>
     <string name="remove">Alisin</string>
@@ -1201,7 +1276,6 @@ Mga Detalye: %2$s"</string>
     <string name="disable">Patayin</string>
     <string name="enable">Paganahin</string>
     <string name="loading">Naglo-load…</string>
-    <string name="loading_older_releases">Naglo-load ng mga mas lumang release…</string>
     <string name="creating">Ginagawa…</string>
     <string name="processing_apk">Pinoproseso ang APK…</string>
     <string name="exporting_apks">Iniluluwas ang mga APK…</string>
@@ -1216,9 +1290,7 @@ Mga Detalye: %2$s"</string>
     <string name="selected">Napili</string>
     <string name="not_selected">Hindi pinili</string>
     <string name="select_all">Piliin lahat</string>
-    <string name="select_all_done">Lahat ay napili</string>
     <string name="deselect_all">Alisin ang pagpili sa lahat</string>
-    <string name="deselect_all_done">Lahat ay hindi napili</string>
     <string name="reorder_list">Ayusin muli ang listahan</string>
     <string name="reorder_list_hint">I-drag upang ayusin muli</string>
     <string name="reorder_done">Nai-save ang pagkakasunud-sunod</string>
@@ -1244,6 +1316,7 @@ Mga Detalye: %2$s"</string>
     <string name="continue_">Magpatuloy</string>
     <string name="version">Bersyon</string>
     <string name="clone">I-clone</string>
+    <!-- Button that starts patching the selected app. A verb, as in "patch this app" -->
     <string name="patch">Patch</string>
     <string name="patching">Nagpa-patch</string>
     <string name="patched">Naka-patch</string>
@@ -1253,6 +1326,7 @@ Mga Detalye: %2$s"</string>
     <string name="unmount">Tanggalin</string>
     <string name="unmounted">Na-unmount</string>
     <string name="remount">Ire-mount</string>
+    <string name="restore">Ibalik</string>
     <string name="share">Ibahagi</string>
     <string name="install">I-install</string>
     <string name="installed">Na-install</string>
@@ -1273,6 +1347,8 @@ Mga Detalye: %2$s"</string>
     <string name="sources">Mga mapagkukunan</string>
     <string name="installing_ellipsis">Ini-install…</string>
     <string name="mounting_ellipsis">Nagma-mount…</string>
+    <string name="mount_stage_restoring_stock">Ibinabalik ang orihinal…</string>
+    <string name="mount_stage_copying">Kinokopya…</string>
     <string name="unmounting_ellipsis">Ina-unmount…</string>
     <string name="importing_ellipsis">Ini-import…</string>
     <string name="imported_successfully">Matagumpay na na-import</string>
@@ -1283,20 +1359,43 @@ Mga Detalye: %2$s"</string>
     <string name="changelog_description">Ano ang bago sa bersyong ito</string>
     <string name="changelog_download_fail">Nabigong mag-download ang changelog: %s</string>
     <string name="changelog_empty">Walang magagamit na changelog</string>
-    <string name="changelog_show_older">Ipakita ang mga lumang bersyon</string>
+    <string name="changelog_earlier_releases">Mas naunang mga release</string>
+    <string name="changelog_patched_with">Na-patch gamit ang %s</string>
     <string name="changelog_older_empty">Walang mas lumang bersyon na ipapakita</string>
+    <string name="changelog_older_failed">Hindi ma-load ang mas lumang mga release</string>
+    <!-- Label of a footer button beside "Translate". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="changelog_release_page">Pahina ng release</string>
+    <string name="content_translate">Isalin</string>
+    <!-- Label of a footer button beside other buttons, which reads "Translate" until pressed. Keep it as short as "Translate", a longer one moves the buttons onto two rows -->
+    <string name="content_show_original">Orihinal</string>
+    <string name="content_translation_failed">Nabigong isalin: %s</string>
+    <string name="changelog_section_new">Bago</string>
+    <string name="changelog_section_fixes">Mga Pag-aayos</string>
+    <string name="changelog_section_performance">Pagganap</string>
+    <string name="changelog_section_improvements">Mga Pagpapabuti</string>
+    <string name="changelog_section_app_support">Suporta sa app</string>
+    <string name="changelog_section_other">Mga Pagbabago</string>
+    <string name="changelog_badge_latest">Pinakabago</string>
+    <!-- Marks the version of a patch source downloaded to the manager, which patches with it rather than the one an installed app was patched with -->
+    <string name="changelog_badge_downloaded">Na-download</string>
+    <string name="changelog_badge_prerelease">Pre-release</string>
+    <!-- "%s" is the number of changes in the section -->
+    <string name="changelog_show_all">Ipakita ang lahat (%s)</string>
+    <string name="changelog_show_less">Ipakita ang mas kaunti</string>
     <string name="no_network_toast">Walang magagamit na koneksyon sa internet</string>
     <string name="update_available">Magagamit ang isang update</string>
     <string name="ready_to_install_update">Handa nang mag-install ang update</string>
     <string name="update_completed">Na-install ang update</string>
     <string name="install_update_manager_failed">Nabigong ma-install ang update</string>
     <string name="installing_manager_update">Ini-install ang update…</string>
+    <string name="installing_manager_update_hint">Magsasara ang Morphe upang matapos ang update</string>
     <string name="downloading_manager_update">Dina-download ang update…</string>
-    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <!-- Shown while downloading when the server does not report the total size. "%1$s" is the megabytes so far. -->
     <string name="manager_update_progress_downloaded">%1$s MB na-download</string>
+    <!-- Shown under the download percentage. "%1$s" is the megabytes so far, "%2$s" the total. -->
+    <string name="manager_update_progress_size">%1$s / %2$s MB</string>
     <string name="manager_update_not_ready">Ang paglalabas na ito ay kasalukuyang pinoproseso. Subukan muli sa loob ng ilang minuto</string>
     <string name="update_download_missing">Ang na-download na update ay hindi na magagamit. I-download muli ito.</string>
-    <string name="download_manager_failed">Nabigong mai-download ang update: %s</string>
     <string name="failed_to_check_updates">Nabigong suriin ang mga update: %s</string>
     <string name="failed_to_download_update">Nabigong mai-download ang update: %s</string>
     <string name="download_confirmation_metered">"Kasalukuyan kang nasa isang metered na koneksyon, at maaaring malapat ang mga singil sa data mula sa iyong service provider.
@@ -1325,6 +1424,7 @@ Gusto mo pa bang ituloy?"</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Mabilis na paglilibot sa feature</string>
     <string name="tour_prompt_desc">Gusto mo bang mabilis na paglilibot sa mga pangunahing feature ng Morphe?</string>
+    <!-- Label of a footer button beside "Skip". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="tour_prompt_confirm">Ipakita sa akin</string>
     <string name="onboarding_restart_title">Paglilibot sa feature</string>
     <string name="onboarding_restart_desc">Isang gabay na paglilibot sa mga pangunahing tampok</string>

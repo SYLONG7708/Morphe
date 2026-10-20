@@ -6,6 +6,18 @@
     <plurals name="option_count">
         <item quantity="other">%s 個修補選項</item>
     </plurals>
+    <!-- How many files and folders a folder holds, under its name in the file picker -->
+    <plurals name="file_picker_item_count">
+        <item quantity="other">%s 個項目</item>
+    </plurals>
+    <!-- Button that confirms the files checked in the file picker -->
+    <plurals name="file_picker_select_count">
+        <item quantity="other">選取%s個檔案</item>
+    </plurals>
+    <!-- Button that adds every source waiting in the add source dialog -->
+    <plurals name="sources_dialog_add_count">
+        <item quantity="other">新增%s個來源</item>
+    </plurals>
     <plurals name="home_app_patch_sources_title">
         <item quantity="other">適用於 %s 個應用程式的修補程式來源</item>
     </plurals>
@@ -54,6 +66,9 @@
     <plurals name="sources_management_subtitle">
         <item quantity="other">已安裝 %s 個來源</item>
     </plurals>
+    <plurals name="home_app_filter_active">
+        <item quantity="other">%1$s · %2$s 個已篩選項目</item>
+    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="other">%s 個隱藏的應用程式</item>
     </plurals>
@@ -68,5 +83,26 @@
     </plurals>
     <plurals name="core_count">
         <item quantity="other">%s 個核心</item>
+    </plurals>
+    <plurals name="changelog_feature_count">
+        <item quantity="other">%s 項功能</item>
+    </plurals>
+    <plurals name="changelog_fix_count">
+        <item quantity="other">%s 項修正</item>
+    </plurals>
+    <plurals name="changelog_performance_count">
+        <item quantity="other">%s 項最佳化</item>
+    </plurals>
+    <plurals name="changelog_change_count">
+        <item quantity="other">%s 項變更</item>
+    </plurals>
+    <plurals name="changelog_new_releases">
+        <item quantity="other">%s 個新版本</item>
+    </plurals>
+    <plurals name="app_links_count_enabled">
+        <item quantity="other">%d 個連結已啟用</item>
+    </plurals>
+    <plurals name="app_links_count_unverified">
+        <item quantity="other">%d 個未驗證連結</item>
     </plurals>
 </resources>

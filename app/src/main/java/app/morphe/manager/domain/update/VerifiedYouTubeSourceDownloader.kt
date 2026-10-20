@@ -10,7 +10,7 @@ import app.morphe.manager.BuildConfig
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.network.service.HttpService
 import app.morphe.manager.network.utils.getOrThrow
-import app.morphe.manager.patcher.util.NativeLibStripper
+import app.morphe.manager.patcher.util.NativeLibs
 import app.morphe.manager.util.PM
 import app.morphe.manager.util.sha256OrNull
 import com.android.apksig.ApkVerifier
@@ -189,7 +189,7 @@ class VerifiedYouTubeSourceDownloader(
                 "APK requires Android API $minSdk; this device is API ${Build.VERSION.SDK_INT}"
             )
         }
-        val nativeAbis = NativeLibStripper.extractAbisFromApk(file)
+        val nativeAbis = NativeLibs.extractAbisFromApk(file)
         if (!sourceAbiCompatible(nativeAbis, Build.SUPPORTED_ABIS.toList())) {
             return YouTubeSourceDownloadResult.Failure(
                 "APK architecture ${nativeAbis.joinToString()} cannot run on " +

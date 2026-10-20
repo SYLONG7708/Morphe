@@ -1,3 +1,8 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
 package app.morphe.manager.util
 
 import androidx.compose.ui.graphics.Color
@@ -31,8 +36,8 @@ fun List<Color>.blend(): Color = when {
     )
 }
 
-/** Determine if a color represents a dark background. */
-fun Color.isDarkBackground(): Boolean = luminance() < 0.5f
+/** Determine if a color represents a dark background, the one [requiresLightContent] reads on. */
+fun Color.isDarkBackground(): Boolean = requiresLightContent()
 
 /** Returns true if the color is near-black or near-white, where tinted surfaces look better than a direct tint. */
 fun Color.isExtremeAccent(): Boolean = luminance() !in 0.04f..0.92f
@@ -51,6 +56,9 @@ fun Color.compositeOver(background: Color, alpha: Float = this.alpha): Color = C
  * Uses WCAG relative luminance threshold.
  */
 fun Color.requiresLightContent(): Boolean = luminance() < 0.5f
+
+/** Whichever of white and black stands out of this color, see [requiresLightContent]. */
+fun Color.contrastingContent(): Color = if (requiresLightContent()) Color.White else Color.Black
 
 /** WCAG contrast ratio against [background], from 1 for identical colors to 21 for black on white. */
 fun Color.contrastAgainst(background: Color): Float {

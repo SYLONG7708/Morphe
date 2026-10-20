@@ -41,9 +41,6 @@
     <string name="home_update_skipped_metered">Päivitykset ohitettu</string>
     <string name="home_update_skipped_metered_subtitle">Mobiilidata on käytössä</string>
     <string name="home_updating_sources">Päivitetään lähteitä…</string>
-    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
-         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
-    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s Mt (%5$d%%)</string>
     <string name="home_update_success">Lähteiden päivitys valmis</string>
     <string name="home_update_success_subtitle">Lähteet ovat ajan tasalla</string>
     <string name="home_sources_are_loading">Lähteitä ladataan, odota…</string>
@@ -126,6 +123,26 @@
     <string name="home_greeting_super_late_3">Tässä vaiheessa vain pysy hereillä ja päivitä</string>
     <string name="home_greeting_super_late_4">Sinä ja palvelimet, molemmat hereillä</string>
     <string name="home_greeting_super_late_5">Yökyykkymäinen ja tuottelias</string>
+    <!-- Halloween greetings, shown instead of the ones above around October 31 -->
+    <!-- Pun on "Trick or treat" -->
+    <string name="home_greeting_halloween_1">Kepponen vai korjaus?</string>
+    <string name="home_greeting_halloween_2">Näissä APK:issa ei ole kummituksia, tarkistimme</string>
+    <string name="home_greeting_halloween_3">Karmiva aika, tuoreita korjauksia</string>
+    <!-- Pun on "Something wicked this way comes", a line from Shakespeare's Macbeth -->
+    <string name="home_greeting_halloween_4">Jokin paha täältä korjaa</string>
+    <!-- Winter holiday greetings, shown instead of the ones above from late December to early January -->
+    <string name="home_greeting_winter_1">Iloista juhla-aikaa, tuoreita korjauksia</string>
+    <!-- Pun on the song "Let It Snow! Let It Snow! Let It Snow!" -->
+    <string name="home_greeting_winter_2">Saa sataa lunta, saa korjata</string>
+    <string name="home_greeting_winter_3">Uusi vuosi, uudet korjaukset</string>
+    <!-- Pun on "Dashing through the snow", the opening line of "Jingle Bells" -->
+    <string name="home_greeting_winter_4">Korjaten halki hangen</string>
+    <!-- New Year greetings, shown instead of the ones above on December 31 and January 1 -->
+    <string name="home_greeting_new_year_1">Hyvää uutta vuotta!</string>
+    <string name="home_greeting_new_year_2">Lasketaan aikoja uusiin päivityksiin</string>
+    <string name="home_greeting_new_year_3">Uusi vuosi, samat mainoksettomat sovellukset</string>
+    <!-- Pun on the saying "Out with the old, in with the new" -->
+    <string name="home_greeting_new_year_4">Vanhat versiot pois, uudet tilalle</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Lisäosien lähteet</string>
     <string name="sources_search">Hae lähteitä ja korjauksia</string>
@@ -141,7 +158,6 @@
     <string name="sources_management_report_issue">Ilmoita ongelmasta</string>
     <string name="sources_management_failed_to_open_url">URL-osoitteen avaaminen epäonnistui</string>
     <string name="sources_apps">Sovellukset</string>
-    <string name="sources_apps_title">Sovellukset lähteestä %1$s</string>
     <string name="sources_apps_description">Napauta sovellusta jättääksesi sen pois tästä lähteestä tai palauttaaksesi sen takaisin, tai paina pitkään valitaksesi useita. Sovellus poistuu aloitusnäytöltä, kun mikään lähde ei tuo sitä.</string>
     <string name="sources_apps_brought">Tämän lähteen tuomat</string>
     <string name="sources_apps_left_out">Tästä lähteestä pois jätetyt</string>
@@ -174,21 +190,22 @@
     <string name="sources_dialog_rename">Nimeä lisäosien lähde uudelleen</string>
     <string name="sources_dialog_duplicate_name_error">Tämän niminen lisäosien lähde on jo olemassa</string>
     <string name="sources_dialog_missing_error">Tämän lisäosien lähteen päivitys epäonnistui</string>
-    <string name="sources_dialog_view_any_version">Mikä tahansa versio</string>
-    <string name="sources_dialog_view_any_package">Mikä tahansa paketti</string>
     <string name="sources_dialog_add_source">Lisää lisäosien lähde</string>
-    <string name="sources_dialog_delete_confirm_message">Poistetaanko lähde \"%s\"? Tätä toimintoa ei voi kumota</string>
+    <string name="sources_dialog_delete_confirm_body">Tätä ei voi kumota</string>
     <string name="sources_dialog_remote">Etälähde</string>
     <string name="sources_dialog_remote_url">Lähteen URL-osoite</string>
-    <string name="sources_dialog_remote_url_formats_title">Esimerkkejä:</string>
+    <string name="sources_dialog_remote_url_hint">Säilö tai linkki korjauspaketin .json-tiedostoon. Liitä useita kerralla lisätäksesi ne kaikki</string>
+    <string name="sources_dialog_paste_no_links">Leikepöydältä ei löytynyt linkkejä</string>
     <string name="sources_dialog_local">Paikallinen</string>
-    <string name="sources_dialog_local_file">Valitse lisäosien lähdetiedosto</string>
+    <string name="sources_dialog_local_files">Valitse korjauslähdetiedostot</string>
+    <!-- Button under the files already picked, which opens the picker again -->
+    <string name="sources_dialog_local_add_more">Lisää tiedostoja</string>
     <string name="sources_dialog_local_file_tap_hint">Selaa tallennustilaa napauttamalla</string>
-    <string name="sources_dialog_local_file_description">Valitse .mpp-muotoinen lisäosien lähdetiedosto tallennustilasta</string>
     <string name="sources_dialog_local_invalid_extension">Tiedoston tunnisteen on oltava .mpp</string>
+    <!-- %s is the name of the local source that another version of the same bundle replaces -->
+    <string name="sources_dialog_local_updates">Päivittää %s</string>
     <string name="sources_dialog_url_valid">Kelvollinen datasäilö tai JSON-osoite</string>
     <string name="sources_dialog_url_invalid">URL-osoitteen on osoitettava GitHub-/GitLab-datasäilöön tai .json-tiedostoon</string>
-    <string name="sources_dialog_local_change_file">Vaihda tiedosto</string>
     <string name="sources_dialog_preinstalled">Esivalmis</string>
     <string name="sources_dialog_community">Yhteisön korjaukset</string>
     <string name="sources_dialog_choose_apps">Valitse sovellukset</string>
@@ -218,7 +235,8 @@ Kaikki mitä lisäät tältä verkkosivustolta, on oma riskisi."</string>
     <string name="home_apk_helper_download">Käytä apuohjelmaa</string>
     <string name="home_apk_helper_title">Lataa apuohjelman avulla</string>
     <string name="home_apk_helper_description">Morphe pyytää alla olevaa apuohjelmaa lataamaan alkuperäisen APK-tiedoston ja palauttamaan tiedoston</string>
-    <string name="home_apk_helper_continue">Avaa apuohjelma</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="home_apk_helper_continue">Avaa avustaja</string>
     <string name="home_apk_helper_warning">Jatka vain, jos luotat tähän apuohjelmaan. Morphe tarkistaa paketin, version ja allekirjoituksen kaikesta, mitä se vastaanottaa ennen korjaamista</string>
     <string name="home_apk_helper_warning_unverified">Jatka vain, jos luotat tähän apuohjelmaan. Morphe ei voi vahvistaa tämän APK-tiedoston allekirjoitusta, joten muokattua tiedostoa ei havaita</string>
     <string name="home_apk_helper_no_result">Apuohjelma ei palauttanut APK-tiedostoa</string>
@@ -240,7 +258,6 @@ Kaikki mitä lisäät tältä verkkosivustolta, on oma riskisi."</string>
     <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; -sovellusta ei ole tuettuja versioita Android %2$s -versiolle (API %3$s). Kaikki ilmoitetut versiot vaativat uudemman Android-version</string>
     <!-- Home Screen - Dialog 2: Download Instructions -->
     <string name="home_download_instructions_title">Lataa alkuperäinen APK</string>
-    <string name="home_download_instructions_steps_title">Ohjeet:</string>
     <string name="home_download_instructions_finding">Etsitään lataussivua…</string>
     <string name="home_download_instructions_step1">Valitse alta %s -painike</string>
     <string name="home_download_instructions_step2_part1">Vieritä verkkosivua alaspäin ja valitse</string>
@@ -262,6 +279,8 @@ Kaikki mitä lisäät tältä verkkosivustolta, on oma riskisi."</string>
     <string name="home_download_instructions_step4_mount">Kun olet asentanut alkuperäisen APK:n, palaa Morpheen</string>
     <string name="home_download_instructions_continue_to">Jatka %s</string>
     <string name="home_download_instructions_destination">lataussivulle</string>
+    <string name="home_download_instructions_copy_link">Kopioi linkki</string>
+    <string name="home_download_instructions_link_copied">Linkki kopioitu</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Valitse ladattu APK</string>
     <string name="home_file_picker_prompt_description">Valitse juuri lataamasi APK sovellukselle: &lt;b&gt;%s&lt;/b&gt;</string>
@@ -273,17 +292,15 @@ Kaikki mitä lisäät tältä verkkosivustolta, on oma riskisi."</string>
     <string name="home_use_installed_app">Käytä asennettua sovellusta</string>
     <string name="home_installed_app_picker_title">Asennetut sovellukset</string>
     <string name="home_installed_app_picker_empty">Sovelluksia ei löytynyt</string>
-    <string name="home_installed_app_picker_filter_all">Kaikki sovellukset</string>
     <string name="home_installed_app_picker_filter_user">Vain käyttäjän sovellukset</string>
     <string name="home_installed_app_picker_filter_system">Vain järjestelmäsovellukset</string>
     <string name="home_invalid_apk_unreadable">Tiedoston lukeminen epäonnistui. Tarkista, ettei ulkoisen tallennustilan akunkäyttöä ole rajoitettu.</string>
     <string name="home_invalid_apk_not_an_apk">Valittu tiedosto ei ole kelvollinen APK</string>
+    <string name="home_invalid_apk_already_patched">Valittu APK on jo paikattu. Valitse sen sijaan alkuperäinen sovellus</string>
     <string name="home_invalid_apk_io_error">Tiedoston avaaminen epäonnistui. Yritä uudelleen</string>
     <string name="home_external_apk_expert_mode_required">Tämä ominaisuus on käytettävissä vain asiantuntijatilassa</string>
     <!-- Home Screen - Dialog 4: Expert Mode Dialog -->
-    <string name="expert_mode_title">Asiantuntijatila</string>
     <string name="expert_mode_search">Hae lisäosia</string>
-    <string name="expert_mode_proceed">Jatka muokkaamiseen</string>
     <string name="expert_mode_disable_all">Poista kaikki käytöstä</string>
     <string name="expert_mode_disable_all_done">Kaikki korjaukset poistettu käytöstä</string>
     <string name="expert_mode_enable_all">Ota kaikki käyttöön</string>
@@ -326,6 +343,7 @@ Parhaan tuloksen saavuttamiseksi sovellus suosittelee &lt;b&gt;kokonaisen APK:n&
 Sovelluksen &lt;b&gt;%s&lt;/b&gt; tässä versiossa on varhainen kokeellinen tuki&lt;br/&gt;&lt;br/&gt;🔧 Siinä saattaa esiintyä odottamatonta toimintaa tai tuntemattomia virheitä, sillä lisäosia hienosäädetään tälle sovellusversiolle</string>
     <string name="home_dialog_unsupported_version_dialog_title">Tukematon versio</string>
     <string name="home_dialog_unsupported_version_dialog_description">Tämä APK ei ole suositeltu sovellusversio. Jos jatkat, sovellus ei ehkä enää toimi</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="home_dialog_unsupported_version_dialog_proceed">Jatka silti</string>
     <string name="home_dialog_unsupported_version_compatible_versions">Yhteensopivat versiot:</string>
     <string name="home_dialog_unsupported_version_unsupported_label">Tukematon</string>
@@ -361,46 +379,55 @@ Sovelluksen &lt;b&gt;%s&lt;/b&gt; tässä versiossa on varhainen kokeellinen tuk
     <string name="patch_option_slider_range_end">Asti</string>
     <string name="patch_option_list_duplicate">Tämä arvo on jo olemassa</string>
     <string name="patch_option_list_empty">Arvo ei voi olla tyhjä</string>
-    <string name="patch_option_list_empty_state">Arvoja ei ole vielä lisätty</string>
     <string name="patch_option_required_missing">%s: täytä kaikki pakolliset kentät</string>
+    <!-- Badge on a patch option whose value differs from the patch's own, which resets it when tapped -->
+    <string name="patch_option_changed">Muutettu</string>
+    <!-- Badge on a patch option that has to be filled in before patching -->
+    <string name="patch_option_required">Pakollinen</string>
+    <!-- Hint under an image patch option. "%1$s" is the width and "%2$s" the height in pixels -->
+    <string name="patch_option_recommended_size">Suositeltu: %1$s×%2$s</string>
     <!-- Adaptive Icon Creator -->
     <string name="adaptive_icon_create">Luo adaptiivinen kuvake</string>
     <string name="adaptive_icon_select_image">Valitse kuva</string>
     <string name="adaptive_icon_change_image">Vaihda kuva</string>
+    <string name="image_load_failed">Tätä kuvaa ei voitu ladata</string>
+    <!-- Card of the adaptive icon creator where the picture is placed on the icon -->
+    <string name="adaptive_icon_launcher">Käynnistyskuvake</string>
+    <string name="adaptive_icon_gesture_hint">Siirrä vetämällä, muuta kokoa nipistämällä</string>
+    <!-- Card of the adaptive icon creator showing the icons as the device draws them -->
+    <string name="adaptive_icon_preview">Esikatselu</string>
+    <!-- Caption under the launcher icon in its own colors -->
+    <string name="adaptive_icon_standard">Vakio</string>
+    <!-- Caption under the launcher icon recolored by the system theme -->
+    <string name="adaptive_icon_themed">Teema</string>
     <string name="adaptive_icon_background_color">Taustaväri</string>
     <string name="adaptive_icon_reset_transform">Palauta sijainti ja mittakaava</string>
-    <string name="adaptive_icon_safe_zone_inner">Turva-alue (aina näkyvissä)</string>
-    <string name="adaptive_icon_safe_zone_outer">Maskialue (saattaa rajautua)</string>
-    <string name="adaptive_icon_no_transparency_warning">Kuvassa ei ole läpinäkyviä pikseleitä. Tulos saattaa näyttää virheelliseltä.</string>
+    <string name="adaptive_icon_no_transparency_warning">Tässä kuvassa ei ole läpinäkyviä pikseleitä, joten teema- ja ilmoituskuvakkeet säilyttävät Morphe-logon</string>
     <string name="adaptive_icon_created_success">Adaptiivinen kuvake on luotu</string>
     <string name="adaptive_icon_creation_failed">Adaptiivisen kuvakkeen luominen epäonnistui</string>
-    <string name="adaptive_icon_label">Mukautuva</string>
-    <string name="adaptive_icon_monochrome_label">Yksivärinen</string>
     <string name="adaptive_icon_guide">Mukautetun kuvakkeen opas</string>
     <string name="adaptive_icon_guide_png_title">Käytä PNG-tiedostoa, jossa on läpinäkyvä tausta</string>
-    <string name="adaptive_icon_guide_png_body">Etualan täytyy olla PNG-tiedosto, jossa on läpinäkyvä tausta. Yksivärinen tausta näyttää väärältä – taustaväri tulee valita alla olevasta taustavärivalitsimesta.</string>
+    <string name="adaptive_icon_guide_png_body">Läpinäkyvällä taustalla oleva logo toimii parhaiten, ja taustaväri valitaan alhaalta. Kuva ilman läpinäkyvyyttä täyttää sen sijaan koko kuvakkeen, jolloin teema- ja ilmoituskuvakkeet säilyttävät Morphe-logon.</string>
     <string name="adaptive_icon_guide_safe_zones_title">Turva-alueet</string>
-    <string name="adaptive_icon_guide_safe_zones_body">"Sisäalue (yhtenäinen): sisältö on aina täysin näkyvissä kaikissa käynnistimen muodoissa.
-Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä – pidä tärkeät tiedot sisäalueella."</string>
+    <string name="adaptive_icon_guide_safe_zones_body">Ääriviiva näyttää käynnistimesi kuvakkeen muodon, ja kaikki sen ulkopuolelle jäävä leikataan pois. Muut käynnistimet käyttävät muita muotoja, joten pidä tärkeät yksityiskohdat katkoviivaympyrän sisällä, jonka kaikki muodot näyttävät.</string>
     <string name="adaptive_icon_guide_notification_title">Ilmoituskuvake</string>
-    <string name="adaptive_icon_guide_notification_body">Luodaan automaattisesti etuosan kuvasta. Säädä sen kokoa Ilmoitukset-liukusäätimellä. Kaikki näkyvä sisältö on valkoista tilarivillä.</string>
-    <string name="adaptive_icon_guide_monochrome_title">Yksivärinen kuvake</string>
-    <string name="adaptive_icon_guide_monochrome_body">Luodaan automaattisesti etuosan kuvasta käyttäen samoja mukautettuja kuvakemuunnoksia. Se on sävytetty taustakuvan korostusvärillä Android 13:ssa ja uudemmissa versioissa.</string>
+    <string name="adaptive_icon_guide_notification_body">Se leikataan kuvan näkyvästä osasta ja skaalataan muiden tilapalkin kuvakkeiden kokoiseksi tiedoston marginaalista riippumatta. Säädä sitä esikatselun alla olevalla liukusäätimellä. Android näyttää sen yksivärisenä.</string>
+    <string name="adaptive_icon_guide_monochrome_title">Teemakuvake</string>
+    <string name="adaptive_icon_guide_monochrome_body">Se leikataan kuvasta samassa kohdassa ja samankokoisena kuin käynnistinkuvake. Android 13:ssa ja sitä uudemmissa versioissa käynnistimet, joissa teemakuvakkeet on otettu käyttöön, värittävät sen taustakuvan väreillä.</string>
     <string name="notification_icon_preview">Ilmoitus</string>
     <!-- Header Creator -->
     <string name="header_creator_create">Luo oma ylätunniste</string>
     <string name="header_creator_light_theme">Vaalean teeman ylätunniste</string>
     <string name="header_creator_dark_theme">Tumman teeman ylätunniste</string>
-    <string name="header_creator_no_image">Ei valittua kuvaa</string>
     <string name="header_creator_success">Ylätunniste on luotu</string>
     <string name="header_creator_failed">Ylätunnisteen luominen epäonnistui</string>
     <string name="header_creator_guide">Ylätunnuksen luontiopas</string>
     <string name="header_creator_guide_image_title">Kuvan vaatimukset</string>
-    <string name="header_creator_guide_image_body">Käytä mitä tahansa kuvatiedostoa (PNG tai JPEG). Parhaan tuloksen saat käyttämällä leveäkuvasuhdetta noin 2,7:1. PNG-tiedostot, joissa on läpinäkyvä tausta, sulautuvat luonnollisesti sovelluksen teemaan.</string>
+    <string name="header_creator_guide_image_body">Läpinäkyvällä taustalla oleva PNG-kuva sulautuu sovelluspalkkiin. Tiedoston logon ympärillä olevat marginaalit jätetään huomiotta, joten sen koko ja paikka ovat alun perin vakiologon mukaiset.</string>
     <string name="header_creator_guide_themes_title">Vaalea ja tumma teema</string>
     <string name="header_creator_guide_themes_body">Useimmat sovellukset vaativat erilliset kuvat vaaleaa ja tummaa teemaa varten. Jotkut sovellukset (kuten YouTube Music) käyttävät vain tummaa teemaa, joten vain tämä osio näytetään.</string>
     <string name="header_creator_guide_positioning_title">Sijainti ja skaalaus</string>
-    <string name="header_creator_guide_positioning_body">Käytä nipistyszoom- ja vedä-eleitä suoraan esikatselussa kuvan sijoittamiseen ja skaalaamiseen. Ohjaimet näkyvät, kun kuva on lähellä keskustaa. Voit käyttää myös esikatselun alla olevaa liukusäädintä.</string>
+    <string name="header_creator_guide_positioning_body">Vedä ja nipistä kuvaa editorissa tai säädä sen kokoa liukusäätimellä. Katkoviivalaatikko merkitsee vakiologon paikan, ja apulinjat tulevat näkyviin, kun kuva on kohdakkain sen kanssa.</string>
     <!-- Batch patching -->
     <string name="batch_patch_action">Valittu lisäosa</string>
     <string name="batch_patch_title">Ryhmäkorjaus</string>
@@ -418,16 +445,18 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <string name="batch_patch_source_file">Liitetty tiedosto</string>
     <string name="batch_patch_source_unavailable">APK-tiedostoa ei voitu valmistella</string>
     <string name="batch_patch_force_version">Korjaa joka tapauksessa</string>
-    <string name="batch_patch_force_version_done">Lisätty jonoon, muille versioille tehdyt muutokset voivat rikkoa sovelluksen</string>
-    <string name="batch_patch_accept_signature_done">Jonoon lisätty joka tapauksessa, tämä APK ei välttämättä ole alkuperäinen</string>
+    <string name="batch_patch_force_version_done">Jonotettu silti, sovellus voi hajota</string>
+    <string name="batch_patch_accept_signature_done">Jonotettu silti, APK:ta ei varmennettu</string>
     <string name="batch_patch_edit_patches">Valitse korjaukset</string>
     <string name="batch_patch_state_no_apk">APK-tiedostoa ei ole</string>
     <string name="batch_patch_state_no_patches">Ei korjauksia</string>
     <string name="batch_patch_policy_install">Asenna valmistuttua</string>
     <string name="batch_patch_policy_install_description">Asentaa jokaisen korjatun sovelluksen heti jonon valmistuttua. Pois käytöstä pitää APK-tiedostot myöhempää käyttöä varten</string>
-    <string name="batch_patch_start">Aloita korjaaminen</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="batch_patch_start">Alku</string>
     <string name="batch_patch_stop_title">Lopeta eräkorjaus?</string>
     <string name="batch_patch_stop_description">Tällä hetkellä korjattava sovellus ja kaikki vielä jonossa olevat sovellukset peruutetaan</string>
+    <!-- Label of a footer button beside "Done". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_install_all">Asenna kaikki</string>
     <string name="batch_patch_install_failed">Asennus epäonnistui</string>
     <string name="batch_patch_in_progress">Eräkorjaus on jo käynnissä</string>
@@ -464,9 +493,24 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <string name="home_app_info_app_update_available_description">Patch-lähteet tukevat tämän sovelluksen uudempaa versiota. Paikkaa se uudelleen siirtyäksesi siihen versioon.</string>
     <string name="home_app_info_newest_supported_version">Uusin tuettu</string>
     <string name="home_app_info_version_move">Asennettu %1$s, uusin tuettu %2$s</string>
+    <string name="home_app_info_version_restore">Asennettu %1$s, paikattu %2$s</string>
     <string name="home_app_info_app_deleted_warning">Sovellus poistettiin</string>
     <string name="home_app_info_app_deleted_description">Tämä sovellus poistettiin Morphen ulkopuolelta. Muokkaa sitä uudelleen palauttaaksesi toiminnot</string>
     <string name="home_app_info_not_patched_description">Tästä sovelluksesta on asennettu korjaamaton versio. Morphella on edelleen aiempi korjaustietue.</string>
+    <string name="home_app_info_mount_replaced_description">Toinen versio korvasi mountatun sovelluksen, joten paikkaus ei enää päde. Palautus palauttaa paikatun version takaisin</string>
+    <string name="home_app_info_mount_replaced_by_play_store_description">Google Play päivitti mountatun sovelluksen, joten paikkaus ei enää päde. Palautus palauttaa paikatun version takaisin. Poista sen automaattipäivitys käytöstä Google Play -kaupassa, jotta se pysyy paikattuna</string>
+    <string name="app_links_title">Tuetut verkkolinkit</string>
+    <string name="app_links_description">Android 12+:ssa linkit tuettuihin verkkotunnuksiin avautuvat oletuksena selaimessasi, ellei niitä ole hyväksytty</string>
+    <string name="app_links_unverified_banner_title">Vahvistamattomat verkkolinkit</string>
+    <string name="app_links_unverified_banner_description">Tuetut verkkolinkit avautuvat tällä hetkellä selaimessasi tämän sovelluksen sijaan</string>
+    <string name="app_links_enable_auto">Ota käyttöön automaattisesti</string>
+    <string name="app_links_enable_auto_in_progress">Otetaan linkkejä käyttöön…</string>
+    <string name="app_links_open_settings">Avaa linkkien asetukset</string>
+    <string name="app_links_repair_success">Sovelluslinkit on otettu käyttöön onnistuneesti</string>
+    <string name="app_links_repair_failed">Sovelluslinkkien automaattinen käyttöönotto epäonnistui</string>
+    <string name="app_links_all_verified">Kaikki tuetut linkit on määritetty avautumaan tässä sovelluksessa</string>
+    <string name="app_links_fix">Korjaa linkit</string>
+    <string name="configure">Määritä</string>
     <string name="patcher_rename_title">Tämä asentaa kloonin</string>
     <string name="patcher_rename_description">Laastarit rakensivat tämän sovelluksen omalla pakettinimellään, joten sen asentaminen lisää kloonin &lt;b&gt;%s&lt;/b&gt; rinnalle päivittämisen sijaan</string>
     <string name="patcher_rename_result_package">Asennetaan nimellä</string>
@@ -494,10 +538,10 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">Sovellus</string>
     <string name="patcher_field_package">Paketti</string>
+    <string name="patcher_field_failed_patch">Epäonnistunut korjaus</string>
     <string name="patcher_field_source">Lähde</string>
     <string name="patcher_field_split">APK:n jakaminen</string>
     <string name="patcher_field_manager">Hallinta</string>
-    <string name="patcher_field_patcher">Paikkaaja</string>
     <string name="patcher_field_runtime">Suoritusaika</string>
     <!-- Native code libraries (.so files) packed inside the APK -->
     <string name="patcher_field_libraries">Kirjastot</string>
@@ -528,10 +572,12 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
     <string name="patcher_installing_subtitle">Melkein valmis rokkaamaan! 🎸</string>
     <string name="patcher_success_title">Valmis! 🎉</string>
     <string name="patcher_success_subtitle">Sovellus on muokattu ja asennettu!</string>
+    <string name="patcher_mounted_subtitle">Sovelluksesi on paikattu ja liitetty!</string>
     <string name="patcher_complete_title">Paikkaus valmis! ✨</string>
     <string name="patcher_failed_title">Hups! Jotain meni vikaan</string>
-    <string name="patcher_failed_hint">Napauta %s nähdäksesi, mikä meni vikaan.</string>
     <string name="patcher_failed_dialog_title">Paikkaus epäonnistui</string>
+    <string name="patcher_error_details">Virheen tiedot</string>
+    <string name="patcher_change_patches">Vaihda paikkauksia</string>
     <string name="patcher_unknown_error">Tapahtui tuntematon virhe</string>
     <string name="patcher_split_step_extracting">Ositettujen APK-tiedostojen purkaminen</string>
     <string name="patcher_split_step_merging">Yhdistetään %s</string>
@@ -545,15 +591,14 @@ Ulkopuolinen alue (katkoviiva): käynnistimen maski saattaa leikata osia siitä 
 
 Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_install_error_title">Asennusvirhe</string>
+    <string name="patcher_mount_error_title">Liitosvirhe</string>
     <string name="patcher_install_error_subtitle">Kokeile poistaa sovelluksen asennus ja asentaa se uudelleen</string>
-    <string name="patcher_ready_to_install_subtitle">Asenna napauttamalla alla olevaa painiketta</string>
     <string name="patcher_ready_to_mount_subtitle">Liitä napauttamalla alla olevaa painiketta</string>
     <string name="patcher_patches_excluded_for_installer">Ei saatavilla tälle asennusmenetelmälle ja pois suljettu: %s</string>
     <string name="patcher_back_to_game_hint">Napauta %1$s palataksesi peliisi</string>
     <string name="patcher_storage_permission_dialog_title">Tallennuspolkua ei voida käyttää</string>
     <string name="patcher_incompatible_patcher_title">Päivitys vaaditaan</string>
-    <string name="patcher_incompatible_patcher_description">Paketti &lt;b&gt;%1$s&lt;/b&gt; vaatii muokkaustyökalun version &lt;b&gt;%2$s&lt;/b&gt; tai uudemman. Päivitä Morphe muokataksesi tätä sovellusta</string>
-    <string name="patcher_incompatible_patcher_update_button">Lataa ja päivitä Morphe</string>
+    <string name="patcher_incompatible_patcher_description">Lähde &lt;b&gt;%1$s&lt;/b&gt; vaatii &lt;b&gt;%2$s&lt;/b&gt;-patcherin tai uudemman. Päivitä Morphe käyttääksesi sitä</string>
     <string name="patcher_storage_permission_description_api30">Yksi tai useampi lisäosien asetus osoittaa polkuihin, joita Morphe ei voi lukea. Anna lupa tallennustilan käyttöön ja napauta painiketta, niin muokkaus alkaa automaattisesti</string>
     <string name="patcher_storage_permission_description_legacy">Yksi tai useampi lisäosien asetus osoittaa polkuihin, joita ei voida käyttää. Päivitä polut lisäosien asetuksissa ja yritä uudelleen</string>
     <string name="patcher_storage_permission_grant">Anna lupa tallennustilan käyttöön</string>
@@ -574,7 +619,6 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_step_load_patches">Ladataan lisäosia</string>
     <string name="patcher_step_prepare_split_apk">Yhdistetään ositettua APK:ta</string>
     <string name="patcher_step_unpack">Luetaan APK-tiedostoa</string>
-    <string name="patcher_step_group_patching">Muokataan</string>
     <string name="patcher_step_group_saving">Tallennetaan</string>
     <string name="patcher_step_write_patched">Kirjoitetaan muokattua APK-tiedostoa</string>
     <string name="patcher_step_sign_apk">Allekirjoitetaan muokattua APK-tiedostoa</string>
@@ -586,6 +630,7 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="patcher_memory_adjustment_title">Muisti ei riitä</string>
     <string name="patcher_memory_adjustment_description">Järjestelmä pysäytti patcherin, kun se toimi %1$d Mt:n muistirajalla. Laskemalla rajan arvoon %2$d Mt patcherista tulee pienempi kohde, ja suoritus voi päättyä.</string>
     <string name="patcher_memory_adjustment_description_at_minimum">Järjestelmä pysäytti patcherin, kun se toimi %1$d Mt:n muistirajalla, joka on jo alin käytettävissä oleva. Yritä paikkausta vähemmillä patch-lähteillä tai valitse vähemmän patcheja.</string>
+    <string name="patcher_memory_adjustment_description_finished">Järjestelmä pysäytti paikkaajan %1$d MB:n muistirajalla, ja se onnistui vasta %2$d MB:ssä. Aloittaminen %2$d MB:stä ohittaa tuon hukatun yrityksen seuraavalla kerralla</string>
     <string name="patcher_memory_adjustment_apply">Pienennä arvoon %1$d Mt</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Muokkaus käynnissä…</string>
@@ -655,6 +700,8 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="mini_game_try_again">Yritä uudelleen</string>
     <string name="mini_game_paused">Tauolla</string>
     <string name="mini_game_resume">Jatka</string>
+    <string name="mini_game_restart">Aloita alusta</string>
+    <string name="mini_game_change">Valitse toinen peli</string>
     <string name="mini_game_2048_picker_subtitle">Liu\'uta laattoja yhdistääksesi ne</string>
     <string name="mini_game_flappy_picker_subtitle">Napauta lentääksesi putkien läpi</string>
     <string name="mini_game_flappy_tap_to_start">Napauta lentääksesi</string>
@@ -674,6 +721,7 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="system">Järjestelmä</string>
     <!-- Settings - Appearance Tab - Background animation -->
     <string name="settings_appearance_background">Taustaanimaatio</string>
+    <string name="settings_appearance_background_description">Animaatio, joka toistuu sovelluksen näyttöjen taustalla</string>
     <string name="settings_appearance_background_circles">Ympyrät</string>
     <string name="settings_appearance_background_rings">Renkaat</string>
     <string name="settings_appearance_background_mesh">Verkko</string>
@@ -682,6 +730,9 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_appearance_background_snow">Lumi</string>
     <string name="settings_appearance_background_grid">Ruudukko</string>
     <string name="settings_appearance_background_particles">Hiukkaset</string>
+    <string name="settings_appearance_background_lava">Lava-lamppu</string>
+    <string name="settings_appearance_background_halloween">Halloween</string>
+    <string name="settings_appearance_background_fireworks">Ilotulitus</string>
     <string name="settings_appearance_background_none">Ei mitään</string>
     <string name="settings_appearance_background_random">Satunnainen</string>
     <string name="settings_appearance_background_random_interval_launch">Käynnistys</string>
@@ -689,6 +740,10 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_appearance_background_random_interval_3days">Joka 3. päivä</string>
     <string name="settings_appearance_parallax_effect">Parallaksiefekti</string>
     <string name="settings_appearance_parallax_effect_description">Tausta liikkuu sulavasti, kun laitetta kallistetaan</string>
+    <string name="settings_appearance_seasonal_themes">Kausiteemat</string>
+    <string name="settings_appearance_seasonal_themes_description">Juhla-aiheiset taustat ja tervehdykset juhlapyhinä</string>
+    <!-- %1$s is a holiday background name, such as Halloween. %2$s is a date, such as November 1 -->
+    <string name="settings_appearance_seasonal_background_notice">%1$s-tausta on käytössä %2$s asti, kun kausiteemat ovat päällä</string>
     <!-- Settings - Appearance Tab - Theme -->
     <string name="settings_appearance_theme">Teema</string>
     <string name="settings_appearance_theme_mode">Teeman tila</string>
@@ -702,6 +757,10 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_appearance_accent_color">Korostusväri</string>
     <string name="settings_appearance_pure_black">Täysin musta</string>
     <string name="settings_appearance_pure_black_description">Käytä täysin mustia taustoja</string>
+    <string name="settings_appearance_color_accents">Sovelluksen ja lähteen värit</string>
+    <string name="settings_appearance_color_accents_description">Käyttää kunkin sovelluksen ja lähteen omaa väriä korostusvärin sijaan</string>
+    <string name="settings_appearance_outlines">Ääriviivat</string>
+    <string name="settings_appearance_outlines_description">Piirtää ohuen reunan korttien, paneelien ja painikkeiden ympärille</string>
     <!-- Settings - Appearance Tab - Language Selector -->
     <string name="settings_appearance_language_and_display">Kieli &amp; näyttö</string>
     <string name="settings_appearance_app_language">Sovelluksen kieli</string>
@@ -742,14 +801,31 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="settings_appearance_app_card_colors_bundle_description">Käytä tässä kunkin sovelluksen omaa väriä, joka on automaattisesti sävytetty sopimaan</string>
     <!-- Settings - Appearance Tab - App Icon Selector -->
     <string name="settings_appearance_app_icon_selector_title">Sovelluskuvake</string>
+    <string name="settings_appearance_app_icon_selector_description">Miltä Morphe näyttää aloitusnäytöllä ja sovelluslokerossa</string>
     <string name="settings_appearance_app_icon_default">Oletus</string>
     <string name="settings_appearance_app_icon_light_2">Taivas</string>
     <string name="settings_appearance_app_icon_light_3">Auringonlasku</string>
-    <string name="settings_appearance_app_icon_dark_1">Meri</string>
+    <string name="settings_appearance_app_icon_light_4">Laventeli</string>
+    <string name="settings_appearance_app_icon_light_5">Jäätikkö</string>
+    <string name="settings_appearance_app_icon_light_6">Usva</string>
+    <string name="settings_appearance_app_icon_light_7">Hiekka</string>
+    <string name="settings_appearance_app_icon_dark_1">Sinivihreä</string>
     <string name="settings_appearance_app_icon_dark_2">Tyhjiö</string>
-    <string name="settings_appearance_app_icon_dark_3">Indigo</string>
+    <string name="settings_appearance_app_icon_dark_3">Luumu</string>
+    <string name="settings_appearance_app_icon_dark_4">Keskiyö</string>
+    <string name="settings_appearance_app_icon_dark_5">Liuske</string>
+    <string name="settings_appearance_app_icon_accent_1">Revontulet</string>
+    <string name="settings_appearance_app_icon_accent_2">Muste</string>
+    <string name="settings_appearance_app_icon_accent_3">Paperi</string>
+    <string name="settings_appearance_app_icon_accent_4">Hämärä</string>
+    <string name="settings_appearance_app_icon_background">Tausta</string>
+    <string name="settings_appearance_app_icon_mark">Logo</string>
+    <string name="settings_appearance_app_icon_mark_color">Väri</string>
+    <string name="settings_appearance_app_icon_mark_white">Valkoinen</string>
+    <string name="settings_appearance_app_icon_mark_black">Musta</string>
     <string name="settings_appearance_app_icon_change_dialog_title">Vaihda sovelluksen kuvake?</string>
     <string name="settings_appearance_app_icon_change_dialog_message">Vaihda kuvakkeeksi: &lt;b&gt;%s&lt;/b&gt;. Käynnistä uudelleen?</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="settings_appearance_app_icon_change_dialog_confirm">Vaihda kuvake</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Päivitykset</string>
@@ -782,7 +858,6 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="external_batch_patch_trust_caller">Salli tämä sovellus aina</string>
     <string name="external_batch_patch_unknown_caller">Tuntematon sovellus</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Morphe-päivitys saatavilla</string>
     <string name="notification_bundle_update_title">Uusia lisäosia saatavilla</string>
     <string name="notification_update_text">Versio %s on valmis ladattavaksi</string>
     <string name="notification_bundle_update_text_unversioned">Avaa Morphe ja päivitä napauttamalla</string>
@@ -793,8 +868,11 @@ Poistaminen poistaa pysyvästi kaikki sovelluksen tiedot."</string>
     <string name="notification_channel_manager_updates_description">Ilmoitukset uusista Morphe-julkaisuista</string>
     <string name="notification_channel_patch_updates">Korjauspäivitykset</string>
     <string name="notification_channel_patch_updates_description">Ilmoitukset uusista korjausjulkaisuista</string>
-    <string name="notification_channel_patcher">Muokkaaminen</string>
     <string name="notification_channel_patcher_description">Näytetään, kun Morphe paikkaa sovellusta taustalla</string>
+    <string name="notification_channel_mounted_apps">Mountatut sovellukset</string>
+    <string name="notification_channel_mounted_apps_description">Kun toinen versio korvasi mountatun sovelluksen eikä sen korjaus enää päde</string>
+    <string name="notification_mount_replaced_title">%1$s ei ole enää korjattu</string>
+    <string name="notification_mount_replaced_text">v%1$s korvasi korjatun v%2$s:n. Avaa Morphe palauttaaksesi sen</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Asiantuntijan asetukset</string>
     <string name="settings_advanced_expert_mode">Asiantuntijatila</string>
@@ -1080,7 +1158,6 @@ Yksityiskohdat: %2$s"</string>
     <string name="settings_system_patched_apks_description">Hallitse tallennettuja muokattuja sovellustiedostoja</string>
     <string name="settings_system_patched_apks_empty">Muokattuja APK:ita ei ole vielä tallennettu</string>
     <string name="settings_system_patched_apks_delete_title">Poista muokattu APK?</string>
-    <string name="settings_system_patched_apks_delete_confirm">Haluatko varmasti poistaa tallennetun muokatun APK:n sovellukselle &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="settings_system_patched_apks_deleted">Muokattu APK on poistettu</string>
     <string name="settings_system_patched_apks_delete_all_title">Poistetaanko kaikki muutetut APK-tiedostot?</string>
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
@@ -1089,7 +1166,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="settings_system_original_apks_empty">Ei alkuperäisiä APK:ita tallennettu</string>
     <string name="settings_system_original_apks_deleted">Alkuperäinen APK on poistettu</string>
     <string name="settings_system_original_apks_delete_title">Poista alkuperäinen APK?</string>
-    <string name="settings_system_original_apks_delete_confirm">Poistaa sovelluksen &lt;b&gt;%s&lt;/b&gt; alkuperäisen APK:n? Et voi muokata tätä uudelleen ilman uuden APK:n lisäämistä</string>
+    <string name="settings_system_original_apks_delete_notice">Et pysty korjaamaan uudelleen ilman uutta APK:ta</string>
     <string name="settings_system_original_apks_delete_all_title">Poistetaanko kaikki alkuperäiset APK-tiedostot?</string>
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
     <string name="settings_system_patch_selections_title">Lisäosavalinnat</string>
@@ -1110,7 +1187,6 @@ Yksityiskohdat: %2$s"</string>
     <string name="settings_system_import_source_data_fail">Lähdetietojen tuonti epäonnistui</string>
     <string name="settings_system_import_source_data_success">Lähdetiedot on tuotu</string>
     <string name="settings_system_selected_patches_section">Valitut lisäosat</string>
-    <string name="settings_system_patch_options_section">Lisäosien asetukset</string>
     <string name="settings_system_no_patches_or_options">Ei lisäosia tai asetuksia tallennettu</string>
     <!-- Copy selection from another bundle -->
     <string name="copy_selection_title">Kopioi valinta…</string>
@@ -1129,12 +1205,12 @@ Yksityiskohdat: %2$s"</string>
     <string name="settings_system_apk_download_helper_installed_by">Asentanut %s</string>
     <string name="settings_system_apk_download_helper_installed_by_unknown">Asentajaa ei tunneta</string>
     <!-- File Picker -->
-    <string name="file_picker_previous_directory">Edellinen hakemisto</string>
     <string name="file_picker_no_files">Täällä ei ole tiedostoja</string>
     <string name="file_picker_read_error">Tätä hakemistoa ei voida lukea</string>
     <string name="file_picker_internal_storage">Sisäinen tallennustila</string>
     <string name="file_picker_sd_card">SD-kortti</string>
     <string name="file_picker_root">Juurihakemisto (/)</string>
+    <string name="file_picker_storages">Tallennustilat</string>
     <string name="file_picker_sort_name_asc">Nimi (A–Ö)</string>
     <string name="file_picker_sort_name_desc">Nimi (Ö–A)</string>
     <string name="file_picker_sort_size_desc">Koko (suurin ensin)</string>
@@ -1160,11 +1236,9 @@ Yksityiskohdat: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">Takaisin sateessa</string>
     <string name="easter_egg_pill_blue_toast_again">Irrotettu. Paluutie on siellä missä se aina oli.</string>
     <!-- Shared strings -->
-    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
-         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
-         how a literal percent sign is written here. -->
-    <string name="download_progress">%1$s Mt / %2$s Mt (%3$s %%)</string>
     <string name="select_file">Valitse tiedosto</string>
+    <string name="select_files">Valitse tiedostot</string>
+    <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="select_folder">Valitse kansio</string>
     <string name="patches">Lisäosat</string>
     <string name="home">Koti</string>
@@ -1191,6 +1265,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="done">Valmis</string>
     <string name="skip">Ohita</string>
     <string name="clear">Tyhjennä</string>
+    <string name="paste">Liitä</string>
     <string name="delete">Poista</string>
     <string name="delete_all">Poista kaikki</string>
     <string name="remove">Poista</string>
@@ -1200,7 +1275,6 @@ Yksityiskohdat: %2$s"</string>
     <string name="disable">Poista käytöstä</string>
     <string name="enable">Ota käyttöön</string>
     <string name="loading">Ladataan…</string>
-    <string name="loading_older_releases">Ladataan vanhempia julkaisuja…</string>
     <string name="creating">Luodaan…</string>
     <string name="processing_apk">Käsitellään APK-tiedostoa…</string>
     <string name="exporting_apks">Viedään APK-tiedostoja…</string>
@@ -1215,9 +1289,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="selected">Valittu</string>
     <string name="not_selected">Ei valittu</string>
     <string name="select_all">Valitse kaikki</string>
-    <string name="select_all_done">Kaikki valittu</string>
     <string name="deselect_all">Poista kaikki valinnat</string>
-    <string name="deselect_all_done">Kaikki poistettu valinnasta</string>
     <string name="reorder_list">Järjestä lista uudelleen</string>
     <string name="reorder_list_hint">Vedä järjestääksesi uudelleen</string>
     <string name="reorder_done">Järjestys tallennettu</string>
@@ -1243,6 +1315,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="continue_">Jatka</string>
     <string name="version">Versio</string>
     <string name="clone">Kloonaa</string>
+    <!-- Button that starts patching the selected app. A verb, as in "patch this app" -->
     <string name="patch">Muokkaa</string>
     <string name="patching">Korjataan</string>
     <string name="patched">Muokatut</string>
@@ -1252,6 +1325,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="unmount">Irroita</string>
     <string name="unmounted">Irrotettu</string>
     <string name="remount">Liitä uudelleen</string>
+    <string name="restore">Palauta</string>
     <string name="share">Jaa</string>
     <string name="install">Asenna</string>
     <string name="installed">Asennettu</string>
@@ -1272,6 +1346,8 @@ Yksityiskohdat: %2$s"</string>
     <string name="sources">Lähteet</string>
     <string name="installing_ellipsis">Asennetaan…</string>
     <string name="mounting_ellipsis">Liitetään…</string>
+    <string name="mount_stage_restoring_stock">Palautetaan alkuperäistä…</string>
+    <string name="mount_stage_copying">Kopioidaan…</string>
     <string name="unmounting_ellipsis">Irrotetaan…</string>
     <string name="importing_ellipsis">Tuodaan…</string>
     <string name="imported_successfully">Tuonti onnistui</string>
@@ -1282,20 +1358,43 @@ Yksityiskohdat: %2$s"</string>
     <string name="changelog_description">Mitä uutta tässä versiossa</string>
     <string name="changelog_download_fail">Muutoslokin lataaminen epäonnistui: %s</string>
     <string name="changelog_empty">Muutoslokia ei ole saatavilla</string>
-    <string name="changelog_show_older">Näytä vanhemmat julkaisut</string>
+    <string name="changelog_earlier_releases">Aiemmat julkaisut</string>
+    <string name="changelog_patched_with">Paikattu sovelluksella %s</string>
     <string name="changelog_older_empty">Ei vanhempia julkaisuja näytettäväksi</string>
+    <string name="changelog_older_failed">Vanhempia julkaisuja ei voitu ladata</string>
+    <!-- Label of a footer button beside "Translate". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="changelog_release_page">Julkaisusivu</string>
+    <string name="content_translate">Käännä</string>
+    <!-- Label of a footer button beside other buttons, which reads "Translate" until pressed. Keep it as short as "Translate", a longer one moves the buttons onto two rows -->
+    <string name="content_show_original">Alkuperäinen</string>
+    <string name="content_translation_failed">Kääntäminen epäonnistui: %s</string>
+    <string name="changelog_section_new">Uutta</string>
+    <string name="changelog_section_fixes">Korjaukset</string>
+    <string name="changelog_section_performance">Suorituskyky</string>
+    <string name="changelog_section_improvements">Parannukset</string>
+    <string name="changelog_section_app_support">Sovellustuki</string>
+    <string name="changelog_section_other">Muutokset</string>
+    <string name="changelog_badge_latest">Uusin</string>
+    <!-- Marks the version of a patch source downloaded to the manager, which patches with it rather than the one an installed app was patched with -->
+    <string name="changelog_badge_downloaded">Ladattu</string>
+    <string name="changelog_badge_prerelease">Ennakkojulkaisu</string>
+    <!-- "%s" is the number of changes in the section -->
+    <string name="changelog_show_all">Näytä kaikki (%s)</string>
+    <string name="changelog_show_less">Näytä vähemmän</string>
     <string name="no_network_toast">Ei internetyhteyttä</string>
     <string name="update_available">Päivitys on saatavilla</string>
     <string name="ready_to_install_update">Valmis asentamaan päivityksen</string>
     <string name="update_completed">Päivitys asennettu</string>
     <string name="install_update_manager_failed">Päivityksen asentaminen epäonnistui</string>
     <string name="installing_manager_update">Asennetaan päivitystä…</string>
+    <string name="installing_manager_update_hint">Morphe sulkeutuu viimeistelläkseen päivityksen</string>
     <string name="downloading_manager_update">Ladataan päivitystä…</string>
-    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <!-- Shown while downloading when the server does not report the total size. "%1$s" is the megabytes so far. -->
     <string name="manager_update_progress_downloaded">Ladattu %1$s Mt</string>
+    <!-- Shown under the download percentage. "%1$s" is the megabytes so far, "%2$s" the total. -->
+    <string name="manager_update_progress_size">%1$s / %2$s MB</string>
     <string name="manager_update_not_ready">Tätä julkaisua julkaistaan vielä. Yritä uudelleen muutaman minuutin kuluttua</string>
     <string name="update_download_missing">Ladattu päivitys ei ole enää saatavilla. Lataa se uudelleen</string>
-    <string name="download_manager_failed">Päivityksen lataaminen epäonnistui: %s</string>
     <string name="failed_to_check_updates">Päivitysten tarkistaminen epäonnistui: %s</string>
     <string name="failed_to_download_update">Päivityksen lataaminen epäonnistui: %s</string>
     <string name="download_confirmation_metered">"Olet tällä hetkellä rajoitetussa yhteydessä, ja palveluntarjoajasi datamaksuja voidaan soveltaa.
@@ -1324,6 +1423,7 @@ Haluatko silti jatkaa?"</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Nopea ominaisuusesittely</string>
     <string name="tour_prompt_desc">Haluatko pikatutoriaalin Morphen tärkeimmistä ominaisuuksista?</string>
+    <!-- Label of a footer button beside "Skip". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="tour_prompt_confirm">Näytä minulle</string>
     <string name="onboarding_restart_title">Ominaisuusesittely</string>
     <string name="onboarding_restart_desc">Opastettu kierros keskeisistä ominaisuuksista</string>

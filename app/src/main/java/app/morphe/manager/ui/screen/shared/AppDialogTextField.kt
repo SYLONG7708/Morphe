@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.InsertDriveFile
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,9 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.relocation.BringIntoViewModifierNode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -76,7 +80,6 @@ fun AppDialogTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    val textColor = LocalDialogTextColor.current
 
     OutlinedTextField(
         value = value,
@@ -106,8 +109,7 @@ fun AppDialogTextField(
                                     stringResource(R.string.settings_system_hide_password_field)
                                 } else {
                                     stringResource(R.string.settings_system_show_password_field)
-                                },
-                                tint = textColor.copy(alpha = 0.7f)
+                                }
                             )
                         }
                     }
@@ -120,8 +122,7 @@ fun AppDialogTextField(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Clear,
-                                contentDescription = stringResource(R.string.clear),
-                                tint = textColor.copy(alpha = 0.7f)
+                                contentDescription = stringResource(R.string.clear)
                             )
                         }
                     }
@@ -134,8 +135,7 @@ fun AppDialogTextField(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.FolderOpen,
-                                contentDescription = stringResource(R.string.select_folder),
-                                tint = textColor.copy(alpha = 0.7f)
+                                contentDescription = stringResource(R.string.select_folder)
                             )
                         }
                     }
@@ -148,8 +148,7 @@ fun AppDialogTextField(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Outlined.InsertDriveFile,
-                                contentDescription = stringResource(R.string.select_file),
-                                tint = textColor.copy(alpha = 0.7f)
+                                contentDescription = stringResource(R.string.select_file)
                             )
                         }
                     }
@@ -170,7 +169,7 @@ fun AppDialogTextField(
         keyboardActions = keyboardActions,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Defaults.CompactCornerRadius),
-        colors = morpheDialogTextFieldColors(textColor)
+        colors = morpheDialogTextFieldColors(dialogTextColor())
     )
 }
 
@@ -230,13 +229,20 @@ fun AppDialogSearchTextField(
  * Kept as its own composable so no layout scope is in scope at the [AnimatedVisibility] call:
  * inside `stickyHeader` the innermost receiver is `LazyItemScope`, and an enclosing `ColumnScope`
  * would otherwise pull in the scoped overload, which cannot be called there.
+ *
+ * The field never asks the list to scroll it into view. It sits at the top, stuck to the list or
+ * above it, so it is always in view, yet a list places a sticky row by its spot at its head: a
+ * field taking focus deep into the list would scroll the list all the way back up to it.
+ *
+ * @param modifier Applied to the field, so it comes and goes along with it.
  */
 @Composable
 fun AppDialogSearchHeader(
     visible: Boolean,
     value: String,
     onValueChange: (String) -> Unit,
-    label: String
+    label: String,
+    modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = visible,
@@ -247,9 +253,25 @@ fun AppDialogSearchHeader(
             value = value,
             onValueChange = onValueChange,
             label = label,
-            requestFocus = true
+            requestFocus = true,
+            modifier = modifier.then(StayInPlaceElement)
         )
     }
+}
+
+/** Takes in the requests to bring what it wraps into view, and passes none of them on. */
+private data object StayInPlaceElement : ModifierNodeElement<StayInPlaceNode>() {
+    override fun create() = StayInPlaceNode()
+    override fun update(node: StayInPlaceNode) = Unit
+
+    // Holds nothing to show, so the inspector only needs its name
+    override fun InspectorInfo.inspectableProperties() {
+        name = "stayInPlace"
+    }
+}
+
+private class StayInPlaceNode : Modifier.Node(), BringIntoViewModifierNode {
+    override suspend fun bringIntoView(childCoordinates: LayoutCoordinates, boundsProvider: () -> Rect?) = Unit
 }
 
 /**
@@ -289,7 +311,6 @@ fun AppDialogDropdownTextField(
     // Text typed while the field is focused, null otherwise
     var input by remember { mutableStateOf<String?>(null) }
     val focusManager = LocalFocusManager.current
-    val textColor = LocalDialogTextColor.current
 
     val presetName = dropdownItems.entries.find { it.value == value }?.key
     val typed = input
@@ -335,8 +356,7 @@ fun AppDialogDropdownTextField(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.FolderOpen,
-                                contentDescription = stringResource(R.string.select_folder),
-                                tint = textColor.copy(alpha = 0.7f)
+                                contentDescription = stringResource(R.string.select_folder)
                             )
                         }
                     }
@@ -349,8 +369,7 @@ fun AppDialogDropdownTextField(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Clear,
-                                contentDescription = stringResource(R.string.clear),
-                                tint = textColor.copy(alpha = 0.7f)
+                                contentDescription = stringResource(R.string.clear)
                             )
                         }
                     }
@@ -375,8 +394,7 @@ fun AppDialogDropdownTextField(
                                 Icons.Outlined.ExpandLess
                             else
                                 Icons.Outlined.ExpandMore,
-                            contentDescription = null,
-                            tint = textColor.copy(alpha = 0.7f)
+                            contentDescription = null
                         )
                     }
                 }
@@ -401,31 +419,23 @@ fun AppDialogDropdownTextField(
                     }
                 ),
             shape = RoundedCornerShape(Defaults.CompactCornerRadius),
-            colors = morpheDialogTextFieldColors(textColor)
+            colors = morpheDialogTextFieldColors(dialogTextColor())
         )
 
-        ExposedDropdownMenu(
+        AppExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
             dropdownItems.forEach { (displayName, itemValue) ->
-                DropdownMenuItem(
-                    text = { Text(displayName) },
+                AppDropdownMenuItem(
+                    text = displayName,
+                    selected = itemValue == value,
                     onClick = {
                         onValueChange(itemValue)
                         expanded = false
                         // A picked preset ends any typing, so the field shows its name again
                         focusManager.clearFocus()
-                    },
-                    leadingIcon = if (itemValue == value) {
-                        {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    } else null
+                    }
                 )
             }
         }

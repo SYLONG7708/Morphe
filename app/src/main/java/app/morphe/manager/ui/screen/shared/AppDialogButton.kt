@@ -28,20 +28,6 @@ private val DialogButtonHorizontalPadding = 16.dp
 private val DialogButtonVerticalPadding = 14.dp
 private val DialogButtonIconSpacing = 8.dp
 
-/** Destructive content color for dark dialog backgrounds. */
-private val DestructiveColorDark = Color(0xFFFF6B6B)
-
-/** Destructive content color for light dialog backgrounds. */
-private val DestructiveColorLight = Color(0xFFD32F2F)
-
-/**
- * Destructive content color readable on the current dialog background.
- * Shared with dialog content that marks a destructive choice outside a button.
- */
-@Composable
-fun dialogDestructiveColor(): Color =
-    if (LocalDialogTextColor.current.isDarkBackground()) DestructiveColorLight else DestructiveColorDark
-
 /** Resolved colors for a dialog button variant. */
 private data class DialogButtonColors(
     val containerColor: Color,
@@ -57,21 +43,24 @@ private data class DialogButtonColors(
  */
 @Composable
 private fun resolveButtonColors(isDestructive: Boolean, filled: Boolean): DialogButtonColors {
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val textColor = LocalDialogTextColor.current
+    // A dialog in an app's own color hands it to its buttons, see [LocalAccent]
+    val primaryColor = LocalAccent.current ?: MaterialTheme.colorScheme.primary
+    val textColor = dialogTextColor()
     val isDark = !textColor.isDarkBackground()
 
     return if (isDestructive) {
+        // A veil, with the red on the label and edge alone, see Destructive.kt
         DialogButtonColors(
-            containerColor = if (filled) Color.Red.copy(alpha = if (isDark) 0.25f else 0.2f) else Color.Transparent,
+            containerColor = if (filled) neutralVeil(textColor) else Color.Transparent,
             contentColor = dialogDestructiveColor(),
-            borderColor = Color.Red.copy(alpha = if (isDark) 0.4f else 0.35f)
+            borderColor = destructiveEdgeColor(dialogDestructiveColor())
         )
     } else {
         DialogButtonColors(
             containerColor = if (filled) primaryColor.copy(alpha = if (isDark) 0.3f else 0.25f) else Color.Transparent,
             contentColor = if (filled) textColor else textColor.copy(alpha = 0.85f),
-            borderColor = primaryColor.copy(alpha = if (isDark) (if (filled) 0.5f else 0.3f) else (if (filled) 0.4f else 0.25f))
+            // An outlined button is edged as the cards above it are, see AccentAlpha.BORDER
+            borderColor = primaryColor.copy(alpha = if (filled) (if (isDark) 0.5f else 0.4f) else AccentAlpha.BORDER)
         )
     }
 }
@@ -148,7 +137,8 @@ private fun DialogButton(
             label = "dialog_button_press_scale"
         )
     val shape = RoundedCornerShape(Defaults.CardCornerRadius)
-    val border = BorderStroke(1.dp, colors.borderColor)
+    // An outlined button is drawn by its edge alone, so it keeps one whatever the outlines setting says
+    val border = if (filled) CardBorder.of(colors.borderColor) else BorderStroke(1.dp, colors.borderColor)
     val contentPadding = PaddingValues(
         horizontal = DialogButtonHorizontalPadding,
         vertical = DialogButtonVerticalPadding
@@ -210,7 +200,8 @@ private fun RowScope.DialogButtonContent(
         Spacer(Modifier.width(DialogButtonIconSpacing))
     }
 
-    Text(
+    // A label that follows its action's state, such as one turning to an "in progress" form
+    CrossfadeText(
         text = text,
         style = MaterialTheme.typography.labelLarge,
         maxLines = 1,
@@ -411,7 +402,7 @@ private fun DialogActionButton(
 
 /** Whether every label fits the share of [availableWidth] its button would get in a single row. */
 @Composable
-private fun actionsFitInRow(actions: List<DialogAction>, availableWidth: Dp): Boolean {
+internal fun actionsFitInRow(actions: List<DialogAction>, availableWidth: Dp): Boolean {
     val measurer = rememberTextMeasurer()
     val style = MaterialTheme.typography.labelLarge
     val density = LocalDensity.current

@@ -6,8 +6,6 @@
 package app.morphe.manager.ui.screen
 
 import android.view.HapticFeedbackConstants
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,16 +21,17 @@ import app.morphe.manager.R
 import app.morphe.manager.data.room.apps.installed.supportsMount
 import app.morphe.manager.data.room.apps.installed.trackingKey
 import app.morphe.manager.domain.batch.BatchTarget
-import app.morphe.manager.domain.bundles.PatchBundleSource.Extensions.isHeldBack
 import app.morphe.manager.domain.manager.*
 import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.update.SafeIntegrationProfile
 import app.morphe.manager.ui.model.HomeAppItem
+import app.morphe.manager.ui.model.navigation.Patcher
 import app.morphe.manager.ui.screen.home.*
 import app.morphe.manager.ui.screen.settings.system.InstallerFlowDialogs
 import app.morphe.manager.ui.screen.settings.system.PrePatchInstallerDialog
 import app.morphe.manager.ui.screen.shared.InstallQueueRequest
 import app.morphe.manager.ui.screen.shared.rememberInstallQueue
+import app.morphe.manager.ui.theme.SeasonalEvent
 import app.morphe.manager.ui.viewmodel.*
 import app.morphe.manager.util.*
 import kotlinx.coroutines.delay
@@ -47,7 +46,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun HomeScreen(
     onSettingsClick: () -> Unit,
-    onStartQuickPatch: (QuickPatchParams) -> Unit,
+    onStartQuickPatch: (Patcher.ViewModelParams) -> Unit,
     onStartBatchPatch: (List<BatchTarget>, Boolean) -> Unit,
     homeViewModel: HomeViewModel = koinViewModel(),
     prefs: PreferencesManager = koinInject(),
@@ -78,10 +77,14 @@ fun HomeScreen(
     // Reactively observe the preference so the greeting updates immediately
     val showGreetingPhrases by prefs.showGreetingPhrases.getAsState()
     val showRepatchNotice by prefs.showRepatchNotice.getAsState()
+    val seasonalThemes by prefs.seasonalThemes.getAsState()
+    val seasonalEvent = remember(seasonalThemes) { SeasonalEvent.on().takeIf { seasonalThemes } }
 
-    // Re-evaluated whenever showPatchingPhrases changes
-    var greetingResId by remember(showGreetingPhrases) {
-        mutableStateOf(if (showGreetingPhrases) HomeAndPatcherMessages.getHomeMessage(context) else null)
+    // Re-evaluated whenever showPatchingPhrases or the seasonal event changes
+    var greetingResId by remember(showGreetingPhrases, seasonalEvent) {
+        mutableStateOf(
+            if (showGreetingPhrases) HomeAndPatcherMessages.getHomeMessage(context, seasonalEvent) else null
+        )
     }
     val greetingMessage = greetingResId?.let { stringResource(it) }
 
@@ -91,14 +94,14 @@ fun HomeScreen(
     val onRefresh: () -> Unit = {
         view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
         HomeAndPatcherMessages.resetHomeMessage()
-        greetingResId = if (showGreetingPhrases) HomeAndPatcherMessages.getHomeMessage(context) else null
+        greetingResId = if (showGreetingPhrases) HomeAndPatcherMessages.getHomeMessage(context, seasonalEvent) else null
         homeViewModel.refresh()
     }
 
     // Collect state flows
     val availablePatches by homeViewModel.availablePatches.collectAsStateWithLifecycle(0)
     // Atomic home state - null means pipeline is still initializing (shimmer)
-    val homeAppState by homeViewModel.homeAppState.collectAsStateWithLifecycle()
+    val homeAppState by homeViewModel.apps.homeAppState.collectAsStateWithLifecycle()
     val homeAppItems = homeAppState?.visible ?: emptyList()
     val hiddenAppItems = homeAppState?.hidden ?: emptyList()
     val homeAppSortMode = homeAppState?.sortMode ?: HomeAppSortMode.MANUAL
@@ -107,14 +110,15 @@ fun HomeScreen(
     val showCategoryViewSwitcher = homeAppState?.showCategoryViewSwitcher == true
     val homeAppSourceGroups = homeAppState?.sourceGroups ?: emptyList()
     val bundlePipelineLoading = homeAppState == null
-    val showOtherAppsButton by homeViewModel.showOtherAppsButton.collectAsStateWithLifecycle()
-    val showSearchButton by homeViewModel.showSearchButton.collectAsStateWithLifecycle()
+    val showOtherAppsButton by homeViewModel.apps.showOtherAppsButton.collectAsStateWithLifecycle()
+    val showSearchButton by homeViewModel.apps.showSearchButton.collectAsStateWithLifecycle()
     val batchRun by homeViewModel.batchRun.collectAsStateWithLifecycle()
     val showSortButtonPref by homeAppButtonPrefs.showSortButton.collectAsStateWithLifecycle()
+    val homeAppFilterModePref by homeAppButtonPrefs.filterMode.collectAsStateWithLifecycle()
     val useExpertMode by prefs.useExpertMode.getAsState()
 
     // Gesture hint: shown once per bundle addition, in-memory
-    val showGestureHint by homeViewModel.showSwipeGestureHint.collectAsStateWithLifecycle()
+    val showGestureHint by homeViewModel.apps.showSwipeGestureHint.collectAsStateWithLifecycle()
 
     val isDeviceRooted = homeViewModel.rootInstaller.isDeviceRooted()
     if (!isDeviceRooted) {
@@ -161,16 +165,9 @@ fun HomeScreen(
         onResult = { uri -> uri?.let { homeViewModel.handleApkSelection(it) } }
     )
 
-    val openBundlePicker = rememberAdaptiveFilePicker(
+    val openBundlePicker = rememberAdaptiveMultiFilePicker(
         mimeTypes = MPP_FILE_MIME_TYPES,
-        onResult = { uri ->
-            uri?.let {
-                homeViewModel.selectedBundleUri = it
-                homeViewModel.selectedBundlePath = it.displayName(context.contentResolver)
-                    ?: it.lastPathSegment
-                    ?: it.toString()
-            }
-        }
+        onResult = homeViewModel::pickBundles
     )
 
     val installAppsPermissionLauncher = rememberLauncherForActivityResult(
@@ -194,7 +191,7 @@ fun HomeScreen(
                     homeViewModel.persistReinstalledApp(installed, packageName, installType)
                 },
                 onInstalled = { packageName ->
-                    homeViewModel.notifyAppStateChanged(packageName)
+                    homeViewModel.apps.notifyAppStateChanged(packageName)
                 }
             )
         }
@@ -249,22 +246,17 @@ fun HomeScreen(
 
     // Sources built for a newer patcher than this manager ships. They cannot be loaded or patched
     // with until the app is updated, so surface it instead of leaving the source silently broken
-    val bundleSources by homeViewModel.patchBundleRepository.sources.collectAsStateWithLifecycle(emptyList())
-    val hasOutdatedManagerSources = bundleSources.any { it.requiresManagerUpdate }
+    val hasOutdatedManagerSources by homeViewModel.patchBundleRepository.hasOutdatedManagerSources.collectAsStateWithLifecycle()
 
     // Reading these took the process down, so they are skipped until the file changes. Nothing
     // else on this screen would explain why their patches are suddenly gone
-    val hasHeldBackSources = bundleSources.any { it.isHeldBack }
+    val hasHeldBackSources by homeViewModel.patchBundleRepository.hasHeldBackSources.collectAsStateWithLifecycle()
 
     // Manager update details dialog
     if (showUpdateDetailsDialog.value) {
-        // Activity-scoped so the download this starts is the same one Settings sees
-        val updateViewModel: UpdateViewModel = koinViewModel(
-            viewModelStoreOwner = LocalActivity.current as ComponentActivity
-        )
-        ManagerUpdateDetailsDialog(
+        ManagerChangelogDialog(
             onDismiss = { showUpdateDetailsDialog.value = false },
-            updateViewModel = updateViewModel
+            expectsUpdate = true
         )
     }
 
@@ -292,6 +284,7 @@ fun HomeScreen(
     // which patches are applied.
     if (homeViewModel.showPrePatchInstallerDialog) {
         PrePatchInstallerDialog(
+            packageName = homeViewModel.pendingPackageName,
             onSelectMount = { homeViewModel.resolvePrePatchInstallerChoice(useMount = true) },
             onSelectStandard = { homeViewModel.resolvePrePatchInstallerChoice(useMount = false) },
             onDismiss = homeViewModel::dismissPrePatchInstallerDialog
@@ -339,6 +332,7 @@ fun HomeScreen(
                     installedAppsLoading = bundlePipelineLoading || homeViewModel.installedAppsLoading,
                     showGestureHint = showGestureHint,
                     sortMode = homeAppSortMode,
+                    filterMode = HomeAppFilterMode.fromPreference(homeAppFilterModePref),
                     categoryState = homeAppCategoryState,
                     categoryViewMode = homeAppCategoryViewMode,
                     showCategoryViewSwitcher = showCategoryViewSwitcher,
@@ -364,49 +358,52 @@ fun HomeScreen(
                             }
                         }
                     },
-                    onHideApp = { packageName -> homeViewModel.hideApp(packageName) },
-                    onHideMultiple = { packageNames -> packageNames.forEach { homeViewModel.hideApp(it) } },
+                    onHideApp = { packageName -> homeViewModel.apps.hideApp(packageName) },
+                    onHideMultiple = { packageNames -> packageNames.forEach { homeViewModel.apps.hideApp(it) } },
                     onUninstallMultiple = { items -> homeViewModel.uninstallApps(items) },
                     onReinstallMultiple = { items -> startBatchReinstall(items) },
                     onPatchMultiple = { items -> startBatchPatch(items) },
-                    onUnhideApp = { packageName -> homeViewModel.unhideApp(packageName) },
+                    onUnhideApp = { packageName -> homeViewModel.apps.unhideApp(packageName) },
                     onShowPatches = { item -> patchesSheetItem.value = item },
                     onGestureHintShown = {
-                        homeViewModel.markSwipeGestureHintShown()
+                        homeViewModel.apps.markSwipeGestureHintShown()
                         if (onboardingState != null && onboardingState.swipeActive) {
                             scope.launch {
                                 delay(600.milliseconds)
-                                if (onboardingState.swipeActive) homeViewModel.triggerSwipeGestureHint()
+                                if (onboardingState.swipeActive) homeViewModel.apps.triggerSwipeGestureHint()
                             }
                         }
                     },
-                    onSaveOrder = { packageNames -> homeViewModel.saveAppOrder(packageNames) },
+                    onSaveOrder = { packageNames -> homeViewModel.apps.saveAppOrder(packageNames) },
                     onSaveSourceOrder = { sourceUid, packageNames ->
-                        homeViewModel.saveAppSourceOrder(sourceUid, packageNames)
+                        homeViewModel.apps.saveAppSourceOrder(sourceUid, packageNames)
                     },
-                    onResetOrder = { homeViewModel.resetAppOrder() },
-                    onResetSourceOrder = { sourceUid -> homeViewModel.resetAppSourceOrder(sourceUid) },
+                    onResetOrder = { homeViewModel.apps.resetAppOrder() },
+                    onResetSourceOrder = { sourceUid -> homeViewModel.apps.resetAppSourceOrder(sourceUid) },
                     onSaveSourceGroupOrder = { sourceUids ->
-                        homeViewModel.saveAppSourceGroupOrder(sourceUids)
+                        homeViewModel.apps.saveAppSourceGroupOrder(sourceUids)
                     },
-                    onSortModeChange = { mode -> homeViewModel.setAppSortMode(mode) },
-                    onCategoryViewModeChange = { mode -> homeViewModel.setAppCategoryViewMode(mode) },
-                    onCreateCategory = { name -> homeViewModel.createAppCategory(name) },
+                    onSortModeChange = { mode -> homeViewModel.apps.setAppSortMode(mode) },
+                    onFilterModeChange = { mode ->
+                        homeAppButtonPrefs.setFilterMode(mode.name.takeIf { mode.isActive })
+                    },
+                    onCategoryViewModeChange = { mode -> homeViewModel.apps.setAppCategoryViewMode(mode) },
+                    onCreateCategory = { name -> homeViewModel.apps.createAppCategory(name) },
                     onRenameCategory = { categoryId, name ->
-                        homeViewModel.renameAppCategory(categoryId, name)
+                        homeViewModel.apps.renameAppCategory(categoryId, name)
                     },
-                    onDeleteCategory = { categoryId -> homeViewModel.deleteAppCategory(categoryId) },
+                    onDeleteCategory = { categoryId -> homeViewModel.apps.deleteAppCategory(categoryId) },
                     onSaveCategoryOrder = { categoryIds ->
-                        homeViewModel.saveAppCategoryOrder(categoryIds)
+                        homeViewModel.apps.saveAppCategoryOrder(categoryIds)
                     },
                     onToggleCategoryCollapsed = { categoryId ->
-                        homeViewModel.toggleAppCategoryCollapsed(categoryId)
+                        homeViewModel.apps.toggleAppCategoryCollapsed(categoryId)
                     },
                     onToggleSourceGroupCollapsed = { sourceUid ->
-                        homeViewModel.toggleAppSourceGroupCollapsed(sourceUid)
+                        homeViewModel.apps.toggleAppSourceGroupCollapsed(sourceUid)
                     },
                     onAssignAppsToCategory = { packageNames, categoryId ->
-                        homeViewModel.assignAppsToCategory(packageNames, categoryId)
+                        homeViewModel.apps.assignAppsToCategory(packageNames, categoryId)
                     }
                 ),
                 chromeActions = HomeChromeActions(

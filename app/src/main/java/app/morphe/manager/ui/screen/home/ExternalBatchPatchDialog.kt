@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
-import app.morphe.manager.ui.screen.shared.LocalDialogSecondaryTextColor
+import app.morphe.manager.ui.screen.shared.dialogSecondaryTextColor
 import app.morphe.manager.ui.screen.shared.AppDialog
 import app.morphe.manager.ui.screen.shared.AppDialogButtonRow
 import app.morphe.manager.ui.screen.shared.SelectionCheckRow
@@ -43,6 +43,7 @@ fun ExternalBatchPatchDialog(
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.external_batch_patch_title),
+        description = stringResource(R.string.external_batch_patch_description, caller),
         footer = {
             AppDialogButtonRow(
                 primaryText = stringResource(R.string.continue_),
@@ -58,20 +59,13 @@ fun ExternalBatchPatchDialog(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = stringResource(R.string.external_batch_patch_description, caller),
-                style = MaterialTheme.typography.bodyLarge,
-                color = LocalDialogSecondaryTextColor.current,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(
                 text = pluralStringResource(
                     R.plurals.batch_patch_ready_count,
                     packageCount,
                     packageCount.toString()
                 ),
                 style = MaterialTheme.typography.bodyMedium,
-                color = LocalDialogSecondaryTextColor.current,
+                color = dialogSecondaryTextColor(),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )

@@ -1,24 +1,36 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/domain/manager/KeystoreManager.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.domain.manager
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import app.morphe.manager.domain.apk.apkFileStampOrNull
+import app.morphe.manager.util.sha256Fingerprint
 import app.morphe.patcher.apk.ApkSigner
 import app.morphe.patcher.apk.ApkUtils
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.*
 import java.nio.file.Files
 import java.security.KeyStore
-import java.security.MessageDigest
 import java.security.UnrecoverableKeyException
 import java.security.cert.Certificate
 import java.security.cert.X509Certificate
-import java.util.zip.ZipEntry
-import java.util.zip.ZipException
-import java.util.zip.ZipFile
-import java.util.zip.ZipOutputStream
 
 /**
  * What tells one signing key from another at a glance.
@@ -40,10 +52,6 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
         const val DEFAULT = "Morphe"
 
         private const val TAG = "Morphe Keystore"
-
-        // apksig reaches the manager only through the patcher, so the format failures it raises
-        // for a malformed archive are recognized by name rather than by type
-        private val ARCHIVE_FORMAT_EXCEPTIONS = setOf("ApkFormatException", "ZipFormatException")
     }
 
     private val keystorePath =
@@ -53,6 +61,11 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
     // file itself changes rather than re-read for every app a home refresh inspects
     @Volatile
     private var cachedCertificateHashes: Pair<String, Set<String>>? = null
+
+    // The signer is kept for the same reason, until the keystore or its settings change
+    private var cachedSigner: Pair<List<Any?>, ApkSigner.Signer>? = null
+    private val signerLock = Mutex()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private suspend fun updatePrefs(alias: String, pass: String, keystorePw: String) = prefs.edit {
         prefs.keystoreAlias.value = alias
@@ -68,78 +81,31 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
     )
 
     /**
-     * Signs [input] into [output].
-     *
-     * Repackaging the archive first fixes the malformed headers some third-party APKs carry. But it
-     * means inflating and re-deflating every entry of the archive. That work is wasted whenever the
-     * archive was already well-formed, as it is for anything the patcher itself just wrote. So sign
-     * directly and fall back to [sanitizeZipIfNeeded] only if the signer rejects the archive itself.
+     * Signs [apk] in place for this device, which never needs a v1 signature. Only ever handed
+     * what the patcher just wrote, whose headers it already rewrites where the signer would reject them.
      */
-    suspend fun sign(input: File, output: File) = withContext(Dispatchers.Default) {
-        val alias = prefs.keystoreAlias.get()
-        try {
-            ApkUtils.signApk(input, output, alias, signingDetails())
-        } catch (e: Exception) {
-            if (!e.isMalformedArchive()) throw e
+    suspend fun sign(apk: File) = withContext(Dispatchers.Default) {
+        signer()?.signApk(apk, apk, Build.VERSION.SDK_INT)
+            // Creates the keystore on the first patch
+            ?: ApkUtils.signApk(apk, apk, prefs.keystoreAlias.get(), signingDetails(), Build.VERSION.SDK_INT)
+    }
 
-            Log.w(TAG, "Signing failed, retrying with a repackaged archive", e)
+    /** Starts loading the signing key, which takes BouncyCastle a while, so signing need not wait for it. */
+    fun preloadSigner() {
+        scope.launch { runCatching { signer() } }
+    }
 
-            // Repackaging fell through, so a second attempt would hand the signer the same bytes
-            val sanitized = sanitizeZipIfNeeded(input).takeIf { it != input } ?: throw e
-
-            try {
-                ApkUtils.signApk(sanitized, output, alias, signingDetails())
-            } catch (retry: Exception) {
-                // The rejection that sent us down this path is what names the archive as the
-                // problem, so it travels with the failure the user ends up seeing
-                throw retry.apply { addSuppressed(e) }
-            } finally {
-                sanitized.delete()
-            }
+    private suspend fun signer(): ApkSigner.Signer? = signerLock.withLock {
+        withContext(Dispatchers.IO) {
+            val stamp = keystorePath.apkFileStampOrNull() ?: return@withContext null
+            val details = signingDetails()
+            val key = listOf(stamp.cacheKey, details.alias, details.password, details.keyStorePassword)
+            cachedSigner?.takeIf { it.first == key }?.second
+                ?: ApkSigner.newApkSigner(
+                    details.alias,
+                    ApkSigner.readPrivateKeyCertificatePair(readKeyStore(), details.alias, details.password)
+                ).also { cachedSigner = key to it }
         }
-    }
-
-    /**
-     * Whether repackaging stands a chance, meaning the signer rejected the archive rather than the
-     * keystore or the output file.
-     */
-    private fun Throwable.isMalformedArchive() = generateSequence(this, Throwable::cause).any {
-        it is ZipException || it.javaClass.simpleName in ARCHIVE_FORMAT_EXCEPTIONS
-    }
-
-    /**
-     * Some APKs (often from third-party downloads) contain malformed ZIP headers that trigger
-     * ApkSigner errors like "Data Descriptor presence mismatch". Repackage the archive to fix
-     * header inconsistencies. Called from [sign] only after a signing attempt has failed, since
-     * repackaging is expensive and almost never needed.
-     */
-    private suspend fun sanitizeZipIfNeeded(input: File): File = withContext(Dispatchers.IO) {
-        runCatching {
-            val tempFile = File.createTempFile("apk-sanitized-", ".apk", input.parentFile)
-            ZipFile(input).use { zip ->
-                ZipOutputStream(tempFile.outputStream()).use { zos ->
-                    zip.entries().asSequence().forEach { entry ->
-                        val cleanEntry = ZipEntry(entry.name).apply {
-                            method = entry.method
-                            time = entry.time
-                            comment = entry.comment
-                            size = entry.size
-                            compressedSize = -1 // let ZipOutputStream compute
-                            crc = entry.crc
-                            extra = entry.extra
-                        }
-                        zos.putNextEntry(cleanEntry)
-                        if (!entry.isDirectory) {
-                            zip.getInputStream(entry).use { inputStream ->
-                                BufferedInputStream(inputStream).copyTo(zos)
-                            }
-                        }
-                        zos.closeEntry()
-                    }
-                }
-            }
-            tempFile
-        }.getOrElse { input }
     }
 
     suspend fun import(alias: String, pass: String, keystorePw: String = "", keystore: InputStream): Boolean {
@@ -215,8 +181,7 @@ class KeystoreManager(app: Application, private val prefs: PreferencesManager) {
         return keystorePath.inputStream().use { ApkSigner.readKeyStore(it, keyStorePassword) }
     }
 
-    private fun Certificate.sha256(): String =
-        MessageDigest.getInstance("SHA-256").digest(encoded).joinToString("") { byte -> "%02x".format(byte) }
+    private fun Certificate.sha256(): String = encoded.sha256Fingerprint()
 
     suspend fun export(target: OutputStream) {
         withContext(Dispatchers.IO) {

@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/domain/bundles/RemotePatchBundle.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.domain.bundles
 
 import app.morphe.manager.BuildConfig
@@ -10,12 +20,9 @@ import app.morphe.manager.network.service.AssetDownloader
 import app.morphe.manager.network.service.HttpService
 import app.morphe.manager.network.utils.getOrThrow
 import app.morphe.manager.patcher.patch.PatchBundle
-import app.morphe.manager.util.ChangelogEntry
-import app.morphe.manager.util.ChangelogParser
-import app.morphe.manager.util.SOURCE_REPO_URL
-import app.morphe.manager.util.TimedCache
-import app.morphe.manager.util.compareVersions
-import app.morphe.manager.util.releasePageUrl
+import app.morphe.manager.util.*
+import io.ktor.client.plugins.HttpTimeoutConfig
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.header
 import io.ktor.client.request.prepareGet
 import io.ktor.client.request.url
@@ -24,16 +31,14 @@ import io.ktor.http.contentLength
 import io.ktor.http.contentType
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import io.ktor.utils.io.readAvailable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
 import java.io.IOException
+import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.ZipInputStream
 
@@ -59,6 +64,7 @@ sealed class RemotePatchBundle(
 ) : PatchBundleSource(name, uid, displayName, createdAt, updatedAt, error, directory, enabled), KoinComponent {
     protected val http: HttpService by inject()
     private val detachedSignatureVerifier: DetachedSignatureVerifier by inject()
+    protected val api: MorpheAPI by inject()
     private val assetDownloader: AssetDownloader by inject()
 
     protected abstract suspend fun getLatestInfo(): MorpheAsset
@@ -206,33 +212,55 @@ sealed class RemotePatchBundle(
             ?: manifestPageUrl?.let { issuesUrlForRepoUrl(it) }
             ?: browsePageUrl
 
+    /** Add-source link for this source, see [addSourceLinkForEndpoint]. */
+    open val addSourceLink: String?
+        get() = addSourceLinkForEndpoint(endpoint, name)
+
     /**
      * Shared cache logic for [fetchChangelogEntries] and its overrides.
      */
     protected suspend fun fetchAndCacheEntries(
         cacheKey: String,
-        sinceVersion: String?,
         fetch: suspend () -> List<ChangelogEntry>
-    ): List<ChangelogEntry> {
-        val allEntries = entriesCache[cacheKey] ?: fetch().also { entriesCache[cacheKey] = it }
-
-        return if (sinceVersion != null)
-            ChangelogParser.entriesNewerThan(allEntries, sinceVersion)
-        else allEntries
-    }
+    ): List<ChangelogEntry> = entriesCache[cacheKey] ?: fetch().also { entriesCache[cacheKey] = it }
 
     /**
      * Fetches entries from CHANGELOG.md next to the bundle endpoint.
      * Results cached for [CHANGELOG_CACHE_TTL]; invalidate via [clearChangelogCache].
      */
-    open suspend fun fetchChangelogEntries(
-        sinceVersion: String? = null
-    ): List<ChangelogEntry> {
-        val api: MorpheAPI by inject()
+    open suspend fun fetchChangelogEntries(): List<ChangelogEntry> {
         val changelogUrl = api.changelogUrlFromBundleEndpoint(endpoint) ?: return emptyList()
-        return fetchAndCacheEntries("$uid|$changelogUrl", sinceVersion) {
+        return fetchAndCacheEntries("$uid|$changelogUrl") {
             api.fetchChangelogFromUrl(changelogUrl)
         }
+    }
+
+    /**
+     * [fetchChangelogEntries] as the source's channel reads it. The stable changelog also keeps
+     * the dev builds merged into each release, which the release itself already sums up.
+     */
+    suspend fun fetchChannelChangelogEntries(): List<ChangelogEntry> {
+        val entries = fetchChangelogEntries()
+        return if (usesPrerelease) entries else entries.filterNot { it.isPrerelease }
+    }
+
+    /**
+     * Releases on the source's channel that an app patched with [version] has yet to get, see
+     * [ChangelogParser.entriesSince]. The stable history a dev changelog stops short of is read
+     * only when needed, and the dev entries alone stand in for it when it cannot be.
+     */
+    suspend fun fetchChangelogSince(version: String?): List<ChangelogEntry> {
+        val entries = fetchChannelChangelogEntries()
+        val stableHistory = if (usesPrerelease && ChangelogParser.stopsAbove(entries, version)) {
+            try {
+                fetchFullChangelogEntries()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                emptyList()
+            }
+        } else emptyList()
+        return ChangelogParser.entriesSince(entries, version, stableHistory)
     }
 
     /**
@@ -254,6 +282,9 @@ sealed class RemotePatchBundle(
         const val BRANCH_DEV = "dev"
 
         private const val MIN_PATCH_BUNDLE_BYTES = 8L
+        /** Bundle file a repository-only link resolves to. */
+        private const val DEFAULT_BUNDLE_FILE = "patches-bundle.json"
+
         internal const val CHANGELOG_CACHE_TTL = 10 * 60 * 1000L
         private val releaseInfoCache = TimedCache<String, MorpheAsset>(CHANGELOG_CACHE_TTL)
         private val entriesCache = TimedCache<String, List<ChangelogEntry>>(CHANGELOG_CACHE_TTL)
@@ -266,26 +297,55 @@ sealed class RemotePatchBundle(
          * Returns null for hosts other than GitHub and GitLab, whose repository layout is unknown.
          */
         fun inferPageUrlFromEndpoint(endpoint: String): String? {
-            return try {
-                val uri = java.net.URI(endpoint)
-                val host = uri.host?.lowercase(java.util.Locale.US)
-                val segments = uri.path?.trim('/')?.split('/')?.filter { it.isNotBlank() }
+            val (host, segments) = endpointParts(endpoint) ?: return null
+            if (segments.size < 2) return null
 
-                when (host) {
-                    "raw.githubusercontent.com", "github.com" -> {
-                        segments?.takeIf { it.size >= 2 }
-                            ?.let { "https://github.com/${it[0]}/${it[1]}" }
-                    }
-                    "gitlab.com" -> {
-                        // gitlab.com/owner/repo/-/raw/branch/... or gitlab.com/owner/repo
-                        segments?.takeIf { it.size >= 2 }
-                            ?.let { "https://gitlab.com/${it[0]}/${it[1]}" }
-                    }
-                    else -> null
-                }
-            } catch (_: Exception) {
-                null
+            return when (host) {
+                "raw.githubusercontent.com", "github.com" -> "https://github.com/${segments[0]}/${segments[1]}"
+                // gitlab.com/owner/repo/-/raw/branch/... or gitlab.com/owner/repo
+                "gitlab.com" -> "https://gitlab.com/${segments[0]}/${segments[1]}"
+                else -> null
             }
+        }
+
+        /**
+         * Add-source link for [endpoint], or null when it would add a different source. The link
+         * carries only owner/repo, which expands to the root bundle file, so only that layout on
+         * the stable or dev branch qualifies.
+         */
+        fun addSourceLinkForEndpoint(endpoint: String, name: String?): String? {
+            val (host, segments) = endpointParts(endpoint) ?: return null
+            val branches = setOf(BRANCH_STABLE, BRANCH_DEV)
+
+            val provider = when (host) {
+                "raw.githubusercontent.com" -> "github".takeIf {
+                    segments.size == 4 && segments[2] in branches && segments[3] == DEFAULT_BUNDLE_FILE
+                }
+
+                "gitlab.com" -> "gitlab".takeIf {
+                    segments.size == 6 && segments[2] == "-" && segments[3] == "raw" &&
+                            segments[4] in branches && segments[5] == DEFAULT_BUNDLE_FILE
+                }
+
+                else -> null
+            } ?: return null
+
+            return buildString {
+                append("$MORPHE_WEBSITE_URL$ADD_SOURCE_PATH?$provider=${segments[0]}/${segments[1]}")
+                name?.takeIf { it.isNotBlank() }?.let {
+                    append("&name=").append(URLEncoder.encode(it, "UTF-8").replace("+", "%20"))
+                }
+            }
+        }
+
+        /** Lowercased host and path segments of [endpoint], or null when it is not a valid URL. */
+        private fun endpointParts(endpoint: String): Pair<String, List<String>>? = try {
+            val uri = java.net.URI(endpoint)
+            uri.host?.lowercase(java.util.Locale.US)?.let { host ->
+                host to uri.path.orEmpty().trim('/').split('/').filter { it.isNotBlank() }
+            }
+        } catch (_: Exception) {
+            null
         }
 
         /**
@@ -417,10 +477,10 @@ class JsonPatchBundle(
             // pre-release and the stable update would go unnoticed
             coroutineScope {
                 val devDeferred = async {
-                    runCatching { http.request<MorpheAsset> { url(switchBranchInUrl(endpoint, BRANCH_DEV)) }.getOrThrow() }.getOrNull()
+                    runCatching { fetchManifest(switchBranchInUrl(endpoint, BRANCH_DEV)) }.getOrNull()
                 }
                 val stableDeferred = async {
-                    runCatching { http.request<MorpheAsset> { url(switchBranchInUrl(endpoint, BRANCH_STABLE)) }.getOrThrow() }.getOrNull()
+                    runCatching { fetchManifest(switchBranchInUrl(endpoint, BRANCH_STABLE)) }.getOrNull()
                 }
                 val devAsset = devDeferred.await()
                 val stableAsset = stableDeferred.await()
@@ -433,7 +493,7 @@ class JsonPatchBundle(
                 }
             }
         } else {
-            http.request<MorpheAsset> { url(resolveBranchUrl(endpoint)) }.getOrThrow()
+            fetchManifest(resolveBranchUrl(endpoint))
         }
 
         // If pageUrl is not set, try to infer it from the endpoint and add version tag
@@ -451,21 +511,21 @@ class JsonPatchBundle(
         }
     }
 
-    override suspend fun fetchChangelogEntries(sinceVersion: String?): List<ChangelogEntry> {
+    private suspend fun fetchManifest(url: String) = api.rawFileRequest<MorpheAsset>(url).getOrThrow()
+
+    override suspend fun fetchChangelogEntries(): List<ChangelogEntry> {
         // endpoint stores the original branch - rebuild the URL for the active branch
-        val api: MorpheAPI by inject()
         val activeEndpoint = resolveBranchUrl(endpoint)
         val changelogUrl = api.changelogUrlFromBundleEndpoint(activeEndpoint) ?: return emptyList()
-        return fetchAndCacheEntries("$uid|$changelogUrl", sinceVersion) {
+        return fetchAndCacheEntries("$uid|$changelogUrl") {
             api.fetchChangelogFromUrl(changelogUrl, stopAfterFirstStable = usePrerelease)
         }
     }
 
     override suspend fun fetchFullChangelogEntries(): List<ChangelogEntry> {
-        val api: MorpheAPI by inject()
         val stableEndpoint = switchBranchInUrl(endpoint, BRANCH_STABLE)
         val changelogUrl = api.changelogUrlFromBundleEndpoint(stableEndpoint) ?: return emptyList()
-        return fetchAndCacheEntries("$uid|$changelogUrl|full", sinceVersion = null) {
+        return fetchAndCacheEntries("$uid|$changelogUrl|full") {
             api.fetchChangelogFromUrl(changelogUrl, stopAfterFirstStable = false)
         }
     }
@@ -542,8 +602,6 @@ class APIPatchBundle(
     enabled: Boolean,
     val usePrerelease: Boolean = false,
 ) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled) {
-    private val api: MorpheAPI by inject()
-
     override suspend fun getLatestInfo() = api.getPatchesUpdate(usePrerelease).getOrThrow()
 
     // The endpoint is the API identifier rather than a browsable URL
@@ -551,15 +609,18 @@ class APIPatchBundle(
 
     override val issuesPageUrl: String get() = "$SOURCE_REPO_URL/issues"
 
-    override suspend fun fetchChangelogEntries(sinceVersion: String?): List<ChangelogEntry> {
+    // Every install already has the default source
+    override val addSourceLink: String? get() = null
+
+    override suspend fun fetchChangelogEntries(): List<ChangelogEntry> {
         val branch = if (usePrerelease) BRANCH_DEV else BRANCH_STABLE
-        return fetchAndCacheEntries("$uid|$branch", sinceVersion) {
+        return fetchAndCacheEntries("$uid|$branch") {
             api.fetchPatchesChangelog(branch, stopAfterFirstStable = usePrerelease)
         }
     }
 
     override suspend fun fetchFullChangelogEntries(): List<ChangelogEntry> =
-        fetchAndCacheEntries("$uid|$BRANCH_STABLE|full", sinceVersion = null) {
+        fetchAndCacheEntries("$uid|$BRANCH_STABLE|full") {
             api.fetchPatchesChangelog(BRANCH_STABLE, stopAfterFirstStable = false)
         }
 
@@ -596,8 +657,6 @@ class GitHubPullRequestBundle(
     enabled: Boolean
 ) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled) {
 
-    private val api: MorpheAPI by inject()
-
     override suspend fun getLatestInfo() = withContext(Dispatchers.IO) {
         val (owner, repo, prNumber) = endpoint.split("/").let { parts ->
             Triple(parts[3], parts[4], parts[6])
@@ -608,7 +667,6 @@ class GitHubPullRequestBundle(
 
     override suspend fun download(info: MorpheAsset, onProgress: PatchBundleDownloadProgress?) = withContext(Dispatchers.IO) {
         val prefs: PreferencesManager by inject()
-        val http: HttpService by inject()
         val gitHubPat = prefs.gitHubPat.get().also {
             if (it.isBlank()) throw RuntimeException("PAT is required")
         }
@@ -618,6 +676,10 @@ class GitHubPullRequestBundle(
                 prepareGet {
                     url(info.downloadUrl)
                     header("Authorization", "Bearer $gitHubPat")
+                    // The client's request timeout covers the whole body, which a large bundle on a
+                    // slow link outlasts while bytes are still arriving. The socket timeout still
+                    // ends a stalled connection.
+                    timeout { requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS }
                 }.execute { httpResponse ->
                     val contentType = httpResponse.contentType()?.toString() ?: ""
                     val contentLength = httpResponse.contentLength()

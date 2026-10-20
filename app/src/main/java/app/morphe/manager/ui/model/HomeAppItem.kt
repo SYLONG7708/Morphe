@@ -1,3 +1,8 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
 package app.morphe.manager.ui.model
 
 import android.content.pm.PackageInfo
@@ -22,6 +27,8 @@ data class HomeAppItem(
     val gradientColors: List<Color>,
     val installedApp: InstalledApp?,
     val packageInfo: PackageInfo?,
+    /** Installed version from the device, else the one the record kept. */
+    val version: String,
     val isPinnedByDefault: Boolean,
     val isInstalledOnDevice: Boolean,
     val isDeleted: Boolean,
@@ -32,12 +39,11 @@ data class HomeAppItem(
     val hasUpdate: Boolean,
     val versionStatus: AppVersionStatus?,
     val patchCount: Int,
-    val isClone: Boolean
+    val isClone: Boolean,
+    /** What tells the card from another app of the same name, see [withNameSuffixes]. */
+    val nameSuffix: String? = null
 ) {
     val hasSavedCopy: Boolean get() = savedApkFile != null
-
-    /** The version this card is about: what the device reports, or what the record kept of it. */
-    val version: String get() = packageInfo?.versionName ?: installedApp?.version.orEmpty()
 
     /**
      * Whether the install is settled enough for pending work on it to be worth surfacing. A record
@@ -65,6 +71,46 @@ data class HomeAppItem(
 }
 
 /**
+ * These cards with a [HomeAppItem.nameSuffix] where different apps share a name, such as two builds
+ * of Telegram. Clones of one app share its package, so they are left as they are.
+ */
+fun List<HomeAppItem>.withNameSuffixes(): List<HomeAppItem> {
+    // One map of first packages finds the shared names, so a list with none builds nothing more
+    val firstPackages = HashMap<String, String>(size * 2)
+    val sharedNames = HashSet<String>()
+    for ((_, packageName, displayName) in this) {
+        val first = firstPackages.putIfAbsent(displayName, packageName)
+        if (first != null && first != packageName) sharedNames += displayName
+    }
+    if (sharedNames.isEmpty()) return this
+
+    val packagesByName = HashMap<String, MutableSet<String>>()
+    for ((_, packageName, displayName) in this) {
+        if (displayName in sharedNames) {
+            packagesByName.getOrPut(displayName) { HashSet() } += packageName
+        }
+    }
+
+    return map { item ->
+        val namesakes = packagesByName[item.displayName] ?: return@map item
+        item.copy(nameSuffix = packageNameSuffix(item.packageName, namesakes - item.packageName))
+    }
+}
+
+/**
+ * The segments of [packageName] that none of [others] has in the same place, or null where there
+ * are none, as for the package the others only extend: `web` for `org.telegram.messenger.web`
+ * against `org.telegram.messenger`, and nothing the other way round.
+ */
+internal fun packageNameSuffix(packageName: String, others: Collection<String>): String? {
+    val otherSegments = others.map { it.split('.') }
+    return packageName.split('.')
+        .filterIndexed { index, segment -> otherSegments.none { it.getOrNull(index) == segment } }
+        .joinToString(".")
+        .ifEmpty { null }
+}
+
+/**
  * What a home screen card is about, before anything is read off the device to describe it.
  *
  * @param isClone Whether the card is about a copy of the app rather than about the app itself.
@@ -75,6 +121,32 @@ data class HomeAppSlot(
     val installedApp: InstalledApp?,
     val isClone: Boolean
 )
+
+/**
+ * The cards of every app in [packageNames], then of every app [records] were patched from that no
+ * source lists anymore, so its installs stay in reach.
+ *
+ * A record patched from a build that was itself patched names that build's package as its app,
+ * which is the package the build's own card already goes by. Such an app gets no card of its own
+ * and its installs are shown by their own packages, so no two cards share an id.
+ */
+fun homeAppSlots(packageNames: Collection<String>, records: List<InstalledApp>): List<HomeAppSlot> {
+    val recordsByApp = records.groupBy { it.originalPackageName }
+    val patchedPackages = records
+        .filter { it.currentPackageName != it.originalPackageName }
+        .mapTo(HashSet()) { it.currentPackageName }
+
+    return (packageNames + recordsByApp.keys).distinct().flatMap { packageName ->
+        val appRecords = recordsByApp[packageName].orEmpty()
+        if (packageName in patchedPackages) {
+            appRecords
+                .sortedBy { it.currentPackageName }
+                .map { HomeAppSlot(it.currentPackageName, packageName, it, it.isClone) }
+        } else {
+            homeAppSlots(packageName, appRecords)
+        }
+    }
+}
 
 /**
  * The cards one app is shown as: the app itself, followed by every further install of it, ordered

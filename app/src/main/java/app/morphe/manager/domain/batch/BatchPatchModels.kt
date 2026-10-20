@@ -26,7 +26,7 @@ data class BatchTarget(
     val packageName: String,
     val repatchedPackageName: String? = null
 ) : Parcelable {
-    /** Identifies the queued app, which the package name alone cannot once clones exist. */
+    /** Identifies the queued app, which the package name alone cannot once clone exist. */
     val id get() = repatchedPackageName ?: packageName
 }
 
@@ -149,6 +149,8 @@ data class BatchPatchItem(
     val bundles: List<BatchBundleRef>,
     val state: BatchItemState,
     val message: String? = null,
+    /** The patch a failed run failed on, null when it failed outside of one. */
+    val failedPatch: String? = null,
     /** True when the sources mark this APK version as experimental. */
     val experimentalVersion: Boolean = false,
     /** Version the sources recommend, offered for download when the APK is missing or wrong. */
@@ -211,6 +213,8 @@ enum class BatchPhase {
  *
  * @param activeRun Live step, log and progress state of the app being patched right now.
  *   The batch screen hands it to the same patching screens the single-app flow uses.
+ * @param finishedInForeground Whether a Morphe screen was in focus when the queue finished, so the
+ *   screen celebrates only an end the user saw rather than one they come back to.
  */
 data class BatchRunState(
     val items: List<BatchPatchItem>,
@@ -218,7 +222,8 @@ data class BatchRunState(
     val policy: BatchInstallPolicy,
     val useMount: Boolean = false,
     val activeIndex: Int? = null,
-    val activeRun: PatchRunProgress? = null
+    val activeRun: PatchRunProgress? = null,
+    val finishedInForeground: Boolean = false
 ) {
     val activeItem get() = activeIndex?.let(items::getOrNull)
     val runnable get() = items.filter { it.state.isRunnable }
@@ -239,6 +244,9 @@ data class BatchRunState(
 
     /** A finished run that patched or failed anything. One canceled before its first app did neither. */
     val hasOutcome get() = phase == BatchPhase.FINISHED && (succeeded > 0 || failed > 0)
+
+    /** A run stopped before its end, by the user or by the system canceling the patch work. */
+    val wasStopped get() = items.any { it.state == BatchItemState.CANCELLED }
 
     /** Successful items that still have their patched APK on disk, in queue order. */
     val patchedItems get() = items.filter { it.state == BatchItemState.SUCCEEDED && it.patchedFile != null }

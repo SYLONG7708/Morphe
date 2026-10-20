@@ -15,6 +15,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,7 +26,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -34,6 +36,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import app.morphe.manager.R
 import app.morphe.manager.patcher.logger.LogLevel
 import app.morphe.manager.patcher.logger.logField
@@ -76,9 +80,8 @@ import app.morphe.manager.ui.screen.patcher.game.MiniGameContent
 import app.morphe.manager.ui.screen.patcher.game.MiniGameState
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.screen.shared.Animations
+import app.morphe.manager.ui.theme.MorpheBrandTeal
 import app.morphe.manager.util.formatBytesForReport
-import app.morphe.manager.util.isRtl
-import app.morphe.manager.util.startToEndGradient
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -88,11 +91,9 @@ internal val PatcherCardPadding = 10.dp
 /** What a card's own margin and the surrounding list each contribute to that same inset. */
 internal val PatcherCardMargin = PatcherCardPadding / 2
 
-/** Brand blue - start of the progress gradient. */
-private val PatcherProgressBlueColor = Color(0xFF1E5AA8)
+private const val SCROLL_THROTTLE_MS = 150L
 
-/** Brand teal - used for the live indicator dot, step pipeline, progress bar end, and success state. */
-private val PatcherProgressTealColor = Color(0xFF00AFAE)
+
 
 sealed interface LogItem {
     /**
@@ -153,35 +154,53 @@ private fun formatElapsed(ms: Long?): String {
 }
 
 /**
- * Converts the full raw log list into display [LogItem]s in a single stateful pass.
+ * Incremental state machine that converts raw log lines into display [LogItem]s.
  *
- * Lines that carry metadata for the banner/summary cards (Runtime, heap limit,
- * heap-after-patching) are consumed and never emitted as plain [LogItem.Entry]s.
+ * Consumes auxiliary metadata lines for [LogItem.StartBanner] and [LogItem.SuccessSummary],
+ * updating banners in-place when metadata arrives before or after the banner marker.
  */
-internal fun List<Pair<LogLevel, String>>.toLogItems(): List<LogItem> {
-    // Pre-scan for auxiliary lines so banner cards can be built in one pass
-    var runtimeMemoryLimitMb: String? = null
-    var processHeapAverageMb: String? = null
-    var processHeapMaxMb: String? = null
-    var ioPeakKbPerSec: Int? = null
-    var androidVersion: String? = null
-    var ramAvailable: String? = null
-    var ramTotal: String? = null
-    var storageAvailable: String? = null
-    var storageTotal: String? = null
-    var deviceManufacturer: String?
-    var deviceModel: String?
-    val sources = mutableListOf<PatchSourceRef>()
-    var managerVersion: String? = null
-    var patcherVersion: String? = null
-    var stripsNativeLibs: Boolean? = null
+internal class LogItemAccumulator(
+    private val targetList: MutableList<LogItem> = mutableListOf(),
+    private val maxItems: Int = Int.MAX_VALUE
+) {
+    val items: List<LogItem> get() = targetList
 
-    for ((_, message) in this) {
+    private var startBannerIndex = -1
+    private var successSummaryIndex = -1
+
+    // Metadata for StartBanner
+    private var managerVersion: String? = null
+    private var patcherVersion: String? = null
+    private var stripsNativeLibs: Boolean? = null
+    private val sources = mutableListOf<PatchSourceRef>()
+    private var runtimeMemoryLimitMb: String? = null
+    private var androidVersion: String? = null
+    private var ramAvailable: String? = null
+    private var ramTotal: String? = null
+    private var storageAvailable: String? = null
+    private var storageTotal: String? = null
+    private var startPackage: String? = null
+    private var startVersion: String? = null
+    private var startApkSize: String? = null
+    private var startPatchCount: Int = 0
+    private var startIsSplit: Boolean = false
+    private var deviceManufacturer: String? = null
+    private var deviceModel: String? = null
+
+    // Metadata for SuccessSummary
+    private var successOutputSize: String? = null
+    private var successElapsedSec: String? = null
+    private var processHeapAverageMb: String? = null
+    private var processHeapMaxMb: String? = null
+    private var ioPeakKbPerSec: Int? = null
+
+    fun append(level: LogLevel, message: String): List<LogItem> {
         when {
             message.startsWith(LOG_WORKER_PREFIX_BUILD) -> {
                 managerVersion = message.logField(LOG_WORKER_FIELD_MANAGER)
                 patcherVersion = message.logField(LOG_WORKER_FIELD_PATCHER)
                 stripsNativeLibs = message.logField(LOG_WORKER_FIELD_NATIVE_LIBS)?.toBooleanStrictOrNull()
+                updateStartBanner()
             }
             message.startsWith(LOG_WORKER_PREFIX_SOURCE) -> {
                 message.logField(LOG_WORKER_FIELD_NAME)?.let { name ->
@@ -189,10 +208,12 @@ internal fun List<Pair<LogLevel, String>>.toLogItems(): List<LogItem> {
                         name = name,
                         version = message.logField(LOG_WORKER_FIELD_VERSION)?.takeIf { it != "?" }
                     )
+                    updateStartBanner()
                 }
             }
             message.startsWith(LOG_WORKER_PREFIX_RUNTIME) -> {
                 runtimeMemoryLimitMb = message.logField(LOG_WORKER_FIELD_MEMORY_LIMIT)?.let { "${it}MB" }
+                updateStartBanner()
             }
             message.startsWith(LOG_WORKER_PREFIX_DEVICE) -> {
                 androidVersion = message.logField(LOG_WORKER_FIELD_ANDROID)?.let { v ->
@@ -202,78 +223,150 @@ internal fun List<Pair<LogLevel, String>>.toLogItems(): List<LogItem> {
                 ramTotal     = message.logField(LOG_WORKER_FIELD_RAM_TOTAL)
                 storageAvailable = message.logField(LOG_WORKER_FIELD_STORAGE_AVAIL)
                 storageTotal     = message.logField(LOG_WORKER_FIELD_STORAGE_TOTAL)
+                updateStartBanner()
             }
             message.startsWith(LOG_MEMORY_PREFIX_DONE) -> {
-                processHeapAverageMb  = message.logField(LOG_MEMORY_FIELD_AVERAGE)
-                processHeapMaxMb   = message.logField(LOG_MEMORY_FIELD_MAX)
+                processHeapAverageMb = message.logField(LOG_MEMORY_FIELD_AVERAGE)
+                processHeapMaxMb = message.logField(LOG_MEMORY_FIELD_MAX)
+                updateSuccessSummary()
             }
             message.startsWith(LOG_USAGE_PREFIX_DONE) -> {
                 ioPeakKbPerSec = message.logField(LOG_USAGE_FIELD_IO_PEAK)?.toIntOrNull()
+                updateSuccessSummary()
             }
-        }
-    }
-
-    val skipPrefixes = setOf(
-        LOG_PROCESS_PREFIX_PROCESS_HEAP,
-        LOG_PROCESS_PREFIX_COROUTINE_HEAP,
-        LOG_MEMORY_PREFIX_DONE,
-        LOG_USAGE_PREFIX_DONE,
-        LOG_WORKER_PREFIX_DEVICE,
-        LOG_WORKER_PREFIX_RUNTIME,
-        LOG_WORKER_PREFIX_SOURCE,
-        LOG_WORKER_PREFIX_BUILD
-    )
-
-    val result = mutableListOf<LogItem>()
-    for ((level, message) in this) {
-        when {
-            skipPrefixes.any { message.startsWith(it) } -> { /* consumed above */ }
-
+            message.startsWith(LOG_PROCESS_PREFIX_PROCESS_HEAP) ||
+                message.startsWith(LOG_PROCESS_PREFIX_COROUTINE_HEAP) -> {
+                // Auxiliary lines consumed without emitting a LogItem
+            }
             message.startsWith(LOG_WORKER_PREFIX_STARTED) -> {
                 val pkg = message.logField(LOG_WORKER_FIELD_PACKAGE)
                 deviceManufacturer = message.logField(LOG_WORKER_FIELD_DEVICE)
                 deviceModel = message.logField(LOG_WORKER_FIELD_MODEL)
                 if (pkg != null) {
-                    result += LogItem.StartBanner(
-                        packageName = pkg,
-                        version = message.logField(LOG_WORKER_FIELD_VERSION) ?: "?",
-                        sources = sources,
-                        managerVersion = managerVersion,
-                        patcherVersion = patcherVersion,
-                        stripsNativeLibs = stripsNativeLibs,
-                        apkSize = message.logBytes(LOG_WORKER_FIELD_SIZE),
-                        patchCount = message.logField(LOG_WORKER_FIELD_PATCHES)?.toIntOrNull() ?: 0,
-                        isSplit = message.logField(LOG_WORKER_FIELD_SPLIT) == "true",
-                        runtimeMemoryLimitMb = runtimeMemoryLimitMb,
-                        androidVersion = androidVersion,
-                        ramAvailable = ramAvailable,
-                        ramTotal = ramTotal,
-                        storageAvailable = storageAvailable,
-                        storageTotal = storageTotal,
-                        deviceManufacturer = deviceManufacturer,
-                        deviceModel = deviceModel,
-                    )
+                    startPackage = pkg
+                    startVersion = message.logField(LOG_WORKER_FIELD_VERSION) ?: "?"
+                    startApkSize = message.logBytes(LOG_WORKER_FIELD_SIZE)
+                    startPatchCount = message.logField(LOG_WORKER_FIELD_PATCHES)?.toIntOrNull() ?: 0
+                    startIsSplit = message.logField(LOG_WORKER_FIELD_SPLIT) == "true"
+                    startBannerIndex = targetList.size
+                    addItem(buildStartBanner())
                 } else {
-                    result += LogItem.Entry(level, message)
+                    addItem(LogItem.Entry(level, message))
                 }
             }
-
             message.startsWith(LOG_WORKER_PREFIX_SUCCEEDED) -> {
-                result += LogItem.SuccessSummary(
-                    outputSize = message.logBytes(LOG_WORKER_FIELD_SIZE),
-                    elapsedSec = formatElapsed(
-                        message.logField(LOG_WORKER_FIELD_ELAPSED)?.filter { it.isDigit() }?.toLongOrNull()
-                    ),
-                    processHeapAverageMb  = processHeapAverageMb,
-                    processHeapMaxMb   = processHeapMaxMb,
-                    ioPeakRate = ioPeakKbPerSec?.let(::formatRate),
+                successOutputSize = message.logBytes(LOG_WORKER_FIELD_SIZE)
+                successElapsedSec = formatElapsed(
+                    message.logField(LOG_WORKER_FIELD_ELAPSED)?.filter { it.isDigit() }?.toLongOrNull()
                 )
+                successSummaryIndex = targetList.size
+                addItem(buildSuccessSummary())
             }
+            else -> {
+                addItem(LogItem.Entry(level, message))
+            }
+        }
+        return targetList
+    }
 
-            else -> result += LogItem.Entry(level, message)
+    fun appendAll(entries: List<Pair<LogLevel, String>>): List<LogItem> {
+        for ((level, message) in entries) {
+            append(level, message)
+        }
+        return targetList
+    }
+
+    fun reset() {
+        targetList.clear()
+        startBannerIndex = -1
+        successSummaryIndex = -1
+        managerVersion = null
+        patcherVersion = null
+        stripsNativeLibs = null
+        sources.clear()
+        runtimeMemoryLimitMb = null
+        androidVersion = null
+        ramAvailable = null
+        ramTotal = null
+        storageAvailable = null
+        storageTotal = null
+        startPackage = null
+        startVersion = null
+        startApkSize = null
+        startPatchCount = 0
+        startIsSplit = false
+        deviceManufacturer = null
+        deviceModel = null
+        successOutputSize = null
+        successElapsedSec = null
+        processHeapAverageMb = null
+        processHeapMaxMb = null
+        ioPeakKbPerSec = null
+    }
+
+    private fun addItem(item: LogItem) {
+        if (targetList.size >= maxItems) {
+            val removeIndex = if (startBannerIndex == 0) 1 else 0
+            if (removeIndex < targetList.size) {
+                targetList.removeAt(removeIndex)
+                if (successSummaryIndex > removeIndex) {
+                    successSummaryIndex--
+                }
+            }
+        }
+        targetList.add(item)
+    }
+
+    private fun updateStartBanner() {
+        if (startBannerIndex in targetList.indices) {
+            targetList[startBannerIndex] = buildStartBanner()
         }
     }
-    return result
+
+    private fun buildStartBanner(): LogItem.StartBanner = LogItem.StartBanner(
+        packageName = startPackage.orEmpty(),
+        version = startVersion ?: "?",
+        sources = sources.toList(),
+        managerVersion = managerVersion,
+        patcherVersion = patcherVersion,
+        stripsNativeLibs = stripsNativeLibs,
+        apkSize = startApkSize.orEmpty(),
+        patchCount = startPatchCount,
+        isSplit = startIsSplit,
+        runtimeMemoryLimitMb = runtimeMemoryLimitMb,
+        androidVersion = androidVersion,
+        ramAvailable = ramAvailable,
+        ramTotal = ramTotal,
+        storageAvailable = storageAvailable,
+        storageTotal = storageTotal,
+        deviceManufacturer = deviceManufacturer,
+        deviceModel = deviceModel,
+    )
+
+    private fun updateSuccessSummary() {
+        if (successSummaryIndex in targetList.indices) {
+            targetList[successSummaryIndex] = buildSuccessSummary()
+        }
+    }
+
+    private fun buildSuccessSummary(): LogItem.SuccessSummary = LogItem.SuccessSummary(
+        outputSize = successOutputSize.orEmpty(),
+        elapsedSec = successElapsedSec ?: "?",
+        processHeapAverageMb = processHeapAverageMb,
+        processHeapMaxMb = processHeapMaxMb,
+        ioPeakRate = ioPeakKbPerSec?.let(::formatRate),
+    )
+}
+
+/**
+ * Converts the full raw log list into display [LogItem]s in a single stateful pass.
+ *
+ * Lines that carry metadata for the banner/summary cards (Runtime, heap limit,
+ * heap-after-patching) are consumed and never emitted as plain [LogItem.Entry]s.
+ */
+internal fun List<Pair<LogLevel, String>>.toLogItems(): List<LogItem> {
+    val accumulator = LogItemAccumulator()
+    return accumulator.appendAll(this).toList()
 }
 
 /**
@@ -284,7 +377,7 @@ internal fun List<Pair<LogLevel, String>>.toLogItems(): List<LogItem> {
  */
 @Composable
 fun ExpertPatchingInProgress(
-    progress: Float,
+    progress: () -> Float,
     patchesProgress: Pair<Int, Int>,
     patchProgress: PatchProgressSource,
     packageName: String? = null,
@@ -292,8 +385,8 @@ fun ExpertPatchingInProgress(
     miniGameState: MiniGameState,
     queueHeader: (@Composable () -> Unit)? = null,
     onCancelClick: () -> Unit,
-    onInstallClick: () -> Unit = {},
-    onHomeClick: () -> Unit
+    resultButton: ResultButton = ResultButton.Install,
+    onResultClick: () -> Unit = {}
 ) {
     val (completed, total) = patchesProgress
     val rawLogs = patchProgress.logs
@@ -307,16 +400,28 @@ fun ExpertPatchingInProgress(
         "[${level.name}] $message"
     }
 
-    LaunchedEffect(rawLogs.size) {
-        if (rawLogs.isNotEmpty()) {
-            // Small delay so AnimatedVisibility places the new item in layout
-            // before we scroll to it - otherwise the item stays off-screen.
-            delay(50.milliseconds)
-            listState.animateScrollToItem(rawLogs.size - 1)
-        }
+    LaunchedEffect(patchProgress, patcherSucceeded) {
+        var lastScrollTime = 0L
+        snapshotFlow { patchProgress.totalLogCount }
+            .collect { count ->
+                if (count > 0 && patchProgress.logItems.isNotEmpty()) {
+                    val now = System.currentTimeMillis()
+                    val elapsed = now - lastScrollTime
+                    if (elapsed < SCROLL_THROTTLE_MS && patcherSucceeded == null) {
+                        delay((SCROLL_THROTTLE_MS - elapsed).milliseconds)
+                    } else if (lastScrollTime == 0L) {
+                        delay(50.milliseconds)
+                    }
+                    val targetIndex = (patchProgress.logItems.size - 1).coerceAtLeast(0)
+                    listState.animateScrollToItem(targetIndex)
+                    lastScrollTime = System.currentTimeMillis()
+                }
+            }
     }
 
     val landscape = isLandscape()
+    // The app's own color marks what is being patched, on the bar and the log panel alike
+    val appColor = packageName?.let { rememberAppColor(it) }
 
     // The same bar in both orientations: only where it hangs and its padding differ, so it is
     // written once rather than kept in step across two branches
@@ -324,16 +429,11 @@ fun ExpertPatchingInProgress(
         PatcherBottomActionBar(
             horizontalPadding = horizontalPadding,
             showCancelButton = patcherSucceeded == null,
-            showHomeButton = patcherSucceeded == true,
-            showInstallButton = patcherSucceeded == true,
-            showSaveButton = false,
-            showErrorButton = false,
+            showHomeButton = false,
+            resultButton = resultButton.takeIf { patcherSucceeded == true },
             showCopyLogsButton = true,
             onCancelClick = onCancelClick,
-            onHomeClick = onHomeClick,
-            onInstallClick = onInstallClick,
-            onSaveClick = {},
-            onErrorClick = {},
+            onResultClick = onResultClick,
             onCopyLogsClick = {
                 copyToClipboard(buildLogsText())
             }
@@ -348,6 +448,7 @@ fun ExpertPatchingInProgress(
             total = total,
             patchProgress = patchProgress,
             packageName = packageName,
+            accentColor = appColor,
             patcherSucceeded = patcherSucceeded,
             showScreenLabel = queueHeader == null
         )
@@ -356,8 +457,8 @@ fun ExpertPatchingInProgress(
         ExpertLogPanel(
             patchProgress = patchProgress,
             listState = listState,
-            patcherSucceeded = patcherSucceeded,
             miniGameState = miniGameState,
+            accentColor = appColor,
             modifier = panelModifier
         )
     }
@@ -386,10 +487,12 @@ fun ExpertPatchingInProgress(
                 ) {
                     // The usage graphs can outgrow a short window, so the header scrolls while
                     // the action bar below it stays put
+                    val headerScrollState = rememberScrollState()
                     Column(
                         modifier = Modifier
                             .weight(1f)
-                            .verticalScroll(rememberScrollState())
+                            .verticalScrollFade(headerScrollState)
+                            .verticalScroll(headerScrollState)
                     ) {
                         queueHeader?.invoke()
 
@@ -447,11 +550,12 @@ fun ExpertPatchingInProgress(
  */
 @Composable
 private fun ExpertProgressHeader(
-    progress: Float,
+    progress: () -> Float,
     completed: Int,
     total: Int,
     patchProgress: PatchProgressSource,
     packageName: String? = null,
+    accentColor: Color? = null,
     patcherSucceeded: Boolean? = null,
     showScreenLabel: Boolean = true
 ) {
@@ -461,6 +565,9 @@ private fun ExpertProgressHeader(
             patchProgress.steps.firstOrNull { it.state == State.RUNNING }
         }
     }
+
+    // The eased progress moves every frame, so only the whole percent is read while composing
+    val percent by remember(progress) { derivedStateOf { (progress() * 100).toInt() } }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -497,37 +604,34 @@ private fun ExpertProgressHeader(
                             text = stepName ?: stringResource(R.string.patcher_success_title),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = usableAppAccent(accentColor) ?: MaterialTheme.colorScheme.primary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
                     if (total > 0) {
-                        // A finished run wears the same teal the success card and the progress bar end on
+                        // A finished run wears the same success tone as the success card
                         StatusBadge(
                             text = stringResource(R.string.patcher_patches_progress_format, completed, total),
-                            containerColor = if (patcherSucceeded == true) {
-                                PatcherProgressTealColor.copy(alpha = 0.18f)
-                            } else {
-                                SemanticTone.Primary.container
-                            },
-                            contentColor = if (patcherSucceeded == true) {
-                                PatcherProgressTealColor
-                            } else {
-                                SemanticTone.Primary.content
-                            }
+                            tone = if (patcherSucceeded == true) SemanticTone.Success else SemanticTone.Primary
                         )
                     }
 
                     StatusBadge(
-                        text = stringResource(R.string.patcher_percentage, (progress * 100).toInt()),
+                        text = stringResource(R.string.patcher_percentage, percent),
                         tone = SemanticTone.Primary
                     )
                 }
             }
 
-            ExpertLinearProgressBar(progress = progress)
+            // The simple mode's wave laid flat, so both modes show progress alike. [progress]
+            // arrives already eased by [rememberDisplayedPatchProgress], so it is drawn as is
+            WavyProgressBar(
+                progress = progress,
+                accentColor = accentColor,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         // Heap, CPU and storage graphs
@@ -539,59 +643,38 @@ private fun ExpertProgressHeader(
     }
 }
 
-/**
- * Horizontal progress bar with a gradient fill.
- */
-@Composable
-private fun ExpertLinearProgressBar(progress: Float) {
-    val animated by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = tween(700, easing = FastOutSlowInEasing),
-        label = "expert_linear_progress"
-    )
-
-    // The fill grows from the start edge, so the sweep has to follow it and run end to start in RTL
-    val rtl = isRtl()
-    val fillBrush = remember(rtl) {
-        startToEndGradient(listOf(PatcherProgressBlueColor, PatcherProgressTealColor), rtl)
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(10.dp)
-            .clip(RoundedCornerShape(5.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(fraction = animated.coerceIn(0f, 1f))
-                .clip(RoundedCornerShape(5.dp))
-                .background(fillBrush)
-        )
-    }
-}
+private const val LOG_PANEL_TAB_LOGS = 0
+private const val LOG_PANEL_TAB_GAMES = 1
 
 /**
  * Scrollable log panel backed directly by [PatchProgressSource.logs].
- * The header tab row lets the user switch between logs and the mini-game.
+ * Tabs over it switch between the logs and the mini-game, by a tap or a swipe.
  */
 @Composable
 private fun ExpertLogPanel(
     modifier: Modifier = Modifier,
     patchProgress: PatchProgressSource,
     listState: LazyListState,
-    patcherSucceeded: Boolean? = null,
-    miniGameState: MiniGameState
+    miniGameState: MiniGameState,
+    accentColor: Color? = null
 ) {
-    val rawLogs = patchProgress.logs
-    // Convert the full list in one stateful pass so banner cards can aggregate metadata from auxiliary lines
-    val logItems = remember(rawLogs, rawLogs.size) { rawLogs.toLogItems() }
-    // 0 = logs, 1 = game
-    var activeTab by rememberSaveable { mutableIntStateOf(0) }
+    val logItems = patchProgress.logItems
+    // Decoration only: the log's own colors keep telling warnings and errors apart
+    val appAccent = usableAppAccent(accentColor)
+    val dotColor = appAccent ?: MorpheBrandTeal
+    val totalLogs = patchProgress.totalLogCount
+
+    var activeTab by rememberSaveable { mutableIntStateOf(LOG_PANEL_TAB_LOGS) }
     LaunchedEffect(activeTab) {
-        if (activeTab != 1) miniGameState.pauseActiveGame()
+        if (activeTab != LOG_PANEL_TAB_GAMES) miniGameState.pauseActiveGame()
+    }
+    // Waits behind its pause overlay while the manager is away, rather than playing on the
+    // moment it is back, before the player has their eyes on it again
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { miniGameState.pauseActiveGame() }
+    // Lines there were when the logs were last in view, so the tab can say the run moved on
+    var seenLogCount by rememberSaveable { mutableIntStateOf(totalLogs) }
+    LaunchedEffect(activeTab, totalLogs) {
+        if (activeTab == LOG_PANEL_TAB_LOGS) seenLogCount = totalLogs
     }
 
     Surface(
@@ -599,33 +682,48 @@ private fun ExpertLogPanel(
         shape = RoundedCornerShape(Defaults.CardCornerRadius),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 2.dp,
-        border = CardBorder.neutral
+        border = CardBorder.of(appAccentBorder(appAccent))
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            LogPanelTabHeader(
-                isLive = patcherSucceeded == null,
-                activeTab = activeTab,
-                onTabSelect = { activeTab = it }
-            )
-
-            HorizontalDivider(color = GlassButtonDefaults.borderColor())
-
-            AnimatedContent(
-                targetState = activeTab,
-                transitionSpec = Animations.fadeCrossfade(200),
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                label = "log_game_tab"
+        // Handed to the log cards, which a queue renders without the screen's own accent around them
+        ProvideAccent(appAccent) {
+            SegmentedTabs(
+                options = listOf(
+                    SegmentedTab(
+                        label = stringResource(R.string.patcher_tab_logs),
+                        icon = Icons.Outlined.Terminal,
+                        badge = activeTab != LOG_PANEL_TAB_LOGS && totalLogs > seenLogCount
+                    ),
+                    SegmentedTab(
+                        label = stringResource(R.string.patcher_tab_game),
+                        icon = Icons.Outlined.SportsEsports
+                    )
+                ),
+                selectedIndex = activeTab,
+                onSelect = { activeTab = it },
+                spacing = 0.dp,
+                compact = true,
+                fillHeight = true,
+                selectorPadding = PaddingValues(
+                    start = PatcherCardPadding,
+                    top = PatcherCardPadding,
+                    end = PatcherCardPadding
+                ),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                // A game in play takes the drags over it, the picker has none of its own
+                pageSwipeEnabled = { page -> page != LOG_PANEL_TAB_GAMES || !miniGameState.hasOpenGame },
+                modifier = Modifier.fillMaxSize()
             ) { tab ->
                 when (tab) {
-                    1 -> MiniGameContent(state = miniGameState)
+                    LOG_PANEL_TAB_GAMES -> MiniGameContent(state = miniGameState)
                     else -> {
                         LazyColumn(
                             state = listState,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(vertical = PatcherCardMargin),
+                                .verticalScrollFade(listState),
+                            contentPadding = PaddingValues(vertical = PatcherCardMargin)
                         ) {
-                            if (rawLogs.isEmpty()) {
+                            if (logItems.isEmpty()) {
                                 item {
                                     Box(
                                         modifier = Modifier
@@ -639,15 +737,18 @@ private fun ExpertLogPanel(
                                         ) {
                                             // Nothing is going to arrive for a run whose log died
                                             // with its process, so the live dot would be a lie
-                                            if (!patchProgress.logsLost) LiveIndicatorDot(size = 10.dp)
-                                            Text(
+                                            if (!patchProgress.logsLost) {
+                                                LiveIndicatorDot(color = dotColor, size = 10.dp)
+                                            }
+                                            CrossfadeText(
                                                 text = stringResource(
                                                     if (patchProgress.logsLost) R.string.patcher_logs_lost
                                                     else R.string.patcher_logs_waiting
                                                 ),
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
-                                                fontFamily = FontFamily.Monospace,
+                                                style = MaterialTheme.typography.bodySmall
+                                                    .copy(fontFamily = FontFamily.Monospace),
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    .copy(alpha = 0.45f),
                                                 textAlign = TextAlign.Center
                                             )
                                         }
@@ -665,71 +766,6 @@ private fun ExpertLogPanel(
                     }
                 }
             }
-        }
-    }
-}
-
-/**
- * Tab header that switches the log panel between patcher logs and the mini-game.
- */
-@Composable
-private fun LogPanelTabHeader(
-    isLive: Boolean,
-    activeTab: Int,
-    onTabSelect: (Int) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 2.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        LogTabChip(
-            label = stringResource(R.string.patcher_tab_logs),
-            selected = activeTab == 0,
-            onClick = { onTabSelect(0) },
-            modifier = Modifier.weight(1f, fill = false),
-            leadingContent = { LiveIndicatorDot(size = 8.dp, isLive = isLive && activeTab == 0) }
-        )
-        LogTabChip(
-            label = stringResource(R.string.patcher_tab_game),
-            selected = activeTab == 1,
-            onClick = { onTabSelect(1) },
-            modifier = Modifier.weight(1f, fill = false)
-        )
-    }
-}
-
-@Composable
-private fun LogTabChip(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    leadingContent: @Composable (() -> Unit)? = null
-) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp),
-        color = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
-        modifier = modifier
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            leadingContent?.invoke()
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }
@@ -758,13 +794,14 @@ private fun PatcherInfoCard(
     badge: String? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    // The start card wears the app's color on a neutral veil, the success one stays green
     val accentColor = when (variant) {
-        CardVariant.Start   -> MaterialTheme.colorScheme.primary
-        CardVariant.Success -> PatcherProgressTealColor
+        CardVariant.Start   -> LocalAccent.current ?: MaterialTheme.colorScheme.primary
+        CardVariant.Success -> SemanticTone.Success.accent
     }
     val bgColor = when (variant) {
-        CardVariant.Start   -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
-        CardVariant.Success -> PatcherProgressTealColor.copy(alpha = 0.10f)
+        CardVariant.Start   -> neutralVeil()
+        CardVariant.Success -> SemanticTone.Success.accent.copy(alpha = 0.10f)
     }
 
     Surface(
@@ -882,7 +919,7 @@ private fun StartBannerCard(item: LogItem.StartBanner) {
         }
 
         HorizontalDivider(
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            color = (LocalAccent.current ?: MaterialTheme.colorScheme.primary).copy(alpha = 0.1f),
             thickness = 1.dp
         )
 
@@ -892,7 +929,7 @@ private fun StartBannerCard(item: LogItem.StartBanner) {
                 value = item.managerVersion ?: "?",
                 modifier = Modifier.weight(1f))
             BannerFieldCell(
-                label = stringResource(R.string.patcher_field_patcher),
+                label = stringResource(R.string.settings_advanced_patcher),
                 value = item.patcherVersion ?: "?",
                 modifier = Modifier.weight(1f))
         }
@@ -906,7 +943,7 @@ private fun StartBannerCard(item: LogItem.StartBanner) {
                     ?.let { "Process $it" }
                     ?: "Coroutine",
                 modifier = Modifier.weight(1f),
-                valueColor = item.runtimeMemoryLimitMb?.let { MaterialTheme.colorScheme.primary }
+                valueColor = item.runtimeMemoryLimitMb?.let { LocalAccent.current ?: MaterialTheme.colorScheme.primary }
             )
             item.stripsNativeLibs?.let { strips ->
                 BannerFieldCell(
@@ -1102,13 +1139,14 @@ private fun logLevelColors(level: LogLevel): LogEntryColors = when (level) {
         text    = MaterialTheme.colorScheme.error
     )
     LogLevel.WARN -> LogEntryColors(
-        rowBg   = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.12f),
-        badgeBg = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
-        text    = MaterialTheme.colorScheme.tertiary
+        rowBg   = SemanticTone.Warning.container.copy(alpha = 0.12f),
+        badgeBg = SemanticTone.Warning.container.copy(alpha = 0.5f),
+        text    = SemanticTone.Warning.accent
     )
+    // The most common level, so its badge stays neutral rather than coloring the whole log
     LogLevel.INFO -> LogEntryColors(
         rowBg   = Color.Unspecified,
-        badgeBg = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+        badgeBg = neutralVeil(),
         text    = MaterialTheme.colorScheme.onSurface
     )
     LogLevel.TRACE -> LogEntryColors(
@@ -1126,26 +1164,18 @@ private val LogLevel.logBadge: String
         LogLevel.ERROR -> "E"
     }
 
-/**
- * Green dot used as a "live" indicator in the log panel header and empty state.
- * When [isLive] is true the dot pulses; when false it stays solid.
- */
+/** Pulsing dot of the empty log panel, in the color of the app being patched, while logs are awaited. */
 @Composable
-private fun LiveIndicatorDot(size: Dp = 8.dp, isLive: Boolean = true) {
-    val alpha = if (isLive) {
-        val infiniteTransition = rememberInfiniteTransition(label = "live_dot")
-        infiniteTransition.animateFloat(
-            initialValue = 0.25f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(900, easing = EaseInOut),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "live_alpha"
-        )
-    } else {
-        remember { mutableFloatStateOf(1f) }
-    }
+private fun LiveIndicatorDot(color: Color, size: Dp) {
+    val alpha = rememberInfiniteTransition(label = "live_dot").animateFloat(
+        initialValue = 0.25f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(900, easing = EaseInOut),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "live_alpha"
+    )
 
     // The pulse is read while drawing rather than while composing, so the dot repaints
     // without recomposing itself on every frame of the patch run
@@ -1153,7 +1183,7 @@ private fun LiveIndicatorDot(size: Dp = 8.dp, isLive: Boolean = true) {
         modifier = Modifier
             .size(size)
             .drawBehind {
-                drawCircle(color = PatcherProgressTealColor.copy(alpha = alpha.value))
+                drawCircle(color = color.copy(alpha = alpha.value))
             }
     )
 }

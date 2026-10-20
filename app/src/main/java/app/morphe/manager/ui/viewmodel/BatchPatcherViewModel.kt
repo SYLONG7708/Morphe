@@ -69,6 +69,8 @@ class BatchPatchEdit(
     val itemId: String,
     /** Key this item saves its patches and options under, and the one a copy excludes itself by. */
     val configurationKey: String,
+    /** The app's own package, which a clone's [configurationKey] is not. */
+    val packageName: String,
     val appName: String,
     val bundles: List<PatchBundleInfo.Scoped>,
     val savedSelection: PatchSelection,
@@ -239,13 +241,16 @@ class BatchPatcherViewModel : ViewModel(), KoinComponent, ApkDownloadHelperHost 
      * apps is reused so rotation does not restart planning.
      */
     fun ensurePlan(targets: List<BatchTarget>, useMount: Boolean) {
+        // Two cards can stand for the same install, such as a mount and a renamed build of one
+        // app, and the queue lists each install once
+        val queued = targets.distinctBy { it.id }
         val current = state.value
         if (current != null) {
             if (current.phase == BatchPhase.PLANNING || current.phase == BatchPhase.RUNNING) return
-            if (current.targets == targets) return
+            if (current.targets == queued) return
             coordinator.clear()
         }
-        coordinator.plan(targets, useMount, BatchInstallPolicy.SAVE_ONLY)
+        coordinator.plan(queued, useMount, BatchInstallPolicy.SAVE_ONLY)
     }
 
     fun requestAttach(packageName: String) {
@@ -358,16 +363,16 @@ class BatchPatcherViewModel : ViewModel(), KoinComponent, ApkDownloadHelperHost 
         private set
 
     /**
-     * Hands the download page to the browser and leaves a prompt behind.
+     * Hands the download page to the browser or the clipboard and leaves a prompt behind.
      *
      * The file picker deliberately waits for that prompt rather than opening straight away:
      * the browser is coming to the front at this moment, and Android does not let a
      * backgrounded app reliably start anything on top of it.
      */
-    fun confirmApkSearch(openUrl: (String) -> Boolean) {
+    fun confirmApkSearch(handOff: (String) -> Boolean) {
         val search = apkSearch ?: return
         apkSearch = null
-        if (openUrl(search.url)) {
+        if (handOff(search.url)) {
             attachPrompt = search.item
         } else {
             app.toast(app.getString(R.string.sources_management_failed_to_open_url))
@@ -464,6 +469,7 @@ class BatchPatcherViewModel : ViewModel(), KoinComponent, ApkDownloadHelperHost 
             edit = BatchPatchEdit(
                 itemId = item.id,
                 configurationKey = item.configurationKey,
+                packageName = item.packageName,
                 appName = item.appName,
                 bundles = bundles,
                 savedSelection = item.selection,

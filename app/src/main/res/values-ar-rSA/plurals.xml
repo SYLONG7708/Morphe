@@ -16,6 +16,33 @@
         <item quantity="many">%s خيارات التعديل</item>
         <item quantity="other">%s خيارات التعديل</item>
     </plurals>
+    <!-- How many files and folders a folder holds, under its name in the file picker -->
+    <plurals name="file_picker_item_count">
+        <item quantity="zero">%s عنصر</item>
+        <item quantity="one">%s عنصر</item>
+        <item quantity="two">%s عنصر</item>
+        <item quantity="few">%s عناصر</item>
+        <item quantity="many">%s عنصرًا</item>
+        <item quantity="other">%s عنصر</item>
+    </plurals>
+    <!-- Button that confirms the files checked in the file picker -->
+    <plurals name="file_picker_select_count">
+        <item quantity="zero">اختر %s ملف</item>
+        <item quantity="one">اختر %s ملف</item>
+        <item quantity="two">اختر %s ملف</item>
+        <item quantity="few">اختر %s ملف</item>
+        <item quantity="many">اختر %s ملف</item>
+        <item quantity="other">اختر %s ملف</item>
+    </plurals>
+    <!-- Button that adds every source waiting in the add source dialog -->
+    <plurals name="sources_dialog_add_count">
+        <item quantity="zero">أضف %s مصدر</item>
+        <item quantity="one">أضف %s مصدر</item>
+        <item quantity="two">أضف %s مصدر</item>
+        <item quantity="few">أضف %s مصدر</item>
+        <item quantity="many">أضف %s مصدر</item>
+        <item quantity="other">أضف %s مصدر</item>
+    </plurals>
     <plurals name="home_app_patch_sources_title">
         <item quantity="zero">مصدر تعديل لـ %s تطبيق</item>
         <item quantity="one">مصدر تعديل لـ %s تطبيق</item>
@@ -144,6 +171,14 @@
         <item quantity="many">%s مصادر تم تثبيتها</item>
         <item quantity="other">%s مصادر تم تثبيتها</item>
     </plurals>
+    <plurals name="home_app_filter_active">
+        <item quantity="zero">%1$s · لا توجد تطبيقات مفلترة (%2$s)</item>
+        <item quantity="one">%1$s · تطبيق واحد مفلتر (%2$s)</item>
+        <item quantity="two">%1$s · تطبيقان مفلتران (%2$s)</item>
+        <item quantity="few">%1$s · %2$s تطبيقات مفلترة</item>
+        <item quantity="many">%1$s · %2$s تطبيقًا مفلترًا</item>
+        <item quantity="other">%1$s · %2$s تطبيق مفلتر</item>
+    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="zero">%s تطبيق مخفي</item>
         <item quantity="one">%s تطبيق مخفي</item>
@@ -183,5 +218,61 @@
         <item quantity="few">%s أنوية</item>
         <item quantity="many">%s نواة</item>
         <item quantity="other">%s نواة</item>
+    </plurals>
+    <plurals name="changelog_feature_count">
+        <item quantity="zero">%s ميزة</item>
+        <item quantity="one">%s ميزة</item>
+        <item quantity="two">%s ميزتان</item>
+        <item quantity="few">%s ميزات</item>
+        <item quantity="many">%s ميزة</item>
+        <item quantity="other">%s ميزة</item>
+    </plurals>
+    <plurals name="changelog_fix_count">
+        <item quantity="zero">%s إصلاح</item>
+        <item quantity="one">%s إصلاح</item>
+        <item quantity="two">%s إصلاح</item>
+        <item quantity="few">%s إصلاح</item>
+        <item quantity="many">%s إصلاحًا</item>
+        <item quantity="other">%s إصلاح</item>
+    </plurals>
+    <plurals name="changelog_performance_count">
+        <item quantity="zero">%s تحسين</item>
+        <item quantity="one">%s تحسين</item>
+        <item quantity="two">%s تحسينان</item>
+        <item quantity="few">%s تحسينات</item>
+        <item quantity="many">%s تحسينًا</item>
+        <item quantity="other">%s تحسينًا</item>
+    </plurals>
+    <plurals name="changelog_change_count">
+        <item quantity="zero">%s تغيير</item>
+        <item quantity="one">%s تغيير</item>
+        <item quantity="two">%s تغيير</item>
+        <item quantity="few">%s تغييرات</item>
+        <item quantity="many">%s تغييرًا</item>
+        <item quantity="other">%s تغيير</item>
+    </plurals>
+    <plurals name="changelog_new_releases">
+        <item quantity="zero">%s إصدار جديد</item>
+        <item quantity="one">%s إصدار جديد</item>
+        <item quantity="two">%s إصدار جديد</item>
+        <item quantity="few">%s إصدارات جديدة</item>
+        <item quantity="many">%s إصدارًا جديدًا</item>
+        <item quantity="other">%s إصدار جديد</item>
+    </plurals>
+    <plurals name="app_links_count_enabled">
+        <item quantity="zero">%d رابط مفعّل</item>
+        <item quantity="one">%d رابط مفعّل</item>
+        <item quantity="two">%d رابطان مفعّلان</item>
+        <item quantity="few">%d روابط مفعّلة</item>
+        <item quantity="many">%d رابطًا مفعّلًا</item>
+        <item quantity="other">%d رابط مفعّل</item>
+    </plurals>
+    <plurals name="app_links_count_unverified">
+        <item quantity="zero">%d رابط غير موثّق</item>
+        <item quantity="one">%d رابط غير موثّق</item>
+        <item quantity="two">%d رابطان غير موثّقان</item>
+        <item quantity="few">%d روابط غير موثّقة</item>
+        <item quantity="many">%d رابطًا غير موثّق</item>
+        <item quantity="other">%d رابط غير موثّق</item>
     </plurals>
 </resources>

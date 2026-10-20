@@ -37,11 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import java.io.File
-import java.io.FileInputStream
 import java.util.UUID
-import java.util.zip.CRC32
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 private const val TAG = "Morphe BatchPatcher"
 
@@ -296,7 +292,14 @@ class BatchPatchCoordinator(
                 withContext(NonCancellable) {
                     activeWorkId = null
                     installUnattendedIfRequested()
-                    _state.update { it.copy(phase = BatchPhase.FINISHED, activeIndex = null, activeRun = null) }
+                    _state.update {
+                        it.copy(
+                            phase = BatchPhase.FINISHED,
+                            activeIndex = null,
+                            activeRun = null,
+                            finishedInForeground = ManagerApplication.isInForeground
+                        )
+                    }
                     announceCompletion()
                 }
             }
@@ -408,7 +411,8 @@ class BatchPatchCoordinator(
             )
         }
 
-        if (prefs.patcherCompletionSound.get()) {
+        // A queue stopped before its end closes quietly rather than sounding like a result
+        if (prefs.patcherCompletionSound.get() && !state.wasStopped) {
             CompletionSound.play(
                 context = app,
                 succeeded = state.succeeded > 0,
@@ -454,7 +458,7 @@ class BatchPatchCoordinator(
 
         val selectedApp = withContext(Dispatchers.IO) { materialize(item) }
         if (selectedApp == null) {
-            runProgress.stopStallWatch()
+            runProgress.finish()
             updateItem(index) {
                 it.copy(
                     state = BatchItemState.FAILED,
@@ -480,6 +484,7 @@ class BatchPatchCoordinator(
             options = item.options.sanitizeForPatcher(),
             logger = runProgress.logger,
             onPatchCompleted = { runProgress.onPatchCompleted() },
+            onPatchFailed = runProgress::onPatchFailed,
             onPatchingRestarted = { runProgress.onRestart() },
             setInputFile = { file, needsSplit, merged ->
                 runProgress.updateSplitRequirement(file, needsSplit, merged)
@@ -513,7 +518,9 @@ class BatchPatchCoordinator(
                         ?.getString(PatcherWorker.PROCESS_FAILURE_MESSAGE_KEY)
                         ?.lineSequence()
                         ?.firstOrNull { it.isNotBlank() }
-                    updateItem(index) { it.copy(state = BatchItemState.FAILED, message = failure) }
+                    updateItem(index) {
+                        it.copy(state = BatchItemState.FAILED, message = failure, failedPatch = runProgress.failedPatch)
+                    }
                 }
             }
         } finally {
@@ -521,7 +528,7 @@ class BatchPatchCoordinator(
             // the application scope, so it would otherwise poll forever
             withContext(NonCancellable) {
                 activeWorkId = null
-                runProgress.stopStallWatch()
+                runProgress.finish()
                 // Retaining the APKs takes seconds, and this run has nothing left to show but
                 // completed steps. The screen switches to its between-apps state instead
                 _state.update { it.copy(activeIndex = null, activeRun = null) }
@@ -558,7 +565,7 @@ class BatchPatchCoordinator(
             is BatchApkSource.Installed -> try {
                 val target = if (source.isSplit) {
                     workspace.resolve("${item.packageName}_installed.apks")
-                        .also { createApksArchive(source, it) }
+                        .also { SplitApkPreparer.writeApksArchive(source.apkPath, source.splitPaths, it) }
                 } else {
                     workspace.resolve("${item.packageName}_installed.apk")
                         .also { File(source.apkPath).copyTo(it, overwrite = true) }
@@ -692,38 +699,10 @@ class BatchPatchCoordinator(
             originalApkRepository.saveOriginalApk(
                 packageName = item.packageName,
                 version = version,
-                sourceFile = file
+                sourceFile = file,
+                moveSource = selectedApp.temporary
             )
         }.onFailure { Log.w(TAG, "Failed to save original APK for ${item.packageName}", it) }
-    }
-
-    /**
-     * Packs a base APK and its splits into an APKS archive so the patcher can merge them.
-     * Entries are stored uncompressed because APKs are already compressed archives.
-     */
-    private fun createApksArchive(source: BatchApkSource.Installed, output: File) {
-        output.parentFile?.mkdirs()
-        ZipOutputStream(output.outputStream().buffered()).use { zip ->
-            fun addEntry(file: File) {
-                val crc = CRC32()
-                val buffer = ByteArray(65536)
-                FileInputStream(file).use { input ->
-                    var read: Int
-                    while (input.read(buffer).also { read = it } >= 0) crc.update(buffer, 0, read)
-                }
-                val entry = ZipEntry(file.name).apply {
-                    method = ZipEntry.STORED
-                    size = file.length()
-                    compressedSize = file.length()
-                    this.crc = crc.value
-                }
-                zip.putNextEntry(entry)
-                FileInputStream(file).use { it.copyTo(zip) }
-                zip.closeEntry()
-            }
-            addEntry(File(source.apkPath))
-            source.splitPaths.forEach { addEntry(File(it)) }
-        }
     }
 
     private fun markRemainingCancelled() {

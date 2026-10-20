@@ -1,6 +1,17 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/ui/component/AppLabel.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.ui.screen.shared
 
 import android.content.pm.PackageInfo
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -8,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -17,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.util.AppDataResolver
 import app.morphe.manager.util.AppDataSource
-import io.github.fornewid.placeholder.material3.placeholder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
@@ -129,10 +140,15 @@ private fun SimpleAppLabel(
     Text(
         label ?: defaultText ?: stringResource(R.string.loading),
         modifier = Modifier
-            .placeholder(
-                visible = label == null,
-                color = MaterialTheme.colorScheme.inverseOnSurface,
-                shape = RoundedCornerShape(100)
+            .then(
+                // A pill stands in for the text until the real label arrives
+                if (label == null) {
+                    Modifier
+                        .background(MaterialTheme.colorScheme.inverseOnSurface, RoundedCornerShape(100))
+                        .drawWithContent {}
+                } else {
+                    Modifier
+                }
             )
             .then(modifier),
         style = style,

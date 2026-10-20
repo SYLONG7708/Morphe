@@ -8,6 +8,21 @@
         <item quantity="one">%s Opção de patch</item>
         <item quantity="other">%s Opções de patch</item>
     </plurals>
+    <!-- How many files and folders a folder holds, under its name in the file picker -->
+    <plurals name="file_picker_item_count">
+        <item quantity="one">%s item</item>
+        <item quantity="other">%s itens</item>
+    </plurals>
+    <!-- Button that confirms the files checked in the file picker -->
+    <plurals name="file_picker_select_count">
+        <item quantity="one">Selecionar %s arquivo</item>
+        <item quantity="other">Selecionar %s arquivos</item>
+    </plurals>
+    <!-- Button that adds every source waiting in the add source dialog -->
+    <plurals name="sources_dialog_add_count">
+        <item quantity="one">Adicionar %s origem</item>
+        <item quantity="other">Adicionar %s origens</item>
+    </plurals>
     <plurals name="home_app_patch_sources_title">
         <item quantity="one">Fontes de patches para %s aplicativo</item>
         <item quantity="other">Fontes de patches para %s aplicativos</item>
@@ -38,7 +53,7 @@
     </plurals>
     <plurals name="batch_install_summary">
         <item quantity="one">%s aplicativo instalado</item>
-        <item quantity="other">%s apps instalados</item>
+        <item quantity="other">%s aplicativos instalados</item>
     </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">%s aplicativo reinstalado</item>
@@ -72,6 +87,10 @@
         <item quantity="one">%s fonte instalada</item>
         <item quantity="other">%s fontes instaladas</item>
     </plurals>
+    <plurals name="home_app_filter_active">
+        <item quantity="one">%1$s · %2$s filtrado</item>
+        <item quantity="other">%1$s · %2$s filtrados</item>
+    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s aplicativo oculto</item>
         <item quantity="other">%s apps ocultos</item>
@@ -91,5 +110,33 @@
     <plurals name="core_count">
         <item quantity="one">%s núcleo</item>
         <item quantity="other">%s núcleos</item>
+    </plurals>
+    <plurals name="changelog_feature_count">
+        <item quantity="one">%s recurso</item>
+        <item quantity="other">%s recursos</item>
+    </plurals>
+    <plurals name="changelog_fix_count">
+        <item quantity="one">%s correção</item>
+        <item quantity="other">%s correções</item>
+    </plurals>
+    <plurals name="changelog_performance_count">
+        <item quantity="one">%s otimização</item>
+        <item quantity="other">%s otimizações</item>
+    </plurals>
+    <plurals name="changelog_change_count">
+        <item quantity="one">%s alteração</item>
+        <item quantity="other">%s alterações</item>
+    </plurals>
+    <plurals name="changelog_new_releases">
+        <item quantity="one">%s nova versão</item>
+        <item quantity="other">%s novas versões</item>
+    </plurals>
+    <plurals name="app_links_count_enabled">
+        <item quantity="one">%d link habilitado</item>
+        <item quantity="other">%d links habilitados</item>
+    </plurals>
+    <plurals name="app_links_count_unverified">
+        <item quantity="one">%d link não verificado</item>
+        <item quantity="other">%d links não verificados</item>
     </plurals>
 </resources>

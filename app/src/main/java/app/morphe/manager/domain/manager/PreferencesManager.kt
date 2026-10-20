@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/domain/manager/PreferencesManager.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.domain.manager
 
 import android.content.Context
@@ -7,13 +17,12 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import app.morphe.manager.BuildConfig
 import app.morphe.manager.domain.manager.base.BasePreferencesManager
-import app.morphe.manager.domain.manager.base.IntPreference
-import app.morphe.manager.domain.manager.base.LongPreference
 import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
 import app.morphe.manager.patcher.runtime.PROCESS_RUNTIME_MEMORY_NOT_SET
 import app.morphe.manager.patcher.runtime.coerceMemoryLimit
 import app.morphe.manager.patcher.runtime.initialMemoryLimit
 import app.morphe.manager.ui.screen.shared.BackgroundType
+import app.morphe.manager.ui.theme.SeasonalEvent
 import app.morphe.manager.ui.theme.Theme
 import app.morphe.manager.ui.theme.ThemeStyle
 import app.morphe.manager.ui.theme.UI_SCALE_DEFAULT
@@ -53,10 +62,22 @@ class PreferencesManager(
     val enableBackgroundParallax = booleanPreference("enable_background_parallax", true)
     val randomBackgroundInterval = enumPreference("random_background_interval", RandomInterval.ON_LAUNCH)
 
+    /** The background the last launch drew for RANDOM, which the next launch steers clear of. */
+    val lastRandomBackground = stringPreference("last_random_background", "")
+
     /** Whether the hidden Matrix background has been found and taken. */
     val matrixBackgroundUnlocked = booleanPreference("matrix_background_unlocked", false)
 
+    /** Whether a running [SeasonalEvent] dresses up the background and the home greetings. */
+    val seasonalThemes = booleanPreference("seasonal_themes", true)
+
     val pureBlackTheme = booleanPreference("pure_black_theme", false)
+
+    /** Whether apps and sources wear their own colors, or the theme's accent in their place. */
+    val colorAccents = booleanPreference("color_accents", true)
+
+    /** Whether cards, panels and buttons draw the hairline edge around them. */
+    val outlines = booleanPreference("outlines", true)
     val showGreetingPhrases = booleanPreference("show_greeting_phrases", true)
 
     /** The per-app badges carry the same news, so the banner is worth turning off. */
@@ -73,8 +94,6 @@ class PreferencesManager(
 
     /** Guards the one-shot migration that folds the retired `dynamic_color` toggle into [themeStyle]. */
     private val themeStyleMigrated = booleanPreference("theme_style_migrated_v1", false)
-
-    val appLanguage = stringPreference("app_language", "system")
 
     // Advanced tab
     val useManagerPrereleases = booleanPreference("manager_prereleases", false)
@@ -129,10 +148,16 @@ class PreferencesManager(
         // ARMv7 silently fails and nobody has researched why.
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !isArmV7()
     )
-    val patcherProcessMemoryLimit = IntPreference(dataStore, "use_process_runtime_memory_limit", PROCESS_RUNTIME_MEMORY_NOT_SET)
+    val patcherProcessMemoryLimit = intPreference("use_process_runtime_memory_limit", PROCESS_RUNTIME_MEMORY_NOT_SET)
 
     /** Whether the last patcher process came up without the heap limit it asked for. Tied to the device, so never exported. */
     val patcherHeapLimitIgnored = booleanPreference("patcher_heap_limit_ignored", false)
+
+    /**
+     * Whether changelogs and patch descriptions show in the app language. Needs the translation
+     * model on this device, so never exported.
+     */
+    val translateContent = booleanPreference("translate_content", false)
 
     val keystoreAlias = stringPreference("keystore_alias", KeystoreManager.DEFAULT)
     val keystorePass = stringPreference("keystore_pass", KeystoreManager.DEFAULT)
@@ -147,13 +172,16 @@ class PreferencesManager(
     val automaticEcosystemUpdates = booleanPreference("automatic_ecosystem_updates", true)
     /** Highest signed manifest sequence accepted; prevents replaying an older release. */
     val lastAcceptedManifestSequence =
-        LongPreference(dataStore, "last_accepted_manifest_sequence", 0L)
+        longPreference("last_accepted_manifest_sequence", 0L)
     val firstLaunch = booleanPreference("first_launch", true)
 
-    val installationTime = LongPreference(dataStore, "manager_installation_time", 0L)
+    val installationTime = longPreference("manager_installation_time", 0L)
     val disablePatchVersionCompatCheck = booleanPreference("disable_patch_version_compatibility_check", false)
 
     val useCustomFilePicker = booleanPreference("use_custom_file_picker", false)
+
+    /** Packages whose unverified web links the user chose not to be warned about. Tied to the installs, so never exported. */
+    val ignoredAppLinksPackages = stringSetPreference("ignored_app_links_packages", emptySet())
 
     /** Packages of the third-party APK download helpers the user trusts to be offered. */
     val trustedApkDownloadHelpers = stringSetPreference("trusted_apk_download_helpers", emptySet())
@@ -251,6 +279,8 @@ class PreferencesManager(
     data class SettingsSnapshot(
         val dynamicColor: Boolean? = null,
         val pureBlackTheme: Boolean? = null,
+        val colorAccents: Boolean? = null,
+        val outlines: Boolean? = null,
         val customAccentColor: String? = null,
         val customThemeColor: String? = null,
         val appCardColorMode: AppCardColorMode? = null,
@@ -283,6 +313,7 @@ class PreferencesManager(
         val backgroundType: BackgroundType? = null,
         val randomBackgroundInterval: RandomInterval? = null,
         val matrixBackgroundUnlocked: Boolean? = null,
+        val seasonalThemes: Boolean? = null,
         val useExpertMode: Boolean? = null,
         val groupPatchesByCategory: Boolean? = null,
         val updateCheckInterval: UpdateCheckInterval? = null,
@@ -318,6 +349,8 @@ class PreferencesManager(
             return SettingsSnapshot(
                 dynamicColor = dynamicColor.takeIf { appearance },
                 pureBlackTheme = pureBlackTheme.takeIf { appearance },
+                colorAccents = colorAccents.takeIf { appearance },
+                outlines = outlines.takeIf { appearance },
                 customAccentColor = customAccentColor.takeIf { appearance },
                 customThemeColor = customThemeColor.takeIf { appearance },
                 appCardColorMode = appCardColorMode.takeIf { appearance },
@@ -350,6 +383,7 @@ class PreferencesManager(
                 backgroundType = backgroundType.takeIf { appearance },
                 randomBackgroundInterval = randomBackgroundInterval.takeIf { appearance },
                 matrixBackgroundUnlocked = matrixBackgroundUnlocked.takeIf { appearance },
+                seasonalThemes = seasonalThemes.takeIf { appearance },
                 useExpertMode = useExpertMode.takeIf { patching },
                 groupPatchesByCategory = groupPatchesByCategory.takeIf { appearance },
                 updateCheckInterval = updateCheckInterval.takeIf { updates },
@@ -376,6 +410,8 @@ class PreferencesManager(
     suspend fun exportSettings() = SettingsSnapshot(
         dynamicColor = themeStyle.get() == ThemeStyle.MATERIAL_YOU,
         pureBlackTheme = pureBlackTheme.get(),
+        colorAccents = colorAccents.get(),
+        outlines = outlines.get(),
         customAccentColor = customAccentColor.get(),
         customThemeColor = customThemeColor.get(),
         appCardColorMode = appCardColorMode.get(),
@@ -384,7 +420,6 @@ class PreferencesManager(
         theme = theme.get(),
         themeStyle = themeStyle.get(),
         uiScale = uiScale.get(),
-        appLanguage = appLanguage.get(),
         gitHubPat = gitHubPat.get().takeIf { includeGitHubPatInExports.get() },
         includeGitHubPatInExports = includeGitHubPatInExports.get(),
         useProcessRuntime = useProcessRuntime.get(),
@@ -406,6 +441,7 @@ class PreferencesManager(
         backgroundType = backgroundType.get(),
         randomBackgroundInterval = randomBackgroundInterval.get(),
         matrixBackgroundUnlocked = matrixBackgroundUnlocked.get(),
+        seasonalThemes = seasonalThemes.get(),
         useExpertMode = useExpertMode.get(),
         groupPatchesByCategory = groupPatchesByCategory.get(),
         updateCheckInterval = updateCheckInterval.get(),
@@ -426,6 +462,8 @@ class PreferencesManager(
 
     suspend fun importSettings(snapshot: SettingsSnapshot) = edit {
         snapshot.pureBlackTheme?.let { pureBlackTheme.value = it }
+        snapshot.colorAccents?.let { colorAccents.value = it }
+        snapshot.outlines?.let { outlines.value = it }
         snapshot.customAccentColor?.let { customAccentColor.value = it }
         snapshot.customThemeColor?.let { customThemeColor.value = it }
         snapshot.appCardColorMode?.let { appCardColorMode.value = it }
@@ -439,7 +477,6 @@ class PreferencesManager(
             }
         // Snapped rather than taken as-is, so a scale from a build with a different range still fits
         snapshot.uiScale?.let { uiScale.value = it.coerceToUiScale() }
-        snapshot.appLanguage?.let { appLanguage.value = it }
         snapshot.gitHubPat?.let { gitHubPat.value = it }
         snapshot.includeGitHubPatInExports?.let { includeGitHubPatInExports.value = it }
         snapshot.useProcessRuntime?.let { useProcessRuntime.value = it }
@@ -479,6 +516,7 @@ class PreferencesManager(
         snapshot.backgroundType?.let { backgroundType.value = it }
         snapshot.randomBackgroundInterval?.let { randomBackgroundInterval.value = it }
         snapshot.matrixBackgroundUnlocked?.let { matrixBackgroundUnlocked.value = it }
+        snapshot.seasonalThemes?.let { seasonalThemes.value = it }
         snapshot.useExpertMode?.let { useExpertMode.value = it }
         snapshot.groupPatchesByCategory?.let { groupPatchesByCategory.value = it }
         snapshot.updateCheckInterval?.let { updateCheckInterval.value = it }

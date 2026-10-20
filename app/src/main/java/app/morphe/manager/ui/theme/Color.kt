@@ -1,6 +1,22 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/ui/theme/Color.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.ui.theme
 
 import androidx.compose.ui.graphics.Color
+
+/** Morphe's brand blue, where its gradient starts. */
+val MorpheBrandBlue = Color(0xFF1E5AA8)
+
+/** Morphe's brand teal, where its gradient ends. */
+val MorpheBrandTeal = Color(0xFF00AFAE)
 
 val theme_light_primary = Color(0xFF005FAC)
 val theme_light_onPrimary = Color(0xFFFFFFFF)
@@ -18,6 +34,12 @@ val theme_light_error = Color(0xFFBA1A1A)
 val theme_light_errorContainer = Color(0xFFFFDAD6)
 val theme_light_onError = Color(0xFFFFFFFF)
 val theme_light_onErrorContainer = Color(0xFF410002)
+val theme_light_warning = Color(0xFF7C5800)
+val theme_light_warningContainer = Color(0xFFFFDEA8)
+val theme_light_onWarningContainer = Color(0xFF271900)
+val theme_light_success = Color(0xFF286C2A)
+val theme_light_successContainer = Color(0xFFABF5A3)
+val theme_light_onSuccessContainer = Color(0xFF002204)
 val theme_light_background = Color(0xFFFDFCFF)
 val theme_light_onBackground = Color(0xFF1A1C1E)
 val theme_light_surface = Color(0xFFFDFCFF)
@@ -49,6 +71,12 @@ val theme_dark_error = Color(0xFFFFB4AB)
 val theme_dark_errorContainer = Color(0xFF93000A)
 val theme_dark_onError = Color(0xFF690005)
 val theme_dark_onErrorContainer = Color(0xFFFFDAD6)
+val theme_dark_warning = Color(0xFFF5BD48)
+val theme_dark_warningContainer = Color(0xFF5F4100)
+val theme_dark_onWarningContainer = Color(0xFFFFDEA8)
+val theme_dark_success = Color(0xFF90D889)
+val theme_dark_successContainer = Color(0xFF0D5316)
+val theme_dark_onSuccessContainer = Color(0xFFABF5A3)
 val theme_dark_background = Color(0xFF1A1C1E)
 val theme_dark_onBackground = Color(0xFFE3E2E6)
 val theme_dark_surface = Color(0xFF1A1C1E)

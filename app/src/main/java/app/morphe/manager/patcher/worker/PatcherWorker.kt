@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/patcher/worker/PatcherWorker.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.patcher.worker
 
 import android.annotation.SuppressLint
@@ -9,8 +19,12 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.drawable.Icon
 import android.os.Build
+import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.work.Data
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -36,7 +50,7 @@ import app.morphe.manager.patcher.runtime.ProcessRuntime
 import app.morphe.manager.patcher.runtime.coerceMemoryLimit
 import app.morphe.manager.patcher.runtime.heapLimitMebibytes
 import app.morphe.manager.patcher.split.SplitApkPreparer
-import app.morphe.manager.patcher.util.NativeLibStripper
+import app.morphe.manager.patcher.util.NativeLibs
 import app.morphe.manager.ui.model.SelectedApp
 import app.morphe.manager.domain.update.SafeIntegrationProfile
 import app.morphe.manager.license.DeviceLicenseManager
@@ -44,9 +58,15 @@ import app.morphe.manager.ui.model.State
 import app.morphe.manager.util.*
 import app.morphe.manager.util.PatchSelectionUtils.restrictTo
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import kotlin.time.measureTime
 
 typealias ProgressEventHandler = (name: String?, state: State?, message: String?) -> Unit
 
@@ -71,6 +91,8 @@ class PatcherWorker(
         val options: Options,
         val logger: Logger,
         val onPatchCompleted: suspend () -> Unit,
+        /** Called with the name of the patch the run failed on. */
+        val onPatchFailed: (String) -> Unit,
         /**
          * Patching was abandoned and started over from the first step, so anything reported by
          * the previous attempt has to be discarded rather than counted twice.
@@ -135,12 +157,33 @@ class PatcherWorker(
                     setSubText("$completed / $total")
                     setProgress(total, completed, false)
                 }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                    applyLiveUpdate(patchProgress)
+                }
             }
             .setSmallIcon(Icon.createWithResource(applicationContext, R.drawable.ic_notification))
             .setContentIntent(pendingIntent)
             .setCategory(Notification.CATEGORY_SERVICE)
             .setOngoing(true)
             .build()
+    }
+
+    /** Request promotion to a Live Update, shown as a status bar chip while the manager is in the background. */
+    @RequiresApi(Build.VERSION_CODES.BAKLAVA)
+    private fun Notification.Builder.applyLiveUpdate(patchProgress: Pair<Int, Int>?) {
+        val style = Notification.ProgressStyle()
+        if (patchProgress != null) {
+            val (completed, total) = patchProgress
+            // The bar length is the sum of its segments, a single one spans every patch
+            style.progressSegments = listOf(Notification.ProgressStyle.Segment(total.coerceAtLeast(1)))
+            style.progress = completed
+            setShortCriticalText("$completed/$total")
+        } else {
+            style.isProgressIndeterminate = true
+        }
+        setStyle(style)
+        // The builder setter only exists from 36.1, the extra is what the framework reads on 36.0
+        addExtras(Bundle().apply { putBoolean(NotificationCompat.EXTRA_REQUEST_PROMOTED_ONGOING, true) })
     }
 
     private fun updatePatcherNotification(
@@ -340,7 +383,10 @@ class PatcherWorker(
                 }
             }
 
-            val useProcessRuntime = prefs.useProcessRuntime.get()
+            keystoreManager.preloadSigner()
+
+            // A value imported from a newer device must not enable it where it cannot run
+            val useProcessRuntime = prefs.useProcessRuntime.get() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
             val autoYouTubeArchitecture = args.packageName == SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE
             val stripNativeLibs = autoYouTubeArchitecture || prefs.stripUnusedNativeLibs.get()
             val inputIsSplitArchive = SplitApkPreparer.isSplitArchive(inputFile)
@@ -395,10 +441,11 @@ class PatcherWorker(
                 )
             }
 
+            // The limit the process runtime will actually start with, not the raw setting
+            val memLimit = coerceMemoryLimit(applicationContext, prefs.patcherProcessMemoryLimit.get())
+
             // Log runtime mode info
             if (useProcessRuntime) {
-                // The limit the runtime will actually start with, not the raw setting
-                val memLimit = coerceMemoryLimit(applicationContext, prefs.patcherProcessMemoryLimit.get())
                 args.logger.info("$LOG_WORKER_PREFIX_RUNTIME process $LOG_WORKER_FIELD_MEMORY_LIMIT=$memLimit")
             } else {
                 // CoroutineRuntime starts memory polling internally; only log the heap size here
@@ -407,7 +454,6 @@ class PatcherWorker(
             }
 
             // Execute patching. ProcessRuntime has its own retry loop that reduces memory on OOM
-            // If it still fails on Android <= Q, fall back to CoroutineRuntime
             val runtime = if (useProcessRuntime) {
                 ProcessRuntime(applicationContext)
             } else {
@@ -417,7 +463,8 @@ class PatcherWorker(
             val options = args.options.restrictTo(args.selectedPatches)
 
             // After merging a split archive (in either runtime), save the resulting mono-APK
-            // directly to originalApksDir so it is used for repatching instead of the archive
+            // directly to originalApksDir so it is used for repatching instead of the archive.
+            // The runtime is done with the file by then, so it is moved rather than copied
             val onMergedApkReady: suspend (File) -> Unit = { mergedFile ->
                 val version = pm.getPackageInfo(mergedFile)?.versionName
                     ?.takeUnless { it.isBlank() }
@@ -426,12 +473,13 @@ class PatcherWorker(
                 val savedFile = originalApkRepository.saveOriginalApk(
                     packageName = args.packageName,
                     version = version,
-                    sourceFile = mergedFile
+                    sourceFile = mergedFile,
+                    moveSource = true
                 )
                 args.setInputFile(savedFile ?: mergedFile, true, true)
             }
 
-            try {
+            val loweredMemoryLimit = try {
                 runtime.execute(
                     inputFile.absolutePath,
                     patchedApk.absolutePath,
@@ -440,6 +488,7 @@ class PatcherWorker(
                     options,
                     args.logger,
                     onPatchCompleted,
+                    args.onPatchFailed,
                     ::updateProgress,
                     stripNativeLibs,
                     onMergedApkReady,
@@ -451,8 +500,6 @@ class PatcherWorker(
                     isBlockedSyscall(e) -> "Patcher process was killed for a system call the device forbids"
                     e is ProcessRuntime.ProcessConnectTimeoutException -> e.message
                     e is ProcessRuntime.HeapLimitIgnoredException -> e.message
-                    isOomRelated(e) && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q ->
-                        "Process runtime OOM on Android ${Build.VERSION.RELEASE}"
                     else -> null
                 } ?: throw e
 
@@ -470,6 +517,7 @@ class PatcherWorker(
                     options,
                     args.logger,
                     onPatchCompleted,
+                    args.onPatchFailed,
                     ::updateProgress,
                     stripNativeLibs,
                     onMergedApkReady,
@@ -477,13 +525,9 @@ class PatcherWorker(
                 )
             }
 
-            if (stripNativeLibs && !inputIsSplitArchive) {
-                NativeLibStripper.strip(patchedApk, args.logger)
-            }
-
             if (autoYouTubeArchitecture) {
-                val outputAbis = NativeLibStripper.extractAbisFromApk(patchedApk)
-                val preferred = NativeLibStripper.preferredAbi(outputAbis.toSet(), Build.SUPPORTED_ABIS.toList())
+                val outputAbis = NativeLibs.extractAbisFromApk(patchedApk)
+                val preferred = NativeLibs.preferredAbi(outputAbis.toSet(), Build.SUPPORTED_ABIS.toList())
                 check(outputAbis.isEmpty() || (preferred != null && outputAbis.all { it == preferred })) {
                     "YouTube output architecture ${outputAbis.joinToString()} does not match " +
                         "this Android system: ${Build.SUPPORTED_ABIS.joinToString()}"
@@ -492,7 +536,13 @@ class PatcherWorker(
             }
 
             updatePatcherNotification(stepName = signingApkLabel, patchProgress = null)
-            keystoreManager.sign(patchedApk, File(args.output))
+            val signTime = measureTime {
+                keystoreManager.sign(patchedApk)
+                withContext(Dispatchers.IO) {
+                    Files.move(patchedApk.toPath(), File(args.output).toPath(), StandardCopyOption.REPLACE_EXISTING)
+                }
+            }
+            args.logger.info("Signed apk in ${signTime.inWholeMilliseconds}ms")
             updateProgress(state = State.COMPLETED) // Signing
 
             SafeIntegrationProfile.expectedPatchedPackage(
@@ -530,7 +580,13 @@ class PatcherWorker(
             val outputPackageName = pm.getPackageInfo(File(args.output))?.packageName ?: args.packageName
             autoInstallPending = installerManager.autoInstallAllowed(outputPackageName)
             succeeded = true
-            Result.success()
+            // A run that only got through on less memory is the same suggestion a killed one
+            // leads to, offered while the limit that worked is known
+            Result.success(
+                loweredMemoryLimit?.let {
+                    workDataOf(PROCESS_PREVIOUS_LIMIT_KEY to memLimit, PROCESS_LOWERED_LIMIT_KEY to it)
+                } ?: Data.EMPTY
+            )
         } catch (e: ProcessRuntime.ProcessExitException) {
             Log.e(
                 tag,
@@ -571,13 +627,19 @@ class PatcherWorker(
             )
             updateProgress(state = State.FAILED, message = e.originalStackTrace)
             Result.failure(
-                workDataOf(PROCESS_FAILURE_MESSAGE_KEY to e.originalStackTrace)
+                workDataOf(PROCESS_FAILURE_MESSAGE_KEY to e.originalStackTrace.truncateForWorkData())
             )
         } catch (e: Exception) {
+            // Stopping the worker closes the patcher process's streams, so a cancel usually
+            // surfaces as an interrupted read rather than a CancellationException
+            if (isStopped || e is CancellationException) {
+                Log.i(tag, "Patching was cancelled".logFmt())
+                throw e
+            }
             Log.e(tag, "An exception occurred while patching".logFmt(), e)
             updateProgress(state = State.FAILED, message = e.stackTraceToString())
             Result.failure(
-                workDataOf(PROCESS_FAILURE_MESSAGE_KEY to e.stackTraceToString())
+                workDataOf(PROCESS_FAILURE_MESSAGE_KEY to e.stackTraceToString().truncateForWorkData())
             )
         } finally {
             if (!patchedApk.delete() && patchedApk.exists()) {
@@ -603,13 +665,6 @@ class PatcherWorker(
 
     private fun Logger.logCoroutineHeap() = info("$LOG_PROCESS_PREFIX_COROUTINE_HEAP ${heapLimitMebibytes()}MB")
 
-    private fun isOomRelated(e: Exception) = when (e) {
-        is ProcessRuntime.ProcessExitException ->
-            e.exitCode == ProcessRuntime.OOM_EXIT_CODE || e.exitCode == ProcessRuntime.SIGKILL_EXIT_CODE
-        is ProcessRuntime.HeapExhaustedException -> true
-        else -> false
-    }
-
     companion object {
         private const val LOG_PREFIX = "[Worker]"
         private fun String.logFmt() = "$LOG_PREFIX $this"
@@ -622,6 +677,7 @@ class PatcherWorker(
 
         const val PROCESS_EXIT_CODE_KEY = "process_exit_code"
         const val PROCESS_PREVIOUS_LIMIT_KEY = "process_previous_limit"
+        const val PROCESS_LOWERED_LIMIT_KEY = "process_lowered_limit"
         const val PROCESS_FAILURE_MESSAGE_KEY = "process_failure_message"
 
         const val LOG_WORKER_PREFIX_STARTED = "Patching started at"

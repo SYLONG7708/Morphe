@@ -37,6 +37,7 @@ fun UiScaleDialog(
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.settings_appearance_ui_scale),
+        description = stringResource(R.string.settings_appearance_ui_scale_description),
         titleTrailingContent = {
             TitleAction(
                 icon = Icons.Outlined.Restore,
@@ -66,7 +67,7 @@ fun UiScaleDialog(
                 value = "${selectedScale.toUiScalePercent()}%",
                 subtitle = stringResource(R.string.settings_appearance_ui_scale_current),
                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                valueColor = LocalDialogTextColor.current
+                valueColor = dialogTextColor()
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall)) {

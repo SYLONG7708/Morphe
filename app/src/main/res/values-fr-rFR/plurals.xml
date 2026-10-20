@@ -8,6 +8,21 @@
         <item quantity="one">%s option de patch</item>
         <item quantity="other">%s options de patch</item>
     </plurals>
+    <!-- How many files and folders a folder holds, under its name in the file picker -->
+    <plurals name="file_picker_item_count">
+        <item quantity="one">%s élément</item>
+        <item quantity="other">%s éléments</item>
+    </plurals>
+    <!-- Button that confirms the files checked in the file picker -->
+    <plurals name="file_picker_select_count">
+        <item quantity="one">Sélectionner %s fichier</item>
+        <item quantity="other">Sélectionner %s fichiers</item>
+    </plurals>
+    <!-- Button that adds every source waiting in the add source dialog -->
+    <plurals name="sources_dialog_add_count">
+        <item quantity="one">Ajouter %s source</item>
+        <item quantity="other">Ajouter %s sources</item>
+    </plurals>
     <plurals name="home_app_patch_sources_title">
         <item quantity="one">Sources de patchs pour %s application</item>
         <item quantity="other">Sources de patchs pour %s applications</item>
@@ -72,6 +87,10 @@
         <item quantity="one">%s source installée</item>
         <item quantity="other">%s sources installées</item>
     </plurals>
+    <plurals name="home_app_filter_active">
+        <item quantity="one">%1$s · %2$s filtré</item>
+        <item quantity="other">%1$s · %2$s filtrés</item>
+    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s application masquée</item>
         <item quantity="other">%s applications masquées</item>
@@ -91,5 +110,33 @@
     <plurals name="core_count">
         <item quantity="one">%s cœur</item>
         <item quantity="other">%s cœurs</item>
+    </plurals>
+    <plurals name="changelog_feature_count">
+        <item quantity="one">%s fonctionnalité</item>
+        <item quantity="other">%s fonctionnalités</item>
+    </plurals>
+    <plurals name="changelog_fix_count">
+        <item quantity="one">%s correction</item>
+        <item quantity="other">%s corrections</item>
+    </plurals>
+    <plurals name="changelog_performance_count">
+        <item quantity="one">%s optimisation</item>
+        <item quantity="other">%s optimisations</item>
+    </plurals>
+    <plurals name="changelog_change_count">
+        <item quantity="one">%s changement</item>
+        <item quantity="other">%s changements</item>
+    </plurals>
+    <plurals name="changelog_new_releases">
+        <item quantity="one">%s nouvelle version</item>
+        <item quantity="other">%s nouvelles versions</item>
+    </plurals>
+    <plurals name="app_links_count_enabled">
+        <item quantity="one">%d lien activé</item>
+        <item quantity="other">%d liens activés</item>
+    </plurals>
+    <plurals name="app_links_count_unverified">
+        <item quantity="one">%d lien non vérifié</item>
+        <item quantity="other">%d liens non vérifiés</item>
     </plurals>
 </resources>

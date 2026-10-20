@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/ui/viewmodel/ImportExportViewModel.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.ui.viewmodel
 
 import android.app.Application
@@ -254,14 +264,9 @@ class ImportExportViewModel(
             val settings = exportFile.settings.restrictedTo(sections)
             preferencesManager.importSettings(settings)
 
-            // Apply the imported language immediately and persist it for the next cold start
-            settings.appLanguage?.let {
-                saveLanguageToPrefs(app, it)
-                applyAppLanguage(it)
-            }
-
-            // Home app buttons (categories, hidden apps, sort mode, etc.) live outside
-            // PreferencesManager, so they're applied here rather than in importSettings
+            // The app language and the home app buttons (categories, hidden apps, sort mode, etc.)
+            // live outside PreferencesManager, so they're applied here rather than in importSettings
+            settings.appLanguage?.let { AppLocale.select(app, it) }
             settings.homeAppButtons?.let(homeAppButtonPreferences::importState)
 
             // Called whenever sources are taken, so Replace can clear existing custom sources even
@@ -288,6 +293,7 @@ class ImportExportViewModel(
         val homeAppButtons = homeAppButtonPreferences.exportState()
         return ManagerSettingsExportFile(
             settings = snapshot.copy(
+                appLanguage = AppLocale.selected.value,
                 customBundles = bundles.ifEmpty { null },
                 homeAppButtons = homeAppButtons
             ).restrictedTo(sections),

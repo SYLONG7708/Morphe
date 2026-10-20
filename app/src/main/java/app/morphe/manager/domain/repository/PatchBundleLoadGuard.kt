@@ -1,3 +1,8 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
 package app.morphe.manager.domain.repository
 
 import android.app.Application
@@ -52,7 +57,7 @@ class PatchBundleLoadGuard(
             if (strike != null) {
                 if (strike.stamp != stamp) {
                     // A replaced bundle ships a different dex and gets a cache of its own, so
-                    // whatever the old file did says nothing about this one
+                    // the old file's crashes say nothing about this one
                     strikes.remove(uid)
                     writeLedger()
                 } else if (strike.count >= HELD_BACK_AFTER) {
@@ -170,7 +175,8 @@ class PatchBundleLoadGuard(
      */
     private fun installIdentity() = "${BuildConfig.VERSION_CODE}|${app.applicationInfo.sourceDir}"
 
-    private fun stampOf(patchesJar: File) =
+    /** Identifies the version of [patchesJar] on disk, which changes whenever the file is replaced. */
+    fun stampOf(patchesJar: File) =
         runCatching { "${patchesJar.lastModified()}-${patchesJar.length()}" }.getOrDefault("unknown")
 
     private data class Strike(val count: Int, val stamp: String)

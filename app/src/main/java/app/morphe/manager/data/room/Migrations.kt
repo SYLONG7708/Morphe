@@ -1,3 +1,8 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
 package app.morphe.manager.data.room
 
 import androidx.room.migration.Migration
@@ -146,5 +151,13 @@ val MIGRATION_15_16 = object : Migration(15, 16) {
             )
             """.trimIndent()
         )
+    }
+}
+
+val MIGRATION_16_17 = object : Migration(16, 17) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Empty entries were written whenever the package manager reported no signers, archives
+        // that verify included, so they are dropped and read again under the verifying check
+        db.execSQL("DELETE FROM apk_signatures WHERE hashes = ''")
     }
 }

@@ -12,6 +12,27 @@
         <item quantity="many">%s nastavení záplaty</item>
         <item quantity="other">%s nastavení záplaty</item>
     </plurals>
+    <!-- How many files and folders a folder holds, under its name in the file picker -->
+    <plurals name="file_picker_item_count">
+        <item quantity="one">%s položka</item>
+        <item quantity="few">%s položky</item>
+        <item quantity="many">%s položky</item>
+        <item quantity="other">%s položiek</item>
+    </plurals>
+    <!-- Button that confirms the files checked in the file picker -->
+    <plurals name="file_picker_select_count">
+        <item quantity="one">Vybrať %s súbor</item>
+        <item quantity="few">Vybrať %s súbory</item>
+        <item quantity="many">Vybrať %s súborov</item>
+        <item quantity="other">Vybrať %s súboru</item>
+    </plurals>
+    <!-- Button that adds every source waiting in the add source dialog -->
+    <plurals name="sources_dialog_add_count">
+        <item quantity="one">Pridať %s zdroj</item>
+        <item quantity="few">Pridať %s zdroje</item>
+        <item quantity="many">Pridať %s zdrojov</item>
+        <item quantity="other">Pridať %s zdroja</item>
+    </plurals>
     <plurals name="home_app_patch_sources_title">
         <item quantity="one">Zdroje záplat pre %s aplikáciu</item>
         <item quantity="few">Zdroje záplat pre %s aplikácie</item>
@@ -108,6 +129,12 @@
         <item quantity="many">%s zdrojov nainštalovaných</item>
         <item quantity="other">%s zdrojov nainštalovaných</item>
     </plurals>
+    <plurals name="home_app_filter_active">
+        <item quantity="one">%1$s · %2$s filtrovaný</item>
+        <item quantity="few">%1$s · %2$s filtrované</item>
+        <item quantity="many">%1$s · %2$s filtrovaných</item>
+        <item quantity="other">%1$s · %2$s filtrovaných</item>
+    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s skrytá aplikácia</item>
         <item quantity="few">%s skryté aplikácie</item>
@@ -137,5 +164,47 @@
         <item quantity="few">%s jadrá</item>
         <item quantity="many">%s jadier</item>
         <item quantity="other">%s jadier</item>
+    </plurals>
+    <plurals name="changelog_feature_count">
+        <item quantity="one">%s funkcia</item>
+        <item quantity="few">%s funkcie</item>
+        <item quantity="many">%s funkcií</item>
+        <item quantity="other">%s funkcie</item>
+    </plurals>
+    <plurals name="changelog_fix_count">
+        <item quantity="one">%s oprava</item>
+        <item quantity="few">%s opravy</item>
+        <item quantity="many">%s opravy</item>
+        <item quantity="other">%s opráv</item>
+    </plurals>
+    <plurals name="changelog_performance_count">
+        <item quantity="one">%s optimalizácia</item>
+        <item quantity="few">%s optimalizácie</item>
+        <item quantity="many">%s optimalizácií</item>
+        <item quantity="other">%s optimalizácie</item>
+    </plurals>
+    <plurals name="changelog_change_count">
+        <item quantity="one">%s zmena</item>
+        <item quantity="few">%s zmeny</item>
+        <item quantity="many">%s zmeny</item>
+        <item quantity="other">%s zmien</item>
+    </plurals>
+    <plurals name="changelog_new_releases">
+        <item quantity="one">%s nová verzia</item>
+        <item quantity="few">%s nové verzie</item>
+        <item quantity="many">%s novej verzie</item>
+        <item quantity="other">%s nových verzií</item>
+    </plurals>
+    <plurals name="app_links_count_enabled">
+        <item quantity="one">%d povolený odkaz</item>
+        <item quantity="few">%d povolené odkazy</item>
+        <item quantity="many">%d povoleného odkazu</item>
+        <item quantity="other">%d povolených odkazov</item>
+    </plurals>
+    <plurals name="app_links_count_unverified">
+        <item quantity="one">%d neoverený odkaz</item>
+        <item quantity="few">%d neoverené odkazy</item>
+        <item quantity="many">%d neovereného odkazu</item>
+        <item quantity="other">%d neoverených odkazov</item>
     </plurals>
 </resources>

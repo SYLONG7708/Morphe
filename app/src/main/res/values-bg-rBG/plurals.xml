@@ -8,6 +8,21 @@
         <item quantity="one">%s пач опция</item>
         <item quantity="other">%s пач опции</item>
     </plurals>
+    <!-- How many files and folders a folder holds, under its name in the file picker -->
+    <plurals name="file_picker_item_count">
+        <item quantity="one">%s елемент</item>
+        <item quantity="other">%s елемента</item>
+    </plurals>
+    <!-- Button that confirms the files checked in the file picker -->
+    <plurals name="file_picker_select_count">
+        <item quantity="one">Изберете %s файл</item>
+        <item quantity="other">Изберете %s файла</item>
+    </plurals>
+    <!-- Button that adds every source waiting in the add source dialog -->
+    <plurals name="sources_dialog_add_count">
+        <item quantity="one">Добавете %s източник</item>
+        <item quantity="other">Добавете %s източника</item>
+    </plurals>
     <plurals name="home_app_patch_sources_title">
         <item quantity="one">Източници на кръпки за %s приложение</item>
         <item quantity="other">Източници на кръпки за %s приложения</item>
@@ -72,6 +87,10 @@
         <item quantity="one">%s инсталиран източник</item>
         <item quantity="other">%s инсталирани източници</item>
     </plurals>
+    <plurals name="home_app_filter_active">
+        <item quantity="one">%1$s · %2$s филтриран</item>
+        <item quantity="other">%1$s · %2$s филтрирани</item>
+    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s скрито приложение</item>
         <item quantity="other">%s скрити приложения</item>
@@ -91,5 +110,33 @@
     <plurals name="core_count">
         <item quantity="one">%s ядро</item>
         <item quantity="other">%s ядра</item>
+    </plurals>
+    <plurals name="changelog_feature_count">
+        <item quantity="one">%s функция</item>
+        <item quantity="other">%s функции</item>
+    </plurals>
+    <plurals name="changelog_fix_count">
+        <item quantity="one">%s поправка</item>
+        <item quantity="other">%s поправки</item>
+    </plurals>
+    <plurals name="changelog_performance_count">
+        <item quantity="one">%s оптимизация</item>
+        <item quantity="other">%s оптимизации</item>
+    </plurals>
+    <plurals name="changelog_change_count">
+        <item quantity="one">%s промяна</item>
+        <item quantity="other">%s промени</item>
+    </plurals>
+    <plurals name="changelog_new_releases">
+        <item quantity="one">%s нова версия</item>
+        <item quantity="other">%s нови версии</item>
+    </plurals>
+    <plurals name="app_links_count_enabled">
+        <item quantity="one">%d връзка е активирана</item>
+        <item quantity="other">%d връзки са активирани</item>
+    </plurals>
+    <plurals name="app_links_count_unverified">
+        <item quantity="one">%d непроверена връзка</item>
+        <item quantity="other">%d непроверени връзки</item>
     </plurals>
 </resources>

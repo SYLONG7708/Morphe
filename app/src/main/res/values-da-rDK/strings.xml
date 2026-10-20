@@ -41,9 +41,6 @@
     <string name="home_update_skipped_metered">Opdateringer oversprunget</string>
     <string name="home_update_skipped_metered_subtitle">Mobildata er aktiv</string>
     <string name="home_updating_sources">Opdaterer kilder…</string>
-    <!-- Download progress across several bundles. "%1$d" and "%2$d" count the bundles, "%3$s" and
-         "%4$s" are the megabytes read and expected, "%5$d" is the percentage. -->
-    <string name="home_update_bundle_count_with_bytes">%1$d / %2$d  ·  %3$s / %4$s (%5$d%%)</string>
     <string name="home_update_success">Opdatering af kilder fuldført</string>
     <string name="home_update_success_subtitle">Dine kilder er opdaterede</string>
     <string name="home_sources_are_loading">Kilder hentes, vent venligst…</string>
@@ -126,6 +123,26 @@
     <string name="home_greeting_super_late_3">På dette tidspunkt, bare bliv vågen og patch</string>
     <string name="home_greeting_super_late_4">Dig og serverne, begge vågne</string>
     <string name="home_greeting_super_late_5">Natlig og produktiv</string>
+    <!-- Halloween greetings, shown instead of the ones above around October 31 -->
+    <!-- Pun on "Trick or treat" -->
+    <string name="home_greeting_halloween_1">Trick eller patch?</string>
+    <string name="home_greeting_halloween_2">Der er ingen spøgelser i disse APK\'er, vi har tjekket</string>
+    <string name="home_greeting_halloween_3">Uhyggelig sæson, friske patches</string>
+    <!-- Pun on "Something wicked this way comes", a line from Shakespeare's Macbeth -->
+    <string name="home_greeting_halloween_4">Noget ondt kommer denne vej med patches</string>
+    <!-- Winter holiday greetings, shown instead of the ones above from late December to early January -->
+    <string name="home_greeting_winter_1">Glædelig jul, friske patches</string>
+    <!-- Pun on the song "Let It Snow! Let It Snow! Let It Snow!" -->
+    <string name="home_greeting_winter_2">Lad det sne, lad det patche</string>
+    <string name="home_greeting_winter_3">Nyt år, nye patches</string>
+    <!-- Pun on "Dashing through the snow", the opening line of "Jingle Bells" -->
+    <string name="home_greeting_winter_4">Vi patcher gennem sneen</string>
+    <!-- New Year greetings, shown instead of the ones above on December 31 and January 1 -->
+    <string name="home_greeting_new_year_1">Godt nytår!</string>
+    <string name="home_greeting_new_year_2">Nedtælling til friske patches</string>
+    <string name="home_greeting_new_year_3">Nyt år, de samme reklamefrie apps</string>
+    <!-- Pun on the saying "Out with the old, in with the new" -->
+    <string name="home_greeting_new_year_4">Ud med de gamle versioner, ind med de nye</string>
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Patchkilder</string>
     <string name="sources_search">Søg i kilder og patches</string>
@@ -141,7 +158,6 @@
     <string name="sources_management_report_issue">Rapportér et problem</string>
     <string name="sources_management_failed_to_open_url">Kunne ikke åbne URL</string>
     <string name="sources_apps">Apps</string>
-    <string name="sources_apps_title">Apps fra %1$s</string>
     <string name="sources_apps_description">Tryk på en app for at udelade den fra denne kilde eller tage den tilbage, eller tryk og hold for at vælge flere. En app forlader startskærmen, når ingen kilde bringer den.</string>
     <string name="sources_apps_brought">Leveret af denne kilde</string>
     <string name="sources_apps_left_out">Udeladt fra denne kilde</string>
@@ -174,21 +190,22 @@
     <string name="sources_dialog_rename">Omdøb navnet på patchkilde</string>
     <string name="sources_dialog_duplicate_name_error">En patchkilde med dette navn findes allerede</string>
     <string name="sources_dialog_missing_error">Kunne ikke opdatere denne patchkilde</string>
-    <string name="sources_dialog_view_any_version">Alle versioner</string>
-    <string name="sources_dialog_view_any_package">Alle pakker</string>
     <string name="sources_dialog_add_source">Tilføj patchkilde</string>
-    <string name="sources_dialog_delete_confirm_message">Slet kilde \"%s\"? Dette kan ikke fortrydes</string>
+    <string name="sources_dialog_delete_confirm_body">Dette kan ikke fortrydes</string>
     <string name="sources_dialog_remote">Fjernt</string>
     <string name="sources_dialog_remote_url">Kilde-URL</string>
-    <string name="sources_dialog_remote_url_formats_title">Eksempler:</string>
+    <string name="sources_dialog_remote_url_hint">Et repository eller et link til en patch-bundle .json. Indsæt flere på én gang for at tilføje dem alle</string>
+    <string name="sources_dialog_paste_no_links">Ingen links fundet på udklipsholderen</string>
     <string name="sources_dialog_local">Lokalt</string>
-    <string name="sources_dialog_local_file">Vælg patch kildefil</string>
+    <string name="sources_dialog_local_files">Vælg kildefiler til patches</string>
+    <!-- Button under the files already picked, which opens the picker again -->
+    <string name="sources_dialog_local_add_more">Tilføj flere filer</string>
     <string name="sources_dialog_local_file_tap_hint">Tryk for at gennemse lager</string>
-    <string name="sources_dialog_local_file_description">Vælg en .mpp patch kildefil fra lagring</string>
     <string name="sources_dialog_local_invalid_extension">Filen skal have en .mpp-udvidelse</string>
+    <!-- %s is the name of the local source that another version of the same bundle replaces -->
+    <string name="sources_dialog_local_updates">Opdaterer %s</string>
     <string name="sources_dialog_url_valid">Gyldigt repository eller JSON-URL</string>
     <string name="sources_dialog_url_invalid">URL\'en skal pege på et GitHub/GitLab-lager eller en .json-fil</string>
-    <string name="sources_dialog_local_change_file">Ændre fil</string>
     <string name="sources_dialog_preinstalled">Forhåndsinstalleret</string>
     <string name="sources_dialog_community">Fællesskabets patches</string>
     <string name="sources_dialog_choose_apps">Vælg apps</string>
@@ -218,7 +235,8 @@ Alt, hvad du tilføjer fra denne hjemmeside, bruges på egen risiko."</string>
     <string name="home_apk_helper_download">Brug en hjælpeapp</string>
     <string name="home_apk_helper_title">Download med en hjælpeapp</string>
     <string name="home_apk_helper_description">Morphe vil bede hjælpeappen nedenfor om at downloade den originale APK og give filen tilbage</string>
-    <string name="home_apk_helper_continue">Åbn hjælpeapp</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="home_apk_helper_continue">Åbn hjælper</string>
     <string name="home_apk_helper_warning">Fortsæt kun, hvis du stoler på denne hjælpeapp. Morphe tjekker pakken, versionen og signaturen af det, den modtager, før den patcer</string>
     <string name="home_apk_helper_warning_unverified">Fortsæt kun, hvis du stoler på denne hjælpeapp. Morphe kan ikke verificere signaturen af denne APK, så en modificeret fil vil ikke blive opdaget</string>
     <string name="home_apk_helper_no_result">Hjælpeappen returnerede ikke en APK</string>
@@ -240,7 +258,6 @@ Alt, hvad du tilføjer fra denne hjemmeside, bruges på egen risiko."</string>
     <string name="home_apk_no_compatible_versions_message">&lt;b&gt;%1$s&lt;/b&gt; har ingen understøttede versioner til Android %2$s (API %3$s). Alle deklarerede versioner kræver en højere Android-version</string>
     <!-- Home Screen - Dialog 2: Download Instructions -->
     <string name="home_download_instructions_title">Download den originale APK</string>
-    <string name="home_download_instructions_steps_title">Instruktioner:</string>
     <string name="home_download_instructions_finding">Finder downloadsiden…</string>
     <string name="home_download_instructions_step1">Tryk på \'%s\' knappen nedenfor</string>
     <string name="home_download_instructions_step2_part1">Rul ned på websiden og tryk</string>
@@ -262,6 +279,8 @@ Alt, hvad du tilføjer fra denne hjemmeside, bruges på egen risiko."</string>
     <string name="home_download_instructions_step4_mount">Når det originale APK er installeret, vend tilbage til Morphe</string>
     <string name="home_download_instructions_continue_to">Fortsæt til %s</string>
     <string name="home_download_instructions_destination">downloadsiden</string>
+    <string name="home_download_instructions_copy_link">Kopier link</string>
+    <string name="home_download_instructions_link_copied">Link kopieret</string>
     <!-- Home Screen - Dialog 3: File Picker Prompt -->
     <string name="home_file_picker_prompt_title">Vælg den downloadede APK</string>
     <string name="home_file_picker_prompt_description">Vælg det &lt;b&gt;%s&lt;/b&gt; APK-fil du lige har downloadet</string>
@@ -273,17 +292,15 @@ Alt, hvad du tilføjer fra denne hjemmeside, bruges på egen risiko."</string>
     <string name="home_use_installed_app">Brug installeret app</string>
     <string name="home_installed_app_picker_title">Installerede apps</string>
     <string name="home_installed_app_picker_empty">Ingen apps fundet</string>
-    <string name="home_installed_app_picker_filter_all">Alle apps</string>
     <string name="home_installed_app_picker_filter_user">Kun brugerapps</string>
     <string name="home_installed_app_picker_filter_system">Kun systemapps</string>
     <string name="home_invalid_apk_unreadable">Kunne ikke læse filen. Tjek at \'Ekstern lagerplads\' ikke er batteribegrænset</string>
     <string name="home_invalid_apk_not_an_apk">Den valgte fil er ikke en gyldig APK</string>
+    <string name="home_invalid_apk_already_patched">Den valgte APK er allerede patchet. Vælg den originale app i stedet. Original app henviser til den uændrede applikation.</string>
     <string name="home_invalid_apk_io_error">Kunne ikke åbne filen. Prøv igen</string>
     <string name="home_external_apk_expert_mode_required">Denne funktion er kun tilgængelig i Eksperttilstand</string>
     <!-- Home Screen - Dialog 4: Expert Mode Dialog -->
-    <string name="expert_mode_title">Experttilstand</string>
     <string name="expert_mode_search">Søg patches</string>
-    <string name="expert_mode_proceed">Gå videre til patching</string>
     <string name="expert_mode_disable_all">Deaktiver alle</string>
     <string name="expert_mode_disable_all_done">Alle patches deaktiveret</string>
     <string name="expert_mode_enable_all">Aktiver alle</string>
@@ -325,6 +342,7 @@ For de bedste resultater anbefaler denne app at patche en &lt;b&gt;fuld APK&lt;/
     <string name="morphe_experimental_app_version_dialog_message">Denne version af &lt;b&gt;%s&lt;/b&gt; har tidlig eksperimentel understøttelse&lt;br/&gt;&lt;br/&gt;🔧 Forvent mærkelig app-adfærd eller uidentificerede fejl, mens patchesene bliver finpudset til denne appversion</string>
     <string name="home_dialog_unsupported_version_dialog_title">Ugyldig version</string>
     <string name="home_dialog_unsupported_version_dialog_description">Denne APK er ikke en anbefalet app-version. At fortsætte kan resultere i en ikke-fungerende app</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="home_dialog_unsupported_version_dialog_proceed">Fortsæt alligevel</string>
     <string name="home_dialog_unsupported_version_compatible_versions">Kompatible versioner:</string>
     <string name="home_dialog_unsupported_version_unsupported_label">Ikke understøttet</string>
@@ -360,46 +378,55 @@ For de bedste resultater anbefaler denne app at patche en &lt;b&gt;fuld APK&lt;/
     <string name="patch_option_slider_range_end">Til</string>
     <string name="patch_option_list_duplicate">Denne værdi eksisterer allerede</string>
     <string name="patch_option_list_empty">Værdien må ikke være tom</string>
-    <string name="patch_option_list_empty_state">Ingen værdier tilføjet endnu</string>
     <string name="patch_option_required_missing">%s: Udfyld alle nødvendige felter</string>
+    <!-- Badge on a patch option whose value differs from the patch's own, which resets it when tapped -->
+    <string name="patch_option_changed">Ændret</string>
+    <!-- Badge on a patch option that has to be filled in before patching -->
+    <string name="patch_option_required">Påkrævet</string>
+    <!-- Hint under an image patch option. "%1$s" is the width and "%2$s" the height in pixels -->
+    <string name="patch_option_recommended_size">Anbefalet: %1$s×%2$s</string>
     <!-- Adaptive Icon Creator -->
     <string name="adaptive_icon_create">Opret adaptiv ikon</string>
     <string name="adaptive_icon_select_image">Vælg billede</string>
     <string name="adaptive_icon_change_image">Ændre billede</string>
+    <string name="image_load_failed">Kunne ikke indlæse dette billede</string>
+    <!-- Card of the adaptive icon creator where the picture is placed on the icon -->
+    <string name="adaptive_icon_launcher">Launcher-ikon</string>
+    <string name="adaptive_icon_gesture_hint">Træk for at flytte, knib for at ændre størrelsen</string>
+    <!-- Card of the adaptive icon creator showing the icons as the device draws them -->
+    <string name="adaptive_icon_preview">Forhåndsvisning</string>
+    <!-- Caption under the launcher icon in its own colors -->
+    <string name="adaptive_icon_standard">Standard</string>
+    <!-- Caption under the launcher icon recolored by the system theme -->
+    <string name="adaptive_icon_themed">Tematiseret</string>
     <string name="adaptive_icon_background_color">Baggrundsfarve</string>
     <string name="adaptive_icon_reset_transform">Nulstil position og skala</string>
-    <string name="adaptive_icon_safe_zone_inner">Sikker zone (altid synlig)</string>
-    <string name="adaptive_icon_safe_zone_outer">Maskezone (kan blive beskåret)</string>
-    <string name="adaptive_icon_no_transparency_warning">Billedet har ingen transparente pixels. Resultatet kan se forkert ud</string>
+    <string name="adaptive_icon_no_transparency_warning">Dette billede har ingen gennemsigtige pixels, så de tematiserede ikoner og notifikationsikoner beholder Morphe-logoet</string>
     <string name="adaptive_icon_created_success">Adaptiv ikon oprettet med succes</string>
     <string name="adaptive_icon_creation_failed">Kunne ikke oprette adaptiv ikon</string>
-    <string name="adaptive_icon_label">Adaptiv</string>
-    <string name="adaptive_icon_monochrome_label">Monokrom</string>
     <string name="adaptive_icon_guide">Guide til ikondesign</string>
     <string name="adaptive_icon_guide_png_title">Brug en PNG-fil med en gennemsigtig baggrund</string>
-    <string name="adaptive_icon_guide_png_body">Forgrunden skal være en PNG-fil med en gennemsigtig baggrund. En baggrund med ens farve vil se forkert ud – baggrundsfarven skal komme fra farvevælgeren nedenfor.</string>
+    <string name="adaptive_icon_guide_png_body">Et logo på en gennemsigtig baggrund fungerer bedst, med baggrundsfarven valgt nedenfor. Et billede uden gennemsigtighed fylder i stedet hele ikonet, og de tematiserede ikoner og notifikationsikoner beholder så Morphe-logoet.</string>
     <string name="adaptive_icon_guide_safe_zones_title">Sikkerhedszoner</string>
-    <string name="adaptive_icon_guide_safe_zones_body">"Indre zone (massiv): Indhold er altid fuldt synligt på alle launcher-former.
-Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige detaljer inde i den indre zone."</string>
+    <string name="adaptive_icon_guide_safe_zones_body">Omridset viser formen på din launcher, og alt uden for omridset klippes væk. Andre launchere bruger andre former, så hold vigtige detaljer inde i den stiplede cirkel, som alle former viser.</string>
     <string name="adaptive_icon_guide_notification_title">Notifikationsikon</string>
-    <string name="adaptive_icon_guide_notification_body">Genereres automatisk fra billedet i forgrunden. Juster størrelsen med skyderen for notifikationer. Alt synligt indhold vises i hvid i statuslinjen.</string>
-    <string name="adaptive_icon_guide_monochrome_title">Monokromt ikon</string>
-    <string name="adaptive_icon_guide_monochrome_body">Genereres automatisk fra billedet i forgrunden ved hjælp af de samme adaptive ikontransformationer. Det vises tonet med tapetaccentfarven på Android 13 og nyere.</string>
+    <string name="adaptive_icon_guide_notification_body">Det klippes fra den synlige del af billedet og får samme størrelse som andre statuslinjeikoner, uanset hvilken margen filen har. Juster det med skyderen under forhåndsvisningen. Android viser det i en enkelt farve.</string>
+    <string name="adaptive_icon_guide_monochrome_title">Tematiseret ikon</string>
+    <string name="adaptive_icon_guide_monochrome_body">Det klippes fra billedet med samme placering og størrelse som launcher-ikonet. På Android 13 og nyere farver launchere, der har tematiserede ikoner slået til, det ud fra tapetet.</string>
     <string name="notification_icon_preview">Notifikation</string>
     <!-- Header Creator -->
     <string name="header_creator_create">Opret tilpasset sidehoved</string>
     <string name="header_creator_light_theme">Lys tema sidehoved</string>
     <string name="header_creator_dark_theme">Mørk tema sidehoved</string>
-    <string name="header_creator_no_image">Intet billede valgt</string>
     <string name="header_creator_success">Sidehoved oprettet med succes</string>
     <string name="header_creator_failed">Kunne ikke oprette sidehoved</string>
     <string name="header_creator_guide">Guide til header-oprettelse</string>
     <string name="header_creator_guide_image_title">Billedkrav</string>
-    <string name="header_creator_guide_image_body">Brug en hvilken som helst billedfil (PNG eller JPEG). For de bedste resultater skal du bruge et bredformatbillede med et aspektforhold på ca. 2,7:1. PNG-filer med gennemsigtige baggrunde vil blende naturligt med app-temaet.</string>
+    <string name="header_creator_guide_image_body">En PNG med en gennemsigtig baggrund smelter ind i app-linjen. Margener omkring logoet i filen ignoreres, så det starter med samme størrelse og placering som standardlogoet.</string>
     <string name="header_creator_guide_themes_title">Lyse og mørke temaer</string>
     <string name="header_creator_guide_themes_body">De fleste apps kræver separate billeder til de lyse og mørke temaer. Nogle apps (f.eks. YouTube Music) bruger kun det mørke tema, så kun det afsnit vises.</string>
     <string name="header_creator_guide_positioning_title">Positionering og skalering</string>
-    <string name="header_creator_guide_positioning_body">Brug knib-til-zoom og trækbevægelser direkte i forhåndsvisningen for at placere og skalere dit billede. Snappingsguider vises, når billedet er tæt på midten. Du kan også bruge skyderen under forhåndsvisningen.</string>
+    <string name="header_creator_guide_positioning_body">Træk og knib billedet i editoren, eller juster størrelsen med skyderen. Den stiplede boks markerer, hvor standardlogoet sidder, og der vises hjælpelinjer, når billedet flugter med det.</string>
     <!-- Batch patching -->
     <string name="batch_patch_action">Valgt patch</string>
     <string name="batch_patch_title">Batch patching</string>
@@ -417,16 +444,18 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
     <string name="batch_patch_source_file">Vedhæftet fil</string>
     <string name="batch_patch_source_unavailable">APK\'en kunne ikke forberedes</string>
     <string name="batch_patch_force_version">Patch alligevel</string>
-    <string name="batch_patch_force_version_done">Queued anyway, patches made for other versions may break the app</string>
-    <string name="batch_patch_accept_signature_done">Sat i kø alligevel, denne APK er muligvis ikke den originale</string>
+    <string name="batch_patch_force_version_done">Sat i kø alligevel, appen kan gå i stykker</string>
+    <string name="batch_patch_accept_signature_done">Sat i kø alligevel, APK ikke verificeret</string>
     <string name="batch_patch_edit_patches">Vælg patches</string>
     <string name="batch_patch_state_no_apk">Ingen APK</string>
     <string name="batch_patch_state_no_patches">Ingen patches</string>
     <string name="batch_patch_policy_install">Installer når færdig</string>
     <string name="batch_patch_policy_install_description">Installerer hver rettet app lige efter køen er afsluttet. Fra giver mulighed for senere installation af APK\'er</string>
-    <string name="batch_patch_start">Start patching</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="batch_patch_start">Start</string>
     <string name="batch_patch_stop_title">Stop batch patching?</string>
     <string name="batch_patch_stop_description">Appen, der patchess lige nu, og alt, der stadig er i kø, annulleres</string>
+    <!-- Label of a footer button beside "Done". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_install_all">Installer alle</string>
     <string name="batch_patch_install_failed">Installation mislykkedes</string>
     <string name="batch_patch_in_progress">Batch patching er allerede i gang</string>
@@ -463,9 +492,24 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
     <string name="home_app_info_app_update_available_description">Patchkilderne understøtter en nyere version af denne app. Patch den igen for at skifte til den version.</string>
     <string name="home_app_info_newest_supported_version">Nyeste understøttede</string>
     <string name="home_app_info_version_move">Installeret %1$s, nyeste understøttede %2$s</string>
+    <string name="home_app_info_version_restore">Installeret %1$s, patchet %2$s</string>
     <string name="home_app_info_app_deleted_warning">Appen blev fjernet</string>
     <string name="home_app_info_app_deleted_description">Denne app blev fjernet udenfor Morphe. Repatch den for at gendanne funktionalitet</string>
     <string name="home_app_info_not_patched_description">En upatchet version af denne app er installeret. Morphe har stadig sin tidligere patch-registrering</string>
+    <string name="home_app_info_mount_replaced_description">En anden version erstattede den monterede app, så patchen ikke længere gælder. Gendannelse sætter den patchede version tilbage</string>
+    <string name="home_app_info_mount_replaced_by_play_store_description">Google Play opdaterede den monterede app, så patchen ikke længere gælder. Gendannelse sætter den patchede version tilbage. Slå auto-opdatering fra for den i Google Play for at holde den patchet</string>
+    <string name="app_links_title">Understøttede weblinks</string>
+    <string name="app_links_description">På Android 12+ åbnes links til understøttede domæner som standard i din browser, medmindre de er godkendt</string>
+    <string name="app_links_unverified_banner_title">Weblinks ikke verificeret</string>
+    <string name="app_links_unverified_banner_description">Understøttede weblinks åbnes i øjeblikket i din browser i stedet for denne app</string>
+    <string name="app_links_enable_auto">Aktivér automatisk</string>
+    <string name="app_links_enable_auto_in_progress">Aktiverer links…</string>
+    <string name="app_links_open_settings">Åbn linkindstillinger</string>
+    <string name="app_links_repair_success">App-links blev aktiveret med succes</string>
+    <string name="app_links_repair_failed">Kunne ikke aktivere applinks automatisk</string>
+    <string name="app_links_all_verified">Alle understøttede links er konfigureret til at åbne i denne app</string>
+    <string name="app_links_fix">Reparer links</string>
+    <string name="configure">Konfigurér</string>
     <string name="patcher_rename_title">Dette vil installere en klon</string>
     <string name="patcher_rename_description">The patches built this app under a package name of their own, so installing it adds a clone alongside &lt;b&gt;%s&lt;/b&gt; instead of updating it</string>
     <string name="patcher_rename_result_package">Vil installere som</string>
@@ -493,10 +537,10 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
     <!-- Field labels, shown in a column beside their values. Keep them short, a long one is cut off rather than wrapped -->
     <string name="patcher_field_app">App</string>
     <string name="patcher_field_package">Pakke</string>
+    <string name="patcher_field_failed_patch">Mislykket patch</string>
     <string name="patcher_field_source">Kilde</string>
     <string name="patcher_field_split">Opdelt APK</string>
     <string name="patcher_field_manager">Manager</string>
-    <string name="patcher_field_patcher">Patcher</string>
     <string name="patcher_field_runtime">Runtime</string>
     <!-- Native code libraries (.so files) packed inside the APK -->
     <string name="patcher_field_libraries">Biblioteker</string>
@@ -527,10 +571,12 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
     <string name="patcher_installing_subtitle">Næsten klar til at rocke! 🎸</string>
     <string name="patcher_success_title">Færdig! 🎉</string>
     <string name="patcher_success_subtitle">Din app er patchet og installeret!</string>
+    <string name="patcher_mounted_subtitle">Din app er patchet og monteret!</string>
     <string name="patcher_complete_title">Patch fuldført! ✨</string>
     <string name="patcher_failed_title">Ups! Noget gik galt</string>
-    <string name="patcher_failed_hint">Tryk på %s for at se, hvad der gik galt</string>
     <string name="patcher_failed_dialog_title">Patch mislykkedes</string>
+    <string name="patcher_error_details">Fejloplysninger</string>
+    <string name="patcher_change_patches">Skift patches</string>
     <string name="patcher_unknown_error">Ukendt fejl opstod</string>
     <string name="patcher_split_step_extracting">Udpakker split-APK\'er</string>
     <string name="patcher_split_step_merging">Sammenlægning af %s</string>
@@ -544,15 +590,14 @@ Ydre zone (stiplet): Kan blive beskåret af launcher-masken – hold vigtige det
 
 Afinstallation sletter permanent alle appdata."</string>
     <string name="patcher_install_error_title">Installationsfejl</string>
+    <string name="patcher_mount_error_title">Monteringsfejl</string>
     <string name="patcher_install_error_subtitle">Prøv at afinstallere og installere igen</string>
-    <string name="patcher_ready_to_install_subtitle">Tryk på knappen nedenfor for at installere</string>
     <string name="patcher_ready_to_mount_subtitle">Tryk på knappen nedenfor for at montere</string>
     <string name="patcher_patches_excluded_for_installer">Ikke tilgængelig for denne installationsmetode og udeladt: %s</string>
     <string name="patcher_back_to_game_hint">Tryk på %1$s for at gå tilbage til dit spil</string>
     <string name="patcher_storage_permission_dialog_title">Kan ikke tilgå lagringssti</string>
     <string name="patcher_incompatible_patcher_title">Opdatering påkrævet</string>
-    <string name="patcher_incompatible_patcher_description">Bundtet &lt;b&gt;%1$s&lt;/b&gt; kræver patcher version &lt;b&gt;%2$s&lt;/b&gt; eller nyere. Opdater venligst Morphe for at patche denne app</string>
-    <string name="patcher_incompatible_patcher_update_button">Download og opdater Morphe</string>
+    <string name="patcher_incompatible_patcher_description">Kilden &lt;b&gt;%1$s&lt;/b&gt; kræver patcher &lt;b&gt;%2$s&lt;/b&gt; eller nyere. Opdater Morphe for at bruge den</string>
     <string name="patcher_storage_permission_description_api30">En eller flere patchtilvalg peger på stier, som Morphe ikke kan læse. Giv adgang til lager og tryk på knappen, så vil patching starte automatisk</string>
     <string name="patcher_storage_permission_description_legacy">En eller flere patchtilvalg peger på stier, som ikke kan tilgås. Opdater stierne i patchtilvalg og prøv igen</string>
     <string name="patcher_storage_permission_grant">Tillad lagringstilladelse</string>
@@ -573,7 +618,6 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="patcher_step_load_patches">Indlæser patches</string>
     <string name="patcher_step_prepare_split_apk">Sammenfletter split APK</string>
     <string name="patcher_step_unpack">Læs APK fil</string>
-    <string name="patcher_step_group_patching">Patcher</string>
     <string name="patcher_step_group_saving">Gemmer</string>
     <string name="patcher_step_write_patched">Skriver patchet APK-fil</string>
     <string name="patcher_step_sign_apk">Signerer patchet APK-fil</string>
@@ -585,6 +629,7 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="patcher_memory_adjustment_title">Ikke nok hukommelse</string>
     <string name="patcher_memory_adjustment_description">Patcheren blev stoppet af systemet, mens den kørte med en hukommelsesgrænse på %1$d MB. En sænkning af grænsen til %2$d MB gør patcheren til et mindre mål og kan lade kørslen fuldføre.</string>
     <string name="patcher_memory_adjustment_description_at_minimum">Patcheren blev stoppet af systemet, mens den kørte med en hukommelsesgrænse på %1$d MB, hvilket allerede er den laveste tilgængelige. Prøv at patche med færre patchkilder, eller vælg færre patches.</string>
+    <string name="patcher_memory_adjustment_description_finished">Systemet stoppede patcheren ved en hukommelsesgrænse på %1$d MB, og den blev først færdig ved %2$d MB. Hvis du starter ved %2$d MB, springer du over det tabte forsøg næste gang</string>
     <string name="patcher_memory_adjustment_apply">Sænk til %1$d MB</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Patching i gang…</string>
@@ -654,6 +699,8 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="mini_game_try_again">Prøv igen</string>
     <string name="mini_game_paused">Pauset</string>
     <string name="mini_game_resume">Fortsæt</string>
+    <string name="mini_game_restart">Start forfra</string>
+    <string name="mini_game_change">Vælg et andet spil</string>
     <string name="mini_game_2048_picker_subtitle">Skub fliser for at sammenlægge</string>
     <string name="mini_game_flappy_picker_subtitle">Tryk for at flyve gennem rør</string>
     <string name="mini_game_flappy_tap_to_start">Tryk for at flyve</string>
@@ -673,6 +720,7 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="system">System</string>
     <!-- Settings - Appearance Tab - Background animation -->
     <string name="settings_appearance_background">Baggrundsanimation</string>
+    <string name="settings_appearance_background_description">Animationen, der afspilles bag appens skærme</string>
     <string name="settings_appearance_background_circles">Cirkler</string>
     <string name="settings_appearance_background_rings">Ringe</string>
     <string name="settings_appearance_background_mesh">Net</string>
@@ -681,6 +729,9 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="settings_appearance_background_snow">Sne</string>
     <string name="settings_appearance_background_grid">Linjer</string>
     <string name="settings_appearance_background_particles">Partikler</string>
+    <string name="settings_appearance_background_lava">Lavalampe</string>
+    <string name="settings_appearance_background_halloween">Halloween</string>
+    <string name="settings_appearance_background_fireworks">Fyrværkeri</string>
     <string name="settings_appearance_background_none">Ingen</string>
     <string name="settings_appearance_background_random">Tilfældig</string>
     <string name="settings_appearance_background_random_interval_launch">Ved opstart</string>
@@ -688,6 +739,10 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="settings_appearance_background_random_interval_3days">Hver 3. dag</string>
     <string name="settings_appearance_parallax_effect">Parallakse-effekt</string>
     <string name="settings_appearance_parallax_effect_description">Flydende baggrundsbevægelse ved tiltning af enheden</string>
+    <string name="settings_appearance_seasonal_themes">Sæsonbestemte temaer</string>
+    <string name="settings_appearance_seasonal_themes_description">Festlige baggrunde og hilsner under helligdage</string>
+    <!-- %1$s is a holiday background name, such as Halloween. %2$s is a date, such as November 1 -->
+    <string name="settings_appearance_seasonal_background_notice">Baggrunden %1$s er aktiv indtil %2$s, mens sæsonbestemte temaer er slået til</string>
     <!-- Settings - Appearance Tab - Theme -->
     <string name="settings_appearance_theme">Tema</string>
     <string name="settings_appearance_theme_mode">Tema-tilstand</string>
@@ -701,6 +756,10 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="settings_appearance_accent_color">Accentfarve</string>
     <string name="settings_appearance_pure_black">Ægte sort</string>
     <string name="settings_appearance_pure_black_description">Brug ægte sort i baggrunde</string>
+    <string name="settings_appearance_color_accents">App- og kildefarver</string>
+    <string name="settings_appearance_color_accents_description">Bruger hver apps og kildes egen farve i stedet for accentfarven</string>
+    <string name="settings_appearance_outlines">Omrids</string>
+    <string name="settings_appearance_outlines_description">Tegner en tynd kant omkring kort, paneler og knapper</string>
     <!-- Settings - Appearance Tab - Language Selector -->
     <string name="settings_appearance_language_and_display">Sprog &amp; skærm</string>
     <string name="settings_appearance_app_language">App-sprog</string>
@@ -740,14 +799,31 @@ Afinstallation sletter permanent alle appdata."</string>
     <string name="settings_appearance_app_card_colors_bundle_description">Brug hver apps egen farve her, med automatisk skyggelægning, så den passer</string>
     <!-- Settings - Appearance Tab - App Icon Selector -->
     <string name="settings_appearance_app_icon_selector_title">Appikon</string>
+    <string name="settings_appearance_app_icon_selector_description">Sådan ser Morphe ud på din startskærm og i app-skuffen</string>
     <string name="settings_appearance_app_icon_default">Standard</string>
     <string name="settings_appearance_app_icon_light_2">Himmel</string>
     <string name="settings_appearance_app_icon_light_3">Solnedgang</string>
-    <string name="settings_appearance_app_icon_dark_1">Hav</string>
+    <string name="settings_appearance_app_icon_light_4">Lavendel</string>
+    <string name="settings_appearance_app_icon_light_5">Gletsjer</string>
+    <string name="settings_appearance_app_icon_light_6">Dis</string>
+    <string name="settings_appearance_app_icon_light_7">Sand</string>
+    <string name="settings_appearance_app_icon_dark_1">Blågrøn</string>
     <string name="settings_appearance_app_icon_dark_2">Tomrum</string>
-    <string name="settings_appearance_app_icon_dark_3">Indigo</string>
+    <string name="settings_appearance_app_icon_dark_3">Blomme</string>
+    <string name="settings_appearance_app_icon_dark_4">Midnat</string>
+    <string name="settings_appearance_app_icon_dark_5">Skifer</string>
+    <string name="settings_appearance_app_icon_accent_1">Aurora</string>
+    <string name="settings_appearance_app_icon_accent_2">Blæk</string>
+    <string name="settings_appearance_app_icon_accent_3">Papir</string>
+    <string name="settings_appearance_app_icon_accent_4">Skumring</string>
+    <string name="settings_appearance_app_icon_background">Baggrund</string>
+    <string name="settings_appearance_app_icon_mark">Logo</string>
+    <string name="settings_appearance_app_icon_mark_color">Farve</string>
+    <string name="settings_appearance_app_icon_mark_white">Hvid</string>
+    <string name="settings_appearance_app_icon_mark_black">Sort</string>
     <string name="settings_appearance_app_icon_change_dialog_title">Ændre appikon? </string>
     <string name="settings_appearance_app_icon_change_dialog_message">Skift til &lt;b&gt;%s&lt;/b&gt; og genstart?</string>
+    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="settings_appearance_app_icon_change_dialog_confirm">Ændre ikon</string>
     <!-- Settings - Advanced Tab - Updates Section -->
     <string name="settings_advanced_updates">Opdateringer</string>
@@ -782,7 +858,6 @@ Patcher er ikke påvirket: aktivér præ-release-patcher for hver kilde i patch-
     <string name="external_batch_patch_trust_caller">Tillad altid denne app</string>
     <string name="external_batch_patch_unknown_caller">En ukendt app</string>
     <!-- Notification content -->
-    <string name="notification_manager_update_title">Morphe-opdatering tilgængelig</string>
     <string name="notification_bundle_update_title">Nye patches tilgængelige</string>
     <string name="notification_update_text">Version %s er klar til download</string>
     <string name="notification_bundle_update_text_unversioned">Tryk for at åbne Morphe og opdatere</string>
@@ -793,8 +868,11 @@ Patcher er ikke påvirket: aktivér præ-release-patcher for hver kilde i patch-
     <string name="notification_channel_manager_updates_description">Notifikationer om nye Morphe-udgivelser</string>
     <string name="notification_channel_patch_updates">Patch-opdateringer</string>
     <string name="notification_channel_patch_updates_description">Notifikationer om nye patch-udgivelser</string>
-    <string name="notification_channel_patcher">Patching</string>
     <string name="notification_channel_patcher_description">Vises mens Morphe patcher en app i baggrunden</string>
+    <string name="notification_channel_mounted_apps">Monterede apps</string>
+    <string name="notification_channel_mounted_apps_description">Når en anden version har erstattet en monteret app, og dens patch ikke længere gælder</string>
+    <string name="notification_mount_replaced_title">%1$s er ikke længere patchet</string>
+    <string name="notification_mount_replaced_text">v%1$s erstattede den patchede v%2$s. Åbn Morphe for at gendanne den</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
     <string name="settings_advanced_expert">Avancerede indstillinger</string>
     <string name="settings_advanced_expert_mode">Eksperttilstand</string>
@@ -1080,7 +1158,6 @@ Detaljer: %2$s"</string>
     <string name="settings_system_patched_apks_description">Håndter gemte patchet APK filer</string>
     <string name="settings_system_patched_apks_empty">Ingen patchet APK\'er er gemt endnu</string>
     <string name="settings_system_patched_apks_delete_title">Slet patchet APK? </string>
-    <string name="settings_system_patched_apks_delete_confirm">Er du sikker på, at du vil slette den gemte patched APK for &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="settings_system_patched_apks_deleted">App slettet</string>
     <string name="settings_system_patched_apks_delete_all_title">Slet alle rettede APK\'er?</string>
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
@@ -1089,7 +1166,7 @@ Detaljer: %2$s"</string>
     <string name="settings_system_original_apks_empty">Ingen lagrede originale APK-er</string>
     <string name="settings_system_original_apks_deleted">Original APK slettet</string>
     <string name="settings_system_original_apks_delete_title">Slet original APK? </string>
-    <string name="settings_system_original_apks_delete_confirm">Slet original APK for &lt;b&gt;%s&lt;/b&gt;? Du vil ikke kunne repatche uden at tilbyde en ny APK</string>
+    <string name="settings_system_original_apks_delete_notice">Du vil ikke kunne repatche uden at levere en ny APK</string>
     <string name="settings_system_original_apks_delete_all_title">Slet alle originale APK\'er?</string>
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
     <string name="settings_system_patch_selections_title">Patchvalg</string>
@@ -1110,7 +1187,6 @@ Detaljer: %2$s"</string>
     <string name="settings_system_import_source_data_fail">Kunne ikke importere kilde-data</string>
     <string name="settings_system_import_source_data_success">Kilde-data importeret med succes</string>
     <string name="settings_system_selected_patches_section">Valgte patches</string>
-    <string name="settings_system_patch_options_section">Patchvalg</string>
     <string name="settings_system_no_patches_or_options">Ingen patches eller valg gemt</string>
     <!-- Copy selection from another bundle -->
     <string name="copy_selection_title">Kopier udvalg fra…</string>
@@ -1129,12 +1205,12 @@ Detaljer: %2$s"</string>
     <string name="settings_system_apk_download_helper_installed_by">Installeret af %s</string>
     <string name="settings_system_apk_download_helper_installed_by_unknown">Installeret af ukendt</string>
     <!-- File Picker -->
-    <string name="file_picker_previous_directory">Forrige mappe</string>
     <string name="file_picker_no_files">Ingen filer her</string>
     <string name="file_picker_read_error">Kan ikke læse denne mappe</string>
     <string name="file_picker_internal_storage">Intern lagring</string>
     <string name="file_picker_sd_card">SD-kort</string>
     <string name="file_picker_root">Rod (/)</string>
+    <string name="file_picker_storages">Lagre</string>
     <string name="file_picker_sort_name_asc">Navn (A–Z)</string>
     <string name="file_picker_sort_name_desc">Navn (Z–A)</string>
     <string name="file_picker_sort_size_desc">Størrelse (størst først)</string>
@@ -1160,11 +1236,9 @@ Detaljer: %2$s"</string>
     <string name="easter_egg_pill_red_toast_again">Tilbage i regnen</string>
     <string name="easter_egg_pill_blue_toast_again">Frakoblet. Vejen tilbage er, hvor den altid var</string>
     <!-- Shared strings -->
-    <!-- Download progress of a bundle or of the manager itself. "%1$s" and "%2$s" are the
-         megabytes read and expected, "%3$s" is the percentage; the doubled "%%" after it is
-         how a literal percent sign is written here. -->
-    <string name="download_progress">%1$s MB / %2$s MB (%3$s%%)</string>
     <string name="select_file">Vælg fil</string>
+    <string name="select_files">Vælg filer</string>
+    <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="select_folder">Vælg mappe</string>
     <string name="patches">Patches</string>
     <string name="home">Hjem</string>
@@ -1191,6 +1265,7 @@ Detaljer: %2$s"</string>
     <string name="done">Færdig</string>
     <string name="skip">Spring over</string>
     <string name="clear">Ryd</string>
+    <string name="paste">Indsæt</string>
     <string name="delete">Slet</string>
     <string name="delete_all">Slet alle</string>
     <string name="remove">Fjern</string>
@@ -1200,7 +1275,6 @@ Detaljer: %2$s"</string>
     <string name="disable">Deaktivér</string>
     <string name="enable">Aktiver</string>
     <string name="loading">Indlæser…</string>
-    <string name="loading_older_releases">Indlæser ældre udgivelser…</string>
     <string name="creating">Opretter…</string>
     <string name="processing_apk">Behandler APK…</string>
     <string name="exporting_apks">Eksporterer APK\'er…</string>
@@ -1215,9 +1289,7 @@ Detaljer: %2$s"</string>
     <string name="selected">Valgt</string>
     <string name="not_selected">Ikke valgt</string>
     <string name="select_all">Vælg alle</string>
-    <string name="select_all_done">Alle valgt</string>
     <string name="deselect_all">Fravælg alle</string>
-    <string name="deselect_all_done">Alle fjernet valget</string>
     <string name="reorder_list">Omarranger liste</string>
     <string name="reorder_list_hint">Træk for at omarrangere</string>
     <string name="reorder_done">Rækkefølge gemt</string>
@@ -1243,6 +1315,7 @@ Detaljer: %2$s"</string>
     <string name="continue_">Fortsæt</string>
     <string name="version">Version</string>
     <string name="clone">Klon</string>
+    <!-- Button that starts patching the selected app. A verb, as in "patch this app" -->
     <string name="patch">Patch</string>
     <string name="patching">Patchning</string>
     <string name="patched">Patchet</string>
@@ -1252,6 +1325,7 @@ Detaljer: %2$s"</string>
     <string name="unmount">Afmonter</string>
     <string name="unmounted">Afmonteret</string>
     <string name="remount">Genmonter</string>
+    <string name="restore">Gendan</string>
     <string name="share">Del</string>
     <string name="install">Installér</string>
     <string name="installed">Installeret</string>
@@ -1272,6 +1346,8 @@ Detaljer: %2$s"</string>
     <string name="sources">Kilder</string>
     <string name="installing_ellipsis">Installerer…</string>
     <string name="mounting_ellipsis">Monterer…</string>
+    <string name="mount_stage_restoring_stock">Gendanner original…</string>
+    <string name="mount_stage_copying">Kopierer…</string>
     <string name="unmounting_ellipsis">Afmontere…</string>
     <string name="importing_ellipsis">Importerer…</string>
     <string name="imported_successfully">Importeret med succes</string>
@@ -1282,20 +1358,43 @@ Detaljer: %2$s"</string>
     <string name="changelog_description">Hvad er nyt i denne version</string>
     <string name="changelog_download_fail">Kunne ikke downloade ændringslog: %s</string>
     <string name="changelog_empty">Ingen ændringslog tilgængelig</string>
-    <string name="changelog_show_older">Vis ældre udgivelser</string>
+    <string name="changelog_earlier_releases">Tidligere udgivelser</string>
+    <string name="changelog_patched_with">Patchet med %s</string>
     <string name="changelog_older_empty">Ingen ældre udgivelser at vise</string>
+    <string name="changelog_older_failed">Kunne ikke indlæse ældre udgivelser</string>
+    <!-- Label of a footer button beside "Translate". Keep it short, a longer one moves the buttons onto two rows -->
+    <string name="changelog_release_page">Udgivelsesside</string>
+    <string name="content_translate">Oversæt</string>
+    <!-- Label of a footer button beside other buttons, which reads "Translate" until pressed. Keep it as short as "Translate", a longer one moves the buttons onto two rows -->
+    <string name="content_show_original">Original</string>
+    <string name="content_translation_failed">Kunne ikke oversætte: %s</string>
+    <string name="changelog_section_new">Nyt</string>
+    <string name="changelog_section_fixes">Rettelser</string>
+    <string name="changelog_section_performance">Ydelse</string>
+    <string name="changelog_section_improvements">Forbedringer</string>
+    <string name="changelog_section_app_support">App-support</string>
+    <string name="changelog_section_other">Ændringer</string>
+    <string name="changelog_badge_latest">Seneste</string>
+    <!-- Marks the version of a patch source downloaded to the manager, which patches with it rather than the one an installed app was patched with -->
+    <string name="changelog_badge_downloaded">Downloadet</string>
+    <string name="changelog_badge_prerelease">Prerelease</string>
+    <!-- "%s" is the number of changes in the section -->
+    <string name="changelog_show_all">Vis alle (%s)</string>
+    <string name="changelog_show_less">Vis mindre</string>
     <string name="no_network_toast">Ingen internetforbindelse tilgængelig</string>
     <string name="update_available">En opdatering er tilgængelig</string>
     <string name="ready_to_install_update">Klar til at installere opdatering</string>
     <string name="update_completed">Opdatering installeret</string>
     <string name="install_update_manager_failed">Kunne ikke installere opdatering</string>
     <string name="installing_manager_update">Installerer opdatering…</string>
+    <string name="installing_manager_update_hint">Morphe lukkes for at fuldføre opdateringen</string>
     <string name="downloading_manager_update">Downloader opdatering…</string>
-    <!-- Shown while downloading, before the total size is known. "%1$s" is the megabytes so far. -->
+    <!-- Shown while downloading when the server does not report the total size. "%1$s" is the megabytes so far. -->
     <string name="manager_update_progress_downloaded">%1$s MB downloadet</string>
+    <!-- Shown under the download percentage. "%1$s" is the megabytes so far, "%2$s" the total. -->
+    <string name="manager_update_progress_size">%1$s / %2$s MB</string>
     <string name="manager_update_not_ready">Denne udgivelse er stadig ved at blive publiceret. Prøv igen om et par minutter</string>
     <string name="update_download_missing">Den downloadede opdatering er ikke længere tilgængelig. Download den igen</string>
-    <string name="download_manager_failed">Kunne ikke downloade opdatering: %s</string>
     <string name="failed_to_check_updates">Kunne ikke søge efter opdateringer: %s</string>
     <string name="failed_to_download_update">Kunne ikke downloade opdatering: %s</string>
     <string name="download_confirmation_metered">"Du er i øjeblikket på en begrænset forbindelse, og der kan opkræves datagebyrer fra din udbyder.
@@ -1324,6 +1423,7 @@ Vil du stadig fortsætte?"</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Hurtig rundvisning i funktioner</string>
     <string name="tour_prompt_desc">Vil du have en hurtig rundvisning i Morph’s vigtigste funktioner?</string>
+    <!-- Label of a footer button beside "Skip". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="tour_prompt_confirm">Vis mig rundt</string>
     <string name="onboarding_restart_title">Funktionstur</string>
     <string name="onboarding_restart_desc">En guidet rundvisning i de vigtigste funktioner</string>

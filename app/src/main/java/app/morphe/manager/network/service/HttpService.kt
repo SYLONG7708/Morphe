@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/network/service/HttpService.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.network.service
 
 import android.util.Log
@@ -12,6 +22,8 @@ import app.morphe.manager.network.utils.APIResponse
 import app.morphe.manager.util.tag
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.HttpTimeoutConfig
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -55,15 +67,18 @@ class HttpService(
      * or [APIResponse.Failure] on network/parse exceptions.
      *
      * Special case: if [T] is [String], returns the raw body text without deserialization.
+     *
+     * [retryOn429] off answers a 429 at once, for a caller that has somewhere else to turn.
      */
     suspend inline fun <reified T> request(
+        retryOn429: Boolean = true,
         // noinline so the builder can also be handed to hostOf for the circuit breaker
         noinline builder: HttpRequestBuilder.() -> Unit = {}
     ): APIResponse<T> {
         var body: String? = null
         return try {
             runWithRetry("request", host = hostOf(builder)) {
-                runWith429Retry("request") {
+                runWith429Retry("request", retry = retryOn429) {
                     try {
                         val response = http.request {
                             builder()
@@ -130,6 +145,10 @@ class HttpService(
             runWith429Retry("streamTo") {
                 http.prepareGet {
                     builder()
+                    // The client's request timeout covers the whole body, which a large download
+                    // on a slow link outlasts while bytes are still arriving. The socket timeout
+                    // still ends a stalled connection.
+                    timeout { requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS }
                     Log.i(tag, "HttpService.streamTo: ${url.buildString()}")
                 }.execute { response ->
                     when {
@@ -408,11 +427,12 @@ class HttpService(
      * Retries [block] up to [MAX_RETRY_ATTEMPTS] times on HTTP 429 responses.
      *
      * Respects the Retry-After response header if present; otherwise falls back to exponential
-     * backoff starting at [INITIAL_RETRY_DELAY_MS].
+     * backoff starting at [INITIAL_RETRY_DELAY_MS]. With [retry] off the first 429 is thrown.
      */
     @PublishedApi
     internal suspend fun <T> runWith429Retry(
         operationName: String,
+        retry: Boolean = true,
         block: suspend () -> T
     ): T {
         var attempt = 0
@@ -422,7 +442,7 @@ class HttpService(
                 attempt++
                 return block()
             } catch (t: TooManyRequestsException) {
-                if (attempt >= MAX_RETRY_ATTEMPTS) throw t
+                if (!retry || attempt >= MAX_RETRY_ATTEMPTS) throw t
                 val wait = (t.retryAfterMillis ?: delayMs).coerceAtMost(MAX_RETRY_DELAY_MS)
                 Log.w(tag, "$operationName hit 429 (attempt $attempt/$MAX_RETRY_ATTEMPTS), waiting ${wait}ms")
                 delay(wait.milliseconds)

@@ -1,3 +1,8 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
 package app.morphe.manager.data.room.apk
 
 import androidx.room.ColumnInfo
@@ -19,7 +24,7 @@ data class ApkSignature(
     @ColumnInfo(name = "file_path") val filePath: String,
     @ColumnInfo(name = "file_size") val fileSize: Long,
     @ColumnInfo(name = "last_modified") val lastModified: Long,
-    /** SHA-256 fingerprints joined by [SEPARATOR]. Empty when the archive carries no signature. */
+    /** SHA-256 fingerprints joined by [SEPARATOR]. Empty when the archive does not verify. */
     @ColumnInfo(name = "hashes") val hashes: String
 ) {
     companion object {

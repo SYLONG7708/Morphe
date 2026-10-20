@@ -158,20 +158,14 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.preview)
     debugImplementation(libs.compose.ui.tooling)
-    implementation(libs.compose.livedata)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.material3)
     implementation(libs.navigation.compose)
 
-    // Accompanist
-    implementation(libs.accompanist.drawablepainter)
-
-    // Placeholder
-    implementation(libs.placeholder.material3)
-
     // Coil (async image loading, network image)
     implementation(libs.coil.compose)
     implementation(libs.coil.appiconloader)
+    implementation(libs.appiconloader.iconloaderlib)
 
     // KotlinX
     implementation(libs.kotlinx.serialization.json)
@@ -181,7 +175,6 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
 
     // Morphe
@@ -205,13 +198,10 @@ dependencies {
 
     // LibSU
     implementation(libs.libsu.core)
-    implementation(libs.libsu.service)
-    implementation(libs.libsu.nio)
 
     // Koin
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
-    implementation(libs.koin.compose.navigation)
     implementation(libs.koin.workmanager)
 
     // Licenses
@@ -220,7 +210,6 @@ dependencies {
 
     // Ktor
     implementation(libs.ktor.core)
-    implementation(libs.ktor.logging)
     implementation(libs.ktor.okhttp)
     implementation(libs.ktor.content.negotiation)
     implementation(libs.ktor.serialization)
@@ -228,15 +217,8 @@ dependencies {
     // Google Play Services availability is used only for device diagnostics.
     implementation(libs.play.services.base)
 
-    // Markdown
-    implementation(libs.markdown.renderer)
-
     // Fading Edges
     implementation(libs.fading.edges)
-
-    // EnumUtil
-    implementation(libs.enumutil)
-    ksp(libs.enumutil.ksp)
 
     // Reorderable lists
     implementation(libs.reorderable)
@@ -252,18 +234,40 @@ dependencies {
 }
 
 /**
- * Locales Morphe is translated into, read from its resource folders so a new Crowdin language needs
- * no change here. Each comes with and without the region, since libraries mostly use the bare one.
+ * Languages Morphe is translated into as language and region pairs, read from the resource folders
+ * Crowdin writes, so a new language needs no change anywhere else.
  */
-val translatedLocales = project.file("src/main/res").listFiles().orEmpty()
-    .mapNotNull { Regex("values-([a-z]{2,3})(-r[A-Z]{2})?").matchEntire(it.name) }
-    .flatMap { match ->
-        val language = match.groupValues[1]
+val translations = project.file("src/main/res").listFiles().orEmpty()
+    .mapNotNull { Regex("values-([a-z]{2,3})(?:-r([A-Z]{2}))?").matchEntire(it.name) }
+    .map { it.groupValues[1] to it.groupValues[2] }
+    .sortedWith(compareBy({ it.first }, { it.second }))
+
+/**
+ * Locales kept from library resources. Each comes with and without the region, since libraries
+ * mostly use the bare one.
+ */
+val translatedLocales = translations
+    .flatMap { (language, region) ->
         // Filipino is still filed under its legacy Tagalog code by some libraries
-        listOfNotNull(language, match.value.removePrefix("values-"), "tl".takeIf { language == "fil" })
+        listOfNotNull(
+            language,
+            "$language-r$region".takeIf { region.isNotEmpty() },
+            "tl".takeIf { language == "fil" }
+        )
     }
     .plus("en")
     .toSet()
+
+/**
+ * Translations as BCP 47 tags for the in-app language picker, written as a Java array literal for
+ * BuildConfig. Resource folders still name Indonesian, Hebrew and Yiddish by their withdrawn ISO
+ * codes, which tags no longer accept.
+ */
+val translationTags = translations.joinToString(prefix = "{", postfix = "}") { (language, region) ->
+    val tagLanguage = mapOf("in" to "id", "iw" to "he", "ji" to "yi")[language] ?: language
+    val tag = listOf(tagLanguage, region).filter { it.isNotEmpty() }.joinToString("-")
+    "\"$tag\""
+}
 
 android {
     namespace = "app.morphe.manager"
@@ -347,6 +351,8 @@ android {
             "\"${safeProfileValue("youtubeSignerSha256")}\"",
         )
 
+        buildConfigField("String[]", "TRANSLATIONS", translationTags)
+
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -394,6 +400,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    // Unit tests run on the JVM, where android.util.Log is only a stub
+    testOptions.unitTests.isReturnDefaultValues = true
 
     dependenciesInfo {
         includeInApk = false
@@ -444,6 +453,11 @@ android {
         // Libraries ship strings in far more languages than Morphe has, which only bloat resources.arsc
         @Suppress("UnstableApiUsage")
         localeFilters += translatedLocales
+
+        // Lists the translations for the per-app language setting of Android 13+ from the same
+        // resource folders, with the default locale taken from res/resources.properties
+        @Suppress("UnstableApiUsage")
+        generateLocaleConfig = true
     }
 
     buildFeatures {
@@ -461,6 +475,8 @@ android {
 
     lint {
         disable += setOf("MissingTranslation")
+        // Crowdin drops a removed string from the translations only on its next sync
+        warning += setOf("ExtraTranslation")
         baseline = file("lint-baseline.xml")
     }
 }
@@ -498,5 +514,63 @@ tasks {
         if (name.startsWith("lintVital")) {
             enabled = false
         }
+    }
+}
+
+/**
+ * Launcher icons on offer, the one place they are defined. Each is a background with a mark over it.
+ * The launcher only shows icons the manifest declares, so the build generates from this an
+ * activity-alias per icon, the adaptive icon it shows and the catalog the app picks from.
+ *
+ * Backgrounds are listed in picker order. A background's drawable is ic_launcher_background_<id>
+ * and its name settings_appearance_app_icon_<id>; a mark's name is
+ * settings_appearance_app_icon_mark_<id>.
+ *
+ * The launcher remembers an icon by its alias, MainActivity_<Background>, plus _<Mark> for any mark
+ * but the background's base one. Released ids and base marks must therefore never change, or users
+ * of that icon would lose it on update. A background's color can change freely.
+ */
+val launcherIconMarks = linkedMapOf(
+    "color" to "ic_symorphe_foreground",
+    "white" to "ic_symorphe_foreground",
+    "black" to "ic_symorphe_foreground"
+)
+
+val launcherIconBackgrounds = listOf(
+    // id to (base mark, other marks that read on it). A mark reads when it keeps a contrast of
+    // about 2.5:1 against the background, the brand mark about 2:1 at its weaker end
+    "default" to ("color" to listOf("black")),
+    "light_2" to ("color" to listOf("black")),
+    "light_3" to ("color" to listOf("black")),
+    "light_4" to ("color" to listOf("black")),
+    "light_5" to ("color" to listOf("black")),
+    "light_6" to ("color" to listOf("black")),
+    "light_7" to ("color" to listOf("black")),
+    "dark_1" to ("white" to listOf("black")),
+    "accent_1" to ("white" to listOf("black")),
+    "accent_4" to ("white" to listOf("black")),
+    "dark_3" to ("white" to listOf("black")),
+    "dark_4" to ("white" to emptyList()),
+    "dark_5" to ("white" to listOf("black")),
+    "dark_2" to ("color" to listOf("white")),
+    "accent_2" to ("white" to listOf("color")),
+    "accent_3" to ("black" to listOf("color"))
+)
+
+val generateLauncherIcons = tasks.register<GenerateLauncherIconsTask>("generateLauncherIcons") {
+    group = "build"
+    description = "Generates the launcher icon aliases, adaptive icons and app catalog."
+    marks.set(launcherIconMarks)
+    backgrounds.set(launcherIconBackgrounds.map { (id, marks) -> listOf(id, marks.first) + marks.second })
+    resDirectory.set(layout.buildDirectory.dir("generated/launcherIcons/res"))
+    kotlinDirectory.set(layout.buildDirectory.dir("generated/launcherIcons/kotlin"))
+    manifestFile.set(layout.buildDirectory.file("generated/launcherIcons/AndroidManifest.xml"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.res?.addGeneratedSourceDirectory(generateLauncherIcons, GenerateLauncherIconsTask::resDirectory)
+        variant.sources.kotlin?.addGeneratedSourceDirectory(generateLauncherIcons, GenerateLauncherIconsTask::kotlinDirectory)
+        variant.sources.manifests.addGeneratedManifestFile(generateLauncherIcons, GenerateLauncherIconsTask::manifestFile)
     }
 }

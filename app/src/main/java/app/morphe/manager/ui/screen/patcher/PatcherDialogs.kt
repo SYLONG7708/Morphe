@@ -25,9 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -35,17 +35,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import app.morphe.manager.BuildConfig
 import app.morphe.manager.R
 import app.morphe.manager.ui.model.RenameWarning
+import app.morphe.manager.ui.screen.home.ManagerChangelogDialog
 import app.morphe.manager.ui.screen.shared.*
-import app.morphe.manager.util.MORPHE_WEBSITE_URL
 import app.morphe.manager.util.PathValidationResult
 import app.morphe.manager.util.deviceStats
 import app.morphe.manager.util.htmlAnnotatedString
@@ -59,7 +57,8 @@ private const val ErrorInfoLabelMaxFraction = 0.45f
 
 /**
  * Shown when a patch bundle requires a newer version of morphe-patcher than the one
- * bundled in this version of the manager. Directs the user to the website to update.
+ * bundled in this version of the manager. The update button hands over to the in-app
+ * update dialog, the same one the home banner opens.
  */
 @Composable
 fun IncompatiblePatcherVersionDialog(
@@ -67,45 +66,36 @@ fun IncompatiblePatcherVersionDialog(
     requiredVersion: String,
     onDismiss: () -> Unit,
 ) {
-    val context = LocalContext.current
+    val showManagerUpdate = rememberSaveable { mutableStateOf(false) }
+
+    if (showManagerUpdate.value) {
+        // Takes this dialog's place rather than stacking on it, and closing it closes both,
+        // since patching with this bundle stays blocked until the update is installed
+        ManagerChangelogDialog(
+            onDismiss = onDismiss,
+            expectsUpdate = true
+        )
+        return
+    }
 
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.patcher_incompatible_patcher_title),
+        description = htmlAnnotatedString(stringResource(
+            R.string.patcher_incompatible_patcher_description,
+            bundleName,
+            requiredVersion
+        )),
         footer = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AppDialogButton(
-                    text = stringResource(R.string.patcher_incompatible_patcher_update_button),
-                    onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, MORPHE_WEBSITE_URL.toUri())
-                        context.startActivity(intent)
-                    },
-                    icon = Icons.Outlined.SystemUpdate,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                AppDialogOutlinedButton(
-                    text = stringResource(R.string.close),
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            AppDialogButtonRow(
+                primaryText = stringResource(R.string.sources_management_outdated_manager_badge),
+                onPrimaryClick = { showManagerUpdate.value = true },
+                primaryIcon = Icons.Outlined.SystemUpdate,
+                secondaryText = stringResource(R.string.close),
+                onSecondaryClick = onDismiss
+            )
         }
-    ) {
-        Text(
-            text = htmlAnnotatedString(stringResource(
-                R.string.patcher_incompatible_patcher_description,
-                bundleName,
-                requiredVersion
-            )),
-            style = MaterialTheme.typography.bodyLarge,
-            color = LocalDialogSecondaryTextColor.current,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+    )
 }
 /**
  * Shown when the finished APK answers to a package name of its own: installing it adds a clone
@@ -121,6 +111,12 @@ fun RenameWarningDialog(
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.patcher_rename_title),
+        description = htmlAnnotatedString(
+            stringResource(
+                R.string.patcher_rename_description,
+                warning.targetPackageName
+            )
+        ),
         padding = DialogPadding.Compact,
         footer = {
             AppDialogButtonRow(
@@ -136,18 +132,6 @@ fun RenameWarningDialog(
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = htmlAnnotatedString(
-                    stringResource(
-                        R.string.patcher_rename_description,
-                        warning.targetPackageName
-                    )
-                ),
-                style = MaterialTheme.typography.bodyLarge,
-                color = LocalDialogSecondaryTextColor.current,
-                textAlign = TextAlign.Center
-            )
-
             MonospaceValuePanel(
                 value = warning.resultPackageName,
                 label = stringResource(R.string.patcher_rename_result_package)
@@ -180,6 +164,7 @@ fun MissingPatchesDialog(
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.patcher_missing_patches_title),
+        description = stringResource(R.string.patcher_missing_patches_description),
         padding = DialogPadding.Compact,
         footer = {
             AppDialogButtonRow(
@@ -195,13 +180,6 @@ fun MissingPatchesDialog(
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(R.string.patcher_missing_patches_description),
-                style = MaterialTheme.typography.bodyLarge,
-                color = LocalDialogSecondaryTextColor.current,
-                textAlign = TextAlign.Center
-            )
-
             MonospaceValuePanel(
                 value = patchNames.joinToString("\n"),
                 label = stringResource(R.string.patcher_missing_patches_label),
@@ -269,92 +247,74 @@ fun UnusableOptionPathsDialog(
                 R.string.patcher_option_paths_gone_title
             }
         ),
+        description = stringResource(
+            when {
+                !storageAccessCanHelp -> R.string.patcher_option_paths_gone_description
+                isApi30Plus -> R.string.patcher_storage_permission_description_api30
+                else -> R.string.patcher_storage_permission_description_legacy
+            }
+        ),
         footer = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (!storageAccessCanHelp) {
-                    // Nothing left to grant, so dropping the paths is the way to go on
-                    if (canClearPaths) {
-                        AppDialogButton(
-                            text = stringResource(R.string.patcher_option_paths_clear),
-                            onClick = onClearPaths,
-                            icon = Icons.Outlined.FolderOff,
-                            modifier = Modifier.fillMaxWidth()
+            val clearPaths = DialogAction(
+                text = stringResource(R.string.patcher_option_paths_clear),
+                onClick = onClearPaths,
+                icon = Icons.Outlined.FolderOff
+            )
+            val grant = when {
+                // Nothing left to grant, so dropping the paths is the way to go on
+                !storageAccessCanHelp -> clearPaths.takeIf { canClearPaths }
+
+                // Android 11+ open the dedicated all-files-access settings screen
+                isApi30Plus -> DialogAction(
+                    text = stringResource(R.string.patcher_storage_permission_open_settings),
+                    onClick = {
+                        // Open the per-app "Allow management of all files" system screen
+                        // When the user comes back, onRetryAfterPermission re-runs preflight
+                        val intent = Intent(
+                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                            Uri.fromParts("package", context.packageName, null)
                         )
-                    }
-                } else if (isApi30Plus) {
-                    // Android 11+ open the dedicated all-files-access settings screen
-                    AppDialogButton(
-                        text = stringResource(R.string.patcher_storage_permission_open_settings),
-                        onClick = {
-                            // Open the per-app "Allow management of all files" system screen
-                            // When the user comes back, onRetryAfterPermission re-runs preflight
-                            val intent = Intent(
-                                Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                                Uri.fromParts("package", context.packageName, null)
-                            )
-                            context.startActivity(intent)
-                            // Trigger re-validation; if the user actually granted the
-                            // permission the patcher will start when they return
-                            onRetryAfterPermission()
-                        },
-                        icon = Icons.Outlined.Settings,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    // Android 10 and below request READ_EXTERNAL_STORAGE inline
-                    AppDialogButton(
-                        text = stringResource(R.string.patcher_storage_permission_grant),
-                        onClick = {
-                            permissionDenied.value = false
-                            readStorageLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        },
-                        icon = Icons.Outlined.Lock,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                        context.startActivity(intent)
+                        // Trigger re-validation; if the user actually granted the
+                        // permission the patcher will start when they return
+                        onRetryAfterPermission()
+                    },
+                    icon = Icons.Outlined.Settings
+                )
 
-                // A path can be gone while storage access is missing as well, so the way out
-                // is offered below the permission button rather than instead of it
-                if (canClearPaths && storageAccessCanHelp) {
-                    AppDialogOutlinedButton(
-                        text = stringResource(R.string.patcher_option_paths_clear),
-                        onClick = onClearPaths,
-                        icon = Icons.Outlined.FolderOff,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                AppDialogOutlinedButton(
-                    text = stringResource(android.R.string.cancel),
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
+                // Android 10 and below request READ_EXTERNAL_STORAGE inline
+                else -> DialogAction(
+                    text = stringResource(R.string.patcher_storage_permission_grant),
+                    onClick = {
+                        permissionDenied.value = false
+                        readStorageLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    },
+                    icon = Icons.Outlined.Lock
                 )
             }
+
+            val actions = listOfNotNull(
+                grant,
+                // A path can be gone while storage access is missing as well, so the way out
+                // is offered next to the permission button rather than instead of it
+                clearPaths.takeIf { canClearPaths && storageAccessCanHelp },
+                DialogAction(
+                    text = stringResource(android.R.string.cancel),
+                    onClick = onDismiss,
+                    emphasis = DialogActionEmphasis.Outlined
+                )
+            )
+            AppDialogActions(
+                actions = actions,
+                // Three choices stack, as in the other dialogs that offer as many
+                layout = if (actions.size > 2) DialogButtonLayout.Vertical else DialogButtonLayout.Auto
+            )
         }
     ) {
-        val secondaryColor = LocalDialogSecondaryTextColor.current
-
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
         ) {
-            Text(
-                text = stringResource(
-                    when {
-                        !storageAccessCanHelp -> R.string.patcher_option_paths_gone_description
-                        isApi30Plus -> R.string.patcher_storage_permission_description_api30
-                        else -> R.string.patcher_storage_permission_description_legacy
-                    }
-                ),
-                style = MaterialTheme.typography.bodyLarge,
-                color = secondaryColor,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
             // Shown on Android 10 and below after the user taps "Deny" on the
             // READ_EXTERNAL_STORAGE prompt. Explains they must either grant the
             // permission or move the files to the private app directory
@@ -378,7 +338,7 @@ fun UnusableOptionPathsDialog(
                             text = failure.patchName,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = secondaryColor
+                            color = dialogSecondaryTextColor()
                         )
 
                         Surface(
@@ -446,104 +406,77 @@ fun BatteryOptimizationDialog(
     AppDialog(
         onDismissRequest = onResult,
         title = stringResource(R.string.battery_optimization_dialog_title),
+        description = stringResource(R.string.battery_optimization_dialog_description),
         footer = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AppDialogButton(
-                    text = stringResource(R.string.allow),
-                    onClick = {
-                        context.requestIgnoreBatteryOptimizations()
-                        onResult()
-                    },
-                    icon = Icons.Outlined.BatterySaver,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                AppDialogOutlinedButton(
-                    text = stringResource(R.string.battery_optimization_not_now),
-                    onClick = onResult,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            AppDialogButtonRow(
+                primaryText = stringResource(R.string.allow),
+                onPrimaryClick = {
+                    context.requestIgnoreBatteryOptimizations()
+                    onResult()
+                },
+                primaryIcon = Icons.Outlined.BatterySaver,
+                secondaryText = stringResource(R.string.battery_optimization_not_now),
+                onSecondaryClick = onResult
+            )
         }
-    ) {
-        Text(
-            text = stringResource(R.string.battery_optimization_dialog_description),
-            style = MaterialTheme.typography.bodyLarge,
-            color = LocalDialogSecondaryTextColor.current,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+    )
 }
 
 /**
  * Shown after the system killed the patcher process, offering the lower memory limit that
- * might get the next run through. The limit is a user setting, so nothing changes until it
- * is accepted here.
+ * might get the next run through, or the one a [finished] run got through on. The limit is a
+ * user setting, so nothing changes until it is accepted here.
  */
 @Composable
 fun MemoryAdjustmentDialog(
     currentLimit: Int,
     suggestedLimit: Int,
     canAdjust: Boolean,
+    finished: Boolean,
     onApply: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.patcher_memory_adjustment_title),
+        description = if (canAdjust) {
+            stringResource(
+                if (finished) R.string.patcher_memory_adjustment_description_finished
+                else R.string.patcher_memory_adjustment_description,
+                currentLimit,
+                suggestedLimit
+            )
+        } else {
+            stringResource(
+                R.string.patcher_memory_adjustment_description_at_minimum,
+                currentLimit
+            )
+        },
         footer = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (canAdjust) {
-                    AppDialogButton(
-                        text = stringResource(
-                            R.string.patcher_memory_adjustment_apply,
-                            suggestedLimit
-                        ),
+            AppDialogActions(
+                actions = listOfNotNull(
+                    DialogAction(
+                        text = stringResource(R.string.patcher_memory_adjustment_apply, suggestedLimit),
                         onClick = onApply,
-                        icon = Icons.Outlined.Memory,
-                        modifier = Modifier.fillMaxWidth()
+                        icon = Icons.Outlined.Memory
+                    ).takeIf { canAdjust },
+                    DialogAction(
+                        text = stringResource(R.string.close),
+                        onClick = onDismiss,
+                        emphasis = DialogActionEmphasis.Outlined
                     )
-                }
-                AppDialogOutlinedButton(
-                    text = stringResource(R.string.close),
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
                 )
-            }
+            )
         }
-    ) {
-        Text(
-            text = if (canAdjust) {
-                stringResource(
-                    R.string.patcher_memory_adjustment_description,
-                    currentLimit,
-                    suggestedLimit
-                )
-            } else {
-                stringResource(
-                    R.string.patcher_memory_adjustment_description_at_minimum,
-                    currentLimit
-                )
-            },
-            style = MaterialTheme.typography.bodyLarge,
-            color = LocalDialogSecondaryTextColor.current,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+    )
 }
 
 /**
- * Full-screen error dialog shown when patching fails.
+ * Full-screen error dialog shown when patching or installing the patched app fails.
  */
 @Composable
 fun PatcherErrorDialog(
+    title: String,
     errorMessage: String,
     errorInfo: PatcherErrorInfo?,
     onDismiss: () -> Unit
@@ -562,7 +495,8 @@ fun PatcherErrorDialog(
 
     AppDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.patcher_failed_dialog_title),
+        accentColor = rememberAppColor(errorInfo?.packageName),
+        title = title,
         padding = DialogPadding.Compact,
         scrollable = false,
         footer = {
@@ -581,79 +515,47 @@ fun PatcherErrorDialog(
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPaddingSmall)
         ) {
-            ErrorInfoCard(
-                label = stringResource(R.string.patcher_error_dialog_diagnostics),
-                icon = Icons.Outlined.Info
-            ) {
-                DiagnosticsContent(diagnostics)
+            SectionCard(accentColor = LocalAccent.current) {
+                Column {
+                    CardHeader(
+                        title = stringResource(R.string.patcher_error_dialog_diagnostics),
+                        icon = Icons.Outlined.Info
+                    )
+                    DiagnosticsContent(diagnostics)
+                }
             }
 
             // Error log card
-            ErrorInfoCard(
-                label = stringResource(R.string.patcher_error_log),
-                icon = Icons.Outlined.BugReport,
-                errorBadge = stringResource(R.string.patcher_error_technical),
-                modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = Defaults.ContentPadding, vertical = 4.dp),
-                ) {
-                    Text(
-                        text = errorMessage,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontFamily = FontFamily.Monospace,
-                        lineHeight = 16.sp
+            SectionCard(modifier = Modifier.weight(1f), accentColor = LocalAccent.current) {
+                Column {
+                    CardHeader(
+                        title = stringResource(R.string.patcher_error_log),
+                        icon = Icons.Outlined.BugReport,
+                        trailing = {
+                            StatusBadge(
+                                text = stringResource(R.string.patcher_error_technical),
+                                tone = SemanticTone.Error
+                            )
+                        }
                     )
+                    val errorScrollState = rememberScrollState()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScrollFade(errorScrollState)
+                            .verticalScroll(errorScrollState)
+                            .padding(horizontal = Defaults.ContentPadding, vertical = 4.dp),
+                    ) {
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontFamily = FontFamily.Monospace,
+                            lineHeight = 16.sp
+                        )
+                    }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun ErrorInfoCard(
-    modifier: Modifier = Modifier,
-    label: String,
-    icon: ImageVector,
-    errorBadge: String? = null,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    SurfaceCard(modifier = modifier.fillMaxWidth(), borderWidth = 1.dp) {
-        Column {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(
-                    topStart = Defaults.CardCornerRadius,
-                    topEnd = Defaults.CardCornerRadius
-                )
-            ) {
-                IconTextRow(
-                    modifier = Modifier.padding(
-                        horizontal = Defaults.ContentPadding,
-                        vertical = Defaults.ContentPaddingSmall
-                    ),
-                    leadingContent = {
-                        ThemedIcon(
-                            icon = icon,
-                            size = 18.dp,
-                            tint = if (errorBadge != null) MaterialTheme.colorScheme.error
-                            else MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    title = label,
-                    titleStyle = MaterialTheme.typography.labelLarge,
-                    titleWeight = FontWeight.SemiBold
-                )
-            }
-
-            SettingsDivider(fullWidth = true)
-
-            content()
         }
     }
 }
@@ -715,7 +617,7 @@ private fun ErrorInfoRow(
         Text(
             text = label,
             style = textStyle,
-            color = LocalDialogSecondaryTextColor.current,
+            color = dialogSecondaryTextColor(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.width(labelWidth)
@@ -742,9 +644,10 @@ private fun diagnosticSections(errorInfo: PatcherErrorInfo?): List<List<Pair<Str
     val packageLabel = stringResource(R.string.patcher_field_package)
     val versionLabel = stringResource(R.string.version)
     val patchesLabel = stringResource(R.string.patches)
+    val failedPatchLabel = stringResource(R.string.patcher_field_failed_patch)
     val sourceLabel = stringResource(R.string.patcher_field_source)
     val managerLabel = stringResource(R.string.patcher_field_manager)
-    val patcherLabel = stringResource(R.string.patcher_field_patcher)
+    val patcherLabel = stringResource(R.string.settings_advanced_patcher)
     val librariesLabel = stringResource(R.string.patcher_field_libraries)
     val androidLabel = stringResource(R.string.patcher_field_android)
     val deviceLabel = stringResource(R.string.patcher_field_device)
@@ -782,6 +685,7 @@ private fun diagnosticSections(errorInfo: PatcherErrorInfo?): List<List<Pair<Str
 
         val patches = errorInfo?.let { info ->
             listOf(patchesLabel to info.patchCount.toString()) +
+                    listOfNotNull(info.failedPatch?.let { failedPatchLabel to it }) +
                     info.bundles.map { bundle ->
                         sourceLabel to listOfNotNull(bundle.name, bundle.version).joinToString(" ")
                     }

@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/data/platform/Filesystem.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.data.platform
 
 import android.Manifest
@@ -10,14 +20,22 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import app.morphe.manager.BuildConfig
+import app.morphe.manager.util.AppCoroutineScope
 import app.morphe.manager.util.FilenameUtils
 import app.morphe.manager.util.RequestManageStorageContract
 import app.morphe.manager.util.formatBytesForReport
+import app.morphe.manager.util.purgeDirectoryAsync
 import java.io.File
 
 private const val TAG = "Morphe Filesystem"
 
-class Filesystem(private val app: Application) {
+// Name prefix of the directory the patcher extracts a bundle's DEX into under java.io.tmpdir
+private const val LEAKED_BUNDLE_DEX_PREFIX = "morphe-extracted-patches"
+
+class Filesystem(
+    private val app: Application,
+    private val appScope: AppCoroutineScope
+) {
     /**
      * Kept in `noBackupFilesDir` so neither an OS cache wipe, nor the user-initiated
      * "Clear patcher workspace" action, nor a restored backup carries it along.
@@ -37,15 +55,15 @@ class Filesystem(private val app: Application) {
 
     init {
         invalidatePatcherWorkspaceOnUpgrade()
+        deleteLeakedBundleDex()
     }
 
     /**
      * A directory that gets cleared when the app restarts.
      * Do not store paths to this directory in a parcel.
      */
-    val tempDir: File = app.getDir("ephemeral", Context.MODE_PRIVATE).apply {
-        deleteRecursively()
-        mkdirs()
+    val tempDir: File = app.getDir("ephemeral", Context.MODE_PRIVATE).also {
+        it.purgeDirectoryAsync(appScope)
     }
 
     /**
@@ -54,6 +72,9 @@ class Filesystem(private val app: Application) {
      * Paths to this directory can be safely stored in parcels.
      */
     val uiTempDir: File = app.getDir("ui_ephemeral", Context.MODE_PRIVATE)
+
+    /** Home card cache, kept apart so storage management does not take it for patcher scratch. */
+    val homeCardCacheDir: File = app.cacheDir.resolve("home")
     private val patchedAppsDir: File = app.getDir("patched-apps", Context.MODE_PRIVATE).apply { mkdirs() }
 
     /**
@@ -101,6 +122,22 @@ class Filesystem(private val app: Application) {
             Log.i(TAG, "Manager version changed ($markedVersion -> $current), wiped patcher workspace")
         }
         runCatching { versionMarker.writeText(current.toString()) }
+    }
+
+    /**
+     * Deletes the `morphe-extracted-patches*` directories patchers from 1.4.0 left in `cacheDir`
+     * on every bundle load, which piled up to hundreds of megabytes. Runs before anything can
+     * load a bundle, so none of them is still being read.
+     */
+    // TODO: Remove a few releases after the manager ships a patcher that deletes them itself
+    private fun deleteLeakedBundleDex() {
+        val leaked = app.cacheDir.listFiles { file ->
+            file.isDirectory && file.name.startsWith(LEAKED_BUNDLE_DEX_PREFIX)
+        }.orEmpty()
+        if (leaked.isEmpty()) return
+
+        leaked.forEach { runCatching { it.deleteRecursively() } }
+        Log.i(TAG, "Deleted ${leaked.size} leaked bundle DEX directories")
     }
 
     /**

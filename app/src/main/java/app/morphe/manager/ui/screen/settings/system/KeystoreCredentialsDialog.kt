@@ -14,17 +14,16 @@ import androidx.compose.material.icons.outlined.FolderZip
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import app.morphe.manager.R
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.util.KeystoreInputFormat
+import app.morphe.manager.util.enumByNameOrNull
 
 /**
  * Keystore Credentials Dialog.
@@ -43,6 +42,7 @@ fun KeystoreCredentialsDialog(
     AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.settings_system_import_keystore_dialog_title),
+        description = stringResource(R.string.settings_system_import_keystore_dialog_description),
         footer = {
             AppDialogButtonRow(
                 primaryText = stringResource(R.string.import_),
@@ -52,20 +52,10 @@ fun KeystoreCredentialsDialog(
             )
         }
     ) {
-        val textColor = LocalDialogTextColor.current
-        val secondaryColor = LocalDialogSecondaryTextColor.current
-
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(Defaults.ContentPadding)
         ) {
-            Text(
-                text = stringResource(R.string.settings_system_import_keystore_dialog_description),
-                style = MaterialTheme.typography.bodyLarge,
-                color = secondaryColor,
-                textAlign = TextAlign.Center
-            )
-
             // Format selector
             val formatItems = remember {
                 KeystoreInputFormat.entries.associate { it.displayName to it.name }
@@ -73,7 +63,7 @@ fun KeystoreCredentialsDialog(
             AppDialogDropdownTextField(
                 value = format.name,
                 onValueChange = { name ->
-                    format = KeystoreInputFormat.entries.firstOrNull { it.name == name } ?: format
+                    format = enumByNameOrNull<KeystoreInputFormat>(name) ?: format
                 },
                 dropdownItems = formatItems,
                 allowCustomValue = false,
@@ -81,8 +71,7 @@ fun KeystoreCredentialsDialog(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.FolderZip,
-                        contentDescription = null,
-                        tint = textColor.copy(alpha = 0.7f)
+                        contentDescription = null
                     )
                 }
             )
@@ -97,8 +86,7 @@ fun KeystoreCredentialsDialog(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Person,
-                        contentDescription = null,
-                        tint = textColor.copy(alpha = 0.7f)
+                        contentDescription = null
                     )
                 },
                 showClearButton = true
@@ -114,8 +102,7 @@ fun KeystoreCredentialsDialog(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Key,
-                        contentDescription = null,
-                        tint = textColor.copy(alpha = 0.7f)
+                        contentDescription = null
                     )
                 },
                 isPassword = true,

@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/patcher/runtime/ProcessRuntime.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.patcher.runtime
 
 import android.content.BroadcastReceiver
@@ -185,11 +195,12 @@ class ProcessRuntime(
         options: Options,
         logger: Logger,
         onPatchCompleted: suspend (String) -> Unit,
+        onPatchFailed: (String) -> Unit,
         onProgress: ProgressEventHandler,
-        skipUnneededSplits: Boolean,
+        stripUnusedNativeLibs: Boolean,
         onMergedApkReady: (suspend (File) -> Unit)?,
         onRestart: suspend () -> Unit
-    ) = coroutineScope {
+    ): Int? {
         var memoryMB = coerceMemoryLimit(context, prefs.patcherProcessMemoryLimit.get())
         var retries = 0
 
@@ -202,14 +213,15 @@ class ProcessRuntime(
                     packageName,
                     selectedPatches,
                     options,
-                    skipUnneededSplits,
+                    stripUnusedNativeLibs,
                     logger,
                     onPatchCompleted,
+                    onPatchFailed,
                     onProgress,
                     onMergedApkReady
                 )
 
-                return@coroutineScope
+                return memoryMB.takeIf { retries > 0 }
             } catch (e: Exception) {
                 val nextMemoryMB = lowerMemoryLimit(memoryMB)
                 val retry = e.isReclaimableMemoryFailure() &&
@@ -258,9 +270,10 @@ class ProcessRuntime(
         packageName: String,
         selectedPatches: PatchSelection,
         options: Options,
-        skipUnneededSplits: Boolean,
+        stripUnusedNativeLibs: Boolean,
         logger: Logger,
         onPatchCompleted: suspend (String) -> Unit,
+        onPatchFailed: (String) -> Unit,
         onProgress: ProgressEventHandler,
         onMergedApkReady: (suspend (File) -> Unit)?,
     ) = coroutineScope {
@@ -342,17 +355,13 @@ class ProcessRuntime(
                     scope.launch { onPatchCompleted(patchName) }
                 }
 
+                override fun patchFailed(patchName: String) = onPatchFailed(patchName)
+
                 override fun progress(name: String?, state: String?, msg: String?) =
                     onProgress(name, state?.let { enumValueOf<State>(it) }, msg)
 
                 override fun splitProgress(eventType: String?, apkName: String?) {
-                    val event = when (eventType) {
-                        "Extracting" -> SplitPreparationEvent.Extracting
-                        "Merging" -> SplitPreparationEvent.Merging(apkName.orEmpty())
-                        "Writing" -> SplitPreparationEvent.Writing
-                        "Finalizing" -> SplitPreparationEvent.Finalizing
-                        else -> return
-                    }
+                    val event = SplitPreparationEvent.fromWire(eventType, apkName) ?: return
                     val message = event.toLocalizedString(context)
                     logger.info(message)
                     onProgress(message, State.RUNNING, null)
@@ -406,7 +415,7 @@ class ProcessRuntime(
                         options[uid].orEmpty()
                     )
                 },
-                skipUnneededSplits = skipUnneededSplits,
+                stripUnusedNativeLibs = stripUnusedNativeLibs,
                 mergedInputFile = mergedInputPath
             )
 

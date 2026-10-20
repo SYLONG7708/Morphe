@@ -1,7 +1,18 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/MainActivity.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -36,6 +47,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.morphe.manager.domain.batch.BatchTarget
+import app.morphe.manager.domain.manager.HomeAppButtonPreferences
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.PatchBundleRepository
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
@@ -51,14 +63,15 @@ import app.morphe.manager.ui.screen.home.*
 import app.morphe.manager.ui.screen.shared.AnimatedBackground
 import app.morphe.manager.ui.screen.shared.Animations
 import app.morphe.manager.ui.screen.shared.BackgroundType
+import app.morphe.manager.ui.screen.shared.RandomBackground
+import app.morphe.manager.ui.screen.shared.rememberRandomBackground
 import app.morphe.manager.ui.theme.*
 import app.morphe.manager.ui.viewmodel.HomeViewModel
 import app.morphe.manager.ui.viewmodel.MainViewModel
 import app.morphe.manager.ui.viewmodel.PatcherViewModel
-import app.morphe.manager.ui.viewmodel.ThemeSettingsViewModel
-import app.morphe.manager.ui.viewmodel.UpdateViewModel
 import app.morphe.manager.util.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.androidx.compose.koinViewModel
@@ -73,34 +86,33 @@ private enum class OnboardingPhase { HOME, SHEET, SETTINGS, DONE }
 
 class MainActivity : AppCompatActivity() {
 
+    /** Language the activity was attached in, to tell when it has to be recreated. */
+    private var attachedLanguage = AppLocale.SYSTEM
+
     /**
      * Applies the interface scale to the activity context, so every window it opens is drawn at
      * that scale rather than only the composition inside [setContent].
      *
-     * On Android < 13, AppCompatDelegate.setApplicationLocales() is unreliable on some
-     * devices and OEMs - the locale is saved correctly but never applied on cold start.
-     * Wrap the base context manually to guarantee the correct locale is always applied.
+     * On Android 12 and lower the app language is applied here too, since Android has no per-app
+     * language there. Both go into one configuration delta, because a context created from
+     * another does not keep the overrides the first one was created with.
      */
     override fun attachBaseContext(newBase: Context) {
-        var context = newBase
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            val storedLang = readLanguageFromPrefs(context)
-            val locale = parseLocaleCode(storedLang)
-            if (locale != null) {
-                val config = context.resources.configuration
-                config.setLocale(locale)
-                context = context.createConfigurationContext(config)
-            }
-        }
-
         // Koin is started in Application.onCreate, which has already run by the time an activity
         // attaches. A scale that cannot be read must not take the launch down with it
         val scale = runCatching {
             GlobalContext.get().get<PreferencesManager>().uiScale.getBlocking()
         }.getOrDefault(UI_SCALE_DEFAULT)
 
-        super.attachBaseContext(context.withUiScale(scale))
+        attachedLanguage = AppLocale.selected.value
+        val overrides = Configuration().apply {
+            AppLocale.applyTo(this)
+            applyUiScale(newBase.resources.configuration.densityDpi, scale)
+        }
+
+        super.attachBaseContext(
+            if (overrides == Configuration()) newBase else newBase.createConfigurationContext(overrides)
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,7 +128,18 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         installSplashScreen()
 
+        // Android 13+ recreates the activity by itself when the app language changes
+        if (!AppLocale.appliedBySystem) {
+            lifecycleScope.launch {
+                AppLocale.selected.first { it != attachedLanguage }
+                recreate()
+            }
+        }
+
         val vm: MainViewModel = getActivityViewModel()
+
+        // A recreated activity keeps the background RANDOM drew, only a fresh launch draws again
+        if (savedInstanceState == null) RandomBackground.newLaunch()
 
         // Handle deep link on cold start. The task keeps the intent that started it, so a restore
         // after the process was reclaimed - or any recreate - would replay a link already acted on
@@ -129,6 +152,8 @@ class MainActivity : AppCompatActivity() {
             val theme by vm.prefs.theme.getAsState()
             val themeStyle by vm.prefs.themeStyle.getAsState()
             val pureBlackTheme by vm.prefs.pureBlackTheme.getAsState()
+            val colorAccents by vm.prefs.colorAccents.getAsState()
+            val outlines by vm.prefs.outlines.getAsState()
             val customAccentColor by vm.prefs.customAccentColor.getAsState()
             val customThemeColor by vm.prefs.customThemeColor.getAsState()
             val appCardColorMode by vm.prefs.appCardColorMode.getAsState()
@@ -148,7 +173,11 @@ class MainActivity : AppCompatActivity() {
                 darkTheme = darkTheme,
                 dynamicColor = effectiveThemeStyle == ThemeStyle.MATERIAL_YOU,
                 pureBlackTheme = pureBlackTheme,
-                monochromeTheme = effectiveThemeStyle == ThemeStyle.MONOCHROME,
+                traits = ThemeTraits(
+                    monochrome = effectiveThemeStyle == ThemeStyle.MONOCHROME,
+                    colorAccents = colorAccents,
+                    outlines = outlines
+                ),
                 accentColorHex = customAccentColor.takeUnless { it.isBlank() },
                 themeColorHex = customThemeColor.takeUnless { it.isBlank() },
                 appCardColorMode = appCardColorMode,
@@ -299,7 +328,7 @@ class MainActivity : AppCompatActivity() {
 
         val isAddSource = data.scheme == "https" &&
                 data.host == "morphe.software" &&
-                data.path?.startsWith("/add-source") == true
+                data.path?.startsWith(ADD_SOURCE_PATH) == true
         if (!isAddSource) return
 
         val name = data.getQueryParameter("name")?.takeIf { it.isNotBlank() }
@@ -358,18 +387,14 @@ private fun MorpheManager(vm: MainViewModel) {
     val scope = rememberCoroutineScope()
     val prefs: PreferencesManager = koinInject()
     val updateCoordinator: EcosystemUpdateCoordinator = koinInject()
-    val themeViewModel: ThemeSettingsViewModel = koinViewModel()
+    val homeAppButtonPrefs: HomeAppButtonPreferences = koinInject()
     val backgroundType by prefs.backgroundType.getAsState()
     val enableParallax by prefs.enableBackgroundParallax.getAsState()
-    val randomInterval by prefs.randomBackgroundInterval.getAsState()
-    val resolvedRandomBackground by themeViewModel.resolvedRandomBackground.collectAsStateWithLifecycle()
-
-    // Resolve which background to show whenever RANDOM mode is active or the interval changes
-    LaunchedEffect(backgroundType, randomInterval) {
-        if (backgroundType == BackgroundType.RANDOM) {
-            themeViewModel.resolveRandomBackground(randomInterval)
-        }
-    }
+    val resolvedRandomBackground =
+        if (backgroundType == BackgroundType.RANDOM) rememberRandomBackground(prefs) else null
+    val seasonalThemes by prefs.seasonalThemes.getAsState()
+    // Read once per launch, so an event that begins while the app is open waits for the next one
+    val seasonalEvent = remember { SeasonalEvent.on() }
 
     // Patcher background speed - driven by PatcherViewModel when on patcher screen.
     // Exposed as top-level mutable state so PatcherScreen can write into it
@@ -439,13 +464,9 @@ private fun MorpheManager(vm: MainViewModel) {
     // The manager has no changelog view of its own for a release it has not installed, so the
     // update dialog is the answer to "what's new": it lists exactly the entries being offered
     if (vm.pendingManagerChangelog) {
-        // Activity-scoped, so this shares the check and the download with the home screen
-        val updateViewModel: UpdateViewModel = koinViewModel(
-            viewModelStoreOwner = LocalActivity.current as ComponentActivity
-        )
-        ManagerUpdateDetailsDialog(
+        ManagerChangelogDialog(
             onDismiss = { vm.pendingManagerChangelog = false },
-            updateViewModel = updateViewModel
+            expectsUpdate = true
         )
     }
 
@@ -520,7 +541,7 @@ private fun MorpheManager(vm: MainViewModel) {
                 getBounds = { homeOnboardingState.firstAppCardBounds },
                 onShow = {
                     homeOnboardingState.swipeActive = true
-                    homeViewModel.triggerSwipeGestureHint()
+                    homeViewModel.apps.triggerSwipeGestureHint()
                 }
             ),
             StepDef(
@@ -528,7 +549,7 @@ private fun MorpheManager(vm: MainViewModel) {
                 getBounds = { homeOnboardingState.sourcesButtonBounds },
                 onShow = {
                     homeOnboardingState.swipeActive = false
-                    homeViewModel.markSwipeGestureHintShown()
+                    homeViewModel.apps.markSwipeGestureHintShown()
                 }
             )
         )
@@ -619,6 +640,8 @@ private fun MorpheManager(vm: MainViewModel) {
 
     // Every entry point starts the tour from its first step on the home screen
     val startOnboardingTour: () -> Unit = {
+        // The tour points at app cards, which a saved filter could leave out of the list
+        homeAppButtonPrefs.setFilterMode(null)
         onboardingPhase = OnboardingPhase.HOME
         phaseInitialStep = 0
         showOnboardingOverlay = true
@@ -636,7 +659,7 @@ private fun MorpheManager(vm: MainViewModel) {
     ) {
         // Show animated background
         AnimatedBackground(
-            type = backgroundType,
+            type = seasonalEvent.backgroundOver(backgroundType, seasonalThemes),
             resolvedType = resolvedRandomBackground,
             enableParallax = enableParallax,
             speedMultiplier = { patcherBackgroundSpeed.floatValue },
@@ -675,15 +698,7 @@ private fun MorpheManager(vm: MainViewModel) {
                     globalOnboardingState = if (showOnboarding) globalOnboardingState else null,
                     onStartQuickPatch = { params ->
                         entry.lifecycleScope.launch {
-                            navController.navigateComplex(
-                                Patcher,
-                                Patcher.ViewModelParams(
-                                    selectedApp = params.selectedApp,
-                                    selectedPatches = params.patches,
-                                    options = params.options,
-                                    targetPackageName = params.targetPackageName
-                                )
-                            )
+                            navController.navigateComplex(Patcher, params)
                         }
                     },
                     onStartBatchPatch = { targets, useMount ->
@@ -712,29 +727,39 @@ private fun MorpheManager(vm: MainViewModel) {
                 BatchPatcherScreen(
                     targets = params.targets,
                     useMount = params.useMount,
-                    onBackClick = { navController.popBackStack() },
+                    onBackClick = {
+                        patchingCompleted.value = false
+                        navController.popBackStack()
+                    },
                     onStartTour = startOnboardingTour,
                     onDeclineTour = declineOnboardingTour,
-                    onAppStateChanged = homeViewModel::notifyAppStateChanged
+                    onAppStateChanged = homeViewModel.apps::notifyAppStateChanged,
+                    onBackgroundSpeedChange = { patcherBackgroundSpeed.floatValue = it },
+                    onPatchingCompleted = { patchingCompleted.value = true }
                 )
             }
 
             composable<Patcher> { it ->
                 val params = it.getComplexArg<Patcher.ViewModelParams>() ?: return@composable
                 val patcherViewModel: PatcherViewModel = koinViewModel { parametersOf(params) }
+                val leavePatcher: () -> Unit = {
+                    patcherViewModel.stopCompletionSound()
+                    patcherBackgroundSpeed.floatValue = 1f
+                    patchingCompleted.value = false
+                    navController.popBackStack()
+                }
                 PatcherScreen(
-                    onBackClick = {
-                        patcherViewModel.stopCompletionSound()
-                        patcherBackgroundSpeed.floatValue = 1f
-                        patchingCompleted.value = false
-                        navController.popBackStack()
-                    },
+                    onBackClick = leavePatcher,
                     patcherViewModel = patcherViewModel,
                     usingMountInstall = usingMountInstallState.value,
                     onBackgroundSpeedChange = { patcherBackgroundSpeed.floatValue = it },
                     onPatchingCompleted = { patchingCompleted.value = true },
                     onStartTour = startOnboardingTour,
-                    onDeclineTour = declineOnboardingTour
+                    onDeclineTour = declineOnboardingTour,
+                    onChangePatches = {
+                        leavePatcher()
+                        homeViewModel.reopenPatchSelection(params)
+                    }
                 )
             }
 
@@ -774,7 +799,7 @@ private fun MorpheManager(vm: MainViewModel) {
                         OnboardingPhase.HOME -> {
                             phaseInitialStep = 0
                             homeOnboardingState.swipeActive = false
-                            homeViewModel.markSwipeGestureHintShown()
+                            homeViewModel.apps.markSwipeGestureHintShown()
                             homeViewModel.showBundleManagementSheet = true
                             globalOnboardingState.sheetOnboardingActive = true
                             scope.launch {
@@ -840,7 +865,7 @@ private fun MorpheManager(vm: MainViewModel) {
                 }
                 val onSkip: () -> Unit = {
                     homeOnboardingState.swipeActive = false
-                    homeViewModel.markSwipeGestureHintShown()
+                    homeViewModel.apps.markSwipeGestureHintShown()
                     globalOnboardingState.sheetOnboardingActive = false
                     homeViewModel.showBundleManagementSheet = false
                     onboardingPhase = OnboardingPhase.DONE

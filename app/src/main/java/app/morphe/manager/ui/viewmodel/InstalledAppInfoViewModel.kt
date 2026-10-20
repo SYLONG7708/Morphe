@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/ui/viewmodel/InstalledAppInfoViewModel.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.ui.viewmodel
 
 import android.app.Application
@@ -16,6 +26,9 @@ import app.morphe.manager.domain.apk.canRemoveTrackedRecord
 import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
 import app.morphe.manager.domain.installer.UninstallCancelledException
+import app.morphe.manager.domain.links.AppLinksManager
+import app.morphe.manager.domain.links.AppLinksStatus
+import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.InstalledAppRepository
 import app.morphe.manager.domain.repository.OriginalApkRepository
 import app.morphe.manager.domain.repository.PatchBundleRepository
@@ -26,6 +39,7 @@ import app.morphe.manager.ui.screen.home.resolveAppliedBundleAttribution
 import app.morphe.manager.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,6 +60,8 @@ class InstalledAppInfoViewModel(
     private val originalApkRepository: OriginalApkRepository by inject()
     private val applicationScope: AppCoroutineScope by inject()
     private val localApkSources: LocalApkSources by inject()
+    private val appLinksManager: AppLinksManager by inject()
+    private val prefs: PreferencesManager by inject()
 
     lateinit var onBackClick: () -> Unit
     var onAppStateChanged: ((packageName: String) -> Unit)? = null
@@ -69,6 +85,13 @@ class InstalledAppInfoViewModel(
     var hasOriginalApk by mutableStateOf(false)
         private set
 
+    /** Web links of the installed app, null while nothing is installed under its package. */
+    var appLinksStatus: AppLinksStatus? by mutableStateOf(null)
+        private set
+
+    /** Packages whose unverified links banner the user turned down. */
+    val ignoredAppLinksPackages = prefs.ignoredAppLinksPackages.flow
+
     /**
      * Whether removing this record is what takes the original APK archive with it, which is not
      * the case while another record of the same app can still repatch from that archive.
@@ -78,6 +101,10 @@ class InstalledAppInfoViewModel(
     var isAppDeleted by mutableStateOf(false)
         private set
     var isInstallStateNotPatched by mutableStateOf(false)
+        private set
+
+    /** Whether the unpatched install that replaced the record came from Google Play. */
+    var isReplacedByPlayStore by mutableStateOf(false)
         private set
     var isInstallStateUnknown by mutableStateOf(false)
         private set
@@ -95,7 +122,8 @@ class InstalledAppInfoViewModel(
             installedAppRepository.getAsFlow(packageName).collect { app ->
                 installedApp = app
 
-                if (app != null) {
+                // Scoped to this emission, so a failed check cancels its siblings rather than the collection
+                if (app != null) coroutineScope {
                     // Run all checks in parallel
                     val deferredOriginalApk = async { originalApkRepository.get(app.originalPackageName) != null }
                     val deferredSiblings = async { installedAppRepository.hasSiblingRecords(app) }
@@ -287,6 +315,8 @@ class InstalledAppInfoViewModel(
         )
         isAppDeleted = trackedPresentation.isDeleted
         isInstallStateNotPatched = trackedPresentation.isNotPatched
+        isReplacedByPlayStore = isInstallStateNotPatched &&
+                pm.getInstallerPackageName(app.currentPackageName) == PLAY_STORE_INSTALLER_PACKAGE
         isInstallStateUnknown = trackedPresentation.isUnknown
 
         canRemoveRecord = canRemoveTrackedRecord(app.installType, trackedPatchState, hasSavedCopy)
@@ -294,6 +324,22 @@ class InstalledAppInfoViewModel(
         // Update mounted state, which a mount install already read for its patch state
         isMounted = snapshot.mounted
             ?: (rootInstaller.isDeviceRooted() && rootInstaller.isAppMounted(app.currentPackageName))
+
+        appLinksStatus = installedInfo?.let { appLinksManager.getStatus(app.currentPackageName) }
+    }
+
+    /** Reads the link selection again, which only the system screen changes. */
+    fun refreshAppLinks() {
+        val app = installedApp ?: return
+        if (appLinksStatus != null) appLinksStatus = appLinksManager.getStatus(app.currentPackageName)
+    }
+
+    /** Hides the unverified links banner of this app for good. The info row still reports them. */
+    fun ignoreAppLinks() {
+        val app = installedApp ?: return
+        viewModelScope.launch {
+            prefs.ignoredAppLinksPackages.update(prefs.ignoredAppLinksPackages.get() + app.currentPackageName)
+        }
     }
 
     /** Manually refresh app state (e.g., after app installation/uninstallation) */

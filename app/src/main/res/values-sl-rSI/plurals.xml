@@ -12,6 +12,27 @@
         <item quantity="few">%s možnosti popravka</item>
         <item quantity="other">%s možnosti popravka</item>
     </plurals>
+    <!-- How many files and folders a folder holds, under its name in the file picker -->
+    <plurals name="file_picker_item_count">
+        <item quantity="one">%s element</item>
+        <item quantity="two">%s elementa</item>
+        <item quantity="few">%s elementi</item>
+        <item quantity="other">%s elementov</item>
+    </plurals>
+    <!-- Button that confirms the files checked in the file picker -->
+    <plurals name="file_picker_select_count">
+        <item quantity="one">Izberi %s datoteko</item>
+        <item quantity="two">Izberi %s datoteki</item>
+        <item quantity="few">Izberi %s datoteke</item>
+        <item quantity="other">Izberi %s datotek</item>
+    </plurals>
+    <!-- Button that adds every source waiting in the add source dialog -->
+    <plurals name="sources_dialog_add_count">
+        <item quantity="one">Dodaj %s vir</item>
+        <item quantity="two">Dodaj %s vira</item>
+        <item quantity="few">Dodaj %s vire</item>
+        <item quantity="other">Dodaj %s virov</item>
+    </plurals>
     <plurals name="home_app_patch_sources_title">
         <item quantity="one">Viri popravkov za %s aplikacijo</item>
         <item quantity="two">Viri popravkov za %s aplikaciji</item>
@@ -108,6 +129,12 @@
         <item quantity="few">%s viri so nameščeni</item>
         <item quantity="other">%s viri so nameščeni</item>
     </plurals>
+    <plurals name="home_app_filter_active">
+        <item quantity="one">%1$s · %2$s filtriran</item>
+        <item quantity="two">%1$s · %2$s filtrirana</item>
+        <item quantity="few">%1$s · %2$s filtrirani</item>
+        <item quantity="other">%1$s · %2$s filtriranih</item>
+    </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="one">%s skrita aplikacija</item>
         <item quantity="two">%s skriti aplikaciji</item>
@@ -130,12 +157,54 @@
         <item quantity="one">Kopiran %s popravek iz izbranega paketa</item>
         <item quantity="two">Kopirana %s popravka iz izbranega paketa</item>
         <item quantity="few">Kopirani %s popravki iz izbranega paketa</item>
-        <item quantity="other">Kopirano %s popravkov iz izbranega paketa</item>
+        <item quantity="other">Kopiranih %s popravkov iz izbranega paketa</item>
     </plurals>
     <plurals name="core_count">
         <item quantity="one">%s jedro</item>
         <item quantity="two">%s jedri</item>
         <item quantity="few">%s jedra</item>
         <item quantity="other">%s jeder</item>
+    </plurals>
+    <plurals name="changelog_feature_count">
+        <item quantity="one">%s funkcija</item>
+        <item quantity="two">%s funkciji</item>
+        <item quantity="few">%s funkcije</item>
+        <item quantity="other">%s funkcij</item>
+    </plurals>
+    <plurals name="changelog_fix_count">
+        <item quantity="one">%s popravek</item>
+        <item quantity="two">%s popravka</item>
+        <item quantity="few">%s popravki</item>
+        <item quantity="other">%s popravkov</item>
+    </plurals>
+    <plurals name="changelog_performance_count">
+        <item quantity="one">%s optimizacija</item>
+        <item quantity="two">%s optimizaciji</item>
+        <item quantity="few">%s optimizacije</item>
+        <item quantity="other">%s optimizacij</item>
+    </plurals>
+    <plurals name="changelog_change_count">
+        <item quantity="one">%s sprememba</item>
+        <item quantity="two">%s spremembi</item>
+        <item quantity="few">%s spremembe</item>
+        <item quantity="other">%s sprememb</item>
+    </plurals>
+    <plurals name="changelog_new_releases">
+        <item quantity="one">%s nova izdaja</item>
+        <item quantity="two">%s novi izdaji</item>
+        <item quantity="few">%s nove izdaje</item>
+        <item quantity="other">%s novih izdaj</item>
+    </plurals>
+    <plurals name="app_links_count_enabled">
+        <item quantity="one">%d omogočena povezava</item>
+        <item quantity="two">%d omogočeni povezavi</item>
+        <item quantity="few">%d omogočene povezave</item>
+        <item quantity="other">%d omogočenih povezav</item>
+    </plurals>
+    <plurals name="app_links_count_unverified">
+        <item quantity="one">%d nepreverjena povezava</item>
+        <item quantity="two">%d nepreverjeni povezavi</item>
+        <item quantity="few">%d nepreverjene povezave</item>
+        <item quantity="other">%d nepreverjenih povezav</item>
     </plurals>
 </resources>

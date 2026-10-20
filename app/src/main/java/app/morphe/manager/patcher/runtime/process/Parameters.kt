@@ -1,3 +1,13 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ *
+ * Original hard forked code:
+ * https://github.com/Jman-Github/Universal-ReVanced-Manager/blob/597b3173a004f5a9aae54326046dd7fd4c5b7777/app/src/main/java/app/revanced/manager/patcher/runtime/process/Parameters.kt
+ *
+ * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
+ */
+
 package app.morphe.manager.patcher.runtime.process
 
 import android.os.Parcelable
@@ -13,9 +23,9 @@ data class Parameters(
     val inputFile: String,
     val outputFile: String,
     val configurations: List<PatchConfiguration>,
-    val skipUnneededSplits: Boolean = false,
-    // If non-null, PatcherProcess writes the merged mono-APK to this path after prepareIfNeeded.
-    // ProcessRuntime reads it back so the main process knows the merged file location
+    val stripUnusedNativeLibs: Boolean = false,
+    // If non-null, PatcherProcess moves the merged mono-APK here after prepareIfNeeded and patches
+    // it from this path. ProcessRuntime reads it back so the main process knows the merged file location
     val mergedInputFile: String? = null
 ) : Parcelable
 

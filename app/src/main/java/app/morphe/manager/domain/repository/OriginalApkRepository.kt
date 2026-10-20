@@ -1,3 +1,8 @@
+/*
+ * Copyright 2026 Morphe.
+ * https://github.com/MorpheApp/morphe-manager
+ */
+
 package app.morphe.manager.domain.repository
 
 import android.util.Log
@@ -11,6 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -37,6 +43,36 @@ internal fun copyThroughStaging(source: File, target: File) {
     }
 }
 
+/**
+ * Moves [source] over [target] in one step where both sit on the same filesystem, which spares
+ * rewriting a file of hundreds of megabytes. Elsewhere, it is copied through staging instead, and
+ * [source] is left for its owner to delete.
+ */
+internal fun moveIntoPlace(source: File, target: File) {
+    try {
+        Files.move(
+            source.toPath(),
+            target.toPath(),
+            StandardCopyOption.ATOMIC_MOVE,
+            StandardCopyOption.REPLACE_EXISTING
+        )
+    } catch (_: AtomicMoveNotSupportedException) {
+        copyThroughStaging(source, target)
+    }
+}
+
+/**
+ * Retains [source] as the original APK at [target]. Ephemeral inputs are moved directly into
+ * place to avoid rewriting the file, while non-temporary inputs are copied through staging.
+ */
+internal fun retainOriginalApk(source: File, target: File, moveSource: Boolean) {
+    // Copy file if source is different, and move it into place only once written in full
+    if (source != target) {
+        if (moveSource) moveIntoPlace(source, target)
+        else copyThroughStaging(source, target)
+    }
+}
+
 class OriginalApkRepository(
     db: AppDatabase,
     fs: Filesystem,
@@ -54,11 +90,15 @@ class OriginalApkRepository(
      * Save original APK file for later repatching.
      * Automatically deletes old version if exists.
      * Returns null and skips persistence when the user has disabled original APK retention.
+     *
+     * @param moveSource whether [sourceFile] is a temporary file the caller has no further use
+     *                   for, so it can be moved into place rather than copied.
      */
     suspend fun saveOriginalApk(
         packageName: String,
         version: String,
-        sourceFile: File
+        sourceFile: File,
+        moveSource: Boolean = false
     ): File? = withContext(Dispatchers.IO) {
         if (!prefs.saveOriginalApks.get()) {
             Log.d(TAG, "Original APK retention disabled, skipping save for $packageName")
@@ -68,15 +108,11 @@ class OriginalApkRepository(
         val safePackage = FilenameUtils.sanitize(packageName)
         val safeVersion = FilenameUtils.sanitize(version.ifBlank { "unspecified" })
         val targetFile = originalApksDir.resolve("${safePackage}_${safeVersion}_original.apk")
-        val copies = sourceFile != targetFile
 
         try {
             val existing = dao.get(packageName)
 
-            // Copy file if source is different, and move it into place only once written in full
-            if (copies) {
-                copyThroughStaging(sourceFile, targetFile)
-            }
+            retainOriginalApk(sourceFile, targetFile, moveSource)
 
             // Save to database
             val originalApk = OriginalApk(
