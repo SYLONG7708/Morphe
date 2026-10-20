@@ -113,16 +113,7 @@ jobs:
         if: steps.gate.outputs.publish == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          python3 tools/ci_retry.py -- python3 tools/repair_discovery.py
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- app-release.json patches-bundle.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'chore: repair verified release discovery [skip ci]'
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+        run: python3 tools/ci_retry.py -- python3 tools/repair_discovery.py --publish
 
       - name: Set up Android SDK
         if: steps.gate.outputs.publish == 'true'
@@ -344,17 +335,7 @@ jobs:
         if: steps.gate.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          cp dist/app-release.json app-release.json
-          cp dist/patches-bundle.json patches-bundle.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add app-release.json patches-bundle.json
-          git diff --cached --quiet || git commit -m "chore: update signed release discovery metadata [skip ci]"
-          git restore app/gradle.properties
-          git pull --rebase origin main
-          git push origin HEAD:main
+        run: python3 tools/ci_retry.py -- python3 tools/repair_discovery.py --publish
 
       - name: Save diagnostic reports
         if: failure()
