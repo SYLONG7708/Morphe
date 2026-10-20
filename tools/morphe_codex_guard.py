@@ -24,6 +24,7 @@ FAILURES = {"failure", "timed_out", "startup_failure", "action_required"}
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 PROTECTED = ("app/src/main/res/raw/update_signing_cert.der",
              "config/uis7870-safe.properties", "config/update-policy.json")
+RUNNING_CODE_SHA256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
 def utc() -> str:
@@ -154,6 +155,7 @@ class Guard:
 
     def status(self, phase: str, **details):
         write_json(self.status_file, {"updated_at": utc(), "pid": os.getpid(),
+                                     "parent_pid": os.getppid(), "code_sha256": RUNNING_CODE_SHA256,
                                      "phase": phase, **details})
 
     def save(self):
@@ -487,6 +489,7 @@ def main():
     args = parser.parse_args()
     config = read_json(args.config)
     root = Path(config["runtime_root"])
+    running_hash = RUNNING_CODE_SHA256
     with exclusive_lock(root / "guard.lock") as acquired:
         if not acquired:
             return
@@ -501,6 +504,8 @@ def main():
                                                  "pid": os.getpid(), "error": str(error)})
             if args.once or args.diagnose_only:
                 return
+            if hashlib.sha256(Path(__file__).read_bytes()).hexdigest() != running_hash:
+                return  # Supervisor reloads updated code after this complete cycle.
             time.sleep(max(60, int(config.get("poll_seconds", 300))))
 
 

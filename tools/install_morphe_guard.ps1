@@ -35,6 +35,30 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\app\src\main\res\raw\update_
 # startup, logon and periodic task launches from creating extra supervisors.
 $supervisor = @'
 $ErrorActionPreference = 'Stop'
+$restartFile = Join-Path $PSScriptRoot 'RESTART'
+if (Test-Path -LiteralPath $restartFile) {
+    try {
+        $statusPath = Join-Path $PSScriptRoot 'status.json'
+        $status = Get-Content -LiteralPath $statusPath -Encoding UTF8 -Raw | ConvertFrom-Json
+        # Never interrupt an agent or release verification. Resolve the exact
+        # installed worker and its supervisor before stopping either process.
+        if ($status.phase -in @('paused_by_owner', 'healthy', 'cooldown', 'monitor_error', 'diagnosis_only', 'unresolved', 'workflow_verified')) {
+            $worker = Get-CimInstance Win32_Process -Filter ("ProcessId=" + [int]$status.pid)
+            $workerScript = Join-Path $PSScriptRoot 'morphe_codex_guard.py'
+            if ($worker -and $worker.Name -eq 'pythonw.exe' -and $worker.CommandLine -and $worker.CommandLine.Contains($workerScript)) {
+                $parent = Get-CimInstance Win32_Process -Filter ("ProcessId=" + $worker.ParentProcessId)
+                $supervisorScript = Join-Path $PSScriptRoot 'Supervise.ps1'
+                if ($parent -and $parent.Name -eq 'powershell.exe' -and $parent.CommandLine -and $parent.CommandLine.Contains($supervisorScript)) {
+                    Stop-Process -Id $parent.ProcessId -ErrorAction Stop
+                    Stop-Process -Id $worker.ProcessId -ErrorAction Stop
+                    Remove-Item -LiteralPath $restartFile
+                }
+            } elseif (-not $worker) { Remove-Item -LiteralPath $restartFile }
+        }
+    } catch {
+        [IO.File]::AppendAllText((Join-Path $PSScriptRoot 'supervisor.log'), ((Get-Date -Format o) + ' Reload deferred: ' + $_.Exception.Message + "`n"))
+    }
+}
 $mutex = [Threading.Mutex]::new($false, 'Local\SyMorpheCodexRecoverySupervisor')
 $owned = $false
 try {
@@ -57,6 +81,7 @@ try {
 }
 '@
 [IO.File]::WriteAllText((Join-Path $Destination 'Supervise.ps1'), $supervisor, $utf8)
+[IO.File]::WriteAllText((Join-Path $Destination 'RESTART'), (Get-Date -Format o), $utf8)
 $runner = @'
 Option Explicit
 Dim shell, fso, root, command
