@@ -192,7 +192,7 @@ class Guard:
         value = self.command(args)
         return json.loads(value) if value.strip() else None
 
-    def blocked_sync(self, run: dict):
+    def sync_report(self, run: dict):
         data = self.api(f"repos/{REPOSITORY}/actions/runs/{run['id']}/artifacts?per_page=100")
         name = f"official-sync-diagnosis-{run.get('run_attempt', 1)}"
         artifact = next((a for a in data["artifacts"] if a["name"] == name and not a["expired"]), None)
@@ -211,6 +211,13 @@ class Guard:
             if info.file_size > 1_000_000:
                 raise RuntimeError("Sync diagnostic JSON exceeds its size limit")
             report = json.loads(archive.read(info))
+        return report
+
+    def blocked_sync(self, run: dict):
+        report = self.sync_report(run)
+        if report is None:
+            return {"blocked": True, "tag": None,
+                    "reason": "Successful sync has no readable diagnosis; update state is unverified"}
         # Retain only stable diagnostic fields; timestamps must not defeat deduplication.
         if report.get("blocked") or report.get("state") == "blocked" or report.get("status") == "blocked":
             return {"blocked": True, "tag": report.get("tag") or report.get("upstream_tag"),
@@ -417,11 +424,12 @@ Return only the required structured report; do not claim production success befo
         started = time.time()
         self.command([self.gh, "workflow", "run", name, "-R", REPOSITORY, "--ref", "main"])
         verified = self.wait_run(name, "main", sha, started)
-        if name == "upstream-sync.yml" and self.blocked_sync(verified):
-            raise RuntimeError("Sync diagnosis is still blocked despite a successful workflow")
         if name == "upstream-sync.yml":
-            release_sha = self.api(f"repos/{REPOSITORY}/git/ref/heads/main")["object"]["sha"]
-            if release_sha != sha:
+            report = self.sync_report(verified)
+            if not report or report.get("state") not in {"prepared", "current"}:
+                raise RuntimeError("Sync diagnosis is not a verified integration despite a successful workflow")
+            if report.get("changed"):
+                release_sha = self.api(f"repos/{REPOSITORY}/git/ref/heads/main")["object"]["sha"]
                 self.wait_run("release.yml", "main", release_sha, started)
         if name in {"release.yml", "upstream-sync.yml"}:
             write_json(job / "public-release-verification.json", self.audit_release())
@@ -440,6 +448,11 @@ Return only the required structured report; do not claim production success befo
             phase = ("public_release_check_pending" if health.get("failures", 0)
                      else "verification_pending" if pending else "healthy")
             self.status(phase, workflows=observations, public_release=health)
+            return
+        if pending:
+            # Let an in-flight update finish before cloning its base. This avoids
+            # racing a valid release's discovery commit or another source merge.
+            self.status("verification_pending", workflows=observations, incidents=incidents)
             return
         now = time.time()
         available = [i for i in incidents if eligible(self.state["incidents"].get(i["key"], {}), now)]
