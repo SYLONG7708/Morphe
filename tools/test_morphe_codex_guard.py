@@ -4,6 +4,7 @@ import io
 import json
 from pathlib import Path
 import subprocess
+import shutil
 import tempfile
 import time
 import unittest
@@ -216,6 +217,34 @@ class MorpheGuardTest(unittest.TestCase):
             self.assertTrue(any(command[:3] == ["gh", "workflow", "run"] for command in commands))
             saved_job = Path(guard.read_json(instance.state_file)["incidents"][scenario]["last_job"])
             self.assertIn(previous, (saved_job / "prompt.txt").read_text(encoding="utf-8"))
+
+    @unittest.skipUnless(shutil.which("git"), "git is required for candidate staging")
+    def test_generated_diagnostics_are_preserved_without_becoming_source_changes(self):
+        instance = guard.Guard(self.config)
+        instance.command(["git", "init", str(self.root)])
+        instance.command(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                          "commit", "--allow-empty", "-m", "initial"], cwd=self.root)
+        outputs = []
+        for name in guard.GENERATED_ROOTS:
+            output = self.root / name / "diagnosis.json"
+            output.parent.mkdir()
+            output.write_text("{}", encoding="utf-8")
+            outputs.append(output)
+        self.assertEqual([], instance.stage_candidate(self.root))
+        source = self.root / "fix.py"
+        source.write_text("print('verified source')\n", encoding="utf-8")
+        self.assertEqual(["fix.py"], instance.stage_candidate(self.root))
+        self.assertTrue(all(output.exists() for output in outputs))
+        instance.command(["git", "add", "verification/diagnosis.json"], cwd=self.root)
+        with self.assertRaisesRegex(RuntimeError, "generated file"):
+            instance.stage_candidate(self.root)
+
+    def test_embedded_repository_is_rejected_before_candidate_publication(self):
+        instance = guard.Guard(self.config)
+        instance.command = Mock(side_effect=[
+            "", "nested-repo\n", ":000000 160000 0000000 abc1234 A\tnested-repo\n"])
+        with self.assertRaisesRegex(RuntimeError, "Embedded repository"):
+            instance.stage_candidate(self.root)
 
 
 if __name__ == "__main__":

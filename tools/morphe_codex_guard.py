@@ -24,6 +24,7 @@ FAILURES = {"failure", "timed_out", "startup_failure", "action_required"}
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 PROTECTED = ("app/src/main/res/raw/update_signing_cert.der",
              "config/uis7870-safe.properties", "config/update-policy.json")
+GENERATED_ROOTS = ("verification", "upstream", "dist", "release-artifacts")
 RUNNING_CODE_SHA256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
@@ -380,6 +381,7 @@ Do not weaken tests, bypass verification, disable workflows, replace public down
 Do not modify host services, other projects, this guardian, or user credentials. Never print tokens/private keys.
 Run relevant Python tests. Keep external processes hidden. Do not launch extra agents or visible app windows.
 Do not push, merge, open issues/PRs, dispatch workflows, rerun jobs or publish artifacts yourself.
+Keep downloaded repositories, build outputs and diagnosis files out of the source candidate.
 The guardian will validate the diff, run all Python tests and both-edition cloud Build and verify, then fast-forward
 main only if the exact candidate passed and main has not advanced. It then checks the repaired workflow.
 Leave changes uncommitted. If no code fix is needed, return retry_only with the reason.
@@ -406,20 +408,13 @@ Return only the required structured report; do not claim production success befo
         # Only the guardian commits/pushes. Detect unsolicited history changes.
         if self.command([self.git, "rev-parse", "HEAD"], cwd=source).strip() != base:
             raise RuntimeError("Repair worker changed history; automatic publication withheld")
-        dirty = self.command([self.git, "status", "--porcelain"], cwd=source)
+        files = self.stage_candidate(source)
         now_main = self.api(f"repos/{REPOSITORY}/git/ref/heads/main")["object"]["sha"]
         if now_main != base:
             raise RuntimeError("Main advanced during diagnosis; retry from the new main")
-        if dirty:
+        if files:
             if report["outcome"] != "candidate_ready":
                 raise RuntimeError("Unexpected local changes in a retry-only result")
-            # Explicitly reject secrets/build outputs even if newly made files are unignored.
-            self.command([self.git, "add", "--all"], cwd=source)
-            files = self.command([self.git, "diff", "--cached", "--name-only"], cwd=source).splitlines()
-            for file in files:
-                if (re.search(r"(?i)(?:^|/)(?:auth\.json|\.env(?:\..*)?|credentials.*)$", file)
-                        or Path(file).suffix.lower() in {".apk", ".jks", ".p12", ".keystore", ".pem"}):
-                    raise RuntimeError(f"Unexpected sensitive/generated file in candidate: {file}")
             self.command([self.python, "-m", "unittest", "discover", "-s", "tools", "-p", "test_*.py"],
                          cwd=source, timeout=1800, log=job / "tests.log")
             self.command([self.git, "-c", "user.name=Codex Morphe Recovery",
@@ -458,6 +453,22 @@ Return only the required structured report; do not claim production success befo
             write_json(job / "public-release-verification.json", self.audit_release())
         write_json(job / "verified-workflow.json", verified)
         return {"job": str(job), "verified_run": verified["html_url"], "sha": sha}
+
+    def stage_candidate(self, source: Path) -> list[str]:
+        # Diagnosis commonly creates these untracked directories. Preserve them
+        # locally without treating a retry-only investigation as a source change.
+        self.command([self.git, "add", "--all", "--", ".",
+                      *(f":(top,exclude){name}" for name in GENERATED_ROOTS)], cwd=source)
+        files = self.command([self.git, "diff", "--cached", "--name-only"], cwd=source).splitlines()
+        for file in files:
+            if (file.split("/", 1)[0] in GENERATED_ROOTS
+                    or re.search(r"(?i)(?:^|/)(?:auth\.json|\.env(?:\..*)?|credentials.*)$", file)
+                    or Path(file).suffix.lower() in {".apk", ".jks", ".p12", ".keystore", ".pem"}):
+                raise RuntimeError(f"Unexpected sensitive/generated file in candidate: {file}")
+        raw = self.command([self.git, "diff", "--cached", "--raw"], cwd=source)
+        if re.search(r"(?m)^:\d+ 160000 ", raw):
+            raise RuntimeError("Embedded repository in candidate; automatic publication withheld")
+        return files
 
     def cycle(self, diagnose_only=False):
         if not self.config.get("enabled", True) or (self.root / "STOP").exists():
