@@ -17,10 +17,16 @@ class CloudRecoveryTest(unittest.TestCase):
     def choose(self, logs="HTTP 503", sha="a" * 40):
         return decision(self.run, self.repo, sha, logs)
 
-    def test_sync_and_release_are_both_recovered(self):
-        for path in (".github/workflows/upstream-sync.yml", ".github/workflows/release.yml"):
+    def test_sync_release_and_two_apk_updates_are_recovered(self):
+        for path in (".github/workflows/upstream-sync.yml", ".github/workflows/release.yml",
+                     ".github/workflows/blue-m-stable.yml"):
             self.run["path"] = path
             self.assertEqual("retry", self.choose()["action"])
+
+    def test_two_apk_verification_failure_is_not_retried(self):
+        self.run["path"] = ".github/workflows/blue-m-stable.yml"
+        self.assertEqual("retain", self.choose(
+            "HTTP 503\nValueError: Official asset digest/size mismatch")["action"])
 
     def test_maximum_three_total_attempts(self):
         for attempt in (1, 2, 3, 4):

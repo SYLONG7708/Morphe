@@ -9,7 +9,8 @@ import time
 
 from ci_retry import PERMANENT, TRANSIENT
 
-WORKFLOWS = {".github/workflows/upstream-sync.yml", ".github/workflows/release.yml"}
+WORKFLOWS = {".github/workflows/upstream-sync.yml", ".github/workflows/release.yml",
+             ".github/workflows/blue-m-stable.yml"}
 HARD_FAILURE = re.compile(
     r"Upstream merge needs a code change|Reviewed resolution.*(?:mismatch|did not apply)|"
     r"Official merge failed|requires a clean checkout|CONFLICT \(|"

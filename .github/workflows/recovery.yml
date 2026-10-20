@@ -1,7 +1,7 @@
 name: Recover failed cloud workflows
 on:
   workflow_run:
-    workflows: ['Signed ecosystem release', 'Sync official stable Manager']
+    workflows: ['Signed ecosystem release', 'Sync official stable Manager', 'Blue M stable auto-update']
     types: [completed]
   workflow_dispatch:
     inputs:

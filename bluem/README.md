@@ -16,6 +16,8 @@
 
 GitHub Actions 每六小時檢查官方穩定 patches、Desktop CLI 及 MicroG。依 patches 標示的非實驗目標選取 YouTube 版本，驗證 Google APK 簽章、四種 ABI、Android 9 相容性、所有修補結果及播放 API。建置工作與持有正式金鑰的簽署工作分開執行。
 
+官方版本查詢透過 `tools/bluem_probe.py` 使用排程的唯讀 GitHub 憑證；憑證只送至 GitHub API，不隨重新導向送到下載站。暫時性網路或執行器失敗納入雲端復原，最多三次嘗試；簽章、雜湊、修補或程式錯誤保留現有版本並等待處理。
+
 簽署後再次核對套件、版本、憑證及 SHA-256。先發布不可覆寫的 APK 資產並下載驗證，再於同一個 Git commit 更新 `channels/blue-m-stable.json` 和簽章。任何失敗都不推進穩定頻道。Blue M 發布不改變 Manager 的 latest release。
 
 App 開啟後與使用期間每六小時檢查頻道；故障重試有退避。只有簽章正確、版本較新且架構相容的 APK 才下載與安裝。播放中等待，閒置後原地更新。首次需要允許「安裝未知應用程式」；Android 12 以上符合平台條件時使用無互動自我更新，其餘情況依系統要求確認。MicroG 更新也受 Android 安裝權限限制。

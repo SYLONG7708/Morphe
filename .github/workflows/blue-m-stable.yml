@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - 'bluem/**'
+      - 'tools/bluem_probe.py'
+      - 'tools/test_bluem_probe.py'
       - '.github/workflows/blue-m-stable.yml'
 
 permissions:
@@ -32,9 +34,13 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
+      - name: Verify metadata authentication boundaries
+        run: python -m unittest discover -s tools -p 'test_bluem_probe.py'
       - name: Resolve official stable versions
         id: probe
-        run: python bluem/cloud.py probe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/bluem_probe.py
       - name: Set up Android SDK
         if: steps.probe.outputs.changed == 'true'
         uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699
