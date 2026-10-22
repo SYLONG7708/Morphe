@@ -187,6 +187,29 @@ def validate_source(info, selected):
         raise ValueError('APK excludes supported head units')
 
 
+def validate_patch_result(result, selection):
+    if not isinstance(result, dict):
+        raise ValueError('Invalid official patching report')
+    # Desktop 1.19 uses stepResults and always emits success. Older CLI
+    # reports use patchingSteps and omit success when it has its default True.
+    step_keys = [key for key in ('patchingSteps', 'stepResults') if key in result]
+    if (not step_keys or result.get('success', 'stepResults' not in result) is not True
+            or result.get('failedPatches') != []):
+        raise ValueError('Official patching failed; preserve published release')
+    for key in step_keys:
+        steps = result[key]
+        if (not isinstance(steps, list) or not steps
+                or any(not isinstance(step, dict) or step.get('success') is not True
+                       or not isinstance(step.get('step'), str) for step in steps)
+                or not {'PATCHING', 'REBUILDING'}.issubset(step['step'] for step in steps)):
+            raise ValueError('Official patching incomplete or failed; preserve published release')
+    applied = result.get('appliedPatches')
+    if (result.get('packageVersion') != selection['youtube_version']
+            or not isinstance(applied, list)
+            or len(applied) < selection['default_patch_support_count']):
+        raise ValueError('Incomplete patch selection')
+
+
 def assemble():
     plan = json.loads((ROOT/'build/plan.json').read_text())
     if not plan['changed']: return
@@ -209,10 +232,7 @@ def assemble():
                    '-p', paths['patches'], '--unsigned', '--bytecode-mode=FULL', '-o', patched,
                    '-r', ROOT/'evidence/patch-result.json'], log, clean_env)
         result = json.loads((ROOT/'evidence/patch-result.json').read_text())
-        if result['failedPatches'] or not all(s['success'] for s in result['patchingSteps']):
-            raise ValueError('Official patching failed; preserve published release')
-        if result['packageVersion'] != plan['selection']['youtube_version'] or len(result['appliedPatches']) < plan['selection']['default_patch_support_count']:
-            raise ValueError('Incomplete patch selection')
+        validate_patch_result(result, plan['selection'])
         (ROOT/'inputs/recommended-base-sha256.txt').write_text(build.digest(patched))
         build.run([sys.executable, ROOT/'run_tests.py'], log)
         build.run([sys.executable, '-m', 'unittest', 'test_cloud', 'test_recommended_policy'], log)

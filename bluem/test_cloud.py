@@ -1,6 +1,6 @@
 import copy
 import unittest
-from cloud import asset, next_code, variants, validate_source, GOOGLE_CERTS, ABIS
+from cloud import asset, next_code, variants, validate_source, validate_patch_result, GOOGLE_CERTS, ABIS
 
 class CloudPolicyTest(unittest.TestCase):
     def test_old_channel_migrates_monotonically(self):
@@ -29,5 +29,129 @@ class CloudPolicyTest(unittest.TestCase):
             with self.subTest(field=field):
                 item=self.source();item[field]=value
                 with self.assertRaises(ValueError):validate_source(item,'21.16.256')
+
+class PatchResultTest(unittest.TestCase):
+    def setUp(self):
+        self.selection = {'youtube_version': '21.20.405', 'default_patch_support_count': 2}
+        # Desktop 1.19.0 report shape from the failed Blue M run 39828820427.
+        self.current = {
+            'success': True,
+            'packageName': 'com.google.android.youtube',
+            'packageVersion': '21.20.405',
+            'appliedPatches': ['GmsCore support', 'Spoof video streams'],
+            'failedPatches': [],
+            'stepResults': [{'step': 'PATCHING', 'success': True},
+                            {'step': 'REBUILDING', 'success': True}],
+        }
+        self.legacy = copy.deepcopy(self.current)
+        self.legacy['patchingSteps'] = self.legacy.pop('stepResults')
+        self.legacy.pop('success')  # Legacy Kotlin serialization omits default True.
+        self.legacy['appliedPatches'] = [{'name': name} for name in self.current['appliedPatches']]
+
+    def reports(self):
+        return [('stepResults', copy.deepcopy(self.current)),
+                ('patchingSteps', copy.deepcopy(self.legacy))]
+
+    def test_current_engine_report_and_legacy_cli_report(self):
+        for key, report in self.reports():
+            with self.subTest(schema=key):
+                validate_patch_result(report, self.selection)
+                report['success'] = True
+                validate_patch_result(report, self.selection)
+
+    def test_current_report_requires_explicit_success(self):
+        self.current.pop('success')
+        with self.assertRaises(ValueError):
+            validate_patch_result(self.current, self.selection)
+
+    def test_overall_failure_and_non_boolean_success_rejected(self):
+        for key, report in self.reports():
+            for success in (False, None, 'true', 'false', 1, 0):
+                with self.subTest(schema=key, success=success):
+                    report['success'] = success
+                    with self.assertRaises(ValueError):
+                        validate_patch_result(report, self.selection)
+
+    def test_failed_patches_and_malformed_failure_list_rejected(self):
+        for key, report in self.reports():
+            for failed in ([{'name': 'GmsCore support', 'error': 'failed'}], None, {}, '', False):
+                with self.subTest(schema=key, failed=failed):
+                    report['failedPatches'] = failed
+                    with self.assertRaises(ValueError):
+                        validate_patch_result(report, self.selection)
+
+    def test_missing_required_report_fields_rejected(self):
+        for key, report in self.reports():
+            for field in (key, 'failedPatches', 'packageVersion', 'appliedPatches'):
+                with self.subTest(schema=key, field=field):
+                    incomplete = copy.deepcopy(report)
+                    incomplete.pop(field)
+                    with self.assertRaises(ValueError):
+                        validate_patch_result(incomplete, self.selection)
+
+    def test_empty_and_malformed_step_results_rejected(self):
+        for key, report in self.reports():
+            for steps in ([], None, {}, 'success', [None], [{}],
+                          [{'step': 'PATCHING'}], [{'step': [], 'success': True}]):
+                with self.subTest(schema=key, steps=steps):
+                    report[key] = steps
+                    with self.assertRaises(ValueError):
+                        validate_patch_result(report, self.selection)
+
+    def test_each_step_must_explicitly_succeed(self):
+        for key, report in self.reports():
+            for index in range(2):
+                for success in (False, None, 'true', 'false', 1, 0):
+                    with self.subTest(schema=key, index=index, success=success):
+                        failed = copy.deepcopy(report)
+                        failed[key][index]['success'] = success
+                        with self.assertRaises(ValueError):
+                            validate_patch_result(failed, self.selection)
+
+    def test_both_unsigned_build_steps_required(self):
+        for key, report in self.reports():
+            for step in report[key]:
+                with self.subTest(schema=key, remaining=step['step']):
+                    incomplete = copy.deepcopy(report)
+                    incomplete[key] = [step]
+                    with self.assertRaises(ValueError):
+                        validate_patch_result(incomplete, self.selection)
+
+    def test_extra_failed_step_is_not_ignored(self):
+        for key, report in self.reports():
+            with self.subTest(schema=key):
+                report[key].append({'step': 'SIGNING', 'success': False})
+                with self.assertRaises(ValueError):
+                    validate_patch_result(report, self.selection)
+
+    def test_one_schema_cannot_mask_failure_in_the_other(self):
+        report = dict(self.current, patchingSteps=self.legacy['patchingSteps'])
+        validate_patch_result(report, self.selection)
+        for key in ('stepResults', 'patchingSteps'):
+            for steps in (None, [], [{'step': 'PATCHING', 'success': False}]):
+                with self.subTest(schema=key, steps=steps):
+                    failed = copy.deepcopy(report)
+                    failed[key] = steps
+                    with self.assertRaises(ValueError):
+                        validate_patch_result(failed, self.selection)
+
+    def test_wrong_target_and_incomplete_patch_selection_rejected(self):
+        for key, report in self.reports():
+            for field, value in (('packageVersion', '21.16.256'),
+                                 ('appliedPatches', ['GmsCore support']),
+                                 ('appliedPatches', []), ('appliedPatches', None),
+                                 ('appliedPatches', 'not a patch list'),
+                                 ('appliedPatches', {'one': True, 'two': True})):
+                with self.subTest(schema=key, field=field, value=value):
+                    incomplete = copy.deepcopy(report)
+                    incomplete[field] = value
+                    with self.assertRaises(ValueError):
+                        validate_patch_result(incomplete, self.selection)
+
+    def test_non_object_reports_rejected(self):
+        for report in (None, [], 'success', True):
+            with self.subTest(report=report), self.assertRaises(ValueError):
+                validate_patch_result(report, self.selection)
+
 
 if __name__=='__main__':unittest.main()
