@@ -158,7 +158,7 @@ class ProcessRuntime(
     private val context: Context,
     // On Android Q and below, memory retry loop is unreliable - skip it and let the caller fall back
     private val skipMemoryRetry: Boolean = Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q
-) : Runtime(context) {
+) : Runtime() {
     private val pm: PM by inject()
     private val appScope: AppCoroutineScope by inject()
 
@@ -403,7 +403,6 @@ class ProcessRuntime(
             }
 
             val parameters = Parameters(
-                frameworkDir = frameworkPath,
                 cacheDir = cacheDir,
                 packageName = packageName,
                 inputFile = inputFile,

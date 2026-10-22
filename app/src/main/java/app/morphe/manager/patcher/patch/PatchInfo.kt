@@ -44,7 +44,6 @@ data class PatchInfo(
     /** Group declared by the bundle, or null when the bundle does not categorize its patches. */
     val category: String? = null
 ) {
-    @Suppress("DEPRECATION")
     constructor(patch: Patch<*>) : this(
         name = patch.name.orEmpty(),
         description = patch.description?.withoutSourceIndent(),
@@ -105,14 +104,7 @@ data class PatchInfo(
                         .takeIf { it.isNotEmpty() },
                 )
             }
-            ?.toImmutableList()
-            // Fallback to legacy API if new compatibility is not available
-            ?: patch.compatiblePackages?.map { (pkgName, versions) ->
-                CompatiblePackage(
-                    packageName = pkgName,
-                    versions = versions?.toImmutableSet()
-                )
-            }?.toImmutableList(),
+            ?.toImmutableList(),
         options = patch.options.map { (_, option) -> Option(option) }.ifEmpty { null }?.toImmutableList(),
         availabilityResolver = patch.availability,
         category = patch.category?.takeIf { it.isNotBlank() }

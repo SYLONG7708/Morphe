@@ -10,7 +10,6 @@
 
 package app.morphe.manager.patcher.runtime
 
-import android.content.Context
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.PatchBundleRepository
@@ -27,14 +26,12 @@ import java.io.File
 /** The heap limit ART granted the calling process, in mebibytes. */
 fun heapLimitMebibytes() = bytesToMebibytes(java.lang.Runtime.getRuntime().maxMemory()).toInt()
 
-sealed class Runtime(context: Context) : KoinComponent {
+sealed class Runtime : KoinComponent {
     private val fs: Filesystem by inject()
     private val patchBundlesRepo: PatchBundleRepository by inject()
     protected val prefs: PreferencesManager by inject()
 
     protected val cacheDir: String = fs.tempDir.absolutePath
-    protected val frameworkPath: String =
-        context.cacheDir.resolve("framework").also { it.mkdirs() }.absolutePath
 
     protected suspend fun bundles() = patchBundlesRepo.bundles.first()
 

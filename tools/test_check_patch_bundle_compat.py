@@ -43,6 +43,21 @@ class PatchBundleCompatibilityTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "requires morphe-patcher 1.8.0"):
             assert_compatible(bundle, catalog)
 
+    def test_patcher_2_bundle_is_rejected_by_patcher_1_manager(self) -> None:
+        bundle, catalog, temp = self.create_inputs("2.0.0", "1.15.1")
+        self.addCleanup(temp.cleanup)
+        with self.assertRaisesRegex(RuntimeError, "requires morphe-patcher 2.0.0"):
+            assert_compatible(bundle, catalog)
+
+    def test_release_catalog_supports_current_and_previous_bundle_api(self) -> None:
+        catalog = Path(__file__).resolve().parents[1] / "gradle/libs.versions.toml"
+        # Published 1.47.0.7870.2 and official 1.48.0 respectively.
+        for required in ("1.14.0", "2.0.0"):
+            with self.subTest(required=required):
+                bundle, _, temp = self.create_inputs(required, "1.15.1")
+                self.addCleanup(temp.cleanup)
+                self.assertEqual(assert_compatible(bundle, catalog)[0], required)
+
 
 if __name__ == "__main__":
     unittest.main()

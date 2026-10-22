@@ -25,7 +25,7 @@ import java.io.File
 /**
  * Simple [Runtime] implementation that runs the patcher using coroutines.
  */
-class CoroutineRuntime(private val context: Context) : Runtime(context) {
+class CoroutineRuntime(private val context: Context) : Runtime() {
     override suspend fun execute(
         inputFile: String,
         outputFile: String,
@@ -90,7 +90,6 @@ class CoroutineRuntime(private val context: Context) : Runtime(context) {
 
                 Session(
                     cacheDir = cacheDir,
-                    frameworkDir = frameworkPath,
                     androidContext = context,
                     logger = logger,
                     input = preparation.file,
