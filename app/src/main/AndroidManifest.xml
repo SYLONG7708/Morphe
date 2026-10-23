@@ -46,6 +46,9 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
 
     <!-- Notifications: Required on Android 13+ (API 33) to post update notifications.
          On older versions the permission is granted automatically. -->
@@ -154,6 +157,12 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="patching" />
         </service>
+
+        <!-- Hosts the run, in a process of its own that ends with it -->
+        <service
+            android:name="app.morphe.manager.patcher.runtime.PatcherService"
+            android:exported="false"
+            android:process=":patcher" />
 
         <provider
             android:name="app.morphe.manager.domain.installer.InstallerFileProvider"

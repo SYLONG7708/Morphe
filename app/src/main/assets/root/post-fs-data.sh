@@ -1,12 +1,12 @@
 #!/system/bin/sh
-package_name="__PKG_NAME__"
+package_name=__PKG_NAME__
 
 module_dir="$(dirname "$0")"
 if [ "${module_dir#"/"}" = "$module_dir" ] && command -v readlink >/dev/null 2>&1; then
   module_dir="$(dirname "$(readlink -f "$0")")"
 fi
 if [ "${module_dir#"/"}" = "$module_dir" ]; then
-  module_dir="/data/adb/modules/__MODULE_ID__"
+  module_dir=/data/adb/modules/__MODULE_ID__
 fi
 
 stock_apk="$module_dir/$package_name-stock.apk"

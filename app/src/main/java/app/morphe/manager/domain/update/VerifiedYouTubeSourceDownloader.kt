@@ -138,7 +138,7 @@ class VerifiedYouTubeSourceDownloader(
         }
     }
 
-    private fun verifyDownloadedApk(
+    private suspend fun verifyDownloadedApk(
         file: File,
         candidate: YouTubeDownloadCandidate,
         expectedSigners: Set<String>,

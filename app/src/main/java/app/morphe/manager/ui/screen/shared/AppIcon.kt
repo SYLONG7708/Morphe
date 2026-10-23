@@ -13,8 +13,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,6 +43,8 @@ import app.morphe.manager.util.startEdgeX
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.composables.icons.materialsymbols.MaterialSymbols
+import com.composables.icons.materialsymbols.roundedfilled.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.zhanghai.android.appiconloader.iconloaderlib.IconNormalizer
@@ -114,10 +114,9 @@ private class ResolvedIcon(val packageInfo: PackageInfo?, val drawable: Drawable
 private fun rememberResolvedIcon(packageName: String?, preferredSource: AppDataSource): ResolvedIcon? {
     val appDataResolver: AppDataResolver = koinInject()
     return produceState<ResolvedIcon?>(null, packageName, preferredSource) {
-        if (packageName == null) {
-            value = null
-            return@produceState
-        }
+        // Cleared first, so another package never shows the icon of the one before it
+        value = null
+        if (packageName == null) return@produceState
         value = withContext(Dispatchers.IO) {
             val resolvedData = appDataResolver.resolveAppData(packageName, preferredSource)
             // Decoded only without packageInfo, which Coil loads on its own
@@ -202,7 +201,7 @@ private fun FallbackIcon(
     contentDescription: String?,
     modifier: Modifier = Modifier
 ) {
-    val image = rememberVectorPainter(Icons.Default.Android)
+    val image = rememberVectorPainter(MaterialSymbols.RoundedFilled.Android)
     val colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
 
     Image(

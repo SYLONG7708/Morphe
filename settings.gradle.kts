@@ -57,3 +57,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "symorphe"
 include(":app")
+include(":patcher-core")

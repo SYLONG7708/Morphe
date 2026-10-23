@@ -6,10 +6,9 @@
 package app.morphe.manager.util
 
 import androidx.compose.ui.graphics.Color
+import app.morphe.manager.BuildConfig
 import app.morphe.manager.ui.theme.MorpheBrandBlue
 import app.morphe.manager.ui.theme.MorpheBrandTeal
-import app.morphe.manager.util.KnownApps.DEFAULT_COLORS
-import app.morphe.manager.util.KnownApps.getAppName
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
@@ -19,6 +18,9 @@ const val SOURCE_NAME = "SyMorphe Verified Patches"
 const val MANAGER_REPO_URL = "https://github.com/SYLONG7708/Morphe"
 const val SOURCE_REPO_URL = MANAGER_REPO_URL
 const val MORPHE_API_URL = "https://api.morphe.software"
+
+/** Sent on every request to [MORPHE_API_URL]. */
+val MORPHE_USER_AGENT = "Morphe-Manager/${BuildConfig.VERSION_CODE}"
 const val MORPHE_WEBSITE_URL = "https://morphe.software"
 const val COMMUNITY_PATCHES_URL = "https://morphe-patches.software"
 const val BLOCKED_SOURCES_URL = "$MORPHE_API_URL/v2/blocked-sources"
@@ -165,23 +167,11 @@ val APK_FILE_MIME_TYPES = arrayOf(
     // end user will know or should have to do. Instead, show all files to ensure the user can
     // always select no matter what file naming ApkMirror uses.
     "application/*",
-//    "application/zip",
-//    "application/x-zip-compressed",
-//    "application/x-apkm",
-//    "application/x-apks",
-//    "application/x-xapk",
-//    "application/xapk",
-//    "application/vnd.android.xapk",
-//    "application/vnd.android.apkm",
-//    "application/apkm",
-//    "application/vnd.android.apks",
-//    "application/apks",
 )
 
 val MPP_FILE_MIME_TYPES = arrayOf(
     BIN_MIMETYPE,
     MPP_MIMETYPE,
-//    "application/x-zip-compressed"
     "*/*"
 )
 

@@ -12,8 +12,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +24,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.ui.screen.shared.Defaults
 import app.morphe.manager.ui.theme.MorpheBrandBlue
+import com.composables.icons.materialsymbols.MaterialSymbols
+import com.composables.icons.materialsymbols.rounded.*
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -147,9 +147,9 @@ fun PairsGame(state: PairsGameState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(Defaults.CompactCornerRadius))
+            .clip(RoundedCornerShape(Defaults.CornerMedium))
             .background(PairsBg)
-            .padding(6.dp),
+            .padding(Defaults.SpaceExtraSmall),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -160,7 +160,7 @@ fun PairsGame(state: PairsGameState) {
             repeat(PAIRS_STRIKES) { i ->
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 3.dp)
+                        .padding(horizontal = Defaults.SpaceExtraSmall)
                         .size(8.dp)
                         .clip(CircleShape)
                         .background(if (i < state.strikes) PairsStrikeLeft else PairsStrikeSpent)
@@ -194,7 +194,7 @@ private fun PairsCard(state: PairsGameState, index: Int, size: Dp) {
     Box(
         modifier = Modifier
             .size(size)
-            .padding(4.dp)
+            .padding(Defaults.SpaceExtraSmall)
             .graphicsLayer {
                 rotationY = rotation
                 cameraDistance = 12f * density
@@ -227,14 +227,14 @@ private val PairsStrikeSpent  = Color(0xFF3A4055)
 
 // One symbol per pair, each with its own color so a glance is enough to match them
 private val PairsSymbols: List<ImageVector> = listOf(
-    Icons.Outlined.Star,
-    Icons.Outlined.Favorite,
-    Icons.Outlined.Bolt,
-    Icons.Outlined.Cloud,
-    Icons.Outlined.Pets,
-    Icons.Outlined.MusicNote,
-    Icons.Outlined.Anchor,
-    Icons.Outlined.Umbrella
+    MaterialSymbols.Rounded.Star,
+    MaterialSymbols.Rounded.Favorite,
+    MaterialSymbols.Rounded.Bolt,
+    MaterialSymbols.Rounded.Cloud,
+    MaterialSymbols.Rounded.Pets,
+    MaterialSymbols.Rounded.Music_note,
+    MaterialSymbols.Rounded.Anchor,
+    MaterialSymbols.Rounded.Umbrella
 )
 
 private val PairsSymbolColors = listOf(

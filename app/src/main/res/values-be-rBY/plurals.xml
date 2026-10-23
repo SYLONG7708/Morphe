@@ -6,6 +6,7 @@
         <item quantity="many">%s патчаў</item>
         <item quantity="other">%s патчаў</item>
     </plurals>
+    <!-- Subtitle of the open-source licenses page: how many libraries it lists -->
     <plurals name="option_count">
         <item quantity="one">%s опцыя патча</item>
         <item quantity="few">%s опцыі патчаў</item>
@@ -105,4 +106,5 @@
         <item quantity="many">Скапіявана %s патчаў з абранага набору</item>
         <item quantity="other">Скапіявана %s патчаў з абранага набору</item>
     </plurals>
+    <!-- Value of the Apps row on a source card when apps were left out on arrival, for example "3/232 · 2 new". %1$s is the app count, %2$d the new apps -->
 </resources>

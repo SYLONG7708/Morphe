@@ -11,11 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DragHandle
-import androidx.compose.material.icons.outlined.Extension
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,12 +32,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.morphe.manager.R
 import app.morphe.manager.ui.model.HomeAppItem
+import app.morphe.manager.ui.screen.shared.Defaults
+import app.morphe.manager.ui.screen.shared.DialogHost
 import app.morphe.manager.ui.screen.shared.SelectableCard
 import app.morphe.manager.ui.screen.shared.appAccentContent
 import app.morphe.manager.ui.screen.shared.rememberAppColor
 import app.morphe.manager.ui.screen.shared.usableAppAccent
 import app.morphe.manager.util.isRtl
 import app.morphe.manager.util.startToEndGradient
+import com.composables.icons.materialsymbols.MaterialSymbols
+import com.composables.icons.materialsymbols.rounded.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -66,7 +65,7 @@ internal fun rememberPatchesSwipeAction(packageName: String): SwipeActionConfig 
     val container = accent ?: MaterialTheme.colorScheme.primaryContainer
     val content = if (accent != null) appAccentContent(container) else MaterialTheme.colorScheme.onPrimaryContainer
     return remember(label, container, content) {
-        SwipeActionConfig(icon = Icons.Outlined.Extension, label = label, containerColor = container, contentColor = content)
+        SwipeActionConfig(icon = MaterialSymbols.Rounded.Extension, label = label, containerColor = container, contentColor = content)
     }
 }
 
@@ -77,7 +76,7 @@ internal fun rememberUnhideSwipeAction(): SwipeActionConfig {
     val container = MaterialTheme.colorScheme.tertiaryContainer
     val content = MaterialTheme.colorScheme.onTertiaryContainer
     return remember(label, container, content) {
-        SwipeActionConfig(icon = Icons.Outlined.Visibility, label = label, containerColor = container, contentColor = content)
+        SwipeActionConfig(icon = MaterialSymbols.Rounded.Visibility, label = label, containerColor = container, contentColor = content)
     }
 }
 
@@ -116,7 +115,7 @@ internal fun SwipeBackground(
                         .padding(end = 20.dp)
                         .graphicsLayer { alpha = startProgress },
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(Defaults.SpaceExtraSmall)
                 ) {
                     Icon(
                         imageVector = startConfig.icon,
@@ -155,7 +154,7 @@ internal fun SwipeBackground(
                         .padding(start = 20.dp)
                         .graphicsLayer { alpha = endProgress },
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(Defaults.SpaceExtraSmall)
                 ) {
                     Icon(
                         imageVector = endConfig.icon,
@@ -193,6 +192,9 @@ internal fun SwipeableCardContainer(
 ) {
     val view = LocalView.current
     val scope = rememberCoroutineScope()
+    // The gesture outlives recompositions, while the card it acts on may have been updated since
+    val currentOnSwipeToStart by rememberUpdatedState(onSwipeToStart)
+    val currentOnSwipeToEnd by rememberUpdatedState(onSwipeToEnd)
 
     // The offset is held in layout coordinates (negative drags the card toward the start edge),
     // while pointer deltas and translationX are physical, so both are mirrored in RTL
@@ -218,12 +220,12 @@ internal fun SwipeableCardContainer(
                                         offsetX.value < -actionThresholdPx -> {
                                             view.performHapticFeedback(startHaptic)
                                             offsetX.animateTo(0f, tween(200))
-                                            onSwipeToStart()
+                                            currentOnSwipeToStart()
                                         }
                                         offsetX.value > actionThresholdPx -> {
                                             view.performHapticFeedback(endHaptic)
                                             offsetX.animateTo(0f, tween(200))
-                                            onSwipeToEnd()
+                                            currentOnSwipeToEnd()
                                         }
                                         else -> offsetX.animateTo(
                                             0f,
@@ -325,7 +327,7 @@ internal fun DynamicAppCard(
 
     val startConfig = remember(hideLabel, errorContainer, onErrorContainer) {
         SwipeActionConfig(
-            icon = Icons.Outlined.VisibilityOff,
+            icon = MaterialSymbols.Rounded.Visibility_off,
             label = hideLabel,
             containerColor = errorContainer,
             contentColor = onErrorContainer
@@ -367,21 +369,20 @@ internal fun DynamicAppCard(
                     endConfig = endConfig,
                     modifier = Modifier
                         .matchParentSize()
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(Defaults.CornerLargeIncreased))
                 )
             }
         ) {
             SelectableCard(
                 isSelected = isSelected,
-                isSelectionMode = isMultiSelectMode,
-                // The drag handle already sits in the corner the check badge would land in
-                showCheckmark = dragHandleModifier == null
+                isSelectionMode = isMultiSelectMode
             ) {
                 HomeAppCard(
                     item = item,
                     onClick = onAppClick,
                     // The drag handle takes the end of the card over while reordering
                     showStatusBadges = dragHandleModifier == null,
+                    selected = isSelected.takeIf { isMultiSelectMode && dragHandleModifier == null },
                     onLongClick = {
                         view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         onLongPress()
@@ -399,7 +400,7 @@ internal fun DynamicAppCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.DragHandle,
+                    imageVector = MaterialSymbols.Rounded.Drag_handle,
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -407,7 +408,7 @@ internal fun DynamicAppCard(
             }
         }
 
-        if (showHideDialog.value) {
+        DialogHost(visible = showHideDialog.value) {
             HideAppDialog(
                 item = item,
                 onDismiss = { showHideDialog.value = false },
@@ -462,7 +463,7 @@ internal fun HiddenSearchAppCard(
                     endConfig = endConfig,
                     modifier = Modifier
                         .matchParentSize()
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(Defaults.CornerLargeIncreased))
                 )
             }
         ) {

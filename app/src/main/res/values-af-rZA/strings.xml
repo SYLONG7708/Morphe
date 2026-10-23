@@ -10,9 +10,12 @@
     <string name="home_app_hide_title">Versteek hierdie program?</string>
     <string name="home_app_hide_message">Hierdie app sal van die tuisskerm weggesteek word. Jy kan dit later herstel deur die \'\'-knoppie onderaan die lys te gebruik</string>
     <string name="home_app_will_be_hidden">Hierdie program sal versteek word</string>
+    <string name="home_app_hidden_named">%s versteek</string>
+    <string name="home_app_shown_named">%s gewys</string>
     <string name="home_app_no_hidden">Geen versteekte program nie</string>
     <string name="home_app_hidden_apps_title">Versteekte programme</string>
     <string name="home_app_hidden_apps_hint">Tik om te wys</string>
+    <string name="home_apps_unhide_message">Nie-verborge programmeer keer terug na die tuisbladskerm</string>
     <string name="home_app_patch_sources_description">Bronne wat nie afgemerk is nie, word nie aangebied wanneer hierdie apps gepatch word nie, en hul patches sluit nooit op hul eie by \'n seleksie aan nie. Elke bron bly aan vir elke ander app.</string>
     <string name="home_app_patch_sources_mixed">Aangebied aan %1$s van %2$s</string>
     <string name="home_app_patch_sources_covers">Het patches vir %1$s van %2$s</string>
@@ -22,6 +25,12 @@
     <string name="deep_link_add_source_title">Voeg oorsprong by</string>
     <string name="deep_link_add_source_message">Wil jy hierdie verandering oorsprong by Morphe voeg?</string>
     <string name="deep_link_add_source_warning">Voeg slegs oorspronge wat jy vertrou by</string>
+    <!-- Shown under the app a link was opened for -->
+    <string name="deep_link_add_source_only_app">Slegs hierdie app is bygevoeg. U kan ander apps uit die bron se applyste byvoeg</string>
+    <!-- Shown when the link was opened for the universal patches of a source, which no app is added with -->
+    <string name="deep_link_add_source_only_universal">Slegs die universele kolle word gevoeg. U kan programme uit die bron se programlys byvoeg</string>
+    <!-- Asked when the link names an app of a source that is already added -->
+    <string name="deep_link_add_source_app_back">Hierdie bron is reeds bygevoeg. Wil u hierdie toepassing uit die bestaande bron byvoeg?</string>
     <!-- Home Screen - Update Notifications -->
     <string name="home_update_available">Morphe-opdatering beskikbaar</string>
     <string name="home_update_available_subtitle">Nuwe weergawe gereed om te installeer</string>
@@ -45,8 +54,8 @@
     <string name="home_update_success_subtitle">Jou oorspronge is opgedateer</string>
     <string name="home_sources_are_loading">Oorsprong word gelaai, wag asseblief…</string>
     <string name="home_search_apps">Soek programme</string>
-    <string name="home_app_list_options_title">Sorteer en filter</string>
-    <string name="home_app_list_options_state_description">Gesorteer volgens %1$s, gefiltreer volgens %2$s</string>
+    <string name="list_options_title">Sorteer en filtreer</string>
+    <string name="list_options_state_description">Gesorteer volgens %1$s, gefiltreer volgens %2$s</string>
     <string name="home_app_filter_all_description">Elke app op die tuisskerm</string>
     <string name="home_app_filter_patched_description">Apps wat jy met Morphe gepatch of gestoor het</string>
     <string name="home_app_filter_not_patched_description">Apps wat jy nog nie in Morphe gepatch het nie</string>
@@ -54,6 +63,10 @@
     <string name="home_app_filter_uninstalled_description">Toepassings wat met Morphe gepatch is en nie meer op hierdie toestel is nie</string>
     <string name="home_app_filter_clones">Klone</string>
     <string name="home_app_filter_clones_description">Toepassings wat onder \'n eie pakketnaam gebou is, langs die oorspronklike geïnstalleer</string>
+    <string name="home_app_grouping_none">Geen</string>
+    <string name="home_app_grouping_all_apps_description">Een lys met elke toepassing</string>
+    <string name="home_app_grouping_sources_description">Toepassings onder die plakbronsbron wat hulle verskaf</string>
+    <string name="home_app_grouping_custom_description">Toepassings in kategorieë wat jy skep</string>
     <string name="home_app_sort_manual_description">Druk lank op \'n program, en tik dan op die herordeneer knoppie</string>
     <string name="home_app_sort_recommended">Aanbevole volgorde</string>
     <string name="home_app_sort_recommended_description">Geïnstalleerde en vasgestelde programme eerste</string>
@@ -146,7 +159,14 @@
     <!-- Home Screen - Sources Management -->
     <string name="sources_management_title">Verandering oorspronge</string>
     <string name="sources_search">Soek bronne en patches</string>
-    <string name="sources_sort_title">Sorteer foutbronne</string>
+    <!-- Which sources the sources page lists, each with what it keeps -->
+    <string name="sources_filter_all_description">Enige bron</string>
+    <string name="sources_filter_enabled_description">Bronkolle word geneem van</string>
+    <string name="sources_filter_disabled_description">Brone afgeskakel</string>
+    <string name="sources_filter_updates">Opdaterings</string>
+    <string name="sources_filter_updates_description">Bronne met \'n nuwer weergawe om te kry</string>
+    <string name="sources_filter_issues">Behoeftige aandag</string>
+    <string name="sources_filter_issues_description">Bronne wat geblokkeer is, kon nie laai nie of benodig \'n nuwer Morphe nie</string>
     <string name="sources_sort_manual">Handmatige volgorde</string>
     <string name="sources_sort_manual_hint">Druk lank op \'n bron om te herschik</string>
     <string name="sources_sort_last_updated">Laaste opgedateer</string>
@@ -158,12 +178,16 @@
     <string name="sources_management_report_issue">Rapporteer \'n probleem</string>
     <string name="sources_management_failed_to_open_url">Mislukking om URL oop te maak</string>
     <string name="sources_apps">Toepassings</string>
-    <string name="sources_apps_description">Raak \'n toepassing aan om dit uit hierdie bron te los of terug te bring, of druk lank om verskeie te kies. \'n Toepassing verlaat die tuisskerm sodra geen bron dit bring nie.</string>
+    <string name="sources_apps_description">Getikte programme kom van hierdie bron. Tik \'n program om dit uit te skakel of terug te kry. \'n Program verdwyn van die huisskerm sodra geen bron meer daardie program bring nie, tensy jy dit gepla het</string>
     <string name="sources_apps_brought">Deur hierdie bron gebring</string>
     <string name="sources_apps_left_out">Uitgelaat uit hierdie bron</string>
-    <string name="sources_apps_leave_out">Los uit</string>
-    <string name="sources_apps_leave_out_done">Uitgelaat</string>
-    <string name="sources_apps_bring_back">Bring terug</string>
+    <!-- Under an app left out of a source that keeps its home screen card because the user has patched it -->
+    <string name="sources_apps_stays_patched">Behou as gepla</string>
+    <!-- Marks an app (not a patch) the source started supporting since its app list was last opened -->
+    <string name="sources_apps_new">Nuut</string>
+    <string name="sources_apps_new_apps">Voeg nuwe programme by</string>
+    <!-- Under the Bring new apps switch in a source's app list, whichever way it is set. "It" is the patch source -->
+    <string name="sources_apps_new_apps_description">Programme wat dit later byvoeg, verskyn op die huisskerm</string>
     <string name="sources_management_prerelease_toggle">Voorvrystellings-veranderinge</string>
     <string name="sources_management_prerelease_toggle_description">Ontvang vroegtydige toegang tot nuwe eksperimentele weergawe-opdaterings</string>
     <string name="sources_prerelease_warning_title">Aktiveer pre-release patches?</string>
@@ -208,7 +232,6 @@
     <string name="sources_dialog_url_invalid">URL moet na \'n GitHub/GitLab repo of \'n .json-lêer wys</string>
     <string name="sources_dialog_preinstalled">Voor geïnstalleer</string>
     <string name="sources_dialog_community">Gemeenskapspleisters</string>
-    <string name="sources_dialog_choose_apps">Kies toepassings</string>
     <string name="sources_dialog_choose_apps_description">Kies watter van sy toepassings om te hou sodra die bron gelaai is.</string>
     <!-- Shown before leaving Morphe for the community patches website. The sources listed there are not reviewed by Morphe -->
     <string name="sources_dialog_community_notice_title">Derdeparty-pleisterbronne</string>
@@ -233,6 +256,8 @@ Enigiets wat jy van hierdie webwerf byvoeg, word op jou eie risiko gebruik."</st
     <string name="home_apk_availability_yes">Ja, help my om \'n APK te vind</string>
     <string name="home_apk_availability_no">Nee, ek het reeds \'n APK</string>
     <string name="home_apk_helper_download">Gebruik \'n hulp-app</string>
+    <string name="home_apk_helper_untrusted">\'n Hulpapp is geïnstalleer maar nog nie vertrou nie, dus word dit hier nie aangebied nie</string>
+    <string name="home_apk_helper_untrusted_action">Hulpbronne hersien</string>
     <string name="home_apk_helper_title">Laai af met \'n hulp-app</string>
     <string name="home_apk_helper_description">Morphe sal die helper-app hieronder vra om die oorspronklike APK af te laai en die lêer terug te gee</string>
     <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
@@ -365,7 +390,6 @@ Vir die beste resultate beveel hierdie app aan om 'n &lt;b&gt;volle APK&lt;/b&gt
     <string name="home_simple_bundle_select_remember">Gebruik altyd hierdie bron vir hierdie app</string>
     <!-- Color picker -->
     <string name="custom_color">Pasgemaakte kleur</string>
-    <string name="hex_color">Seshoekskleur</string>
     <string name="color_picker_shade">Versadiging en helderheid</string>
     <string name="color_picker_hue">Kleurtoon</string>
     <!-- Patch Options -->
@@ -432,7 +456,6 @@ Vir die beste resultate beveel hierdie app aan om 'n &lt;b&gt;volle APK&lt;/b&gt
     <string name="batch_patch_title">Groepbedekking</string>
     <string name="batch_patch_planning">Besig om die tou voor te berei…</string>
     <string name="batch_patch_preparing_next">Besig om die volgende app voor te berei…</string>
-    <string name="batch_patch_progress_counter">Gepatch %1$s van %2$s</string>
     <string name="batch_patch_summary">%1$s gepatch, %2$s gefaal, %3$s oorgeslaan</string>
     <string name="batch_patch_saved_hint">Die gepatchte programme is gestoor. Installeer hulle nou, of later vanaf die lys van gepatchde APK\'s in instellings</string>
     <string name="batch_patch_multiple_sources">Sommige programme kombineer pleisters van meer as een bron, wat konflik kan veroorsaak</string>
@@ -446,20 +469,27 @@ Vir die beste resultate beveel hierdie app aan om 'n &lt;b&gt;volle APK&lt;/b&gt
     <string name="batch_patch_force_version">Patcher tog</string>
     <string name="batch_patch_force_version_done">In elk geval in die tou geplaas, die app mag breek</string>
     <string name="batch_patch_accept_signature_done">In elk geval in die tou geplaas, APK nie geverifieer nie</string>
+    <string name="batch_patch_apk_selected">APK gekies</string>
     <string name="batch_patch_edit_patches">Kies pleisters</string>
     <string name="batch_patch_state_no_apk">Geen APK</string>
     <string name="batch_patch_state_no_patches">Geen pleisters</string>
+    <string name="batch_patch_state_no_selection">Geen gekies nie</string>
+    <string name="batch_patch_no_selection">Geen van die beskiklike wysigings is gekies nie</string>
     <string name="batch_patch_policy_install">Installeer wanneer voltooi</string>
     <string name="batch_patch_policy_install_description">Installeer elke gepatchte program direk nadat die tou voltooi is. Af skakel die APK\'s vir later af</string>
-    <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
+    <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Begin</string>
     <string name="batch_patch_stop_title">Stop batch pleister?</string>
-    <string name="batch_patch_stop_description">Die program wat tans gepatch word en alles wat nog in die tou staan, sal gekanselleer word</string>
+    <string name="batch_patch_stop_description">Die program wat regstreeks gekol word en alles wat nog in die ry wag, sal gekanselleer word</string>
     <!-- Label of a footer button beside "Done". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_install_all">Installeer alles</string>
     <string name="batch_patch_install_failed">Installasie misluk</string>
     <string name="batch_patch_in_progress">Batch pleister is reeds besig</string>
     <string name="batch_patch_nothing_outdated">Elke gepatchte program is op datum</string>
+    <string name="batch_queue_add_action">Voeg by waglys</string>
+    <string name="batch_queue_pending_subtitle">Tik om te hersien en te begin</string>
+    <string name="batch_queue_clear_title">Maak die waglys skoon?</string>
+    <string name="batch_queue_clear_description">Alle toepassing sal uit die waglys verwyder word</string>
     <string name="shortcut_repatch_short">Her-pleister</string>
     <string name="shortcut_repatch_long">Her-pleister verouderde programme</string>
     <string name="shortcut_check_updates_short">Kyk vir opgraderings</string>
@@ -522,10 +552,10 @@ Vir die beste resultate beveel hierdie app aan om 'n &lt;b&gt;volle APK&lt;/b&gt
     <string name="root_pre_patch_installer_description">Jou toestel het worteltoegang. Kies of hierdie program gepatch moet word vir wortelmontering of standaardinstallasie</string>
     <string name="root_pre_patch_installer_mount_title">Wortelmonteringsmodus</string>
     <string name="root_pre_patch_installer_mount_description">Patches vir wortelmontering, monteer dan die APK oor die ooreenstemmende standaardprogram. Geen GmsCore benodig nie</string>
-    <string name="root_mount_module_unmount_warning">As KernelSU verstek Unmount modules geaktiveer het, maak KernelSU oop > Superuser > die app wat jy gemonteer het > Profiel > Pasgemaak en deaktiveer Unmount modules. Andersins kan die gemonteerde gepatchde APK nie effektief wees nie, selfs al wys Morphe dit as gemonteer.</string>
+    <string name="root_mount_module_unmount_warning">As KernelSU \"Verwyder modules by verstek\" aangeskakel het, oop KernelSU &lt;b&gt;&amp;gt;&lt;/b&gt; Superuser &lt;b&gt;&amp;gt;&lt;/b&gt; die program wat u gemonteer het &lt;b&gt;&amp;gt;&lt;/b&gt; Profiel &lt;b&gt;&amp;gt;&lt;/b&gt; Aangepas en skakel \"Modules verwyder\" af. Andersins mag die gemonteerde ge-kolte APK nie werksaam wees nie, selfs al dui Morphe aan dat dit gemonteer is</string>
     <string name="root_pre_patch_installer_standard_title">Standaard installasiemodus</string>
     <string name="root_pre_patch_installer_standard_description">Patches as \'n normale APK met GmsCore ondersteuning. Jou installeringsinstelling word gebruik na die patching.</string>
-    <string name="root_pre_patch_installer_hint">Hierdie patch modus is afsonderlik van Instellings > Stelsel > Installeerder en kan nie verander word ná patching nie.</string>
+    <string name="root_pre_patch_installer_hint">Gevraag tydens Instellings &gt; Flikkering &gt; Installasie &gt; Installateur-seleksie-aantekening is aan. Die flikkermodus kan nie na flikkering verander word nie</string>
     <!-- Patcher Screen -->
     <string name="patcher_error_copied">Fout gekopieer na knipbord</string>
     <string name="patcher_error_log">Foutlog</string>
@@ -553,7 +583,7 @@ Vir die beste resultate beveel hierdie app aan om 'n &lt;b&gt;volle APK&lt;/b&gt
     <string name="patcher_field_output_size">Uitsetgrootte</string>
     <!-- How long patching took -->
     <string name="patcher_field_time">Tyd</string>
-    <!-- Average and peak memory the patcher process held while it ran -->
+    <!-- Average and peak heap the patcher held while it ran -->
     <string name="patcher_field_memory_average">Gemiddelde geheue</string>
     <string name="patcher_field_memory_max">Maksimum geheue</string>
     <!-- Fastest read or write rate reached while patching, in data per second -->
@@ -607,7 +637,7 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <string name="patcher_storage_badge_missing">Nie gevind nie</string>
     <string name="batch_patch_option_paths_skipped">Patch-opsielêers ontbreek en sal oorgeslaan word: %1$s</string>
     <string name="patcher_missing_patches_title">Sommige patches is weg</string>
-    <string name="patcher_missing_patches_description">Die gestoorde keuse vir hierdie app noem patches wat nie meer deur enige geaktiveerde bron aangebied word nie. Deur voort te gaan, word die app sonder hulle gepatch</string>
+    <string name="patcher_missing_patches_description">Die bewaarde keuse vir hierdie program naam kolle wat geen aktiewe bron meer aanbied nie. Gaan voort om die program sonder hulle te kol</string>
     <string name="patcher_missing_patches_label">Nie meer aangebied nie</string>
     <string name="patcher_option_paths_gone_title">Patch-opsielêers ontbreek</string>
     <string name="patcher_option_paths_gone_description">Een of meer patch-opsies wys na lêers wat nie meer bestaan nie. Verwyder die paaie om sonder hulle te patch, of sit die lêers terug en probeer weer.</string>
@@ -625,12 +655,6 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <string name="battery_optimization_dialog_title">Beskerming teen agtergrondpleister</string>
     <string name="battery_optimization_dialog_description">Sommige toestelle kan die pleister stop wanneer die toepassing geminimaliseer word. Laat Morphe sonder batterybeperkings loop om te verseker dat die pleister betroubaar voltooi word.</string>
     <string name="battery_optimization_not_now">Nie nou nie</string>
-    <!-- Memory limit dialog, shown after the patcher process was killed -->
-    <string name="patcher_memory_adjustment_title">Nie genoeg geheue</string>
-    <string name="patcher_memory_adjustment_description">Die patcher is deur die stelsel gestop terwyl dit met \'n %1$d MB geheueperk loop. Deur die perk na %2$d MB te verlaag, maak die patcher \'n kleiner teiken en kan die loop laat klaarmaak.</string>
-    <string name="patcher_memory_adjustment_description_at_minimum">Die patcher is deur die stelsel gestop terwyl dit met \'n %1$d MB geheueperk loop, wat reeds die laagste beskikbare is. Probeer om met minder patchbronne te patch, of kies minder patches.</string>
-    <string name="patcher_memory_adjustment_description_finished">Die stelsel het die patcher teen \'n geheueperk van %1$d MB gestop, en dit het eers by %2$d MB klaargekom. Om by %2$d MB te begin, slaan daardie verlore poging volgende keer oor</string>
-    <string name="patcher_memory_adjustment_apply">Verlaag na %1$d MB</string>
     <!-- Patcher Screen - Patcher Worker -->
     <string name="patcher_notification_title">Patching aan die gang…</string>
     <string name="patcher_notification_text">Tik om terug te keer na die patcher</string>
@@ -665,8 +689,6 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <!-- Expert patcher Screen -->
     <string name="patching_app">App word gepleister</string>
     <string name="memory_usage">Geheiebruik</string>
-    <!-- "%1$s" is the share of the memory limit the patcher is using, already formatted as a percentage. "%2$s" is that limit in megabytes. -->
-    <string name="memory_usage_detail">%1$s van %2$s MB</string>
     <string name="cpu_usage">SVE-gebruik</string>
     <string name="storage_io_usage">Berging I/O</string>
     <!-- Patcher Screen - Other hidden strings -->
@@ -674,8 +696,9 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <string name="failed_to_execute_patch">Kon nie %s toepas nie</string>
     <string name="patched_app_save_failed_toast">Kon nie gepatchte app stoor nie</string>
     <string name="plugin_activity_dialog_body">Gebruikers interaksie is vereis om met hierdie inprop voort te gaan</string>
-    <string name="patcher_process_exit_message">Patcherproses het met kode %s afgehandel</string>
-    <string name="patcher_heap_exhausted_message">Die patcher het nie genoeg geheue gehad nie met \'n %1$d MB-heap. Hierdie app is te groot vir die geselekteerde patches. Probeer om met minder patchbronne te patch, of kies minder patches.</string>
+    <string name="patcher_process_killed_message">Die stelsel het die patcher gestop voordat dit voltooi is, gewoonlik om geheue vry te stel. Maak ander programme toe en probeer weer</string>
+    <!-- Shown when a run fills the heap it was given. "%1$s" is the heap in megabytes. -->
+    <string name="patcher_out_of_memory_message">Die patsjering het uit geheue geloop met \'n %1$s MB-heap. Hierdie toepassing is te groot vir die geselekteerde patsjies. Probeer om met minder patsjibronne te werk, of selekteer minder patsjies</string>
     <string name="install_app_success">Suksesvol geïnstalleer</string>
     <string name="install_app_fail">Kon nie app installeer nie: %s</string>
     <string name="install_ignore_signature">Installeer nietemin</string>
@@ -716,7 +739,6 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <string name="mini_game_pairs_picker_subtitle">Draai kaarte om, vind die paar</string>
     <!-- Settings -->
     <string name="appearance">Voorkoms</string>
-    <string name="advanced">Gevorderd</string>
     <string name="system">Stelsel</string>
     <!-- Settings - Appearance Tab - Background animation -->
     <string name="settings_appearance_background">Agtergrond animasie</string>
@@ -744,6 +766,8 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <!-- %1$s is a holiday background name, such as Halloween. %2$s is a date, such as November 1 -->
     <string name="settings_appearance_seasonal_background_notice">Die %1$s-agtergrond is aan tot %2$s terwyl seisoenale temas aan is</string>
     <!-- Settings - Appearance Tab - Theme -->
+    <string name="settings_appearance_display">Vertoning</string>
+    <string name="settings_appearance_effects">Effekte</string>
     <string name="settings_appearance_theme">Tema</string>
     <string name="settings_appearance_theme_mode">Tema-modus</string>
     <string name="settings_appearance_system">Stelsel</string>
@@ -752,37 +776,28 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <string name="settings_appearance_dynamic">Material You</string>
     <string name="settings_appearance_monochrome">Monochroom</string>
     <string name="settings_appearance_color_style">Kleurstyl</string>
-    <string name="settings_appearance_colors">Kleure</string>
     <string name="settings_appearance_accent_color">Aksentkleur</string>
     <string name="settings_appearance_pure_black">Pure Black</string>
     <string name="settings_appearance_pure_black_description">Gebruik ware swart agtergronde</string>
     <string name="settings_appearance_color_accents">Toep- en bronkleure</string>
-    <string name="settings_appearance_color_accents_description">Gebruik elke toep en bron se eie kleur in plaas van die aksentkleur</string>
+    <string name="settings_appearance_color_accents_description">Gebruik elke app- en bronkleur in plaas van die aksentkleur</string>
     <string name="settings_appearance_outlines">Omlyne</string>
     <string name="settings_appearance_outlines_description">Teken \'n dun randjie om kaarte, panele en knoppies</string>
+    <string name="settings_appearance_blur">Vervaging</string>
+    <string name="settings_appearance_blur_description">Vervag wat onder kopskrifte, bate en panele gly</string>
     <!-- Settings - Appearance Tab - Language Selector -->
-    <string name="settings_appearance_language_and_display">Taal en vertoning</string>
     <string name="settings_appearance_app_language">App taal</string>
     <string name="settings_appearance_app_language_current">Huidige taal</string>
+    <string name="settings_appearance_translate">Help vertaal Morphe</string>
     <string name="settings_appearance_translations_info_title">Vertalings vir sommige tale is dalk ontbrekend of onvoltooid</string>
-    <string name="settings_appearance_translations_info_text">"Om nuwe tale te vertaal of die bestaande vertalings te verbeter, besoek
-%s"</string>
     <!-- Settings - Appearance Tab - Interface Scale -->
     <string name="settings_appearance_ui_scale">Koppelvlak-skaal</string>
-    <string name="settings_appearance_ui_scale_current">Huidige skaal</string>
-    <string name="settings_appearance_ui_scale_description">Skaal alles in die toepassing, bo-op die stelsel se skermzoem en lettergrootte.</string>
-    <string name="settings_appearance_ui_scale_preview_title">Voorbeeldinstelling</string>
-    <string name="settings_appearance_ui_scale_preview_subtitle">Teks en kontroles op hierdie skaal</string>
     <!-- Settings - Appearance Tab - Home Screen Section -->
     <string name="settings_appearance_home_screen">Tuisskerm</string>
     <string name="settings_appearance_greeting_phrases">Groetfrases</string>
-    <string name="settings_appearance_greeting_phrases_subtitle">Wys \'n groet-boodskap op die tuisskerm</string>
-    <string name="settings_appearance_app_grouping">Toepassingsgroepering</string>
-    <string name="settings_appearance_app_grouping_description">Wys \'n skakelaar om programme volgens bron of kategorie te groepeer</string>
+    <string name="settings_appearance_greeting_phrases_subtitle">Wys \'n begroetingboodskap</string>
     <string name="settings_appearance_repatch_notice">Re-patch-kennisgewing</string>
-    <string name="settings_appearance_repatch_notice_description">Wys \'n banier wanneer gepatchte programme weer gepatch kan word</string>
-    <string name="settings_appearance_sort_button">Sorteer- en filterknoppie</string>
-    <string name="settings_appearance_sort_button_description">Wys die sorteer- en filterknoppie op die tuisskerm</string>
+    <string name="settings_appearance_repatch_notice_description">Wys \'n banier wanneer gemodifieerde opnuut gepatch kan word</string>
     <string name="settings_appearance_app_card_colors">App-kaartkleure</string>
     <string name="settings_appearance_app_card_colors_default">Verstek</string>
     <string name="settings_appearance_app_card_colors_default_description">Gee elke app die kleur van sy eie bundel</string>
@@ -827,8 +842,6 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
     <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="settings_appearance_app_icon_change_dialog_confirm">Verander ikoon</string>
     <!-- Settings - Advanced Tab - Updates Section -->
-    <string name="settings_advanced_updates">Opdaterings</string>
-    <string name="settings_advanced_patcher">Patcher</string>
     <string name="settings_advanced_updates_manager_prereleases">Voorafvrystellingsopdaterings</string>
     <!-- "Morphe" here is the app itself, not the patches. Do not translate this as pre-release patches -->
     <string name="settings_advanced_updates_manager_prereleases_description">Vroeë toegang tot nuwe Morphe-weergawes</string>
@@ -838,22 +851,20 @@ Deïnstallering sal alle toepassingsdata permanent uitwis."</string>
 
 Patches word nie beïnvloed nie: aktiveer voorafvrystelling-patches vir elke bron in die patch-bronnelys"</string>
     <string name="settings_advanced_updates_allow_metered">Mobiele data-opdaterings</string>
-    <string name="settings_advanced_updates_allow_metered_description">Laat Morphe en patch-opdaterings toe om oor mobiele data af te laai</string>
+    <string name="settings_advanced_updates_allow_metered_description">Laai Morphe-en patch-opdaterings oor mobiele data af</string>
     <string name="settings_advanced_updates_background_notifications">Agtergrondopdateringskennisgewings</string>
     <string name="settings_advanced_updates_background_notifications_description">Kontroleer periodiek vir opdaterings in die agtergrond en gee kennis wanneer dit beskikbaar is</string>
     <string name="settings_advanced_updates_background_notifications_description_fcm">Stuurkennisgewings vir nuwe vrystellings, selfs wanneer die toepassing gesluit is</string>
     <string name="settings_system_notifications_categories">Kennisgewingkategorieë</string>
     <string name="settings_system_notifications_categories_description">Kies in stelselinstellings watter opdaterings jou in kennis stel</string>
     <string name="settings_advanced_update_interval">Kontroleer frekwensie</string>
-    <string name="settings_advanced_update_interval_dialog_title">Kontroleer vir opdaterings</string>
-    <string name="settings_advanced_update_interval_hourly">Een keer per uur</string>
-    <string name="settings_advanced_update_interval_daily">Een keer per dag</string>
-    <string name="settings_advanced_update_interval_weekly">Een keer per week</string>
-    <string name="settings_advanced_update_interval_monthly">Een keer per maand</string>
-    <string name="settings_advanced_update_interval_chip_subtitle">Agtergrondkontroleer frekwensie</string>
+    <string name="settings_advanced_update_interval_hourly">Uurliks</string>
+    <string name="settings_advanced_update_interval_daily">Daagliks</string>
+    <string name="settings_advanced_update_interval_weekly">Weekliks</string>
+    <string name="settings_advanced_update_interval_monthly">Maandeliks</string>
     <string name="settings_advanced_update_interval_battery_warning">Agtergrondkontroles werk moontlik nie betroubaar op sommige toestelle nie. Vervaardigers soos Xiaomi, Huawei, Samsung en OnePlus beperk dikwels agtergrondprosesse aggressief om battery te spaar</string>
     <string name="settings_advanced_external_batch_patch">Laat eksterne snellers toe</string>
-    <string name="settings_advanced_external_batch_patch_description">Laat outomatiseringstoepassings bondelopdatering via ’n intent begin.</string>
+    <string name="settings_advanced_external_batch_patch_description">Laat outomatiseringsapps toe om pakhetering te begin</string>
     <string name="external_batch_patch_title">Begin batch pleister?</string>
     <string name="external_batch_patch_description">%s wil Morphe laat programme patch en installeer</string>
     <string name="external_batch_patch_trust_caller">Altyd hierdie program toelaat</string>
@@ -875,22 +886,24 @@ Patches word nie beïnvloed nie: aktiveer voorafvrystelling-patches vir elke bro
     <string name="notification_mount_replaced_title">%1$s is nie meer gepatch nie</string>
     <string name="notification_mount_replaced_text">v%1$s het die gepatchte v%2$s vervang. Maak Morphe oop om dit te herstel</string>
     <!-- Settings - Advanced Tab - Expert settings Section -->
-    <string name="settings_advanced_expert">Spesialisinstellings</string>
     <string name="settings_advanced_expert_mode">Spesialismodus</string>
-    <string name="settings_advanced_expert_mode_description">Skakel ingewikkelde Morphe-patchinstellings en aanpassingsopsies in</string>
+    <string name="settings_advanced_expert_mode_description">Ontsluit gevorderde patch-instellings en -opsies</string>
     <string name="settings_advanced_expert_mode_dialog_title">Aktiveer Expert modus?</string>
     <string name="settings_advanced_expert_mode_dialog_message">Expert modus gee meer beheer oor hoe patches toegepas word, maar miskonfigureer instellings in expert modus kan lei tot \'n nie-funksionele aansoek</string>
     <string name="settings_advanced_strip_unused_libs">Optimaliseer vir toestelargitektuur</string>
-    <string name="settings_advanced_strip_unused_libs_description">Verwyder ongebruikte CPU-argitektuur-biblioteke en gedeelde APK-modules</string>
+    <string name="settings_advanced_strip_unused_libs_description">Verwyder ongebruikte inheemde biblioteekgroepe en APK-splitsings</string>
     <!-- Settings - Advanced Tab - GitHub PAT Settings -->
-    <string name="settings_advanced_github_pat_description">Vereis vir pull request bronne</string>
+    <string name="settings_advanced_github_pat_summary">Ontsluit bronne van pull-aanvrae en privaat repositorys</string>
+    <string name="settings_advanced_github_pat_description">Vir pull-aanvrae-bronne, private repositorys en \'n hoër GitHub-typlimiet</string>
     <string name="settings_advanced_github_pat_configured">Token gekonfigureer</string>
-    <string name="settings_advanced_github_pat_how_to_get">Hoe kry jy \'n token</string>
-    <!-- "%s" is "GitHub Personal Access Token", kept in English because GitHub has no localized UI -->
-    <string name="settings_advanced_github_pat_dialog_title">Stel %s in</string>
-    <!-- "%3$s" is "GitHub Personal Access Token", "%2$s" is the GitHub scope name and "%1$s" is the GitHub website. "PAT" is its abbreviation, keep it in English -->
-    <string name="settings_advanced_github_pat_dialog_description">"Stel 'n %3$s in om pull requests as eksterne bronne te kan byvoeg. Skep 'n PAT met omvang %2$s op
-%1$s"</string>
+    <string name="settings_advanced_github_pat_create">Skep \'n teken op GitHub</string>
+    <!-- "%s" is the GitHub scope name, keep it as is -->
+    <string name="settings_advanced_github_pat_create_description">Stel GitHub oop met die %s-omvang reeds gekies</string>
+    <string name="settings_advanced_github_pat_checking">Beoordeel tans met GitHub…</string>
+    <!-- "%s" is the GitHub account name -->
+    <string name="settings_advanced_github_pat_account">By GitHub aangemeld as %s</string>
+    <string name="settings_advanced_github_pat_rejected">GitHub het hierdie teken afgewys. Dit kan verstryk of herroep wees</string>
+    <string name="settings_advanced_github_pat_unreachable">Kon nie GitHub bereik om hierdie teken te kontroleer nie</string>
     <string name="settings_advanced_github_pat_export_include_label">Insluit in settings eksport</string>
     <!-- "PAT" is a GitHub Personal Access Token, keep it in English because GitHub has no localized UI -->
     <string name="settings_advanced_github_pat_export_include_supporting">Voeg hierdie PAT by uitgevoerde Morphe-instellings</string>
@@ -898,7 +911,6 @@ Patches word nie beïnvloed nie: aktiveer voorafvrystelling-patches vir elke bro
     <string name="settings_advanced_github_pat_export_warning">Moenie jou PAT deel nie. As jy dit in \'n settings eksport insluit, hou daardie lêer privaat want dit bevat die token</string>
     <!-- Settings - Advanced Tab - Patch Options Section -->
     <string name="settings_advanced_patch_options">Patch opsies</string>
-    <string name="settings_advanced_patch_options_youtube_description">Handelsmerk- en kopskrifopsies</string>
     <string name="settings_advanced_patch_options_restart_message">Om patch opsies te verander vereis herpatching van die app om in werking te tree</string>
     <string name="settings_advanced_patch_options_expert_mode_notice">In Spesialismodus sal patch opsies beskikbaar wees tydens die patch proses</string>
     <string name="settings_advanced_patch_options_loading">Laai patch opsies…</string>
@@ -968,7 +980,6 @@ Die beeld afmetings moet soos volg wees:
 - drawable-xxhdpi: 387x144 px
 - drawable-xxxhdpi: 512x192 px"</string>
     <!-- Settings - Advanced Tab - Patch Options Section: Hide Shorts -->
-    <string name="settings_advanced_patch_options_hide_shorts_features">Verberg Shorts funksies</string>
     <string name="settings_advanced_patch_options_hide_shorts_app_shortcut">Verberg Shorts app kortpad</string>
     <string name="settings_advanced_patch_options_hide_shorts_app_shortcut_description">Verwyder Shorts uit die langdruk-kieslys van die lanseerder</string>
     <string name="settings_advanced_patch_options_hide_shorts_widget">Verberg Shorts widget</string>
@@ -976,6 +987,7 @@ Die beeld afmetings moet soos volg wees:
     <!-- Settings - System Tab - Installer Section -->
     <string name="installer">Installer</string>
     <string name="installer_settings_title">Standaard installer</string>
+    <string name="settings_installation">Installasie</string>
     <string name="installer_title">Kies installer</string>
     <string name="installer_internal_description">Gebruik die Android pakketinstalleerder</string>
     <string name="installer_play_store_description">Gebruik die stelsel se installeerder en stel Google Play Winkel as die installasiefontein in</string>
@@ -1006,19 +1018,21 @@ Die beeld afmetings moet soos volg wees:
     <string name="installer_unavailable_title">%s beskikbaar nie</string>
     <string name="installer_unavailable_message">Jou voorkeurs installer (%s) is tans nie beskikbaar nie. Jy kan die probleem regstel en weer probeer, of die standaard installer gebruik</string>
     <string name="installer_unavailable_shizuku_hint">Maak seker Shizuku loop en toestemming is aan hierdie app gegee</string>
-    <string name="installer_use_standard">Gebruik standaard</string>
+    <string name="installer_choose_another">Kies \'n ander installeerder</string>
     <string name="installer_play_store_warning_title">As Play Winkel installeer?</string>
     <string name="installer_play_store_warning_message">Die gepatchte app sal as geïnstalleer vanaf die Google Play Winkel aangeteken word. Dit kan dienste soos Android Auto help om dit as \'n Play Winkel-app te herken, maar dit is nie vir elke app of toestel gewaarborg nie. Gedrag kan verskil na gelang van die Android-weergawe, ROM, toestelhandelsmerk en app-spesifieke kontroles.</string>
     <string name="installer_play_store_warning_risk">Play Winkel kan opdaterings aanbied vir die gewysigde app. Die installering van daardie opdatering sal die gewysigde APK vervang met die oorspronklike weergawe en die wysigings verwyder. As u gevra word om op te dateer, tik op die drie-punt-menu op die app se Play Winkel-bladsy en kies \"Deaktiveer opdaterings\"</string>
     <string name="installer_play_store_warning_continue">Ek verstaan, gaan voort</string>
     <string name="installer_play_store_mode">Installeer as Play Winkel</string>
-    <string name="installer_play_store_mode_description">Teken die Google Play Winkel as die installasiebron vir hierdie installasiemetode aan.</string>
+    <string name="installer_play_store_mode_description">Merk Google Play-winkel as die installeerbron</string>
     <string name="settings_prompt_installer_on_install">Installeerder seleksie prompt</string>
-    <string name="settings_prompt_installer_on_install_description">Wys die installeerder seleksie dialoog elke keer as \'n gepatchte toepassing geïnstalleer word</string>
+    <string name="settings_prompt_installer_on_install_description">Vraag hoe om elke app te installeer: met root voor flikkering, andersins daarna</string>
     <string name="settings_auto_install_with_shizuku">Outomatiese installering na patstelling</string>
-    <string name="settings_auto_install_with_shizuku_description">Installeer die gepatchte APK sodra die patching voltooi is</string>
+    <string name="settings_auto_install_with_shizuku_description">Installeer of mount die geflakte APK so gou as wat flikkering voltooi is</string>
     <string name="settings_auto_uninstall_with_shizuku">Outo-deïnstallering by konflik</string>
-    <string name="settings_auto_uninstall_with_shizuku_description">Wanneer outo-installasie met Shizuku gebruik word, deïnstalleer eers die bestaande app as Android \'n handtekeningskonflik rapporteer. Dit kan appdata verwyder.</string>
+    <string name="settings_auto_uninstall_with_shizuku_description">Uninstall the existing app on a signature conflict. This can remove app data</string>
+    <string name="settings_ignore_install_target_rules">Ignoreer instellingstekenvereistes</string>
+    <string name="settings_ignore_install_target_rules_description">Laat toe dat die installasieteken vereistes afgeskakel word en dié wat dit uitsluit, aangeskakel word. Die gepatste app mag nie werk nie</string>
     <string name="settings_auto_uninstall_warning_title">Outo-deïnstallering aktiveer?</string>
     <string name="settings_auto_uninstall_warning_message">As Android \'n handtekeningskonflik tydens Shizuku-outo-installasie rapporteer, sal Morphe die bestaande app deïnstalleer voordat die gepatchte APK geïnstalleer word.</string>
     <string name="settings_auto_uninstall_warning_risk">Dit kan appdata verwyder. Indien die gepatchte APK nie na deïnstallering kan installeer nie, is die vorige app dalk reeds verwyder.</string>
@@ -1047,23 +1061,14 @@ Besonderhede: %2$s"</string>
     <!-- Settings - System Tab - Performance Section -->
     <string name="settings_system_battery_optimization">Battery-optimalisering</string>
     <string name="settings_system_battery_optimization_description">Hou die patcher lopend wanneer die toepassing geminimaliseer is</string>
-    <string name="settings_system_background">Agtergrond</string>
-    <string name="settings_system_process_runtime">Proses tydloop</string>
-    <string name="settings_system_process_runtime_description">Voer patching in \'n aparte proses uit vir beter stabiliteit</string>
-    <string name="settings_system_process_runtime_memory_limit_description">Hoër limiete versnel patching op toestelle wat dit kan hanteer</string>
-    <string name="settings_system_process_runtime_enable">Aktiveer proses tydloop</string>
-    <string name="settings_system_memory_limit_subtitle">Geheue beskikbaar vir patching</string>
-    <string name="settings_system_process_runtime_heap_limit_ignored">Hierdie toestel het die geheueperk tydens die laaste lopie geïgnoreer, dus kan die toepassing van regstellings terugval om binne Morphe te loop.</string>
-    <string name="settings_system_memory_limit_warning">\'n Lae geheugelimiet kan mislukking veroorsaak wanneer groter apps gepatched word</string>
-    <string name="settings_system_memory_limit_high_warning">\' n Hoë geheue-limiet kan patching op sommige toestelle baie stadiger maak. Verhoog dit net as patching steeds by laer limiete misluk.</string>
-    <string name="settings_system_process_runtime_enabled_description">%s MB limiet</string>
-    <string name="settings_system_process_runtime_disabled_description">Klik om te konfigureer</string>
-    <string name="settings_system_process_runtime_description_not_available">Hierdie kenmerk vereis Android 11 of later</string>
+    <string name="settings_system_process_runtime">Patcher-runtime</string>
+    <string name="settings_system_jvm_runtime_enable">Gebruik ingeboude VM</string>
+    <string name="settings_system_jvm_runtime_description">Vlekke in \'n Java-VM wat Morphe dra, wat soveel geheue kan gebruik as wat die toestel oor het. Skakel af om met Android se tydeloop te flikker</string>
     <string name="settings_system_patcher_completion_sound">Voltooiingklank</string>
     <string name="settings_system_patcher_completion_sound_description">Speel \'n kenmerkende toon vir sukses of mislukking wanneer die patching voltooi is</string>
     <!-- Settings - System Tab - Notifications Section -->
     <string name="settings_system_notifications">Kennisgewings</string>
-    <string name="settings_system_notifications_description">Konfigureer agtergrondwaarskuwings en voltooiingsklanke</string>
+    <string name="settings_system_notifications_description">Hoe Morphe jou op die hoogte hou</string>
     <string name="settings_system_notifications_success_sound">Suksesklank</string>
     <string name="settings_system_notifications_error_sound">Foutklank</string>
     <string name="settings_system_notifications_sound_default">Verstek</string>
@@ -1073,9 +1078,8 @@ Besonderhede: %2$s"</string>
     <string name="settings_system_notifications_sound_reset">Stel terug na verstek</string>
     <string name="settings_system_notifications_ringtone_picker_title">Kies \'n toon</string>
     <!-- Settings - System Tab - Import and Export Section -->
-    <string name="settings_system_import_export">Importeer &amp; eksporteer</string>
     <string name="settings_system_signing_key">Ondertekeningsleutel</string>
-    <string name="settings_system_signing_key_description">Rugsteun en herstel die sleutel waarmee jou gepatchte apps onderteken word</string>
+    <string name="settings_system_signing_key_description">Rugsteun of herstel die sleutel wat gepatchte apps onderteken</string>
     <string name="settings_system_signing_key_dialog_description">Elke app wat deur Morphe gepatch word, word met hierdie sleutel onderteken. Hou \'n kopie: sonder dit kan gepatchte apps slegs opgedateer word nadat hulle verwyder is</string>
     <string name="settings_system_signing_key_missing">Morphe skep een met jou eerste patch</string>
     <string name="settings_system_signing_key_created">Geskep %s</string>
@@ -1120,7 +1124,6 @@ Besonderhede: %2$s"</string>
     <string name="settings_system_export_debug_logs_export_failed">Kon nie logboeke uitvoer nie</string>
     <string name="settings_system_export_debug_logs_export_success">Logboeke uitgevoer</string>
     <!-- Settings - System Tab - Files & Storage Section -->
-    <string name="settings_system_files">Lêers &amp; berging</string>
     <string name="settings_system_apks_size">Totale grootte: %s</string>
     <string name="settings_system_apks_delete_all_confirm">Dit sal die gestoorde APK-lêers wat hier gewys word permanent uitvee.</string>
     <string name="settings_system_apks_delete_selected_title">Geselekteerde APK\'s uitvee?</string>
@@ -1131,7 +1134,11 @@ Besonderhede: %2$s"</string>
     <string name="settings_system_apks_export_zip_failed">Kon nie die geselekteerde APK\'s uitvoer nie</string>
     <!-- Settings - System Tab - Storage Management screen -->
     <string name="settings_system_storage_management_title">Stooringsbestuur</string>
-    <string name="settings_system_storage_management_description">Hersien skyfgebruik en maak gekasste lêers skoon</string>
+    <string name="settings_system_storage_management_description">Wys skyfgewverbruik en skoon kasgelêre</string>
+    <!-- Shown under how much Morphe takes up. "%1$s" is the space still available on the device, already formatted with its unit. "Free" as in unused, not as in free of charge. -->
+    <string name="settings_system_storage_free">%1$s gratis</string>
+    <string name="settings_system_storage_saved_apks">Gestoorde APK\'s</string>
+    <string name="settings_system_storage_caches">Kashe</string>
     <string name="settings_system_storage_keystore_title">Ondertekeningsleutestoor</string>
     <string name="settings_system_storage_app_data_title">Programdata</string>
     <string name="settings_system_storage_patch_bundles_title">Patch-bundels</string>
@@ -1147,6 +1154,8 @@ Besonderhede: %2$s"</string>
     <string name="settings_system_storage_clear_all_description">Maak alle herwinnbare kasruimte op een slag vry</string>
     <string name="settings_system_storage_clear_all_confirm">Dit vee die gekasde netwerkresponse, gestageerde installer kopieë en tydelike lêers uit. Oorspronklike en gepatchde APK\'s word behou.</string>
     <string name="settings_system_storage_cleared">%s vrygemaak</string>
+    <string name="settings_system_storage_patch_running_warning">\'n Patroon is tans aktief en hierdie lêers gebruik. Die opheling van hulle nou sal die mislukking veroorsaak</string>
+    <string name="settings_system_storage_clear_anyway">Kies om uit te vee</string>
     <string name="settings_system_storage_nothing_to_clear">Niets om uit te vee</string>
     <string name="settings_system_storage_open_app_info_title">Maak Android-appberging oop</string>
     <string name="settings_system_storage_open_app_info_description">Bestuur of vee alle Morphe-data uit via stelselinstellings</string>
@@ -1156,14 +1165,12 @@ Besonderhede: %2$s"</string>
     <string name="settings_system_save_patched_apks_description">Stoor \'n kopie van die gewysigde APK vir latere uitvoer of herinstallasie vanaf die bestuurder</string>
     <!-- Settings - System Tab - Storage Management - Patched APKs Management -->
     <string name="settings_system_patched_apks_title">Gepatched APK\'s</string>
-    <string name="settings_system_patched_apks_description">Bestuur gestoorde gepatchte toepassingslêers</string>
     <string name="settings_system_patched_apks_empty">Geen gepatched APK\'s stoor nie</string>
     <string name="settings_system_patched_apks_delete_title">Verwyder gepatched APK?</string>
     <string name="settings_system_patched_apks_deleted">Gepatched APK suksesvol verwyder</string>
     <string name="settings_system_patched_apks_delete_all_title">Alle patched APK\'s verwyder?</string>
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
     <string name="settings_system_original_apks_title">Original APK\'s</string>
-    <string name="settings_system_original_apks_description">Gestoor vir herpatching. Een weergawe per app word gehou</string>
     <string name="settings_system_original_apks_empty">Geen original APK\'s gestoor nie</string>
     <string name="settings_system_original_apks_deleted">Original APK suksesvol verwyder</string>
     <string name="settings_system_original_apks_delete_title">Verwyder original APK?</string>
@@ -1173,14 +1180,11 @@ Besonderhede: %2$s"</string>
     <string name="settings_system_patch_selections_title">Patch seleksies</string>
     <string name="settings_system_patch_selections_description">Spaar gestoor patch seleksies, behou na verwydering</string>
     <string name="settings_system_patch_selection_reset_all_confirm_title">Herstel alles?</string>
-    <string name="settings_system_patch_selection_reset_package_confirm_title">Herstel pakket seleksies?</string>
     <string name="settings_system_patch_selection_reset_selected_confirm_title">Geselekteerde pakkette terugstel?</string>
     <string name="settings_system_patch_selection_reset_source_confirm_title">Herstel bron seleksie?</string>
     <string name="settings_system_patch_selection_total_summary_format">%1$s oor %2$s</string>
-    <string name="settings_system_patch_selection_patches_in_sources_format">%1$s in %2$s</string>
     <string name="settings_system_patch_selection_source_format">Bron #%s</string>
     <string name="settings_system_patch_selection_reset_all_warning">Dit sal permanent alle gestoorde patch seleksies vir alle pakkette en bronne uitvee</string>
-    <string name="settings_system_patch_selection_reset_package_warning">Dit sal permanent alle gestoorde patch-seleksies vir &lt;b&gt;%s&lt;/b&gt; oor alle bronne verwyder.</string>
     <string name="settings_system_patch_selection_reset_source_warning">Dit sal permanent gestoorde patch-seleksies vir &lt;b&gt;%1$s&lt;/b&gt; in &lt;b&gt;%2$s&lt;/b&gt; verwyder.</string>
     <string name="settings_system_patch_selection_reset_selected_warning">Dit sal permanent alle gestoorde patch-seleksies vir die gekose pakkette verwyder.</string>
     <string name="settings_system_export_source_data_fail">Kon nie bron data uitvoer nie</string>
@@ -1197,11 +1201,13 @@ Besonderhede: %2$s"</string>
     <string name="copy_selection_same_source">Dieselfde bron</string>
     <!-- Settings - System Tab - Custom file picker -->
     <string name="settings_system_custom_file_picker">Pasgemaakte lêerkeurder</string>
-    <string name="settings_system_custom_file_picker_description">Gebruik Morphe se ingeboude lêerkeurder in plaas van die stelsel se verstek</string>
+    <string name="settings_system_custom_file_picker_description">Gebruik Morphe se ingeboude kiesprogram in plaas van die stelsel een</string>
     <!-- Settings - System Tab - APK download helper -->
     <string name="settings_system_apk_download_helper">APK-aflaaikhulp</string>
     <string name="settings_system_apk_download_helper_trusted_count">Vertroude: %1$d van %2$d</string>
     <string name="settings_system_apk_download_helper_dialog_description">Helperprogramme kan oorspronklike APK\'s vir jou aflaai. Slegs diegene wat jy hier vertrou, word in die aflaai-instruksies aangebied.</string>
+    <string name="settings_system_apk_download_helper_trust_title">Vertrou hierdie helper?</string>
+    <string name="settings_system_apk_download_helper_trust">Vertrou</string>
     <string name="settings_system_apk_download_helper_warning">Die APK kom van die helperprogram af, so vertrou net programme wat jy ken. Morphe kontroleer steeds die pakket, weergawe en handtekening van elke lêer voordat dit gepatch word.</string>
     <string name="settings_system_apk_download_helper_installed_by">Geïnstalleer deur %s</string>
     <string name="settings_system_apk_download_helper_installed_by_unknown">Installeerder onbekend</string>
@@ -1221,11 +1227,14 @@ Besonderhede: %2$s"</string>
     <string name="file_picker_show_hidden_files">Wys versteekte lêers</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Oor</string>
-    <string name="settings_system_manager_description">Kon nie \'%1$s\' aflaai nie: %2$s</string>
     <string name="credits">Krediete</string>
+    <string name="credits_description">Die mense agter Morphe</string>
+    <string name="settings_about_section_project">Projek</string>
+    <string name="settings_about_section_help">Hulp</string>
     <string name="credits_current_development">Huidige ontwikkeling</string>
     <string name="credits_prior_development">Vorige ontwikkeling</string>
     <string name="opensource_licenses">Open-source lisensies</string>
+    <string name="opensource_licenses_description">Die biblioteke waarop Morphe gebou is</string>
     <!-- Easter egg offered after seven taps on the version in the About dialog -->
     <string name="easter_egg_pill_title">\'n Keuse</string>
     <string name="easter_egg_pill_message">Neem die blou pil en die advertensies bly presies waar hulle is. Neem die rooi een en kyk hoe diep die bytekode gaan.</string>
@@ -1244,10 +1253,25 @@ Besonderhede: %2$s"</string>
     <string name="patches">Veranderinge</string>
     <string name="home">Tuis</string>
     <string name="settings">Instellings</string>
+    <string name="apps">Toepassing</string>
+    <!-- Sections the settings page lists, each opening a page of its own. A summary names what the section holds -->
+    <string name="settings_section_patcher">Laaier</string>
+    <string name="settings_section_updates">Opdaterings</string>
+    <string name="settings_section_patching">Lapwerk</string>
+    <string name="settings_section_appearance_summary">Hoe Morphe lyk</string>
+    <string name="settings_section_patch_options_summary">Wat eenvoudige modus programme opdateer met</string>
+    <string name="settings_section_general">Algemeen</string>
+    <string name="settings_section_patcher_summary">Wen programme op hierdie toestel geplaas word</string>
+    <string name="settings_section_help_info">Hulp &amp; inligting</string>
+    <string name="settings_section_about_summary">Meer oor Morphe en hoe om hulp te kry</string>
+    <string name="settings_section_local_files">Leërs</string>
+    <string name="settings_section_backup">Rugsteun</string>
+    <string name="settings_search">Soek instellings</string>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
     <string name="all">Almal</string>
     <string name="filter">Filter</string>
+    <string name="group">Groep</string>
     <string name="reset">Herstel</string>
     <string name="reset_all">Herstel Alles</string>
     <string name="apply">Pas toe</string>
@@ -1255,7 +1279,7 @@ Besonderhede: %2$s"</string>
     <string name="warning">Waarskuwing</string>
     <string name="error_">Fout</string>
     <string name="failed">Misluk</string>
-    <string name="cancelled">Gekanselleer</string>
+    <string name="canceled">Kanselleer</string>
     <string name="ready">Klaar</string>
     <string name="retry">Probeer weer</string>
     <string name="refresh">Herlaai</string>
@@ -1287,8 +1311,8 @@ Besonderhede: %2$s"</string>
     <string name="any_version">Enige</string>
     <string name="enabled">Geaktiveer</string>
     <string name="disabled">Gedeaktiveer</string>
-    <string name="selected">Gekies</string>
-    <string name="not_selected">Nie gekies nie</string>
+    <string name="state_selected">Gekies</string>
+    <string name="state_not_selected">Nie gekies nie</string>
     <string name="select_all">Kies alles</string>
     <string name="deselect_all">Deselekteer alles</string>
     <string name="reorder_list">Lysordening</string>
@@ -1315,6 +1339,10 @@ Besonderhede: %2$s"</string>
     <string name="available">Beskikbaar</string>
     <string name="continue_">Gaan voort</string>
     <string name="version">Weergawe</string>
+    <!-- Who made a patch source, as a field label -->
+    <string name="author">Auteur</string>
+    <!-- A file a patch source is added from, as a field label -->
+    <string name="file">Lêer</string>
     <string name="clone">Kloon</string>
     <!-- Button that starts patching the selected app. A verb, as in "patch this app" -->
     <string name="patch">Verandering</string>
@@ -1340,7 +1368,7 @@ Besonderhede: %2$s"</string>
     <string name="hide">Verberg</string>
     <string name="hidden">Versteek</string>
     <string name="unhide">Herstel</string>
-    <string name="unhide_done">Wys</string>
+    <string name="show_all">Wys almal</string>
     <string name="ignore">Ignoreer</string>
     <string name="stop_ignoring">Hou op om te ignoreer</string>
     <string name="logs">Logboeke</string>
@@ -1413,13 +1441,9 @@ Wil jy voortgaan?"</string>
     <string name="onboarding_sources_version_desc">Tik op die weergawe om die volledige veranderingslogboek vir hierdie bron te besigtig.</string>
     <string name="onboarding_sources_prerelease_desc">Aktiveer dit om voorlopige weergawe pleisters van hierdie bron te ontvang.</string>
     <string name="onboarding_appearance_tab_desc">Pas die voorkoms van die program aan: tema, aksentkleur en agtergrond.</string>
-    <string name="onboarding_appearance_theme_desc">Kies tussen ligte, donker of stelsel-tema. Jy kan ook \'n pasgemaakte aksentkleur kies of Dynamic Color aktiveer.</string>
     <string name="onboarding_expert_mode_desc">Aktiveer Ekspermodus om pleisterkeuse, pasgemaakte opsies en ander gevorderde funksies te ontsluit.</string>
     <!-- Translate "System" the same way as the System settings tab -->
-    <string name="onboarding_system_tab_title">Stelseltab</string>
-    <string name="onboarding_system_tab_desc">Keystore bestuur, invoer/uitvoer gereedskap en programinligting.</string>
     <string name="onboarding_system_installer_desc">Kies hoe gepleisterde programme geïnstalleer word: standaard, wortelmontering of Shizuku.</string>
-    <string name="onboarding_system_process_runtime_desc">Voer pleister aan in \'n aparte proses uit om stabiliteit te verbeter en geheuggebruik te beheer. Aanbeveel vir groot programme.</string>
     <string name="onboarding_system_file_picker_desc">Aktiveer om die ingeboude lêerblaaier in plaas van die stelselpiker te gebruik wanneer APK\'s of sleutelwinkels gekies word.</string>
     <!-- Tour prompt dialog shown after first successful patch install -->
     <string name="tour_prompt_title">Vinnige kenmerktoer</string>

@@ -178,12 +178,17 @@ data class PatchInfo(
     }
 
     /**
+     * Returns true if [versionName] is among the versions this patch names for [packageName],
+     * rather than one it takes because it names none.
+     */
+    fun targetsVersion(packageName: String, versionName: String?): Boolean =
+        versionName != null && pkgFor(packageName)?.versions?.contains(versionName) == true
+
+    /**
      * Returns true if [versionName] is an experimental target for [packageName].
      */
-    fun isExperimental(packageName: String, versionName: String?): Boolean {
-        if (versionName == null) return false
-        return pkgFor(packageName)?.experimentalVersions?.contains(versionName) == true
-    }
+    fun isExperimental(packageName: String, versionName: String?): Boolean =
+        versionName != null && pkgFor(packageName)?.experimentalVersions?.contains(versionName) == true
 
     /**
      * Returns the display name for [packageName] declared in the patch bundle, or null if not specified.
@@ -216,26 +221,11 @@ private fun PatchInfo.compatibilityKey() =
     compatiblePackages?.mapNotNull { it.packageName }?.sorted()?.joinToString().orEmpty()
 
 /**
- * Selection keys for [patches], in the same order, keeping same-named ones apart so they cannot
- * share one entry. Scoped to a single app's list, because that is how selections are stored.
+ * Selection keys for [patches], in the same order, given the way the patcher keys the patches
+ * themselves in [keyedFor], so a selection resolves to the patch it was made against.
  */
-fun uniqueNames(patches: List<PatchInfo>): List<String> {
-    val keys = patches.mapTo(mutableListOf()) { it.name }
-    val duplicates = patches.withIndex().groupBy { it.value.name }.filterValues { it.size > 1 }
-    if (duplicates.isEmpty()) return keys
-
-    val taken = patches.mapTo(mutableSetOf()) { it.name }
-    duplicates.forEach { (name, group) ->
-        // The most specific patch keeps the plain name, so already stored keys stay valid
-        group.sortedByDescending { it.value.compatibilityKey() }.drop(1).forEach { (index, _) ->
-            var occurrence = 1
-            var key = name
-            while (!taken.add(key)) key = "$name (${++occurrence})"
-            keys[index] = key
-        }
-    }
-    return keys
-}
+fun uniqueNames(patches: List<PatchInfo>): List<String> =
+    uniqueKeys(patches, PatchInfo::name) { it.compatibilityKey() }
 
 @Immutable
 data class CompatiblePackage(
@@ -303,7 +293,6 @@ data class Option<T>(
     /** Bounds declared by a slider or range option. Null for every other kind. */
     val sliderBounds: SliderBounds? = null,
 ) {
-    @Suppress("DEPRECATION")
     constructor(option: PatchOption<T>) : this(
         title = option.title ?: option.key,
         key = option.key,

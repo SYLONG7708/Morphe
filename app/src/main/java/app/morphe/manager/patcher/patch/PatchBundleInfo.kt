@@ -71,6 +71,7 @@ sealed class PatchBundleInfo {
 
             // Accumulate all per-package metadata in a single pass
             var isVersionExperimental = false
+            var targetsVersion = false
             var appIconColor: Int? = null
             var apkFileType: app.morphe.patcher.patch.ApkFileType? = null
             var displayName: String? = null
@@ -89,6 +90,7 @@ sealed class PatchBundleInfo {
                 if (version != null && !isVersionExperimental) {
                     isVersionExperimental = patch.isExperimental(packageName, version)
                 }
+                if (!targetsVersion) targetsVersion = patch.targetsVersion(packageName, version)
                 if (appIconColor == null) appIconColor = patch.appIconColorFor(packageName)
                 if (apkFileType == null) apkFileType = patch.apkFileTypeFor(packageName)
                 if (displayName == null) displayName = patch.displayNameFor(packageName)
@@ -105,6 +107,7 @@ sealed class PatchBundleInfo {
                 incompatible,
                 universal,
                 isVersionExperimental = isVersionExperimental,
+                targetsVersion = targetsVersion,
                 appIconColor = appIconColor,
                 apkFileType = apkFileType,
                 displayName = displayName,
@@ -121,6 +124,8 @@ sealed class PatchBundleInfo {
      * @param incompatible Patches that are compatible with the specified package name but not version.
      * @param universal Patches that are compatible with all packages.
      * @param isVersionExperimental Whether the selected app version is marked as experimental in this bundle.
+     * @param targetsVersion Whether the bundle names the selected app version itself, rather than
+     *   only taking it through patches that name no version.
      * @param appIconColor The 0xAARRGGBB app icon background color declared in the bundle, or null.
      * @param apkFileType The preferred/required APK file type declared in the bundle, or null.
      * @param displayName The app display name declared in the patch bundle (e.g. "YouTube"), or null.
@@ -138,6 +143,7 @@ sealed class PatchBundleInfo {
         val incompatible: List<PatchInfo>,
         val universal: List<PatchInfo>,
         val isVersionExperimental: Boolean = false,
+        val targetsVersion: Boolean = false,
         val appIconColor: Int? = null,
         val apkFileType: app.morphe.patcher.patch.ApkFileType? = null,
         val displayName: String? = null,

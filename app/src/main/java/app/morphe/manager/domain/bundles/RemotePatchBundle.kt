@@ -49,6 +49,14 @@ data class PatchBundleDownloadResult(
 
 typealias PatchBundleDownloadProgress = (bytesRead: Long, bytesTotal: Long?) -> Unit
 
+/** What a remote bundle reaches its source with, handed to it by whoever builds the bundle. */
+class RemoteBundleServices(
+    val http: HttpService,
+    val api: MorpheAPI,
+    val assetDownloader: AssetDownloader,
+    val prefs: PreferencesManager
+)
+
 sealed class RemotePatchBundle(
     name: String,
     uid: Int,
@@ -61,10 +69,11 @@ sealed class RemotePatchBundle(
     val endpoint: String,
     val autoUpdate: Boolean,
     enabled: Boolean,
+    protected val services: RemoteBundleServices,
 ) : PatchBundleSource(name, uid, displayName, createdAt, updatedAt, error, directory, enabled), KoinComponent {
-    protected val http: HttpService by inject()
+    protected val http = services.http
+    protected val api = services.api
     private val detachedSignatureVerifier: DetachedSignatureVerifier by inject()
-    protected val api: MorpheAPI by inject()
     private val assetDownloader: AssetDownloader by inject()
 
     protected abstract suspend fun getLatestInfo(): MorpheAsset
@@ -90,7 +99,7 @@ sealed class RemotePatchBundle(
     protected open suspend fun download(info: MorpheAsset, onProgress: PatchBundleDownloadProgress? = null) =
         withContext(Dispatchers.IO) {
             installPatchBundle("Downloading patch bundle") { staging ->
-                assetDownloader.downloadToFile(
+                services.assetDownloader.downloadToFile(
                     downloadUrl = info.downloadUrl,
                     saveLocation = staging,
                     onProgress = onProgress
@@ -378,8 +387,9 @@ class JsonPatchBundle(
     endpoint: String,
     autoUpdate: Boolean,
     enabled: Boolean,
+    services: RemoteBundleServices,
     val usePrerelease: Boolean = false,
-) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled) {
+) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, services) {
 
     /**
      * The branch the endpoint URL currently points to.
@@ -540,12 +550,12 @@ class JsonPatchBundle(
         enabled: Boolean
     ) = JsonPatchBundle(
         name, uid, displayName, createdAt, updatedAt,
-        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, usePrerelease,
+        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, services, usePrerelease,
     )
 
     fun copy(usePrerelease: Boolean) = JsonPatchBundle(
         name, uid, displayName, createdAt, updatedAt,
-        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, usePrerelease,
+        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, services, usePrerelease,
     )
 
     companion object {
@@ -600,8 +610,9 @@ class APIPatchBundle(
     endpoint: String,
     autoUpdate: Boolean,
     enabled: Boolean,
+    services: RemoteBundleServices,
     val usePrerelease: Boolean = false,
-) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled) {
+) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, services) {
     override suspend fun getLatestInfo() = api.getPatchesUpdate(usePrerelease).getOrThrow()
 
     // The endpoint is the API identifier rather than a browsable URL
@@ -634,12 +645,12 @@ class APIPatchBundle(
         enabled: Boolean
     ) = APIPatchBundle(
         name, uid, displayName, createdAt, updatedAt,
-        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, usePrerelease,
+        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, services, usePrerelease,
     )
 
     fun copy(usePrerelease: Boolean) = APIPatchBundle(
         name, uid, displayName, createdAt, updatedAt,
-        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, usePrerelease,
+        installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, services, usePrerelease,
     )
 }
 
@@ -654,8 +665,9 @@ class GitHubPullRequestBundle(
     directory: File,
     endpoint: String,
     autoUpdate: Boolean,
-    enabled: Boolean
-) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled) {
+    enabled: Boolean,
+    services: RemoteBundleServices
+) : RemotePatchBundle(name, uid, displayName, createdAt, updatedAt, installedVersionSignature, error, directory, endpoint, autoUpdate, enabled, services) {
 
     override suspend fun getLatestInfo() = withContext(Dispatchers.IO) {
         val (owner, repo, prNumber) = endpoint.split("/").let { parts ->
@@ -666,8 +678,7 @@ class GitHubPullRequestBundle(
     }
 
     override suspend fun download(info: MorpheAsset, onProgress: PatchBundleDownloadProgress?) = withContext(Dispatchers.IO) {
-        val prefs: PreferencesManager by inject()
-        val gitHubPat = prefs.gitHubPat.get().also {
+        val gitHubPat = services.prefs.gitHubPat.get().also {
             if (it.isBlank()) throw RuntimeException("PAT is required")
         }
 
@@ -794,6 +805,7 @@ class GitHubPullRequestBundle(
         directory,
         endpoint,
         autoUpdate,
-        enabled
+        enabled,
+        services
     )
 }

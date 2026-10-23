@@ -10,7 +10,6 @@ import app.morphe.manager.BuildConfig
 import app.morphe.manager.data.platform.Filesystem
 import app.morphe.manager.data.platform.NetworkInfo
 import app.morphe.manager.domain.installer.InstallResult
-import app.morphe.manager.domain.installer.InstallerManager
 import app.morphe.manager.domain.installer.RootInstaller
 import app.morphe.manager.domain.installer.SessionDeadException
 import app.morphe.manager.domain.installer.SessionInstaller
@@ -188,7 +187,7 @@ class EcosystemUpdateCoordinator(
         val expectedPackage = requireNotNull(artifact.packageName)
 
         val result = when {
-            sessionInstaller.shizukuAvailability(InstallerManager.InstallTarget.MANAGER_UPDATE).available ->
+            sessionInstaller.shizukuAvailability().available ->
                 sessionInstaller.installShizuku(localFile, expectedPackage)
 
             rootInstaller.hasRootAccess() -> {
@@ -508,7 +507,7 @@ class EcosystemUpdateCoordinator(
             destination
         }
 
-    private fun validateDownloadedArtifact(file: File, artifact: UpdateArtifact): Boolean {
+    private suspend fun validateDownloadedArtifact(file: File, artifact: UpdateArtifact): Boolean {
         if (!file.isFile) return false
         if (artifact.size > 0 && file.length() != artifact.size) return false
         val hash = file.sha256OrNull() ?: return false

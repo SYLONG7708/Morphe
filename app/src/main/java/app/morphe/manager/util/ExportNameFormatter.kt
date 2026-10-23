@@ -38,7 +38,10 @@ object ExportNameFormatter {
             .trim()
             .ifEmpty { DEFAULT_TEMPLATE }
             .let { if (it.endsWith(".apk", ignoreCase = true)) it else "$it.apk" }
-        return FilenameUtils.sanitize(resolved)
+        // An app name made only of symbols would leave nothing before the extension
+        return FilenameUtils.sanitize(resolved, keepScripts = true)
+            .takeUnless { it.substringBeforeLast('.').isBlank() }
+            ?: "${FilenameUtils.sanitize(data.packageName)}.apk"
     }
 
     private fun replaceVariables(template: String, data: PatchedAppExportData): String {
@@ -68,15 +71,13 @@ object ExportNameFormatter {
         }
     }
 
-    private fun formatVersion(raw: String?): String? {
-        val normalized = raw?.trim()?.lowercase()?.removePrefix("v")?.takeUnless { it.isEmpty() } ?: return null
-        return "v$normalized"
-    }
+    private fun formatVersion(raw: String?): String? = bareVersion(raw)?.let { "v$it" }
 
-    private fun formatPatchesVersion(raw: String?): String? {
-        val normalized = raw?.trim()?.lowercase()?.removePrefix("v")?.takeUnless { it.isEmpty() } ?: return null
-        return "patches-v$normalized"
-    }
+    private fun formatPatchesVersion(raw: String?): String? = bareVersion(raw)?.let { "patches-v$it" }
+
+    // Lowercased first, so a "V" prefix goes too
+    private fun bareVersion(raw: String?): String? =
+        raw?.trim()?.lowercase()?.normalizeVersion()?.takeUnless { it.isEmpty() }
 
     private fun joinValues(
         values: List<String>,

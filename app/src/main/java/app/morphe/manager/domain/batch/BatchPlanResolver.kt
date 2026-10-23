@@ -181,6 +181,7 @@ class BatchPlanResolver(
      *   catalog is not rebuilt once per app; looked up here otherwise.
      * @param allowUnverifiedSignature Set once the user has accepted an APK whose signing
      *   certificate no bundle vouches for, so the same file is not questioned twice.
+     * @param chosenBundleUid The one source simple mode was told to patch the app from.
      */
     suspend fun resolve(
         target: BatchTarget,
@@ -189,7 +190,8 @@ class BatchPlanResolver(
         suggestedVersion: String? = null,
         allowIncompatible: Boolean = false,
         allowUnverifiedSignature: Boolean = false,
-        preferInstalled: Boolean = false
+        preferInstalled: Boolean = false,
+        chosenBundleUid: Int? = null
     ): BatchPatchItem = withContext(Dispatchers.IO) {
         val packageName = target.packageName
         val appName = resolveAppName(target)
@@ -251,7 +253,8 @@ class BatchPlanResolver(
             source = source,
             useMount = useMount,
             suggested = suggested,
-            forceIncompatible = allowIncompatible
+            forceIncompatible = allowIncompatible,
+            chosenBundleUid = chosenBundleUid
         )
     }
 
@@ -290,46 +293,26 @@ class BatchPlanResolver(
     }
 
     /**
-     * Rebuilds an existing item against a newly attached APK, keeping the user's
-     * force-version choice.
+     * Rebuilds an existing item against a newly attached APK. A forced item stays runnable after
+     * swapping its APK, so the user does not have to confirm the same version warning twice, and
+     * keeps the patches that came with it. The new file has its signature checked afresh.
      */
     suspend fun reattach(item: BatchPatchItem, file: File, useMount: Boolean): BatchPatchItem =
-        resolve(
-            target = item.target,
-            useMount = useMount,
-            attachedFile = file,
-            // A forced item stays runnable after swapping its APK, so the user does not have
-            // to confirm the same version warning twice, and keeps the patches that came with it
-            allowIncompatible = item.forceVersionMismatch
-        ).copy(forceVersionMismatch = item.forceVersionMismatch)
+        reresolve(item, useMount, attachedFile = file, acceptSignature = false)
 
     /**
      * Re-resolves an app against the APK the user picked in the availability dialog. Only the
      * order of preference changes: the file itself is still discovered the usual way.
      */
     suspend fun useSource(item: BatchPatchItem, useMount: Boolean, preferInstalled: Boolean): BatchPatchItem =
-        resolve(
-            target = item.target,
-            useMount = useMount,
-            allowIncompatible = item.forceVersionMismatch,
-            preferInstalled = preferInstalled
-        ).copy(forceVersionMismatch = item.forceVersionMismatch)
+        reresolve(item, useMount, attachedFile = null, preferInstalled = preferInstalled, acceptSignature = false)
 
     /**
      * Re-resolves an app the user accepted an unsupported version for, this time keeping the
      * patches that declare a different version.
      */
     suspend fun forceVersion(item: BatchPatchItem, useMount: Boolean): BatchPatchItem =
-        resolve(
-            target = item.target,
-            useMount = useMount,
-            attachedFile = (item.source as? BatchApkSource.UserFile)?.file,
-            allowIncompatible = true,
-            allowUnverifiedSignature = item.forceUnverifiedSignature
-        ).copy(
-            forceVersionMismatch = true,
-            forceUnverifiedSignature = item.forceUnverifiedSignature
-        )
+        reresolve(item, useMount, forceVersion = true)
 
     /**
      * Re-resolves an app whose attached APK the user accepted despite its unknown signing
@@ -337,16 +320,37 @@ class BatchPlanResolver(
      * instead of a second download.
      */
     suspend fun acceptUnverifiedSignature(item: BatchPatchItem, useMount: Boolean): BatchPatchItem =
-        resolve(
-            target = item.target,
-            useMount = useMount,
-            attachedFile = (item.source as? BatchApkSource.UserFile)?.file,
-            allowIncompatible = item.forceVersionMismatch,
-            allowUnverifiedSignature = true
-        ).copy(
-            forceVersionMismatch = item.forceVersionMismatch,
-            forceUnverifiedSignature = true
-        )
+        reresolve(item, useMount, acceptSignature = true)
+
+    /**
+     * Re-resolves an app against sources that changed under it, keeping every choice the user
+     * made on it: the attached file or the installed app, a forced version, an accepted
+     * signature, the source it is patched from.
+     */
+    suspend fun refresh(item: BatchPatchItem, useMount: Boolean): BatchPatchItem =
+        reresolve(item, useMount, preferInstalled = item.source is BatchApkSource.Installed)
+
+    /** Resolves [item] again, carrying over the choices the caller does not override. */
+    private suspend fun reresolve(
+        item: BatchPatchItem,
+        useMount: Boolean,
+        attachedFile: File? = (item.source as? BatchApkSource.UserFile)?.file,
+        preferInstalled: Boolean = false,
+        forceVersion: Boolean = item.forceVersionMismatch,
+        acceptSignature: Boolean = item.forceUnverifiedSignature
+    ): BatchPatchItem = resolve(
+        target = item.target,
+        useMount = useMount,
+        attachedFile = attachedFile,
+        allowIncompatible = forceVersion,
+        allowUnverifiedSignature = acceptSignature,
+        preferInstalled = preferInstalled,
+        chosenBundleUid = item.chosenBundleUid
+    ).copy(
+        forceVersionMismatch = forceVersion,
+        forceUnverifiedSignature = acceptSignature,
+        chosenBundleUid = item.chosenBundleUid
+    )
 
     private suspend fun buildItem(
         target: BatchTarget,
@@ -354,13 +358,17 @@ class BatchPlanResolver(
         source: BatchApkSource,
         useMount: Boolean,
         suggested: String?,
-        forceIncompatible: Boolean
+        forceIncompatible: Boolean,
+        chosenBundleUid: Int?
     ): BatchPatchItem {
         val packageName = target.packageName
         val bundles = patchBundleRepository
             .offeredBundleInfoFlow(packageName, source.version, source.versionCode)
             .first()
             .filter { it.enabled }
+            // A chosen source is the only one the app is patched from, and the version warnings
+            // are its own. One no longer offered leaves the choice with nothing to stand for
+            .let { offered -> offered.filter { it.uid == chosenBundleUid }.ifEmpty { offered } }
 
         // Asked of the bundles the APK is being resolved against rather than of the version
         // catalog, so the badge cannot disagree with the warning the single-app flow shows
@@ -375,11 +383,14 @@ class BatchPlanResolver(
         val versionMismatch = !hasCompatible && hasIncompatible && !allowIncompatible
 
         /**
-         * Nothing to run with. Which of the two reasons it is matters: an app whose patches
-         * simply declare other versions still has a way forward, and calling that "no patches"
-         * would hide both the reason and the buttons that fix it.
+         * Nothing to run with. Which of the reasons it is matters: an app whose patches simply
+         * declare other versions, or are all left unselected, still has a way forward, and
+         * calling that "no patches" would hide both the reason and the buttons that fix it.
          */
-        fun blocked(contributing: List<PatchBundleInfo.Scoped> = emptyList()) = BatchPatchItem(
+        fun blocked(
+            contributing: List<PatchBundleInfo.Scoped> = emptyList(),
+            nothingSelected: Boolean = false
+        ) = BatchPatchItem(
             target = target,
             appName = appName,
             source = source,
@@ -388,7 +399,11 @@ class BatchPlanResolver(
             bundles = contributing.map { it.toRef() },
             experimentalVersion = experimental,
             suggestedVersion = suggested,
-            state = if (versionMismatch) BatchItemState.VERSION_MISMATCH else BatchItemState.NO_PATCHES
+            state = when {
+                versionMismatch -> BatchItemState.VERSION_MISMATCH
+                nothingSelected -> BatchItemState.NO_SELECTION
+                else -> BatchItemState.NO_PATCHES
+            }
         )
 
         if (!hasCompatible && !hasIncompatible && !hasUniversal) return blocked()
@@ -407,7 +422,7 @@ class BatchPlanResolver(
             apkArchitecture = source.apkArchitecture()
         )
 
-        if (selection.values.sumOf { it.size } == 0) return blocked(contributing)
+        if (selection.values.sumOf { it.size } == 0) return blocked(contributing, nothingSelected = true)
 
         val savedOptions = resolveOptions(target, configurationKey, contributing)
 
@@ -515,15 +530,8 @@ class BatchPlanResolver(
      * Where a target's saved patches and options live: its own package once it is an install of
      * its own, falling back to the app for a clone that predates configurations of their own.
      */
-    private suspend fun configurationKeyFor(target: BatchTarget): String {
-        val repatched = target.repatchedPackageName?.takeUnless { it == target.packageName }
-            ?: return target.packageName
-
-        val hasOwnConfiguration = patchSelectionRepository
-            .getAllSelectionsForPackage(repatched)
-            .isNotEmpty()
-        return if (hasOwnConfiguration) repatched else target.packageName
-    }
+    private suspend fun configurationKeyFor(target: BatchTarget): String =
+        patchSelectionRepository.configurationKeyFor(target.packageName, target.repatchedPackageName)
 
     /**
      * Same resolution the home screen uses. Patching renames packages, so an app that is only

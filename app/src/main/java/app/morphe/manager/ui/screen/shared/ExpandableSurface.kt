@@ -5,12 +5,9 @@
 
 package app.morphe.manager.ui.screen.shared
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,7 +19,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import com.composables.icons.materialsymbols.MaterialSymbols
+import com.composables.icons.materialsymbols.rounded.*
 
 /** Expandable surface with a header icon, title, and collapsible content. */
 @Composable
@@ -30,7 +28,7 @@ fun ExpandableSurface(
     title: String,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.Outlined.Info,
+    icon: ImageVector = MaterialSymbols.Rounded.Info,
     initialExpanded: Boolean = false,
     headerTint: Color = dialogTextColor()
 ) {
@@ -39,8 +37,8 @@ fun ExpandableSurface(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(Defaults.CompactCornerRadius)),
-        shape = RoundedCornerShape(Defaults.CompactCornerRadius),
+            .clip(RoundedCornerShape(Defaults.CornerMedium)),
+        shape = RoundedCornerShape(Defaults.CornerMedium),
         color = headerTint.copy(alpha = 0.05f),
         border = CardBorder.tinted(headerTint)
     ) {
@@ -50,12 +48,12 @@ fun ExpandableSurface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { expanded = !expanded }
-                    .padding(12.dp),
+                    .padding(Defaults.SpaceMedium),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Defaults.SpaceSmall),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
@@ -76,17 +74,12 @@ fun ExpandableSurface(
                 ExpandChevron(
                     expanded = expanded,
                     modifier = Modifier.size(Defaults.IconSizeSmall),
-                    tint = dialogTextColor().copy(alpha = 0.7f),
                     announced = true
                 )
             }
 
             // Expandable content
-            AnimatedVisibility(
-                visible = expanded,
-                enter = Animations.expandFadeEnter,
-                exit = Animations.shrinkFadeExit
-            ) {
+            FoldingVisibility(visible = expanded) {
                 content()
             }
         }
