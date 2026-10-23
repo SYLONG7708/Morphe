@@ -1,0 +1,112 @@
+--- a/app/src/main/java/app/morphe/manager/ui/viewmodel/PatcherViewModel.kt
++++ b/app/src/main/java/app/morphe/manager/ui/viewmodel/PatcherViewModel.kt
+@@ -14,6 +14,7 @@
+ import android.content.Intent
+ import android.content.pm.PackageInfo
+ import android.net.Uri
++import android.os.Build
+ import android.os.Bundle
+ import android.os.ParcelUuid
+ import android.os.PowerManager
+@@ -38,6 +39,8 @@
+ import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
+ import app.morphe.manager.domain.manager.PreferencesManager
+ import app.morphe.manager.domain.repository.*
++import app.morphe.manager.domain.repository.PatchBundleRepository.Companion.DEFAULT_SOURCE_UID
++import app.morphe.manager.domain.update.SafeIntegrationProfile
+ import app.morphe.manager.domain.worker.WorkerRepository
+ import app.morphe.manager.patcher.patch.ApkArchitectureResolver
+ import app.morphe.manager.patcher.patch.PatchBundleInfo
+@@ -597,7 +600,15 @@
+         // Checked by name alone: a source that is gone, or one that dropped every patch picked
+         // from it, is exactly the case a fallback to the picked names would hide
+         val scopedBundles = scopedBundles()
+-        val missing = input.selectedPatches.mapValues { (uid, patches) ->
++        val safeSelection = SafeIntegrationProfile.enforceYouTubePatches(
++            sourcePackage = packageName,
++            patches = input.selectedPatches,
++            availablePatches = scopedBundles.mapValues { (_, bundle) ->
++                bundle.patches.mapTo(mutableSetOf()) { it.name }
++            },
++        )
++        runSelection = safeSelection
++        val missing = safeSelection.mapValues { (uid, patches) ->
+             patches - scopedBundles[uid]?.patches?.mapTo(mutableSetOf()) { it.name }.orEmpty()
+         }.filterValues { it.isNotEmpty() }
+         if (missing.isNotEmpty()) {
+@@ -607,19 +618,21 @@
+                 )
+                 return false
+             }
+-            runSelection = input.selectedPatches
++            runSelection = safeSelection
+                 .mapValues { (uid, patches) -> patches - missing[uid].orEmpty() }
+                 .filterValues { it.isNotEmpty() }
+             patchRun.totalPatches = patchCount
+         }
+ 
++        appliedSelection = runSelection
++        patchRun.totalPatches = patchCount
+         patchSourcesForLog = collectSelectedBundleMetadata()
+ 
+         // Check that all selected bundles are compatible with the patcher bundled in this
+         // version of the manager. If a bundle requires a newer patcher, block and show a dialog
+         // asking the user to update the manager app
+         val globalBundlesForCheck = patchBundleRepository.bundleInfoFlow.first()
+-        appliedSelection.keys.forEach { uid ->
++        runSelection.keys.forEach { uid ->
+             val bundle = globalBundlesForCheck[uid] ?: return@forEach
+             val required = bundle.patcherVersion ?: return@forEach
+             if (isPatcherOutdated(required, BuildConfig.PATCHER_VERSION)) {
+@@ -654,11 +667,16 @@
+             return false
+         }
+ 
+-        startWorker(options)
++        startWorker(SafeIntegrationProfile.enforceYouTubeOptions(
++            sourcePackage = packageName,
++            patches = runSelection,
++            options = options,
++        ))
+         return true
+     }
+ 
+     private fun startWorker(options: Options) {
++        appliedOptions = options
+         val workId = launchWorker(options)
+         patcherWorkerId = ParcelUuid(workId)
+         observeWorker(workId)
+@@ -869,6 +887,17 @@
+             } finally {
+                 _isSaving.value = false
+             }
++        }
++    }
++
++    fun exportToDownloads() = viewModelScope.launch {
++        if (_isSaving.value || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return@launch
++        _isSaving.value = true
++        try {
++            ensureExportMetadata()
++            finishExport(app.exportApkToDownloads(outputFile, exportFileName))
++        } finally {
++            _isSaving.value = false
+         }
+     }
+ 
+@@ -1043,6 +1072,15 @@
+     }
+ 
+     private fun scheduleAutoInstallIfNeeded() = viewModelScope.launch {
++        // All-in-one builds are explicitly a one-entry workflow. Launch Android's regular
++        // installer as soon as the patched YouTube APK is ready; the system confirmation remains
++        // visible and cannot be bypassed by an ordinary application.
++        if (BuildConfig.BUNDLED_ECOSYSTEM_ENABLED) {
++            autoInstallPending = true
++            delay(successScreenDelay)
++            _autoInstallChannel.trySend(Unit)
++            return@launch
++        }
+         // A patch is free to rename the app, and the name it built under is the one being replaced
+         val target = withContext(Dispatchers.IO) { pm.getPackageInfo(outputFile)?.packageName }
+             ?: packageName

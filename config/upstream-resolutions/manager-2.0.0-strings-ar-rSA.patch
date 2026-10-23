@@ -1,0 +1,10 @@
+--- a/app/src/main/res/values-ar-rSA/strings.xml
++++ b/app/src/main/res/values-ar-rSA/strings.xml
+@@ -1460,4 +1460,7 @@
+     <string name="tour_prompt_confirm">خذني في جولة</string>
+     <string name="onboarding_restart_title">جولة في الميزات</string>
+     <string name="onboarding_restart_desc">جولة إرشادية حول الميزات الرئيسية</string>
++    <string name="settings_appearance_patch_list">قائمة التعديل</string>
++    <string name="settings_appearance_patch_categories">تجميع حسب الفئة</string>
++    <string name="settings_appearance_patch_categories_description">تصنيف قوائم التعديلات حسب الفئات التي يعلن عنها المصدر، وترك المصادر التي لا تعلن عن أي فئة على شكل قائمة بسيطة</string>
+ </resources>

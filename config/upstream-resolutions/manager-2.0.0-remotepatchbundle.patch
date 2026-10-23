@@ -1,0 +1,119 @@
+--- a/app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt
++++ b/app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt
+@@ -9,14 +9,18 @@
+  */
+ 
+ package app.morphe.manager.domain.bundles
+ 
++import app.morphe.manager.BuildConfig
++import app.morphe.manager.domain.bundles.RemotePatchBundle.Companion.CHANGELOG_CACHE_TTL
+ import app.morphe.manager.domain.manager.PreferencesManager
++import app.morphe.manager.domain.update.DetachedSignatureVerifier
+ import app.morphe.manager.network.api.MorpheAPI
+ import app.morphe.manager.network.dto.MorpheAsset
+ import app.morphe.manager.network.service.AssetDownloader
+ import app.morphe.manager.network.service.HttpService
+ import app.morphe.manager.network.utils.getOrThrow
++import app.morphe.manager.patcher.patch.PatchBundle
+ import app.morphe.manager.util.*
+ import io.ktor.client.plugins.HttpTimeoutConfig
+ import io.ktor.client.plugins.timeout
+ import io.ktor.client.request.header
+@@ -29,8 +33,10 @@
+ import io.ktor.utils.io.readAvailable
+ import kotlinx.coroutines.*
+ import kotlinx.datetime.TimeZone
+ import kotlinx.datetime.toInstant
++import org.koin.core.component.KoinComponent
++import org.koin.core.component.inject
+ import java.io.File
+ import java.io.IOException
+ import java.net.URLEncoder
+ import java.util.concurrent.ConcurrentHashMap
+@@ -63,11 +69,13 @@
+     val endpoint: String,
+     val autoUpdate: Boolean,
+     enabled: Boolean,
+     protected val services: RemoteBundleServices,
+-) : PatchBundleSource(name, uid, displayName, createdAt, updatedAt, error, directory, enabled) {
++) : PatchBundleSource(name, uid, displayName, createdAt, updatedAt, error, directory, enabled), KoinComponent {
+     protected val http = services.http
+     protected val api = services.api
++    private val detachedSignatureVerifier: DetachedSignatureVerifier by inject()
++    private val assetDownloader: AssetDownloader by inject()
+ 
+     protected abstract suspend fun getLatestInfo(): MorpheAsset
+     abstract fun copy(
+         error: Throwable? = this.error,
+@@ -95,8 +103,18 @@
+                     downloadUrl = info.downloadUrl,
+                     saveLocation = staging,
+                     onProgress = onProgress
+                 )
++                info.signatureDownloadUrl?.let { signatureUrl ->
++                    val detached = http.request<String> {
++                        url(signatureUrl)
++                        header("Cache-Control", "no-cache")
++                    }.getOrThrow()
++                    check(detachedSignatureVerifier.verifyFile(staging, detached)) {
++                        "Patch bundle detached-signature verification failed"
++                    }
++                }
++                validateCandidate(staging)
+             }
+ 
+             PatchBundleDownloadResult(
+                 versionSignature = info.version,
+@@ -104,8 +122,42 @@
+                     info.createdAt.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                 }.getOrNull()
+             )
+         }
++
++    /**
++     * Proves that a downloaded bundle can be consumed by this exact Manager build before it
++     * replaces the last known-good file. Manifest comparison gives a clear diagnostic, while
++     * loading metadata catches binary/API incompatibilities that are not declared correctly.
++     */
++    private fun validateCandidate(candidate: File) {
++        if (!candidate.isFile || candidate.length() < MIN_PATCH_BUNDLE_BYTES) {
++            throw IOException(
++                "Downloading patch bundle produced an empty or truncated file " +
++                    "(size=${candidate.length()})"
++            )
++        }
++
++        // Android 14+ only permits loading dex containers that are read-only.
++        check(candidate.setReadOnly() || !candidate.canWrite()) {
++            "Unable to make downloaded patch bundle read-only"
++        }
++        val bundle = PatchBundle(candidate.absolutePath)
++        val requiredPatcher = bundle.manifestAttributes?.patcherVersion
++        if (
++            requiredPatcher != null &&
++            compareVersions(requiredPatcher, BuildConfig.PATCHER_VERSION) > 0
++        ) {
++            throw IllegalStateException(
++                "Patch bundle requires morphe-patcher $requiredPatcher, " +
++                    "but this Manager provides ${BuildConfig.PATCHER_VERSION}"
++            )
++        }
++
++        check(PatchBundle.Loader.metadata(bundle).isNotEmpty()) {
++            "Patch bundle contains no loadable patches"
++        }
++    }
+ 
+     /**
+      * [getLatestInfo] with the manifest page URL remembered, so [browsePageUrl] can use it without
+      * a network request of its own.
+@@ -237,8 +289,9 @@
+     companion object {
+         const val BRANCH_STABLE = "main"
+         const val BRANCH_DEV = "dev"
+ 
++        private const val MIN_PATCH_BUNDLE_BYTES = 8L
+         /** Bundle file a repository-only link resolves to. */
+         private const val DEFAULT_BUNDLE_FILE = "patches-bundle.json"
+ 
+         internal const val CHANGELOG_CACHE_TTL = 10 * 60 * 1000L

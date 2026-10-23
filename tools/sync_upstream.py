@@ -46,8 +46,17 @@ def prepare(status: dict) -> None:
         result = git("merge", "--no-ff", "--no-commit", commit, check=False)
         print(result.stdout, result.stderr)
         original_conflicts = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
+        if result.returncode and not original_conflicts:
+            raise RuntimeError("Official merge failed; current release retained: "
+                               + result.stdout + result.stderr)
         # CI jobs, reusable actions, and repository automation belong to this
         # signed release channel and must not be replaced by upstream's tree.
+        # restore cannot remove an unmerged path absent from HEAD. Resolve these
+        # modify/delete conflicts explicitly before restoring the owned tree.
+        for path in original_conflicts:
+            if (path.startswith(".github/")
+                    and git("cat-file", "-e", f"HEAD:{path}", check=False).returncode):
+                git("rm", "-f", "--", path)
         git("restore", "--source=HEAD", "--staged", "--worktree", "--", ".github")
         conflicts = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
         for path in conflicts:
@@ -60,8 +69,6 @@ def prepare(status: dict) -> None:
         if remaining:
             status["conflicts"] = remaining
             raise IntegrationNeeded("Upstream merge needs a code change; current release retained: " + ", ".join(remaining))
-        if result.returncode and not original_conflicts:
-            raise RuntimeError("Official merge failed; current release retained")
         changed = True
         Path("config/upstream-manager.json").write_text(json.dumps({
             "repository": "MorpheApp/morphe-manager", "tag": tag, "commit": commit,

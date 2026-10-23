@@ -1,0 +1,21 @@
+--- a/app/src/test/java/app/morphe/manager/network/service/RangeDownloadTest.kt
++++ b/app/src/test/java/app/morphe/manager/network/service/RangeDownloadTest.kt
+@@ -10,6 +10,7 @@
+ import io.ktor.client.engine.okhttp.OkHttp
+ import io.ktor.client.request.url
+ import kotlinx.coroutines.runBlocking
++import kotlinx.coroutines.withTimeout
+ import kotlinx.serialization.json.Json
+ import java.io.File
+ import java.io.IOException
+@@ -62,8 +63,9 @@
+         return "http://127.0.0.1:${server.address.port}/patches.mpp"
+     }
+ 
+-    private suspend fun download(url: String) =
++    private suspend fun download(url: String) = withTimeout(30_000) {
+         HttpService(Json, client).downloadToFile(saveLocation = target, builder = { url(url) })
++    }
+ 
+     @Test
+     fun `a short range response is resumed instead of leaving a hole`() = runBlocking {

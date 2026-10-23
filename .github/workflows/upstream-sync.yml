@@ -48,6 +48,9 @@ jobs:
           python3 tools/ci_retry.py -- python3 tools/prepare_morphe_dependencies.py
           python3 -m unittest discover -s tools -p 'test_*.py'
           chmod +x gradlew
+          if [ -f patcher-core/build.gradle.kts ]; then
+            python3 tools/ci_retry.py -- ./gradlew :patcher-core:test --stacktrace
+          fi
           python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PsignAsDebug --stacktrace
           python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PsignAsDebug -PnoDeviceLicense --stacktrace
       - name: Publish only a verified source merge and request signed release

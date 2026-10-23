@@ -1,0 +1,47 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/home/PatchesListShared.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/home/PatchesListShared.kt
+@@ -29,8 +29,10 @@
+ import androidx.compose.ui.semantics.contentDescription
+ import androidx.compose.ui.unit.dp
+ import app.morphe.manager.R
++import app.morphe.manager.domain.manager.PreferencesManager
+ import app.morphe.manager.patcher.patch.PatchInfo
+ import app.morphe.manager.ui.screen.shared.*
++import app.morphe.manager.util.toHsv
+ import com.composables.icons.materialsymbols.MaterialSymbols
+ import com.composables.icons.materialsymbols.rounded.*
+ import org.koin.compose.koinInject
+@@ -102,7 +104,7 @@
+     infoOf: (T) -> PatchInfo,
+     isEnabled: (T) -> Boolean = { false }
+ ): List<PatchGroup<T>> {
+-    val byCategory = patches.groupBy { infoOf(it).category }
++    val byCategory = patches.groupBy { if (options.groupByCategory) infoOf(it).category else null }
+     val (universal, ungrouped) = byCategory[null].orEmpty().partition { infoOf(it).isUniversal }
+ 
+     return buildList {
+@@ -143,14 +145,20 @@
+  */
+ @Immutable
+ internal data class PatchGroupingOptions(
+-    val universalTitle: String
++    val universalTitle: String,
++    val groupByCategory: Boolean
+ )
+ 
+ @Composable
+-internal fun rememberPatchGroupingOptions(): PatchGroupingOptions {
++internal fun rememberPatchGroupingOptions(
++    prefs: PreferencesManager = koinInject()
++): PatchGroupingOptions {
+     val universalTitle = stringResource(R.string.expert_mode_universal_patches)
+-
+-    return remember(universalTitle) { PatchGroupingOptions(universalTitle) }
++    val groupByCategory by prefs.groupPatchesByCategory.getAsState()
++
++    return remember(universalTitle, groupByCategory) {
++        PatchGroupingOptions(universalTitle, groupByCategory)
++    }
+ }
+ 
+ /**

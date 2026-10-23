@@ -1,0 +1,12 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/settings/SettingsPage.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/settings/SettingsPage.kt
+@@ -196,7 +196,8 @@
+         SettingsGroup {
+             UpdatesItems(
+                 settingsViewModel = settingsViewModel,
+-                onManagerPrereleasesToggle = { homeViewModel.triggerUpdateCheck() }
++                onManagerPrereleasesToggle = { homeViewModel.triggerUpdateCheck() },
++                onYouTubeUpdate = { homeViewModel.patchFlow.openOneTapHubDialog() },
+             )
+         }
+     }

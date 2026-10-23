@@ -1,0 +1,19 @@
+--- a/app/src/main/res/values-in-rID/strings.xml
++++ b/app/src/main/res/values-in-rID/strings.xml
+@@ -849,7 +849,7 @@
+     <string name="settings_advanced_updates_manager_prereleases_description">Akses awal ke versi Morphe baru</string>
+     <string name="settings_advanced_updates_prerelease_warning_title">Aktifkan pembaruan pra-rilis?</string>
+     <!-- Shown before pre-release updates are turned on for the app itself. Patches have their own toggle in each patch source -->
+-    <string name="settings_advanced_updates_prerelease_warning_message">"Versi pra-rilis Morphe masih tahap pengembangan dan mungkin tidak stabil. 
++    <string name="settings_advanced_updates_prerelease_warning_message">"Versi pra-rilis Morphe masih tahap pengembangan dan mungkin tidak stabil.
+ 
+ Tambalan tidak terpengaruh: aktifkan tambalan pra-rilis untuk setiap sumber dalam daftar sumber tambalan"</string>
+     <string name="settings_advanced_updates_allow_metered">Pembaruan data seluler</string>
+@@ -1457,4 +1457,7 @@
+     <string name="tour_prompt_confirm">Tunjukkan</string>
+     <string name="onboarding_restart_title">Tur fitur</string>
+     <string name="onboarding_restart_desc">Tur berpandu fitur-fitur utama</string>
++    <string name="settings_appearance_patch_list">Daftar tambalan</string>
++    <string name="settings_appearance_patch_categories">Grup berdasarkan kategori</string>
++    <string name="settings_appearance_patch_categories_description">Kelompokkan daftar tambalan berdasarkan kategori yang ditentukan oleh sumber, serta tampilkan sumber tanpa kategori sebagai daftar biasa</string>
+ </resources>

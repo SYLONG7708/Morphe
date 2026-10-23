@@ -1,0 +1,10 @@
+--- a/app/src/main/res/values-el-rGR/strings.xml
++++ b/app/src/main/res/values-el-rGR/strings.xml
+@@ -1453,4 +1453,7 @@
+     <string name="tour_prompt_confirm">Δείξτε μου γύρω</string>
+     <string name="onboarding_restart_title">Περιήγηση λειτουργιών</string>
+     <string name="onboarding_restart_desc">Μια ξενάγηση στα βασικά χαρακτηριστικά</string>
++    <string name="settings_appearance_patch_list">Λίστα επιδιορθώσεων</string>
++    <string name="settings_appearance_patch_categories">Ομαδοποίηση ανά κατηγορία</string>
++    <string name="settings_appearance_patch_categories_description">Ομαδοποίηση των λιστών επιδιορθώσεων ανά κατηγορίες που δηλώνει μια πηγή, ενώ οι πηγές χωρίς κατηγορία παραμένουν ως απλή λίστα.</string>
+ </resources>

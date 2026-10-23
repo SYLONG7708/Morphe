@@ -1,0 +1,26 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/home/OneTapYouTubeDialog.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/home/OneTapYouTubeDialog.kt
+@@ -34,13 +34,13 @@
+ import app.morphe.manager.R
+ import app.morphe.manager.domain.update.UpdateStatus
+ import app.morphe.manager.ui.screen.shared.AppDialog
+-import app.morphe.manager.ui.screen.shared.DialogPadding
++import app.morphe.manager.ui.screen.shared.DialogHostScope
+ import app.morphe.manager.ui.screen.shared.LocalDialogSecondaryTextColor
+ import app.morphe.manager.ui.screen.shared.LocalDialogTextColor
+ import app.morphe.manager.ui.viewmodel.OneTapHubUiState
+ 
+ @Composable
+-fun OneTapYouTubeDialog(
++fun DialogHostScope.OneTapYouTubeDialog(
+     state: OneTapHubUiState,
+     onUseLocal: () -> Unit,
+     onUseRecommended: () -> Unit,
+@@ -51,7 +51,6 @@
+         onDismissRequest = onDismiss,
+         title = stringResource(R.string.one_tap_title),
+         dismissOnClickOutside = false,
+-        padding = DialogPadding.Compact,
+         footer = {
+             Row(
+                 modifier = Modifier.fillMaxWidth(),

@@ -1,0 +1,12 @@
+--- a/app/src/main/java/app/morphe/manager/network/service/HttpService.kt
++++ b/app/src/main/java/app/morphe/manager/network/service/HttpService.kt
+@@ -319,6 +319,9 @@
+                                                 totalRead.addAndGet(read.toLong())
+                                                 reportProgress()
+                                             }
++                                            // A server may send beyond this chunk. Cancel the response
++                                            // scope so unread body tasks cannot keep cleanup waiting.
++                                            if (position > end) response.cancel()
+                                         }
+ 
+                                         else -> throw HttpException(response.status)

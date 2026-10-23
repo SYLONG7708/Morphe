@@ -1,0 +1,83 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/HomeScreen.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/HomeScreen.kt
+@@ -25,6 +25,7 @@
+ import androidx.compose.ui.unit.Dp
+ import androidx.compose.ui.unit.dp
+ import androidx.lifecycle.compose.collectAsStateWithLifecycle
++import app.morphe.manager.domain.update.SafeIntegrationProfile
+ import app.morphe.manager.R
+ import app.morphe.manager.data.room.apps.installed.trackingKey
+ import app.morphe.manager.domain.batch.BatchTarget
+@@ -177,9 +178,31 @@
+     // Gesture hint: shown once per bundle addition, in-memory
+     val showGestureHint by homeViewModel.apps.showSwipeGestureHint.collectAsStateWithLifecycle()
+ 
+-    // Set up HomeViewModel
+-    LaunchedEffect(Unit) {
++    // Set up the current patch callback before inspecting one-tap choices.
++    LaunchedEffect(onStartQuickPatch) {
+         homeViewModel.patchFlow.onStartQuickPatch = onStartQuickPatch
++    }
++
++    // One-tap cold start: wait for the patch metadata, inspect the installed YouTube,
++    // Morphe recommendation, and MicroG, then present both browser-free choices.
++    LaunchedEffect(
++        homeAppState,
++        availablePatches,
++        bundleUpdateProgress,
++        onboardingState,
++        patchTriggerPackage,
++        onStartQuickPatch,
++    ) {
++        homeViewModel.patchFlow.onStartQuickPatch = onStartQuickPatch
++        if (
++            homeAppState != null &&
++            availablePatches > 0 &&
++            bundleUpdateProgress == null &&
++            onboardingState == null &&
++            patchTriggerPackage == null
++        ) {
++            homeViewModel.patchFlow.inspectOneTapHubOptions()
++        }
+     }
+ 
+     val openApkPicker = rememberAdaptiveFilePicker(
+@@ -194,7 +217,10 @@
+ 
+     val installAppsPermissionLauncher = rememberLauncherForActivityResult(
+         contract = RequestInstallAppsContract
+-    ) { homeViewModel.showAndroid11Dialog = false }
++    ) { granted ->
++        homeViewModel.showAndroid11Dialog = false
++        homeViewModel.patchFlow.onInstallAppsPermissionResult(granted)
++    }
+ 
+     val startInstallQueue = rememberInstallQueue(
+         installViewModel = installViewModel,
+@@ -422,14 +448,18 @@
+                     ),
+                     appActions = HomeAppActions(
+                         onAppClick = { item ->
+-                            homeViewModel.handleAppClick(
+-                                packageName = item.packageName,
+-                                availablePatches = availablePatches,
+-                                android11BugActive = homeViewModel.android11BugActive,
+-                                installedApp = item.installedApp
+-                            )
+-                            item.installedApp?.let {
+-                                homeViewModel.patchFlow.openInstalledAppInfo(it.currentPackageName)
++                            if (item.packageName == SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE && item.installedApp == null) {
++                                homeViewModel.patchFlow.openOneTapHubDialog()
++                            } else {
++                                homeViewModel.handleAppClick(
++                                    packageName = item.packageName,
++                                    availablePatches = availablePatches,
++                                    android11BugActive = homeViewModel.android11BugActive,
++                                    installedApp = item.installedApp
++                                )
++                                item.installedApp?.let {
++                                    homeViewModel.patchFlow.openInstalledAppInfo(it.currentPackageName)
++                                }
+                             }
+                         },
+                         onHideApp = { packageName -> homeViewModel.apps.hideApp(packageName) },

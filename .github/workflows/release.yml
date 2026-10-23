@@ -214,6 +214,9 @@ jobs:
           test "${#expected_signer}" -eq 64
           export SYMORPHE_EXPECTED_SIGNING_CERT_SHA256="$expected_signer"
           chmod +x gradlew
+          if [ -f patcher-core/build.gradle.kts ]; then
+            python3 tools/ci_retry.py -- ./gradlew :patcher-core:test --stacktrace
+          fi
           python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease --stacktrace
           apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
           test -f "$apk"

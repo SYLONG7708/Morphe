@@ -1,0 +1,7 @@
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -57,3 +57,4 @@
+ 
+ rootProject.name = "symorphe"
+ include(":app")
++include(":patcher-core")

@@ -564,6 +564,709 @@
       "requires": [
         "manager-1.35.0-androidmanifest"
       ]
+    },
+    {
+      "id": "manager-2.0.0-app-gradle",
+      "path": "app/build.gradle.kts",
+      "inputs": {
+        "base": "69e4e282945cdec1330f78b4e167adacbb1b3d7c92a4166ba58caae1033ceedb",
+        "local": "6121b4ce50d373e3dba6638d3e3a11413340af3d57f9f3152733af3dad67f468",
+        "upstream": "640aeb3b334fe162b2bb92d6c771f518ef660965454933c44f8dd426f902574a"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-app-gradle.patch",
+      "patch_sha256": "b093f19c97a497a1bf4d77fa3a78c9d94a1babe58c0f54138037d5d1e5cefe41",
+      "result_sha256": "a418af0ae529b7e4770754f2d0110d20b18ea794ebbceba40776fcc96a6e3545",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-mainactivity",
+        "manager-2.0.0-managerapplication",
+        "manager-2.0.0-remotepatchbundle",
+        "manager-2.0.0-ecosystemupdatecoordinator",
+        "manager-2.0.0-verifiedyoutubesourcedownloader",
+        "manager-2.0.0-morpheapi",
+        "manager-2.0.0-httpservice",
+        "manager-2.0.0-coroutineruntime",
+        "manager-2.0.0-processruntime",
+        "manager-2.0.0-runtime",
+        "manager-2.0.0-parameters",
+        "manager-2.0.0-patcherprocess",
+        "manager-2.0.0-patcherworker",
+        "manager-2.0.0-batchpatcherscreen",
+        "manager-2.0.0-homescreen",
+        "manager-2.0.0-patcherscreen",
+        "manager-2.0.0-homedialogs",
+        "manager-2.0.0-onetapyoutubedialog",
+        "manager-2.0.0-patcheslistshared",
+        "manager-2.0.0-advancedtabcontent",
+        "manager-2.0.0-appearancesettings",
+        "manager-2.0.0-appearancetabcontent",
+        "manager-2.0.0-settingspage",
+        "manager-2.0.0-updatesitems",
+        "manager-2.0.0-homeviewmodel",
+        "manager-2.0.0-installviewmodel",
+        "manager-2.0.0-patchflow",
+        "manager-2.0.0-patcherviewmodel",
+        "manager-2.0.0-settingsviewmodel",
+        "manager-2.0.0-updateviewmodel",
+        "manager-2.0.0-fcmtopicmanager",
+        "manager-2.0.0-updatecheckworker",
+        "manager-2.0.0-strings-ar-rSA",
+        "manager-2.0.0-strings-el-rGR",
+        "manager-2.0.0-strings-hi-rIN",
+        "manager-2.0.0-strings-in-rID",
+        "manager-2.0.0-rangedownloadtest",
+        "manager-2.0.0-libs-versions",
+        "manager-2.0.0-session",
+        "manager-2.0.0-settings-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-mainactivity",
+      "path": "app/src/main/java/app/morphe/manager/MainActivity.kt",
+      "inputs": {
+        "base": "3621a221b5b22cc814c4a92c30c373905f9248fa480671f782804b6e046b8ebe",
+        "local": "389f18e2d4df8215dee1df52e97147af982d5df075f7a13b6eb6d602a20715f5",
+        "upstream": "145f86cb0d0700da33880771cb47520ac07463ec88dfcfc9f594e59f3aa8c132"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-mainactivity.patch",
+      "patch_sha256": "bab9734fc29283b0cd27ddaab6c99fd4888b518143a5caac283c5b636b8299a5",
+      "result_sha256": "d8fc55a499b13d89b828eb27b090fd666cab024c75d353e7a290bd3fa8563eaf",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-managerapplication",
+      "path": "app/src/main/java/app/morphe/manager/ManagerApplication.kt",
+      "inputs": {
+        "base": "a0e650110aa490ff7ba0a23f825bbe1d1ef023ef2d9e83823462f39772aa833b",
+        "local": "f0dd3ff0e7eceec0be6295b12ff54db32993224e83187e43f1f68ab0b128c732",
+        "upstream": "ce2fa731ac4b5a9230d3bc4baa95e6035776d7c0d725295fd1e719c16677f7e0"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-managerapplication.patch",
+      "patch_sha256": "818f954a17e8ff0bb793b53e21bbbbbe9ccd4a62c6d93bc332bdee90cdc0c5c3",
+      "result_sha256": "08756e18c4325d3c6507d0bdd8ccfffc18e9add15541f615c6718f9fa81eb18c",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-remotepatchbundle",
+      "path": "app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt",
+      "inputs": {
+        "base": "394d787f24b2b479f1434cdae291e4e948ba82c5454802114937ff72afbd7961",
+        "local": "9f93d7ad18b9412f72808caac7c9e87e9ba1c851444cfe2f6b1026b201c08bc0",
+        "upstream": "031ab683145f84c5e93e14212a2aa508d75e3cab8c139bea88125f07b54cf592"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-remotepatchbundle.patch",
+      "patch_sha256": "d76cf1f654a331fd298b65d4ddeaeb92ce97db4ef1c61a2c62196c8eba363710",
+      "result_sha256": "380baa521e663d779f9f174c060623718a45e9628361be0cbeb79280ee4fa95c",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-ecosystemupdatecoordinator",
+      "path": "app/src/main/java/app/morphe/manager/domain/update/EcosystemUpdateCoordinator.kt",
+      "inputs": {
+        "base": null,
+        "local": "453e6e118ae44d38ab72ed6aec5d21d7635c18793d301cf4821d02d3d310181e",
+        "upstream": null,
+        "merged": "453e6e118ae44d38ab72ed6aec5d21d7635c18793d301cf4821d02d3d310181e"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-ecosystemupdatecoordinator.patch",
+      "patch_sha256": "626022bdccda5f4d51ab9cf48a2dcc4e6c7275c7bdce83a8bd0a987bf12a895e",
+      "result_sha256": "36fae2825913787a66f7756f88f0b74fc747d6d8c20e4bf8c1cad5d7955fdd5b",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-verifiedyoutubesourcedownloader",
+      "path": "app/src/main/java/app/morphe/manager/domain/update/VerifiedYouTubeSourceDownloader.kt",
+      "inputs": {
+        "base": null,
+        "local": "6399ef40b8174ae04f2b3018cece5f2de220751d55c459d981c461fb64253530",
+        "upstream": null,
+        "merged": "6399ef40b8174ae04f2b3018cece5f2de220751d55c459d981c461fb64253530"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-verifiedyoutubesourcedownloader.patch",
+      "patch_sha256": "992b218bba6f461ffcf20ff7a8e5ed5ed83aebe7d2c671ee10dad1afea70925e",
+      "result_sha256": "b324347a3737f0f56b937b8f0765e030742b7116aba71b81c3ecae490d050880",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-morpheapi",
+      "path": "app/src/main/java/app/morphe/manager/network/api/MorpheAPI.kt",
+      "inputs": {
+        "base": "e1ea5d2de34728eefc90b004a54f1db12098f0ca90d107b85ce7a495fed41b09",
+        "local": "08590e1fa8afd59e8bf1bcd5935f965e71fd7e23dc0459805e59760c3a906e17",
+        "upstream": "7754e3e5faa4ab7fdbc86d18148efa081a29b40bc04e653000f8a6ce3b930ad6"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-morpheapi.patch",
+      "patch_sha256": "039a14a96f43992ec864d01df81cf97c9be3ac3cd3f69f1b7ce6c4c69ea14341",
+      "result_sha256": "e9a6f972bab017b024035f33ad310cc711545187a41335fd96b60a2a4a9cd821",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-httpservice",
+      "path": "app/src/main/java/app/morphe/manager/network/service/HttpService.kt",
+      "inputs": {
+        "base": "74e73f86ead33896d299af98460d953beffad63098c27209a7043abbd2d72995",
+        "local": "74e73f86ead33896d299af98460d953beffad63098c27209a7043abbd2d72995",
+        "upstream": "0f20b3d09cb27f9876494dcbd6f75f445694bbf3e3783237ee20df62b5f5efcc",
+        "merged": "0f20b3d09cb27f9876494dcbd6f75f445694bbf3e3783237ee20df62b5f5efcc"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-httpservice.patch",
+      "patch_sha256": "f65b29b5cdd8586319829802b21dd99b500e074c6fc8eb603a7435271ac0dbba",
+      "result_sha256": "7b65441ffb658817f677121afe74173e2baa58decdb12ebc4716a4d189633ca9",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-coroutineruntime",
+      "path": "app/src/main/java/app/morphe/manager/patcher/runtime/CoroutineRuntime.kt",
+      "inputs": {
+        "base": "1547acaf6837dfe5b03242e06aad86f08890d57da60c7d7dd03f3041609ebd52",
+        "local": "969411875e17252c1f12cfe5eda867c2559d1b38c73e8cedd9f9ecb27b46e46d",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-coroutineruntime.patch",
+      "patch_sha256": "694d65423ef2284e1945c72a006f0634925b78019ed8462cdfd5e89dc145f8be",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-processruntime",
+      "path": "app/src/main/java/app/morphe/manager/patcher/runtime/ProcessRuntime.kt",
+      "inputs": {
+        "base": "993608559d61f348236dd0ffa531c0b002dc5980d420307572dad7d2a9a4ba78",
+        "local": "29b052170972c4397731d66c2f775226f19360c3b98fd693c08483b8b0bc5558",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-processruntime.patch",
+      "patch_sha256": "3a3c39bd9854ecd1471d248de62c7173ad3f12cd27287816f3f6bf19988434ef",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-runtime",
+      "path": "app/src/main/java/app/morphe/manager/patcher/runtime/Runtime.kt",
+      "inputs": {
+        "base": "c395638f5aa4dab8729fea86c3a2ddf825c0b8e267c6f4be1a223064e1e94f10",
+        "local": "8400b56c9a9e6fae998baa2f6921d8feaed2099918e9fb8d8f5730c837ca96c0",
+        "upstream": "00e9ab3c501ff10478b1a8cca2b7518708107ae073a55d1019bc94bbbb786545"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-runtime.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "00e9ab3c501ff10478b1a8cca2b7518708107ae073a55d1019bc94bbbb786545",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-parameters",
+      "path": "app/src/main/java/app/morphe/manager/patcher/runtime/process/Parameters.kt",
+      "inputs": {
+        "base": "52bfe5727a296b0fc3702e6ad7e31b8c6ad81f629c8e0caee314dfb8144ab150",
+        "local": "476c4ebae6413710126505da2c9392cca975e037b8835abe7883347d6dc8091c",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-parameters.patch",
+      "patch_sha256": "35d2e303484c68bbe9d64ac774081c3908a9f829c98fee0726f9e74f84f62d6a",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-patcherprocess",
+      "path": "app/src/main/java/app/morphe/manager/patcher/runtime/process/PatcherProcess.kt",
+      "inputs": {
+        "base": "421eb2a7f141e9c06b1f37c365c5c03f4c140d820e23b5732d27a975e0926925",
+        "local": "b0f398a1e6c9eada90ef965c2e296b99cb0ac37898517534e6b060eb3b909557",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-patcherprocess.patch",
+      "patch_sha256": "4384e4b717874e4b8bc99b2fb090a08627e6a859817fd84a67feb213e17eb19a",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-patcherworker",
+      "path": "app/src/main/java/app/morphe/manager/patcher/worker/PatcherWorker.kt",
+      "inputs": {
+        "base": "ad7516cf89a0dd0f3893ff8b3cadd03c842bbac563fbe3dbbda65d7c029a3b94",
+        "local": "e5b728b13210cc56da6063157439f5a5ffa6e0c43ef5fd1e04724d8b78ad7371",
+        "upstream": "825625018b7717329771c6c7080013e06fb1f9d7a93fce816c85adc7aaf7ea63"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-patcherworker.patch",
+      "patch_sha256": "fb1c1d2f2b8e8aa6bf5dfef4c4dbba7d3512b28ec44495bbc418b315ad70622b",
+      "result_sha256": "68bfe8fa1e51906715b782eec7c4c6a9c209eeb519a78440f336807e1c2af9c1",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-batchpatcherscreen",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/BatchPatcherScreen.kt",
+      "inputs": {
+        "base": "5bd421434243a8f46c68195908c4bc82998ccb538e66869376ba10b980d6299d",
+        "local": "d36aa4abd56c488a70143445f5216b1cfe51619167f47e24b15ee094dafda928",
+        "upstream": "7fa47c5f884489938375715ce96bcc9a0b2ced39d03ba4728ebf9824deb4c7c7"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-batchpatcherscreen.patch",
+      "patch_sha256": "a661a799337db6fbd89a40cf5f408df251d306dd97d6414824d207880c93637b",
+      "result_sha256": "375132250cce9f47e8f48c11871a2538bacc40bdc533fdda703c5562c8ae0ed3",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-homescreen",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/HomeScreen.kt",
+      "inputs": {
+        "base": "657f199571a293ae669a86bb5686061d74a5be20c0cf9f29f7b3958c95348b75",
+        "local": "f31d92e73ff3732173eaa7c5659d181031b5671f8026e51c8bbb15bf30fe0b02",
+        "upstream": "e6ecc9e89d2f0185047cc16fd7c01475a561d03796912ba1867f60d5ba6abc48"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-homescreen.patch",
+      "patch_sha256": "28f2a52569b99af10ffbcbcbe650d1727631849134d2528524b06f8dd6f8e991",
+      "result_sha256": "54b94c082b67b68d90077e066d00465a66317e4dd3b7073423eb9cb114efeea4",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-patcherscreen",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/PatcherScreen.kt",
+      "inputs": {
+        "base": "bb85d78aff2419a654177bf76bb5b4e887ac08fd97d50106fb1f01ef30a709e8",
+        "local": "a8ed44bb29ea93173cc88af7a18f9fd127c039a4897c9bba777e8d5a86f71e1c",
+        "upstream": "4cbc7368f66b5ac20f0350e8f64af363bbed8f0c163a12aeb4a81b6526b8fd59"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-patcherscreen.patch",
+      "patch_sha256": "117dbdb5ca550c28cc1ddcd2fd8c3c0381f3635b5d86d7ca167f8ee89d391108",
+      "result_sha256": "6dd999f420d57e4ea0d089695849be0e5a8912fb82c2146d6baaccef541c0ad2",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-homedialogs",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/home/HomeDialogs.kt",
+      "inputs": {
+        "base": "02695463ea64f676405594777c094afffd7c88bc17d816fd317c5edca54eaa41",
+        "local": "c67d9a9f2388c9f33ac2b99bb8dc3585b433567533f75713e941aea8d08393a0",
+        "upstream": "e8a1cdb5a5f24a59e676fe43aa3c216dc60abd144089ee75e15a396986fdf780"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-homedialogs.patch",
+      "patch_sha256": "25c74a73583864e23d4ebae6dff2c5f430093d5d552df74574f6e11a245ff61d",
+      "result_sha256": "9a029bb5ce69727c3ce452c5ebbc815305a25a38e0cc9f20da37838e127604c4",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-onetapyoutubedialog",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/home/OneTapYouTubeDialog.kt",
+      "inputs": {
+        "base": null,
+        "local": "b8a0a58c0c2b564b0c3cd46cdbe8004f5c6e0969996b657f89643bda5ff8f454",
+        "upstream": null,
+        "merged": "b8a0a58c0c2b564b0c3cd46cdbe8004f5c6e0969996b657f89643bda5ff8f454"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-onetapyoutubedialog.patch",
+      "patch_sha256": "062df47ebe4edeed232334203d69f897cd02640977248a5e0fe806a4830af778",
+      "result_sha256": "d771a172d7520f1988a04662115a8a82422191d96d007893763a318160b7eb6f",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-patcheslistshared",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/home/PatchesListShared.kt",
+      "inputs": {
+        "base": "603cd7972cdf908d1917240387f6259d86f3b062826e9afaf52ca2e8cbb921af",
+        "local": "c1996384576a7078d4657747ec23bac71d81034aaa4288944775db1e541df085",
+        "upstream": "8bc8ab53ede4c978f53b97714628a2263077579933e9ee32445cec2b74927d42"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-patcheslistshared.patch",
+      "patch_sha256": "44503e5f64aedcfd22ca3b78aa370838f82f2583123ad179a9575e166a6d6764",
+      "result_sha256": "469b1ddb9979d6740b5586dbfcb45ff984af7b4191031d4f0349fa5d1ae319c6",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-advancedtabcontent",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/settings/AdvancedTabContent.kt",
+      "inputs": {
+        "base": "eb43933c90bed22125f97161b836125633a5b522b07005229ef36f7a412428d6",
+        "local": "6a0829b19544c94d702045fa9217cc6e85ce265f06eeba7a6d9ab6205ce4a3d9",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-advancedtabcontent.patch",
+      "patch_sha256": "7fc46353763597b00dc30871a77931cc5cd5f68dabef369b005e437f553b7ad2",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-appearancesettings",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceSettings.kt",
+      "inputs": {
+        "base": null,
+        "local": null,
+        "upstream": "2ba6f5a65fd6dd4975d8e3c6aa42138aeaf1a783ac7d3f4963fac45a35d5cae1",
+        "merged": "2ba6f5a65fd6dd4975d8e3c6aa42138aeaf1a783ac7d3f4963fac45a35d5cae1"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-appearancesettings.patch",
+      "patch_sha256": "e4fb46ab6a33e890fb059f5c58433e48f28a3cb2b093c1464bd872a70e2eaf58",
+      "result_sha256": "6aaedc0dff0d28f64c07a51c9674ff6fb207847402cdad415c9a4508ce5f745c",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-appearancetabcontent",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceTabContent.kt",
+      "inputs": {
+        "base": "50d269f8f75c91afea6a32d543c56770a3fd8cb83b85b16c0eaeb5fa797b5928",
+        "local": "1666bb4213f7cf305e904d1aa3df72ca7a81760b5c292122335cfd638f2484ee",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-appearancetabcontent.patch",
+      "patch_sha256": "8b9c21601ce19097029ae1f66f903ad75a4e05d7d88a89505dbed1e748f7c68f",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-settingspage",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/settings/SettingsPage.kt",
+      "inputs": {
+        "base": null,
+        "local": null,
+        "upstream": "64bd73fa6e3dc86227a45b11836100e8e27b45cc102ad8fa7b3ef3370f52994e",
+        "merged": "64bd73fa6e3dc86227a45b11836100e8e27b45cc102ad8fa7b3ef3370f52994e"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-settingspage.patch",
+      "patch_sha256": "267515893e2410da45d3de095c2ccdea26ebb9f55ea89d708570647a66afe846",
+      "result_sha256": "f29a6baa2fef6b6d9d28707b9ffab4410080587cfb5be4bdac52810a3431ae86",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-updatesitems",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/settings/advanced/UpdatesItems.kt",
+      "inputs": {
+        "base": "93d8d0c264ea5cdfcc2f18baec32e302060c83604f9921fa9deacb888405d31d",
+        "local": "cb479fa9bfe365d45dbb23437ea170af7c652517f97a950e8a79cca70ec91903",
+        "upstream": "c1e9c1c54f56e24ead48403e1a7e670d2466dd664b17701a186fe758cd4187ea"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-updatesitems.patch",
+      "patch_sha256": "c8047d013a1ec725322937278a21669c98b0f61e34919a41a9647a9aa6bb272d",
+      "result_sha256": "aefe6de4181a86fdd49d986dc3c0f8a2945d4b1dfb4d852f98128e9fb289a6a8",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-homeviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt",
+      "inputs": {
+        "base": "4c811bf85fef0e3cc94efd2fd3c9f25e434e0fdc30b533919cc39fcab5aa6c89",
+        "local": "49af9e8c0c737b1db4c6dcc9ff155ff7aa1496e2d584949130e5d90386f9a2d7",
+        "upstream": "259cee262fc6d331efff0d503327bca4a4b3296d766645cfcb0f6e7f213fff59"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-homeviewmodel.patch",
+      "patch_sha256": "cd9aad8cb208f95ad50f76923c0d477e897eae334dfb46a8cb049f69ee1966f4",
+      "result_sha256": "5f0b9410b395d767122b8ccea470abad4cc3b6f9c0f5ac38a27e7cbe820bab43",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-installviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/InstallViewModel.kt",
+      "inputs": {
+        "base": "31b8f2786c89adae13d6aa579f27af09aa683526002714ff3c7d7e5b47710d9c",
+        "local": "e715a3641b9b447cdc1c4899b4d4646c5393986589078d0f3e8020f243643368",
+        "upstream": "91e09dde3bc273fe47a003282b4c4946b05f17152f4fe0b634e71d99c9f71937"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-installviewmodel.patch",
+      "patch_sha256": "03953d062687a18509de73c04a3098bebfe6129dfca2eebd0bf8bec0b80c2da6",
+      "result_sha256": "10359e380e59680a9b27bf962a5ad371c68a6ec5eda36a9bcb633ded57f8b52c",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-patchflow",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/PatchFlow.kt",
+      "inputs": {
+        "base": null,
+        "local": null,
+        "upstream": "9444ed78012dc9ccd498b8d9ffa908a58a29d2b638a708742cdeec4ab56fe836",
+        "merged": "9444ed78012dc9ccd498b8d9ffa908a58a29d2b638a708742cdeec4ab56fe836"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-patchflow.patch",
+      "patch_sha256": "16d94a048b938d3bb402931cb2fff8e0e949ad219d9ebf46a607dd3d68a34fb2",
+      "result_sha256": "9377f8f684ee9ff1eefdb56626d6716958e8c3691de67392fa037cd0467e3d64",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-patcherviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/PatcherViewModel.kt",
+      "inputs": {
+        "base": "ccd4335861ff28252209f2c957bfe09515c0e0e8cca7549b54e6725e351d72f8",
+        "local": "e22e579d57aaeabc4013c4436108e56f0033933d67436db87b3741bb13e23b88",
+        "upstream": "f867a701099eb305125a25caf271cf35eb1774dc7f0e89a2cc0c17547a176851"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-patcherviewmodel.patch",
+      "patch_sha256": "c60966f3f9ea877eac4561cfb209bce8a02bc79002fb1266a33c2713ea892ebf",
+      "result_sha256": "12f1a8cabf6d15a87b9ff58dea4a884b37cf3ab0c29d40c9973176eae63c1d80",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-settingsviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/SettingsViewModel.kt",
+      "inputs": {
+        "base": "021072011509bcf368b52f6f5825ab71f3957709fde97d6421c80fcb47f3cc0f",
+        "local": "f4df55afc98adc82f5f68c520db4c151b6b27cb033ca169850b37a939a603a3a",
+        "upstream": "33ce9a61445a5c43be1daa830d62d6f4ef0a3681a658b7c80739369d30d2f3f8"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-settingsviewmodel.patch",
+      "patch_sha256": "b3e654d79c919eb1d9ba9f8029f519790cdd0222b7a100ef6a6ebfc8d0a5cbe5",
+      "result_sha256": "f101f1f8ffc6cd4102b0e00eb3e554d9157f445379dcefad43839b94e1da8b54",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-updateviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/UpdateViewModel.kt",
+      "inputs": {
+        "base": "cce02f663504dc84c46e2686de1376661629b5983c7e46f0ededbadf1c9d538b",
+        "local": "1ebe3202bdaa3e2366913e7800169ca3eecc9e663805b129ae2103a8325b335e",
+        "upstream": "442652fe0eff9842cc7400c0f92efe1a2e2f6a7b09ade7dea056942afd426175"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-updateviewmodel.patch",
+      "patch_sha256": "60c152052801ac3d4464420e6d00e90f1054fd85ad1f8597689eda5b6db5ebab",
+      "result_sha256": "b4fb38b85e47583bb027b9f4fc37fef9fbf88df1c28d2bc0bda0f1d2fba3bef2",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-fcmtopicmanager",
+      "path": "app/src/main/java/app/morphe/manager/util/FcmTopicManager.kt",
+      "inputs": {
+        "base": "2a2a65be7ccf68bcdbf388fafd5c789b97e9d1008d0315e7ea7705c19d415aed",
+        "local": "ef50b01405aed8eecd9e32afe481958189c0414b496258fc5ebda2bfe83f26d2",
+        "upstream": "155667b34e59d0cb77189a9f07941f03bd02d17b53a519157f3e7182c4833fdc"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-fcmtopicmanager.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "ef50b01405aed8eecd9e32afe481958189c0414b496258fc5ebda2bfe83f26d2",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-updatecheckworker",
+      "path": "app/src/main/java/app/morphe/manager/worker/UpdateCheckWorker.kt",
+      "inputs": {
+        "base": "97b6a523527fa32682ea5677fdc90b735b7f38ca8eebea7bf5e41ff9629a3ea4",
+        "local": "57ce1a426ea5818d0106b2a305786e5f648b465b17dcab221648e04d8a92931c",
+        "upstream": "64687b588470acc0017024115253ab44e6ac7f213dddf8689903685c4bf62b4a"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-updatecheckworker.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "57ce1a426ea5818d0106b2a305786e5f648b465b17dcab221648e04d8a92931c",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-strings-ar-rSA",
+      "path": "app/src/main/res/values-ar-rSA/strings.xml",
+      "inputs": {
+        "base": "a37822343d4c8224342d628364d60671cdaffc536b6f7df5bca094a17324e58d",
+        "local": "482dc71f7456b9620a371ec081eb8678c816c5ee1f16204efc5b151f2a9be4ba",
+        "upstream": "7363ed6233b15f97614dde53e0e4dadbac7b29fe432cfe70e1d5f1f0d71b1e42"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-strings-ar-rSA.patch",
+      "patch_sha256": "a8bb7f9e109c7b432f030716e127cc1d0a14192e82d6e93ddae28523e5ab39f0",
+      "result_sha256": "0bddc6f597b9f39463daeb5077b56ac8fbb4f303048e40eab5298d432539380b",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-strings-el-rGR",
+      "path": "app/src/main/res/values-el-rGR/strings.xml",
+      "inputs": {
+        "base": "857b50ab80eef4d1a3fcf10cb56b01dbce7847b69590fc8772f5e9303678faaa",
+        "local": "3bc6bb2fb5cc56225d8ab1f4bfca0cdeb36ecb1b51b21c456bfd9f40877195d3",
+        "upstream": "3f35293902a5e282cac09db2d5b4953ee8e3982b32c346360b567e2b57f36b3f"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-strings-el-rGR.patch",
+      "patch_sha256": "5b4eda6a1a98f1407d8b3ecfa1aa08edb42904c10f2c73b22bb5bb405335e4d3",
+      "result_sha256": "fc9846edfcbc5403da7854aebed66c884cd1d078f3630c180c9bdd4fb7a3f236",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-strings-hi-rIN",
+      "path": "app/src/main/res/values-hi-rIN/strings.xml",
+      "inputs": {
+        "base": "d62f0614c154c5d27f181dd1eac78aef02aef43c494edf4cdd206de5933ca267",
+        "local": "89bcfcea12676fb07c59d60fedbd60ce704f5e8b1562ae180921d8dfe7ccb003",
+        "upstream": "cb20be18c1051118a2d0e76e24d6ec81cd082cd4676c9a0797fa3a270f41458c"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-strings-hi-rIN.patch",
+      "patch_sha256": "aea6669ae8a508fbd5d816aba89aa00337dc0b1511492768fefc3d9e267c8951",
+      "result_sha256": "c7bd77319cf0ab33ed8b9f6a005bd7a3bce0867ca21de9fde86a4385f43702ac",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-strings-in-rID",
+      "path": "app/src/main/res/values-in-rID/strings.xml",
+      "inputs": {
+        "base": "f6fd6515126948e3a4e9e7ed5c5814d1913e3233beaf8a345bdc8b5d34b216fa",
+        "local": "5f7945c427439b94de2d68ec321b1df55adb969a7951662563e66bc2924d6587",
+        "upstream": "33c38d8f229d3bd057bfb2258c6b71e9f10e1bac6e591422187ec7cccc7f334e"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-strings-in-rID.patch",
+      "patch_sha256": "c1fb4b133dce49dba08198ca4318a4834a79143f5e3d6e937f167eabf6c6cd95",
+      "result_sha256": "7dfaacbe5f48fbd15ba69f3892d354fb2c011ca9b049b4ac65629bdb09d52209",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-rangedownloadtest",
+      "path": "app/src/test/java/app/morphe/manager/network/service/RangeDownloadTest.kt",
+      "inputs": {
+        "base": null,
+        "local": null,
+        "upstream": "5ffa0a9b918896ce522f71e6d5da972336ca2feee986ded011b766e78a95a30c",
+        "merged": "5ffa0a9b918896ce522f71e6d5da972336ca2feee986ded011b766e78a95a30c"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-rangedownloadtest.patch",
+      "patch_sha256": "a953081fbbbd1a5317ac1dd07134ecc18977b31b2ff421226741932f7a5f24d5",
+      "result_sha256": "c764d9d4f918248909bd06b7f5111bf38ceb31562d2f19829eee55587f39395c",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-libs-versions",
+      "path": "gradle/libs.versions.toml",
+      "inputs": {
+        "base": "97aaa29138804e0a01fce89316ba61cee95d2dffa2d0f7063f3bf62a461c375e",
+        "local": "e06a5b8c832fe3c0890b31bdff2eb11bfb45267528f4525a12b1d58ab9d5e926",
+        "upstream": "c8c8a9150cc2fdb5fc322a07223968d1132305c716788387ad2b879e378a09da"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-libs-versions.patch",
+      "patch_sha256": "02703f01ef39fb01d6dee71af9339e3e6ae73d1b086ecb9f0acdd63c9d41770d",
+      "result_sha256": "f9dcfcd5c27641c68898afab082986788ae3d92d7fecff619b85ccc5c53eddd3",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-session",
+      "path": "patcher-core/src/main/kotlin/app/morphe/manager/patcher/Session.kt",
+      "inputs": {
+        "base": "7f701d74bf70acf55b5b661061d50b49ffb7fb0e2abb3848a011d0397b9be080",
+        "local": "6475e878c57a27c55b2291639bf102c62a7da1000b46e79e12650910b90cd5bf",
+        "upstream": "81a01abfb7c3253098a8321249b36f59d3a7e6fd0f05cb89343a432ab1008acd"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-session.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "81a01abfb7c3253098a8321249b36f59d3a7e6fd0f05cb89343a432ab1008acd",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
+    },
+    {
+      "id": "manager-2.0.0-settings-gradle",
+      "path": "settings.gradle.kts",
+      "inputs": {
+        "base": "e3cbcdd58a014eaa4e2c68ab6bbdabb4023fc38f98cf2a4a192307f095b3cbfe",
+        "local": "3c4d7df19339446dbe12c14d2db7416823898a9b8a111b9d6d0078224a79644a",
+        "upstream": "f2d87d7295d4310e645d4d5637f10f3ffcc29fccb1a0ebde2fbd233603fc6447"
+      },
+      "patch": "config/upstream-resolutions/manager-2.0.0-settings-gradle.patch",
+      "patch_sha256": "20ef8acc4b46e820f5cca79e893a9f38c3cb0b42bd9af6d0c03bc0d699bd2320",
+      "result_sha256": "36a354450375b887d728b63082dec6fffbd7999f687fe4f1156033fcd9a82c4c",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.0.0-app-gradle"
+      ]
     }
   ]
 }

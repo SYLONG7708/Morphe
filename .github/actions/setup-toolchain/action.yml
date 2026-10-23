@@ -3,6 +3,13 @@ description: Install explicit SDK packages with bounded network recovery
 runs:
   using: composite
   steps:
+    - name: Set up embedded patcher JVM toolchain
+      if: ${{ hashFiles('patcher-core/build.gradle.kts') != '' }}
+      uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: '25'
+        set-default: false # Keep JDK 21 for the existing derived-component builds.
     - uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4
       with:
         packages: 'platform-tools'

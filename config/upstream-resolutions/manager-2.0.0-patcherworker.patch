@@ -1,0 +1,82 @@
+--- a/app/src/main/java/app/morphe/manager/patcher/worker/PatcherWorker.kt
++++ b/app/src/main/java/app/morphe/manager/patcher/worker/PatcherWorker.kt
+@@ -53,7 +53,10 @@
+ import app.morphe.manager.patcher.runtime.Runtime
+ import app.morphe.manager.patcher.runtime.PatcherVm
+ import app.morphe.manager.patcher.split.SplitApkPreparer
++import app.morphe.manager.patcher.util.NativeLibs
+ import app.morphe.manager.ui.model.SelectedApp
++import app.morphe.manager.domain.update.SafeIntegrationProfile
++import app.morphe.manager.license.DeviceLicenseManager
+ import app.morphe.manager.ui.model.State
+ import app.morphe.manager.util.*
+ import app.morphe.manager.util.PatchSelectionUtils.restrictTo
+@@ -247,6 +250,10 @@
+     }
+ 
+     override suspend fun doWork(): Result {
++        if (!DeviceLicenseManager.isLicensed(applicationContext)) {
++            Log.e(tag, "Refusing to patch without a valid device-bound license".logFmt())
++            return Result.failure()
++        }
+         if (runAttemptCount > 0) {
+             Log.d(tag, "Android requested retrying but retrying is disabled.".logFmt())
+             return Result.failure()
+@@ -386,7 +393,8 @@
+             keystoreManager.preloadSigner()
+ 
+             val vm = patcherProcesses.preferredVm()
+-            val stripNativeLibs = prefs.stripUnusedNativeLibs.get()
++            val autoYouTubeArchitecture = args.packageName == SafeIntegrationProfile.GOOGLE_YOUTUBE_PACKAGE
++            val stripNativeLibs = autoYouTubeArchitecture || prefs.stripUnusedNativeLibs.get()
+             val inputIsSplitArchive = SplitApkPreparer.isSplitArchive(inputFile)
+             // The architecture the patches were selected against, worth a line of its own now
+             // that a patch can declare itself unavailable for the one the input carries. Read
+@@ -485,6 +493,16 @@
+                 runtime(PatcherVm.ART).patchInput()
+             }
+ 
++            if (autoYouTubeArchitecture) {
++                val outputAbis = NativeLibs.extractAbisFromApk(patchedApk)
++                val preferred = NativeLibs.preferredAbi(outputAbis.toSet(), Build.SUPPORTED_ABIS.toList())
++                check(outputAbis.isEmpty() || (preferred != null && outputAbis.all { it == preferred })) {
++                    "YouTube output architecture ${outputAbis.joinToString()} does not match " +
++                        "this Android system: ${Build.SUPPORTED_ABIS.joinToString()}"
++                }
++                args.logger.info("Automatic YouTube architecture: ${preferred ?: "universal"}")
++            }
++
+             updatePatcherNotification(stepName = signingApkLabel, patchProgress = null)
+             val signTime = measureTime {
+                 keystoreManager.sign(patchedApk)
+@@ -494,6 +512,30 @@
+             }
+             args.logger.info("Signed apk in ${signTime.inWholeMilliseconds}ms")
+             updateProgress(state = State.COMPLETED) // Signing
++
++            SafeIntegrationProfile.expectedPatchedPackage(
++                sourcePackage = args.packageName,
++                patches = args.selectedPatches,
++            )?.let { expectedPackage ->
++                val output = File(args.output)
++                val actualPackage = pm.getPackageInfo(output)?.packageName
++                if (actualPackage != expectedPackage) {
++                    if (!output.delete() && output.exists()) {
++                        Log.w(
++                            tag,
++                            "Failed to delete unsafe patched output: ${output.absolutePath}".logFmt()
++                        )
++                    }
++                    throw IllegalStateException(
++                        "UIS7870 safety gate rejected patched package " +
++                            "${actualPackage ?: "<unreadable>"}; expected $expectedPackage"
++                    )
++                }
++                args.logger.info(
++                    "UIS7870 safety gate accepted output package=$actualPackage"
++                )
++            }
++
+ 
+             args.logger.info(
+                 "$LOG_WORKER_PREFIX_SUCCEEDED $LOG_WORKER_FIELD_OUTPUT=${args.output} " +

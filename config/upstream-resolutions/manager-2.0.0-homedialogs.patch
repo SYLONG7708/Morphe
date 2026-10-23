@@ -1,0 +1,28 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/home/HomeDialogs.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/home/HomeDialogs.kt
+@@ -82,7 +82,24 @@
+ 
+     // APK selection processing overlay - blocks interaction while APK is loaded/validated in background
+     Overlay(visible = flow.processingApkSelection) {
+-        PulsingLogoWithCaption(caption = stringResource(R.string.processing_apk))
++        val progress = flow.automaticYouTubeDownloadProgressPercent
++        PulsingLogoWithCaption(
++            caption = if (progress == null) {
++                stringResource(R.string.processing_apk)
++            } else {
++                "${stringResource(R.string.processing_apk)} · $progress%"
++            }
++        )
++    }
++
++    DialogHost(visible = flow.showOneTapYouTubeDialog) {
++        OneTapYouTubeDialog(
++            state = flow.oneTapHubUiState,
++            onUseLocal = flow::startOneTapLocalYouTubePatch,
++            onUseRecommended = flow::startOneTapRecommendedYouTubePatch,
++            onRefresh = flow::openOneTapHubDialog,
++            onDismiss = flow::dismissOneTapHubDialog,
++        )
+     }
+ 
+     // The patch flow over the app information it may have started from, in the order they opened

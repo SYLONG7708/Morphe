@@ -96,6 +96,57 @@ class OfficialSyncTest(unittest.TestCase):
         self.assertIn("changed=false", (self.root / "output").read_text())
         self.assertIn("blocked=true", (self.root / "output").read_text())
 
+    def test_failed_merge_does_not_attempt_resolution_without_a_merge_head(self):
+        real_git = sync_upstream.git
+
+        def failed_merge(*args, **kwargs):
+            if args[0] == "merge":
+                return subprocess.CompletedProcess(args, 128, "", "fatal: merge could not start")
+            return real_git(*args, **kwargs)
+
+        with patch("sync_upstream.git", side_effect=failed_merge), \
+             patch("sync_upstream.resolve_reviewed") as resolve:
+            with self.assertRaisesRegex(RuntimeError, "Official merge failed.*merge could not start"):
+                self.prepare()
+        resolve.assert_not_called()
+        self.assertEqual("", self.cmd(self.fork, "status", "--porcelain", "--untracked-files=no").stdout)
+        self.assertFalse((self.fork / "config/upstream-manager.json").exists())
+        status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
+        self.assertEqual("error", status["state"])
+        self.assertIn("fatal: merge could not start", status["error"])
+
+    def test_locally_deleted_automation_is_not_resurrected_by_upstream(self):
+        deleted = (".github/workflows/release.yml", ".github/actions/setup-toolchain/action.yml")
+        for path in deleted:
+            (self.fork / path).unlink()
+        (self.fork / ".github/workflows/signed.yml").write_text("signed channel workflow\n")
+        self.commit(self.fork, "replace upstream automation")
+        self.prepare()
+        for path in deleted:
+            self.assertFalse((self.fork / path).exists())
+        self.assertFalse((self.fork / ".github/workflows/new-publish.yml").exists())
+        self.assertEqual("", self.cmd(self.fork, "diff", "HEAD", "--", ".github").stdout)
+        self.assertEqual("", self.cmd(self.fork, "diff", "--name-only", "--diff-filter=U").stdout)
+        self.assertEqual("upstream improvement\n", (self.fork / "app.txt").read_text())
+        status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
+        self.assertEqual("prepared", status["state"])
+        self.assertIn("blocked=false", (self.root / "output").read_text())
+
+    def test_deleted_automation_does_not_hide_an_unreviewed_source_conflict(self):
+        (self.fork / ".github/workflows/release.yml").unlink()
+        (self.fork / "app.txt").write_text("custom behavior\n")
+        self.commit(self.fork, "owned automation and custom source")
+        before = self.cmd(self.fork, "rev-parse", "HEAD").stdout
+        self.prepare()
+        status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
+        self.assertEqual("blocked", status["state"])
+        self.assertEqual(["app.txt"], status["conflicts"])
+        self.assertEqual(before, self.cmd(self.fork, "rev-parse", "HEAD").stdout)
+        self.assertEqual("", self.cmd(self.fork, "status", "--porcelain", "--untracked-files=no").stdout)
+        self.assertFalse((self.fork / ".github/workflows/release.yml").exists())
+        self.assertFalse((self.fork / "config/upstream-manager.json").exists())
+        self.assertIn("changed=false", (self.root / "output").read_text())
+
     def reviewed_rule(self):
         local = "custom behavior\n"
         result = "upstream improvement\ncustom behavior\n"
@@ -302,6 +353,56 @@ class OfficialSyncTest(unittest.TestCase):
         self.assertEqual("upstream improvement\nchannel integration\n", (self.fork / path).read_text())
         self.assertEqual(["reviewed-clean-merge"],
                          json.loads((self.fork / "verification/upstream-sync.json").read_text())["repairs"])
+
+    def new_upstream_module_rule(self):
+        catalog = self.merged_rule()
+        rule = catalog["resolutions"][0]
+        path = "config/new-module.txt"
+        rule["path"] = path
+        rule["inputs"].update(base=None, local=None)
+        data = (self.fork / rule["patch"]).read_bytes().replace(b"app.txt", path.encode())
+        (self.fork / rule["patch"]).write_bytes(data)
+        rule["patch_sha256"] = hashlib.sha256(data).hexdigest()
+        (self.fork / "config/upstream-resolutions.json").write_text(json.dumps(catalog))
+        self.commit(self.fork, "reviewed new upstream module")
+        (self.upstream / "config").mkdir()
+        (self.upstream / path).write_text("upstream improvement\n")
+        self.commit(self.upstream, "extract new module")
+        self.cmd(self.upstream, "tag", "-f", "v1.31.0")
+        return path
+
+    def test_new_upstream_file_can_receive_an_exact_reviewed_adaptation(self):
+        path = self.new_upstream_module_rule()
+        self.prepare()
+        self.assertEqual("upstream improvement\nchannel integration\n", (self.fork / path).read_text())
+        self.assertEqual(["reviewed-clean-merge"],
+                         json.loads((self.fork / "verification/upstream-sync.json").read_text())["repairs"])
+
+    def test_absent_local_input_does_not_match_an_existing_identical_file(self):
+        path = self.new_upstream_module_rule()
+        (self.fork / path).write_text("upstream improvement\n")
+        self.commit(self.fork, "local module already exists")
+        self.prepare()
+        self.assertEqual("upstream improvement\n", (self.fork / path).read_text())
+        self.assertEqual([], json.loads((self.fork / "verification/upstream-sync.json").read_text())["repairs"])
+
+    def test_changed_new_module_cannot_partially_apply_a_required_integration(self):
+        path = self.new_upstream_module_rule()
+        module_catalog = json.loads((self.fork / "config/upstream-resolutions.json").read_text())
+        catalog = self.reviewed_rule()
+        catalog["resolutions"][0]["requires"] = [module_catalog["resolutions"][0]["id"]]
+        catalog["resolutions"] += module_catalog["resolutions"]
+        (self.fork / "config/upstream-resolutions.json").write_text(json.dumps(catalog))
+        self.commit(self.fork, "source and new module must integrate together")
+        (self.upstream / path).write_text("unreviewed module API\n")
+        self.commit(self.upstream, "module changed since review")
+        self.cmd(self.upstream, "tag", "-f", "v1.31.0")
+        with self.assertRaisesRegex(ValueError, "dependency did not match"):
+            self.prepare()
+        self.assertEqual("custom behavior\n", (self.fork / "app.txt").read_text())
+        self.assertFalse((self.fork / path).exists())
+        self.assertFalse((self.fork / "config/upstream-manager.json").exists())
+        self.assertEqual("", self.cmd(self.fork, "status", "--porcelain", "--untracked-files=no").stdout)
 
     def test_dirty_checkout_is_preserved(self):
         (self.fork / "app.txt").write_text("user work\n")

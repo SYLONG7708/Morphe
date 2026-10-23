@@ -1,0 +1,32 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceSettings.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceSettings.kt
+@@ -51,6 +51,7 @@
+     val appLanguage by AppLocale.selected.collectAsStateWithLifecycle()
+     val showGreetingPhrases by themeViewModel.prefs.showGreetingPhrases.getAsState()
+     val showRepatchNotice by themeViewModel.prefs.showRepatchNotice.getAsState()
++    val groupPatchesByCategory by themeViewModel.prefs.groupPatchesByCategory.getAsState()
+     val colorAccents by themeViewModel.prefs.colorAccents.getAsState()
+     val outlines by themeViewModel.prefs.outlines.getAsState()
+     val blur by themeViewModel.prefs.blur.getAsState()
+@@ -124,6 +125,21 @@
+             randomInterval = randomInterval,
+             onBackgroundClick = { showBackgroundDialog.value = true }
+         )
++
++        SettingsSection(
++            title = stringResource(R.string.settings_appearance_patch_list),
++            icon = MaterialSymbols.Rounded.Extension
++        ) {
++            SettingsGroup {
++                SettingsSwitchItem(
++                    title = stringResource(R.string.settings_appearance_patch_categories),
++                    subtitle = stringResource(R.string.settings_appearance_patch_categories_description),
++                    icon = MaterialSymbols.Rounded.Category,
++                    checked = groupPatchesByCategory,
++                    onToggle = { themeViewModel.toggleGroupPatchesByCategory(groupPatchesByCategory) }
++                )
++            }
++        }
+ 
+         HomeScreenSection(
+             showGreetingPhrases = showGreetingPhrases,

@@ -50,6 +50,9 @@ jobs:
           set -euo pipefail
           chmod +x gradlew
           mkdir -p verification
+          if [ -f patcher-core/build.gradle.kts ]; then
+            python3 tools/ci_retry.py -- ./gradlew :patcher-core:test --stacktrace
+          fi
           python3 tools/ci_retry.py -- ./gradlew clean testDebugUnitTest lintRelease assembleRelease -PsignAsDebug --stacktrace
           licensed_apk="$(find app/build/outputs/apk/release -name '*.apk' -type f | head -n1)"
           test -f "$licensed_apk"

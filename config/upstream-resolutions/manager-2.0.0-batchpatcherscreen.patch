@@ -1,0 +1,7 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/BatchPatcherScreen.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/BatchPatcherScreen.kt
+@@ -1107,4 +1107,3 @@
+     }
+     StatusBadge(text = stringResource(labelRes), tone = tone)
+ }
+-

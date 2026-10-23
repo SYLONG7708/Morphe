@@ -54,9 +54,11 @@ def resolve_reviewed(conflicts: list[str]) -> list[str]:
                 ("base", merge_base), ("local", "HEAD"), ("upstream", "MERGE_HEAD"),
                 ("merged", ":0"))}
             source = blobs["merged"]
-        # Only modifications and reviewed upstream deletions are supported.
-        if (blobs["local"] is None or source is None
-                or (path in conflicts and blobs["base"] is None)):
+        # Conflicts need a local/base blob. A clean upstream addition can also
+        # receive a reviewed adaptation: absence of base/local and both the
+        # upstream and merged bytes must all match the rule exactly.
+        if (source is None or (path in conflicts
+                and (blobs["local"] is None or blobs["base"] is None))):
             continue
         digests = {name: sha(value) for name, value in blobs.items()}
         matches = [r for r in catalog["resolutions"] if r["path"] == path and r["inputs"] == digests]
