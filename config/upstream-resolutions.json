@@ -1267,6 +1267,19 @@
       "requires": [
         "manager-2.0.0-app-gradle"
       ]
+    },
+    {
+      "id": "manager-2.1.0-strings-lo-rLA",
+      "path": "app/src/main/res/values-lo-rLA/strings.xml",
+      "inputs": {
+        "base": "3d678b0af90bb600b9ef39cef520126ec957d38123616fb3be1ec7171bf5c59c",
+        "local": "465bee4597651bb2ca589ae94a219b05627b435a64d0efd837aad6db864080d8",
+        "upstream": "99fa8e1ac11f8694d3ba4a0d310189c629b7b512e67d50ca88635df35aa99761"
+      },
+      "patch": "config/upstream-resolutions/manager-2.1.0-strings-lo-rLA.patch",
+      "patch_sha256": "c9d79a48c3721942930cd77e65b0ab86b1f8559a5041e94931bf0b772858aeed",
+      "result_sha256": "7cd02fdd2c2220e49b77d00992720f8a5f7968f6cc96875e996b7bc403287e8d",
+      "patch_base": "upstream"
     }
   ]
 }

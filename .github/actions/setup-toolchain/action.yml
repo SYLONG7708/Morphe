@@ -8,7 +8,10 @@ runs:
       uses: actions/setup-java@v5
       with:
         distribution: temurin
-        java-version: '25'
+        # Keep v2.0.0 buildable while v2.1.0 moves the embedded JVM to 17.
+        java-version: |
+          17
+          25
         set-default: false # Keep JDK 21 for the existing derived-component builds.
     - uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4
       with:

@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-lo-rLA/strings.xml
++++ b/app/src/main/res/values-lo-rLA/strings.xml
+@@ -399,7 +399,7 @@
+     <string name="patcher_message_5">ແນະນຳໃຫ້ພັກດື່ມກາເຟ… ☕</string>
+     <string name="patcher_message_6">ເບິ່ງຂ້າງນອກ, ບ່ອນນັ້ນງາມ… 🌤️</string>
+     <string name="patcher_message_8">ກຳລັງແກ້ສະປາເກັດຕີດິຈິຕອນ… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">ກຳລັງແກ້ບັກໃນແອັບທີ່ຍັງບໍ່ໄດ້ແພດ… 🪲</string>
+     <string name="patcher_message_10">ຊຸດແພດດີໆຄຸ້ມຄ່າການລໍຖ້າ… ⏳</string>
+     <string name="patcher_message_11">ກຳລັງຂັດເງົາພິກເຊວຈົນສ່ອງແສງ… 💎</string>
