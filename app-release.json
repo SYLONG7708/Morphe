@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-10-24T07:27:03Z",
+  "created_at": "2026-10-24T07:47:18Z",
   "description": "SyMorphe signed stable release",
-  "download_url": "https://github.com/SYLONG7708/Morphe/releases/download/symorphe-v1.1.227/SyMorphe-1.1.227-licensed.apk",
-  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/download/symorphe-v1.1.227/SyMorphe-1.1.227-licensed.apk.sig",
-  "version": "1.1.227"
+  "download_url": "https://github.com/SYLONG7708/Morphe/releases/download/symorphe-v1.1.229/SyMorphe-1.1.229-licensed.apk",
+  "signature_download_url": "https://github.com/SYLONG7708/Morphe/releases/download/symorphe-v1.1.229/SyMorphe-1.1.229-licensed.apk.sig",
+  "version": "1.1.229"
 }
