@@ -64,6 +64,10 @@
         <item quantity="one">%s इंस्टॉल किया गया ऐप</item>
         <item quantity="other">%s इंस्टॉल किए गए ऐप्स</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">%s ऐप माउंट किया गया</item>
+        <item quantity="other">%s ऐप्स माउंट किए गए</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">%s ऐप फिर से इंस्टॉल किया गया</item>
         <item quantity="other">%s ऐप्स फिर से इंस्टॉल किए गए</item>

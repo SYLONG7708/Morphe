@@ -164,6 +164,9 @@
     <string name="sources_filter_enabled_description">Ang mga patch sa pinagmulan ay kinuha mula sa</string>
     <string name="sources_filter_disabled_description">Pinagmulang nakapag-off</string>
     <string name="sources_filter_updates">Mga update</string>
+    <string name="sources_filter_updates_description">Mga source na may mas bagong bersyon na maaaring makuha</string>
+    <string name="sources_filter_issues">Kailangan ng atensyon</string>
+    <string name="sources_filter_issues_description">Mga source na naka-block, nabigong mag-load, o nangangailangan ng mas bagong Morphe</string>
     <string name="sources_sort_manual">Manu-manong pagkakasunud-sunod</string>
     <string name="sources_sort_manual_hint">Pindutin nang matagal ang isang pinagmulan upang muling ayusin</string>
     <string name="sources_sort_last_updated">Huling in-update</string>
@@ -453,6 +456,7 @@ Para sa pinakamahusay na resulta, nirerekomenda ng app na ito na i-patch ang isa
     <string name="batch_patch_title">Batch patching</string>
     <string name="batch_patch_planning">Inihahanda ang pila…</string>
     <string name="batch_patch_preparing_next">Inihahanda ang susunod na app…</string>
+    <string name="batch_patch_progress_counter">Pag-patch ng %1$s mula sa %2$s</string>
     <string name="batch_patch_summary">%1$s na-patch, %2$s nabigo, %3$s nilaktawan</string>
     <string name="batch_patch_saved_hint">Nai-save ang mga na-patch na app. I-install ngayon, o mamaya mula sa listahan ng na-patch na APK sa mga setting</string>
     <string name="batch_patch_multiple_sources">Ang ilang app ay pinagsasama ang mga patch mula sa higit sa isang source, na maaaring magdulot ng mga conflict</string>
@@ -474,6 +478,10 @@ Para sa pinakamahusay na resulta, nirerekomenda ng app na ito na i-patch ang isa
     <string name="batch_patch_no_selection">Walang isahang available patch ay napili</string>
     <string name="batch_patch_policy_install">I-install kapag tapos na</string>
     <string name="batch_patch_policy_install_description">I-i-install ang bawat na-patch na app pagkatapos ng queue. Off ay nagpapanatili sa mga APK para sa ibang pagkakataon</string>
+    <string name="batch_patch_policy_mount">I-mount kapag tapos na</string>
+    <string name="batch_patch_policy_mount_description">I-ma-mount ang bawat patched app kapag natapos na ang queue. Panatilihin ang Off para sa mga APK sa huli</string>
+    <string name="batch_patch_policy_install_mount">I-install o i-mount kapag natapos na</string>
+    <string name="batch_patch_policy_install_mount_description">I-install o i-mount ang bawat na-patch na app kapag natapos na ang queue. Kapag Off, itatago ang mga APK para sa ibang pagkakataon.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Simula</string>
     <string name="batch_patch_stop_title">Itigil ang batch patching?</string>
@@ -693,7 +701,7 @@ Ang pag-uninstall ay permanenteng bubura sa lahat ng data ng app."</string>
     <string name="failed_to_execute_patch">Nabigong ilapat %s</string>
     <string name="patched_app_save_failed_toast">Nabigong ma-save ang na-patch na aplikasyon</string>
     <string name="plugin_activity_dialog_body">Kinakailangan ng pakikipag-ugnayan sa tagagamit upang magpatuloy sa plugin na ito</string>
-    <string name="patcher_process_killed_message">Itinigil ng system ang patcher bago ito tapos, karaniwan upang maluwagan ang memorya. Isara ang ibang apps at subukan ulit</string>
+    <string name="patcher_process_killed_message">Itinigil ng system ang patcher bago ito matapos, upang magkaroon ng sapat na memory. Isara ang ibang apps at subukan ulit</string>
     <!-- Shown when a run fills the heap it was given. "%1$s" is the heap in megabytes. -->
     <string name="patcher_out_of_memory_message">Ang patcher ay wala nang memorya sa %1$s MB heap. Ang app na ito ay masyadong malaki para sa mga piniling patches. Subukang mag-patch gamit ang mas kaunting patch sources, o piliin ang mas kaunting patches</string>
     <string name="install_app_success">Matagumpay na na-install</string>
@@ -1061,6 +1069,7 @@ Mga Detalye: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher runtime</string>
     <string name="settings_system_jvm_runtime_enable">Gumamit ng embedded VM</string>
     <string name="settings_system_jvm_runtime_description">Mga patch sa isang Java VM na dala nina Morphe, na maaaring gumamit ng memorya hanggang sa kaya ng device. I-off upang i-patch gamit ang runtime ng Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Nangangailangan ng ARM o 64-bit x86 na device</string>
     <string name="settings_system_patcher_completion_sound">Tunog ng pagkumpleto</string>
     <string name="settings_system_patcher_completion_sound_description">Tumutugtog ng natatanging tono para sa tagumpay o kabiguan kapag natapos ang pag-patch</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1257,6 +1266,7 @@ Mga Detalye: %2$s"</string>
     <string name="settings_section_updates">Mga update</string>
     <string name="settings_section_patching">Nagpa-patch</string>
     <string name="settings_section_appearance_summary">Paano tingnan ang Morphe</string>
+    <string name="settings_section_patch_options_summary">Kung ano ang ginagamit ng simple mode sa pag-patch ng mga app</string>
     <string name="settings_section_general">Pangkalahatan</string>
     <string name="settings_section_patcher_summary">Paano pinatch ng mga application sa device na ito</string>
     <string name="settings_section_help_info">Tulong &amp; impormasyon</string>
@@ -1318,6 +1328,7 @@ Mga Detalye: %2$s"</string>
     <string name="reset_order">Ibalik sa orihinal na pagkakasunud-sunod</string>
     <string name="reset_order_done">Naibalik ang order</string>
     <string name="accessibility_select_app">Piliin ang APK</string>
+    <string name="accessibility_select_source">Piliin ang source</string>
     <string name="accessibility_move_up">Ilipat paitaas</string>
     <string name="accessibility_move_down">Ilipat pababa</string>
     <string name="accessibility_app_moved_announcement">%1$s ay inilipat sa posisyon %2$s ng %3$s</string>
@@ -1431,11 +1442,15 @@ Gusto mo pa bang ituloy?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s ng %2$s</string>
     <string name="onboarding_sources_desc">Pamahalaan ang iyong mga pinagmumulan ng patch. Ang bawat pinagmumulan ay nagbibigay ng mga patch na maaaring ilapat sa iyong mga app</string>
+    <string name="onboarding_other_apps_desc">I-patch ang isang app na wala sa listahan, mula sa APK file o mula sa isang app na naka-install sa iyong device</string>
+    <string name="onboarding_add_source_desc">Magdagdag ng patch source mula sa link o patch bundle file</string>
+    <string name="onboarding_signing_key_desc">Mag-backup ng key na nag-sign sa iyong patched apps. Kung hindi ito magagamit, ma-update lang sila pagkatapos nilang i-uninstall</string>
     <string name="onboarding_swipe_title">Mga kilos ng pag-swipe</string>
     <string name="onboarding_swipe_desc">Mag-swipe pakanan sa isang card ng app upang makita ang mga available na patch nito. Mag-swipe pakaliwa upang itago ang card mula sa home screen</string>
     <string name="onboarding_settings_desc">I-customize ang Morphe: hitsura, mga advanced na opsyon, at mga tool ng sistema</string>
     <string name="onboarding_sources_patches_desc">I-tap upang makita ang lahat ng mga patch na available mula sa pinagmumulang ito</string>
     <string name="onboarding_sources_version_desc">I-tap ang bersyon upang makita ang kumpletong changelog para sa pinagmumulang ito</string>
+    <string name="onboarding_sources_apps_desc">I-tap para makita ang mga app na pinipatch ng source na ito at piliin kung alin sa mga ito ay may inihahanda nang patches</string>
     <string name="onboarding_sources_prerelease_desc">I-enable ito upang makatanggap ng mga bersyon ng patch na pre-release mula sa pinagmumulang ito</string>
     <string name="onboarding_appearance_tab_desc">I-customize ang hitsura ng app: tema, kulay ng accent, at background</string>
     <string name="onboarding_expert_mode_desc">I-enable ang Expert Mode upang i-unlock ang pagpili ng patch, mga custom na opsyon, at iba pang mga advanced na feature</string>

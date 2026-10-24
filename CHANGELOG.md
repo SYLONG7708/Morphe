@@ -1,3 +1,44 @@
+# [2.1.0](https://github.com/MorpheApp/morphe-manager/compare/v2.0.0...v2.1.0) (2026-10-23)
+
+
+### Bug Fixes
+
+* Mount apps queued for batch patching on rooted devices ([9d5c007](https://github.com/MorpheApp/morphe-manager/commit/9d5c0073abbcd369c130c7d47eeb5b619b90d527))
+* Open files shared to the app for patching ([d2867a0](https://github.com/MorpheApp/morphe-manager/commit/d2867a072e30a0bbee6a926d2d1fdcffafbf8e38))
+* Patch on JDK 17 (fix for low-end devices) ([#1246](https://github.com/MorpheApp/morphe-manager/issues/1246)) ([619719f](https://github.com/MorpheApp/morphe-manager/commit/619719f353e8eb833637abb2c4c230e4b0ad7bc7))
+
+
+### Features
+
+* Name patch sources in exported APK file names ([5878b00](https://github.com/MorpheApp/morphe-manager/commit/5878b006f2c400e3e8d2e980f2ed4ce797a9bba6))
+* Show more of Morphe in the feature tour ([701a7bd](https://github.com/MorpheApp/morphe-manager/commit/701a7bdb035ed7463e6689299eb9011adc179a88))
+
+
+### Performance Improvements
+
+* Slide straight to the picked tab ([1ffe743](https://github.com/MorpheApp/morphe-manager/commit/1ffe74339476b9bf3860a8f3dc6371561a7c7815))
+
+# [2.1.0-dev.2](https://github.com/MorpheApp/morphe-manager/compare/v2.1.0-dev.1...v2.1.0-dev.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* Mount apps queued for batch patching on rooted devices ([9d5c007](https://github.com/MorpheApp/morphe-manager/commit/9d5c0073abbcd369c130c7d47eeb5b619b90d527))
+* Patch on JDK 17 (fix for low-end devices) ([#1246](https://github.com/MorpheApp/morphe-manager/issues/1246)) ([619719f](https://github.com/MorpheApp/morphe-manager/commit/619719f353e8eb833637abb2c4c230e4b0ad7bc7))
+
+# [2.1.0-dev.1](https://github.com/MorpheApp/morphe-manager/compare/v2.0.0...v2.1.0-dev.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* Open files shared to the app for patching ([d2867a0](https://github.com/MorpheApp/morphe-manager/commit/d2867a072e30a0bbee6a926d2d1fdcffafbf8e38))
+
+
+### Features
+
+* Name patch sources in exported APK file names ([5878b00](https://github.com/MorpheApp/morphe-manager/commit/5878b006f2c400e3e8d2e980f2ed4ce797a9bba6))
+* Show more of Morphe in the feature tour ([701a7bd](https://github.com/MorpheApp/morphe-manager/commit/701a7bdb035ed7463e6689299eb9011adc179a88))
+
 # [2.0.0](https://github.com/MorpheApp/morphe-manager/compare/v1.35.0...v2.0.0) (2026-10-22)
 
 

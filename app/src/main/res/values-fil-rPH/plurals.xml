@@ -64,6 +64,10 @@
         <item quantity="one">Na-install ang %s app</item>
         <item quantity="other">Na-install ang %s apps</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Naka-mount na %s app</item>
+        <item quantity="other">Naka-mount na %s app</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Muling na-install ang %s app</item>
         <item quantity="other">Muling na-install ang %s apps</item>

@@ -174,9 +174,8 @@ class PatcherProcesses(
     }
 
     private suspend fun start(bundles: List<String>, vm: PatcherVm): PatcherProcess {
-        val debugOptions = if (vm == PatcherVm.JVM) debugOptions() else emptyList()
         val process = try {
-            startHost(vm, debugOptions)
+            startHost(vm)
         } catch (e: Exception) {
             // What the run falls back to ART on
             throw if (vm == PatcherVm.JVM && (e is IllegalStateException || e is RemoteException)) {
@@ -195,8 +194,9 @@ class PatcherProcesses(
         }
     }
 
-    private suspend fun startHost(vm: PatcherVm, debugOptions: List<String>): PatcherProcess {
-        val launch = if (vm == PatcherVm.JVM) jvmLaunch(debugOptions) else null
+    private suspend fun startHost(vm: PatcherVm): PatcherProcess {
+        val tuning = if (vm == PatcherVm.JVM) jvmTuning() else null
+        val launch = tuning?.let { jvmLaunch(it) }
         val connection = PatcherConnection.connect(app)
         val (commands, commandsSink) = ParcelFileDescriptor.createPipe()
         val (events, eventsSink) = ParcelFileDescriptor.createPipe()
@@ -216,20 +216,21 @@ class PatcherProcesses(
             connection.close()
             throw e
         }
-        return PatcherProcess(vm, connection, started, commandsSink, events, debugOptions)
+        return PatcherProcess(vm, connection, started, commandsSink, events, launch, tuning.orEmpty())
     }
 
-    private suspend fun jvmLaunch(debugOptions: List<String>): JvmLaunch {
+    private suspend fun jvmLaunch(tuning: List<String>): JvmLaunch {
         val installed = installation.install()
         return JvmLaunch(
             libjvm = installed.libjvm.path,
             preload = installed.preload,
-            options = jvmOptions(installed) + debugOptions, // Last, so a flag given again there wins
+            options = jvmOptions(installed) + tuning,
             mainClass = HOST_MAIN_CLASS,
             heapLimitMb = jvmHeapLimitMb
         )
     }
 
+    /** The options any JVM needs to run inside an app, the same on every device. */
     private fun jvmOptions(installed: JvmInstallation.Installed) = listOf(
         "-Djava.class.path=${installed.hostJar}",
         // The JVM falls back to /tmp, which an app cannot write to
@@ -238,16 +239,22 @@ class PatcherProcesses(
         "-Xrs",
         // Nothing reads the performance counters, which would otherwise be kept in a file of their own
         "-XX:-UsePerfData",
-        // C1 only. A run is too short for C2 to pay off, and its compiles take cores the run needs
-        "-XX:TieredStopAtLevel=1",
         // The working directory of an app is not writable, which is where the report would go
         "-XX:ErrorFile=${errorFile("%p")}"
-    ) + listOfNotNull(
-        // 8 byte object headers instead of 12. A run keeps millions of small objects alive, and
-        // smaller ones leave the collector and the caches less to do. A 32-bit JVM does not
-        // know the flag and will not start with it.
-        "-XX:+UseCompactObjectHeaders".takeIf { Process.is64Bit() }
     )
+
+    /**
+     * The options that tune the JVM to the process, and last those of a debug build, so a flag
+     * given again there wins.
+     */
+    private suspend fun jvmTuning() = (if (Process.is64Bit()) listOf(
+        // C1 only. A run is too short for C2 to pay off, and its compiles take cores the run needs
+        "-XX:TieredStopAtLevel=1"
+    ) else listOf(
+        // The simplest collector, with no threads of its own, on a port that runs few others. A
+        // 32-bit JVM is the client VM, which only has C1 to begin with
+        "-XX:+UseSerialGC"
+    )) + debugOptions()
 
     /** Where the JVM in process [pid] reports a crash, %p standing for the pid of whichever does. */
     private fun errorFile(pid: Any) = fs.tempDir.resolve("patcher-jvm-error-$pid.log")
@@ -270,7 +277,8 @@ class PatcherProcesses(
      * A started host waiting for its run, which takes [HostCommand]s through [commands] and reports
      * on [events]. Closing it ends its process.
      *
-     * @param debugOptions The options a debug build added to a JVM, for the run to log.
+     * @param launch How its JVM was started, or null on ART.
+     * @param tuning The options of [launch] that differ between devices and builds, for the run to log.
      */
     private inner class PatcherProcess(
         val vm: PatcherVm,
@@ -278,8 +286,11 @@ class PatcherProcesses(
         private val started: HostStarted,
         commands: ParcelFileDescriptor,
         events: ParcelFileDescriptor,
-        private val debugOptions: List<String>
+        private val launch: JvmLaunch?,
+        private val tuning: List<String>
     ) : Closeable {
+        private val startedAt = System.currentTimeMillis()
+
         private val writer = ParcelFileDescriptor.AutoCloseOutputStream(commands).bufferedWriter()
 
         // Read from the start, as patches loaded ahead of the run may already print
@@ -298,7 +309,7 @@ class PatcherProcesses(
         }
 
         suspend fun run(requestFile: File, logger: Logger, listener: PatchingListener) {
-            if (debugOptions.isNotEmpty()) logger.info("Debug JVM options: ${debugOptions.joinToString(" ")}")
+            logDescription(logger)
             try {
                 send(HostCommand.Run(requestFile.path))
             } catch (_: IOException) {
@@ -320,6 +331,22 @@ class PatcherProcesses(
             val failure = finished.failure ?: return
             throw if (failure.outOfMemory) HeapExhaustedException(started.heapLimitMb, failure.stackTrace)
             else PatcherFailureException(failure.stackTrace)
+        }
+
+        /**
+         * What the run happens in, as the process and the device report it. A run that fails on
+         * some devices alone is mostly told apart by these.
+         */
+        private fun logDescription(logger: Logger) {
+            val bits = if (Process.is64Bit()) 64 else 32
+            val age = (System.currentTimeMillis() - startedAt) / 1000
+            logger.info(
+                "Patcher process: pid=${started.pid} vm=$vm heap=${started.heapLimitMb}MB bits=$bits " +
+                        "abis=${Build.SUPPORTED_ABIS.joinToString(",")} age=${age}s"
+            )
+            launch?.let {
+                logger.info("Patcher JVM: libjvm=${it.libjvm.substringAfter("/lib/")} options=${tuning.joinToString(" ")}")
+            }
         }
 
         /** Hands the events of the run over as they arrive, up to its end, or null if the process ended first. */

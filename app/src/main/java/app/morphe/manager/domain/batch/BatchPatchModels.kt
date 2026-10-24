@@ -137,6 +137,8 @@ data class BatchBundleRef(
  *
  * @param bundles Every enabled source that contributes patches to this app. An app covered by
  *   more than one source is patched with all of them at once, exactly like the single-app flow.
+ * @param useMount Whether the app is patched to be mounted over its stock install with root. It is
+ *   the install target the patches declare their availability against, so it shapes the selection.
  * @param forceVersionMismatch Set when the user chose to patch despite an unsupported version.
  * @param forceUnverifiedSignature Set when the user chose to patch an APK whose signing certificate
  *   none of the bundles vouch for. Carried along so re-resolving the item does not ask again.
@@ -155,6 +157,7 @@ data class BatchPatchItem(
     val options: Options,
     val bundles: List<BatchBundleRef>,
     val state: BatchItemState,
+    val useMount: Boolean = false,
     val message: String? = null,
     /** The patch a failed run failed on, null when it failed outside of one. */
     val failedPatch: String? = null,
@@ -244,7 +247,6 @@ data class BatchRunState(
     val items: List<BatchPatchItem>,
     val phase: BatchPhase,
     val policy: BatchInstallPolicy,
-    val useMount: Boolean = false,
     val activeIndex: Int? = null,
     val activeRun: PatchRunProgress? = null,
     val finishedInForeground: Boolean = false,
@@ -289,8 +291,7 @@ data class BatchRunState(
             SavedBatchQueue(
                 targets = targets,
                 excluded = items.filter { it.state == BatchItemState.EXCLUDED }.mapTo(mutableSetOf()) { it.id },
-                policy = policy,
-                useMount = useMount
+                policy = policy
             )
         } else {
             null
@@ -305,8 +306,7 @@ data class BatchRunState(
 data class SavedBatchQueue(
     val targets: List<BatchTarget>,
     val excluded: Set<String> = emptySet(),
-    val policy: BatchInstallPolicy = BatchInstallPolicy.SAVE_ONLY,
-    val useMount: Boolean = false
+    val policy: BatchInstallPolicy = BatchInstallPolicy.SAVE_ONLY
 ) {
     /** Apps the queue would patch if it were started now. */
     val queuedCount get() = targets.count { it.id !in excluded }

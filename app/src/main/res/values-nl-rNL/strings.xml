@@ -456,6 +456,7 @@ Voor de beste resultaten beveelt deze app aan om een &lt;b&gt;volledig APK&lt;/b
     <string name="batch_patch_title">Batch patching</string>
     <string name="batch_patch_planning">De wachtrij wordt voorbereid…</string>
     <string name="batch_patch_preparing_next">De volgende app wordt voorbereid…</string>
+    <string name="batch_patch_progress_counter">Patchen van %1$s van %2$s</string>
     <string name="batch_patch_summary">%1$s gepatcht, %2$s mislukt, %3$s overgeslagen</string>
     <string name="batch_patch_saved_hint">De gepatchte apps zijn opgeslagen. Installeer ze nu, of later vanuit de lijst met gepatchte APK\'s in de instellingen</string>
     <string name="batch_patch_multiple_sources">Sommige apps combineren patches uit meer dan één bron, wat conflicten kan veroorzaken</string>
@@ -477,6 +478,10 @@ Voor de beste resultaten beveelt deze app aan om een &lt;b&gt;volledig APK&lt;/b
     <string name="batch_patch_no_selection">Geen van de beschikbare patches is geselecteerd</string>
     <string name="batch_patch_policy_install">Installeren na afronding</string>
     <string name="batch_patch_policy_install_description">Installeert elke gepatchte app direct na het afronden van de wachtrij. Uitgeschakeld bewaart de APK\'s voor later</string>
+    <string name="batch_patch_policy_mount">Koppelen wanneer voltooid</string>
+    <string name="batch_patch_policy_mount_description">Koppelt elke gepatchte app zodra de wachtrij is voltooid. Uitgeschakeld bewaart de APK\'s voor later</string>
+    <string name="batch_patch_policy_install_mount">Installeren of koppelen wanneer voltooid</string>
+    <string name="batch_patch_policy_install_mount_description">Installeert of mount alle gepatchte apps zodra de wachtrij is voltooid. \'Uit\' bewaart de APK\'s voor later</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Start</string>
     <string name="batch_patch_stop_title">Batch patchen stoppen?</string>
@@ -1064,6 +1069,7 @@ Details: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher-runtime</string>
     <string name="settings_system_jvm_runtime_enable">Ingebouwde VM gebruiken</string>
     <string name="settings_system_jvm_runtime_description">Patchen in een Java VM die Morphe meeneemt, die zoveel geheugen kan gebruiken als het apparaat vrij heeft. Zet uit om te patchen met de runtime van Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Vereist een ARM- of 64-bits x86-apparaat</string>
     <string name="settings_system_patcher_completion_sound">Voltooiingsgeluid</string>
     <string name="settings_system_patcher_completion_sound_description">Speelt een specifiek geluid af bij succes of mislukking wanneer het patchen voltooid is</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Details: %2$s"</string>
     <string name="reset_order">Volgorde herstellen</string>
     <string name="reset_order_done">Bestelling gereset</string>
     <string name="accessibility_select_app">App selecteren</string>
+    <string name="accessibility_select_source">Selecteer bron</string>
     <string name="accessibility_move_up">Omhoog verplaatsen</string>
     <string name="accessibility_move_down">Omlaag verplaatsen</string>
     <string name="accessibility_app_moved_announcement">%1$s verplaatst naar positie %2$s van %3$s</string>
@@ -1435,11 +1442,15 @@ Wilt u toch doorgaan?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s van %2$s</string>
     <string name="onboarding_sources_desc">Beheer uw patchbronnen. Elke bron biedt patches die kunnen worden toegepast op uw apps</string>
+    <string name="onboarding_other_apps_desc">Patch een app die niet in de lijst staat, vanuit een APK-bestand of een app die op je apparaat is geïnstalleerd</string>
+    <string name="onboarding_add_source_desc">Een patchbron toevoegen vanuit een link of een patchbundelbestand</string>
+    <string name="onboarding_signing_key_desc">Back-up van de sleutel die je gepatchte apps ondertekent. Zonder deze sleutel kunnen ze alleen worden bijgewerkt na het verwijderen ervan</string>
     <string name="onboarding_swipe_title">Veeggebaren</string>
     <string name="onboarding_swipe_desc">Veeg naar rechts op een app-kaart om de beschikbare patches te bekijken. Veeg naar links om de kaart te verbergen van het startscherm</string>
     <string name="onboarding_settings_desc">Pas Morphe aan: uiterlijk, geavanceerde opties en systeemtools</string>
     <string name="onboarding_sources_patches_desc">Tik om alle patches te bekijken die beschikbaar zijn vanuit deze bron</string>
     <string name="onboarding_sources_version_desc">Tik op de versie om de volledige wijzigingslogboek voor deze bron te bekijken</string>
+    <string name="onboarding_sources_apps_desc">Tik om de apps te zien die door deze bron worden gepatcht en kies welke er patches voor aanbiedt</string>
     <string name="onboarding_sources_prerelease_desc">Activeer dit om pre-release patchversies van deze bron te ontvangen</string>
     <string name="onboarding_appearance_tab_desc">Pas het uiterlijk van de app aan: thema, accentkleur en achtergrond</string>
     <string name="onboarding_expert_mode_desc">Schakel Expert Mode in om patchselectie, aangepaste opties en andere geavanceerde functies vrij te geven</string>

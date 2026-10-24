@@ -251,11 +251,13 @@ Elixe outro APK</string>
     <!-- How long patching took -->
     <!-- Average and peak heap the patcher held while it ran -->
     <!-- Fastest read or write rate reached while patching, in data per second -->
+    <string name="patcher_field_value_unknown">descoñecido</string>
     <!-- Value of "Libraries": the libraries this device cannot use were dropped from the patched APK -->
     <!-- Value of "Libraries": every library was left in the patched APK -->
     <string name="patcher_long_step_warning">Este paso poderá tardar un tempo. Por favor, agarde…</string>
     <string name="patcher_installing_subtitle">Case listo para arrasar! 🎸</string>
     <string name="patcher_success_subtitle">A súa aplicación foi parcheada e instalada!</string>
+    <string name="patcher_failed_dialog_title">Aplicación de parches completada</string>
     <!-- Patcher Screen - Patcher Steps -->
     <string name="patcher_step_group_preparing">Preparando</string>
     <string name="patcher_step_load_patches">Cargando parches</string>
@@ -282,6 +284,7 @@ Elixe outro APK</string>
     <!-- Shown when a run fills the heap it was given. "%1$s" is the heap in megabytes. -->
     <!-- Patcher Screen - Mini-games -->
     <string name="mini_game_resume">Continuar</string>
+    <string name="mini_game_restart">Comezar de novo</string>
     <!-- Settings -->
     <!-- Settings - Appearance Tab - Background animation -->
     <string name="settings_appearance_background_none">Ningún</string>
@@ -292,6 +295,9 @@ Elixe outro APK</string>
     <!-- Settings - Appearance Tab - Interface Scale -->
     <!-- Settings - Appearance Tab - Home Screen Section -->
     <string name="settings_appearance_app_card_colors_default">Predefinido</string>
+    <string name="settings_appearance_app_card_colors_accent">Acento</string>
+    <string name="settings_appearance_app_card_colors_gradient">Gradiente</string>
+    <string name="settings_appearance_app_card_colors_solid">Sólido</string>
     <!-- Settings - Appearance Tab - App Icon Selector -->
     <string name="settings_appearance_app_icon_default">Predefinido</string>
     <!-- Label of a footer button beside "Cancel". Keep it short, a longer one moves the buttons onto two rows -->
@@ -312,6 +318,7 @@ Elixe outro APK</string>
     <!-- Settings - Advanced Tab - Patch Options Section: Custom Header -->
     <!-- Settings - Advanced Tab - Patch Options Section: Hide Shorts -->
     <!-- Settings - System Tab - Installer Section -->
+    <string name="installer_shizuku_status_ready">Listo</string>
     <!-- Settings - System Tab - Performance Section -->
     <string name="settings_system_battery_optimization">Optimización de batería</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -322,6 +329,7 @@ Elixe outro APK</string>
     <!-- Settings - System Tab - Files & Storage Section -->
     <!-- Settings - System Tab - Storage Management screen -->
     <!-- Shown under how much Morphe takes up. "%1$s" is the space still available on the device, already formatted with its unit. "Free" as in unused, not as in free of charge. -->
+    <string name="settings_system_storage_temporary_title">Ficheiros temporais</string>
     <!-- Settings - System Tab - Storage Management - Patched APKs Management -->
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
@@ -341,6 +349,8 @@ Elixe outro APK</string>
     <string name="settings_section_patching">Parcheando</string>
     <string name="settings_section_general">Xeneral</string>
     <string name="settings_search">Buscar axustes</string>
+    <string name="failed">Fallou</string>
+    <string name="ready">Listo</string>
     <string name="remove">Eliminar</string>
     <string name="search">Busca</string>
     <string name="enabled">Activado</string>

@@ -64,6 +64,10 @@
         <item quantity="one">%s app geïnstalleer</item>
         <item quantity="other">%s toepassings geïnstalleer</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">%s app gemonteer</item>
+        <item quantity="other">%s apps gemonteer</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">%s app hergeïnstalleer</item>
         <item quantity="other">%s toepassings hergeïnstalleer</item>

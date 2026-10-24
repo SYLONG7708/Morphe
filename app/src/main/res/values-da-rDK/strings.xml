@@ -456,6 +456,7 @@ For de bedste resultater anbefaler denne app at patche en &lt;b&gt;fuld APK&lt;/
     <string name="batch_patch_title">Batch patching</string>
     <string name="batch_patch_planning">Preparing the queue…</string>
     <string name="batch_patch_preparing_next">Preparing the next app…</string>
+    <string name="batch_patch_progress_counter">Patcher %1$s af %2$s</string>
     <string name="batch_patch_summary">%1$s patchet, %2$s mislykkedes, %3$s sprunget over</string>
     <string name="batch_patch_saved_hint">De rettede apps er gemt. Installer dem nu, eller senere fra listen over rettede APK\'er i indstillingerne</string>
     <string name="batch_patch_multiple_sources">Nogle apps kombinerer patches fra mere end én kilde, hvilket kan forårsage konflikter</string>
@@ -477,6 +478,10 @@ For de bedste resultater anbefaler denne app at patche en &lt;b&gt;fuld APK&lt;/
     <string name="batch_patch_no_selection">Ingen af de tilgængelige patches er valgt</string>
     <string name="batch_patch_policy_install">Installer når færdig</string>
     <string name="batch_patch_policy_install_description">Installerer hver rettet app lige efter køen er afsluttet. Fra giver mulighed for senere installation af APK\'er</string>
+    <string name="batch_patch_policy_mount">Mount når færdig</string>
+    <string name="batch_patch_policy_mount_description">Mounts hver patchet app, når køen er færdig. Slået fra beholder APK\'erne til senere</string>
+    <string name="batch_patch_policy_install_mount">Installer eller mount når færdig</string>
+    <string name="batch_patch_policy_install_mount_description">Installerer eller monterer hver patchet app, når køen er færdig. Fra beholder APK\'erne til senere</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Start</string>
     <string name="batch_patch_stop_title">Stop batch patching?</string>
@@ -1064,6 +1069,7 @@ Detaljer: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher-køretid</string>
     <string name="settings_system_jvm_runtime_enable">Brug indlejret VM</string>
     <string name="settings_system_jvm_runtime_description">Retter i en Java-VM, som Morphe bærer på, hvilket kan bruge så meget hukommelse, som enheden sparer. Slå fra for at rette med Android\'s køretid</string>
+    <string name="settings_system_jvm_runtime_unavailable">Kræver en ARM- eller 64-bit x86-enhed</string>
     <string name="settings_system_patcher_completion_sound">Fuldførelseslyd</string>
     <string name="settings_system_patcher_completion_sound_description">Afspiller en særlig tone ved succes eller fiasko, når patching er færdigt</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Detaljer: %2$s"</string>
     <string name="reset_order">Nulstil rækkefølge</string>
     <string name="reset_order_done">Ordre nulstillet</string>
     <string name="accessibility_select_app">Vælg app</string>
+    <string name="accessibility_select_source">Vælg kilde</string>
     <string name="accessibility_move_up">Flyt op</string>
     <string name="accessibility_move_down">Flyt ned</string>
     <string name="accessibility_app_moved_announcement">%1$s flyttet til position %2$s af %3$s</string>
@@ -1435,11 +1442,15 @@ Vil du stadig fortsætte?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s af %2$s</string>
     <string name="onboarding_sources_desc">Administrer dine patch-kilder. Hver kilde leverer patches, der kan anvendes på dine apps</string>
+    <string name="onboarding_other_apps_desc">Patch et app, der ikke er på listen, fra en APK-fil eller en app installeret på din enhed</string>
+    <string name="onboarding_add_source_desc">Tilføj en patch-kilde fra et link eller en patch-bundtfil</string>
+    <string name="onboarding_signing_key_desc">Sikkerhedskopier nøglen, der signerer dine patched apps. Uden den kan de kun opdateres efter afinstallation</string>
     <string name="onboarding_swipe_title">Swipe-gestusser</string>
     <string name="onboarding_swipe_desc">Stryg til højre på et app-kort for at se de tilgængelige patches. Stryg til venstre for at skjule kortet fra startskærmen</string>
     <string name="onboarding_settings_desc">Tilpas Morphe: udseende, avancerede indstillinger og systemværktøjer</string>
     <string name="onboarding_sources_patches_desc">Tryk for at se alle patches, der er tilgængelige fra denne kilde</string>
     <string name="onboarding_sources_version_desc">Tryk på versionen for at se den fulde ændringslog for denne kilde</string>
+    <string name="onboarding_sources_apps_desc">Tryk for at se apps, som denne kilche patcher, og vælg hvilke af dem den tilbyder patches til</string>
     <string name="onboarding_sources_prerelease_desc">Aktiver dette for at modtage præ-release patch-versioner fra denne kilde</string>
     <string name="onboarding_appearance_tab_desc">Tilpas appens udseende: tema, accentfarve og baggrund</string>
     <string name="onboarding_expert_mode_desc">Aktiver Eksperttilstand for at låse op for patch-valg, brugerdefinerede indstillinger og andre avancerede funktioner</string>

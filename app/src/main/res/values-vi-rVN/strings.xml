@@ -456,6 +456,7 @@ Tốt nhất bạn nên chuyển sang &lt;b&gt;APK đầy đủ&lt;/b&gt; để 
     <string name="batch_patch_title">Đang vá hàng loạt</string>
     <string name="batch_patch_planning">Đang chuẩn bị hàng chờ…</string>
     <string name="batch_patch_preparing_next">Đang chuẩn bị ứng dụng tiếp theo…</string>
+    <string name="batch_patch_progress_counter">Đang vá %1$s trên %2$s</string>
     <string name="batch_patch_summary">%1$s đã vá, %2$s thất bại, %3$s bị bỏ qua</string>
     <string name="batch_patch_saved_hint">Đã lưu các ứng dụng đã vá. Bạn có thể cài đặt ngay hoặc cài đặt khi khác từ danh sách APK đã vá trong phần Cài đặt</string>
     <string name="batch_patch_multiple_sources">Một số ứng dụng sử dụng bản vá từ nhiều nguồn khác nhau, điều này có thể dẫn đến xung đột</string>
@@ -477,6 +478,10 @@ Tốt nhất bạn nên chuyển sang &lt;b&gt;APK đầy đủ&lt;/b&gt; để 
     <string name="batch_patch_no_selection">Không có bản vá nào khả dụng được chọn</string>
     <string name="batch_patch_policy_install">Cài đặt khi hoàn tất</string>
     <string name="batch_patch_policy_install_description">Tự động cài đặt tất cả ứng dụng đã vá ngay sau khi hàng chờ hoàn tất. Nếu tắt, các APK sẽ được giữ lại để cài đặt sau</string>
+    <string name="batch_patch_policy_mount">Gắn khi hoàn tất</string>
+    <string name="batch_patch_policy_mount_description">Gắn mọi ứng dụng đã vá sau khi hàng đợi hoàn tất. Tắt để giữ các APK cho lần sau.</string>
+    <string name="batch_patch_policy_install_mount">Cài đặt hoặc gắn khi hoàn tất</string>
+    <string name="batch_patch_policy_install_mount_description">Cài đặt hoặc gắn mọi ứng dụng đã vá sau khi hàng đợi hoàn tất. Tắt để giữ các APK cho lần sau.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Bắt đầu</string>
     <string name="batch_patch_stop_title">Dừng vá hàng loạt?</string>
@@ -1067,6 +1072,7 @@ Chi tiết: %2$s"</string>
     <string name="settings_system_process_runtime">Thời gian chạy Patcher</string>
     <string name="settings_system_jvm_runtime_enable">Sử dụng VM nhúng</string>
     <string name="settings_system_jvm_runtime_description">Các bản vá trong Java VM mà Morphe mang theo, có thể sử dụng nhiều bộ nhớ như thiết bị nhường. Tắt để vá bằng thời gian chạy của Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Yêu cầu thiết bị ARM hoặc x86 64-bit</string>
     <string name="settings_system_patcher_completion_sound">Âm báo hoàn tất</string>
     <string name="settings_system_patcher_completion_sound_description">Phát ra âm thanh để báo hiệu kết quả vá thành công hoặc thất bại</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1437,11 +1443,15 @@ Chi tiết: %2$s"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s/%2$s</string>
     <string name="onboarding_sources_desc">Quản lý các nguồn vá. Mỗi nguồn cung cấp các bản vá có thể được áp dụng cho ứng dụng của bạn</string>
+    <string name="onboarding_other_apps_desc">Dán vá một ứng dụng không có trong danh sách, từ file APK hoặc một ứng dụng được cài đặt trên thiết bị của bạn</string>
+    <string name="onboarding_add_source_desc">Thêm nguồn dán vá từ liên kết hoặc file gói dán vá</string>
+    <string name="onboarding_signing_key_desc">Sao lưu khóa ký các ứng dụng đã dán vá của bạn. Không có nó, chúng chỉ có thể được cập nhật sau khi xóa chúng đi</string>
     <string name="onboarding_swipe_title">Cử chỉ vuốt</string>
     <string name="onboarding_swipe_desc">Vuốt phải để xem bản vá. Vuốt trái để ẩn thẻ khỏi màn hình chính</string>
     <string name="onboarding_settings_desc">Tùy chỉnh Morphe: giao diện, tùy chọn nâng cao và công cụ hệ thống</string>
     <string name="onboarding_sources_patches_desc">Bấm để xem tất cả các bản vá từ nguồn</string>
     <string name="onboarding_sources_version_desc">Bấm vào phiên bản để xem chi tiết lịch sử cập nhật của nguồn</string>
+    <string name="onboarding_sources_apps_desc">Chạm để xem các ứng dụng mà nguồn này dán vá và chọn cái nào trong số đó cung cấp dán vá</string>
     <string name="onboarding_sources_prerelease_desc">Bật cái này để nhận bản vá được phát hành trước từ nguồn</string>
     <string name="onboarding_appearance_tab_desc">Tùy chỉnh giao diện của ứng dụng: chủ đề, màu nổi bật và nền</string>
     <string name="onboarding_expert_mode_desc">Bật chế độ Chuyên gia để mở khóa tính năng tự chọn bản vá, tùy chỉnh bản vá và nhiều tính năng khác</string>

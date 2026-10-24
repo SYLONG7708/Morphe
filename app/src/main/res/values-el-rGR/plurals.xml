@@ -64,6 +64,10 @@
         <item quantity="one">Εγκαταστάθηκε η εφαρμογή %s</item>
         <item quantity="other">Εγκαταστάθηκαν οι εφαρμογές %s</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Προσαρτήθηκε %s εφαρμογή</item>
+        <item quantity="other">Προσαρτήθηκαν %s εφαρμογές</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Επανεγκαταστάθηκε %s εφαρμογή</item>
         <item quantity="other">Επανεγκαταστάθηκαν %s εφαρμογές</item>

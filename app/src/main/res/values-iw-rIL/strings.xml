@@ -457,6 +457,7 @@
     <string name="batch_patch_title">תיקון באצווה</string>
     <string name="batch_patch_planning">מכין את התור…</string>
     <string name="batch_patch_preparing_next">מכין את האפליקציה הבאה…</string>
+    <string name="batch_patch_progress_counter">הטמעת %1$s מתוך %2$s</string>
     <string name="batch_patch_summary">%1$s טלאים הותקנו, %2$s נכשלו, %3$s דולגו</string>
     <string name="batch_patch_saved_hint">האפליקציות שעברו תיקון נשמרו. התקן אותן עכשיו, או מאוחר יותר מרשימת ה-APK המתוקנים בהגדרות</string>
     <string name="batch_patch_multiple_sources">אפליקציות מסוימות משלבות טלאים ממקורות שונים, מה שעלול לגרום להתנגשויות</string>
@@ -478,6 +479,10 @@
     <string name="batch_patch_no_selection">אף אחד מהפאצ\'ים הזמינים אינו נבחר</string>
     <string name="batch_patch_policy_install">התקן לאחר סיום</string>
     <string name="batch_patch_policy_install_description">מתקין כל אפליקציה שעברה תיקון מיד לאחר סיום התור. כבוי שומר את ה-APKs לשימוש מאוחר יותר</string>
+    <string name="batch_patch_policy_mount">בצע Mount בסיום</string>
+    <string name="batch_patch_policy_mount_description">מבצע Mount לכל אפליקציה שעברה פאטץ\' ברגע שהתור מסתיים. כיבוי ישמור את קבצי ה-APK להמשך</string>
+    <string name="batch_patch_policy_install_mount">התקן או בצע Mount בסיום</string>
+    <string name="batch_patch_policy_install_mount_description">מתקין או מרכיב כל אפליקציה שעברה פאטץ\' ברגע שהתור מסתיים. מצב \'כבוי\' שומר את קבצי ה-APK להמשך</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">התחלה</string>
     <string name="batch_patch_stop_title">עצור תיקון באצווה?</string>
@@ -1075,6 +1080,7 @@ drawable-xxhdpi: 387x144 פיקסלים
     <string name="settings_system_process_runtime">זמן ריצה של המתקן</string>
     <string name="settings_system_jvm_runtime_enable">השתמש ב-JVM מובנה</string>
     <string name="settings_system_jvm_runtime_description">תיקונים במכונה הווירטואלית של ג\'אווה ש-Morphe מציעה, שתוכל לנצל את כל הזיכרון העומד לרשות המכשיר. כבה זאת כדי לתקן בעזרת זמן הריצה של אנדרואיד</string>
+    <string name="settings_system_jvm_runtime_unavailable">נדרש מכשיר ARM או x86 של 64 סיביות</string>
     <string name="settings_system_patcher_completion_sound">צליל השלמה</string>
     <string name="settings_system_patcher_completion_sound_description">מנגן צליל ייחודי להצלחה או לכישלון כאשר התיקון מסתיים</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1333,6 +1339,7 @@ drawable-xxhdpi: 387x144 פיקסלים
     <string name="reset_order">אפס סדר</string>
     <string name="reset_order_done">איפוס ההזמנה</string>
     <string name="accessibility_select_app">בחר אפליקציה</string>
+    <string name="accessibility_select_source">בחר מקור</string>
     <string name="accessibility_move_up">עלה</string>
     <string name="accessibility_move_down">רד</string>
     <string name="accessibility_app_moved_announcement">%1$s הועבר למקום %2$s מתוך %3$s</string>
@@ -1446,11 +1453,15 @@ drawable-xxhdpi: 387x144 פיקסלים
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s מתוך %2$s</string>
     <string name="onboarding_sources_desc">נהל את מקורות התיקונים שלך. כל מקור מספק תיקונים שניתן להחיל על האפליקציות שלך</string>
+    <string name="onboarding_other_apps_desc">הוסף תיקון לאפליקציה שאינה ברשימה, מקובץ APK או מאפליקציה המותקנת במכשיר שלך</string>
+    <string name="onboarding_add_source_desc">הוסף מקור תיקון מקישור או מקובץ חבילת תיקונים</string>
+    <string name="onboarding_signing_key_desc">גבה את מפתח החתימה של אפליקציות התיקון שלך. ללאו, ניתן לעדכן אותן רק לאחר הסרת ההתקנה שלהן</string>
     <string name="onboarding_swipe_title">מחוות החלקה</string>
     <string name="onboarding_swipe_desc">החלק ימינה על כרטיס אפליקציה כדי לראות את התיקונים הזמינים. החלק שמאלה כדי להסתיר את הכרטיס ממסך הבית</string>
     <string name="onboarding_settings_desc">התאם אישית את Morphe: מראה, אפשרויות מתקדמות וכלי מערכת</string>
     <string name="onboarding_sources_patches_desc">הקש כדי לראות את כל התיקונים הזמינים ממקור זה</string>
     <string name="onboarding_sources_version_desc">הקש על הגרסה כדי לראות את יומן השינויים המלא עבור מקור זה</string>
+    <string name="onboarding_sources_apps_desc">לחץ כדי לראות אילו אפליקציות מתוקנות על ידי המקור הזה ובחר איזו מהן הוא מציע תיקונים עבורן</string>
     <string name="onboarding_sources_prerelease_desc">הפעל זאת כדי לקבל גרסאות תיקון לפני הפצה ממקור זה</string>
     <string name="onboarding_appearance_tab_desc">התאם אישית את מראה האפליקציה: ערכת נושא, צבע הדגשה ורקע</string>
     <string name="onboarding_expert_mode_desc">הפעל מצב מומחה כדי לפתוח בחירת תיקונים, אפשרויות מותאמות אישית ותכונות מתקדמות אחרות</string>

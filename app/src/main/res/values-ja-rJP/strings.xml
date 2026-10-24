@@ -470,7 +470,7 @@
     <string name="batch_patch_force_version">とにかくパッチを適用する</string>
     <string name="batch_patch_force_version_done">キューに追加しましたが、アプリが正常に動作しない可能性があります</string>
     <string name="batch_patch_accept_signature_done">キューに追加しましたが、APK は検証されていません</string>
-    <string name="batch_patch_apk_selected">APK選択済み</string>
+    <string name="batch_patch_apk_selected">選択済みの APK</string>
     <string name="batch_patch_edit_patches">パッチを選択する</string>
     <string name="batch_patch_state_no_apk">APK がありません</string>
     <string name="batch_patch_state_no_patches">パッチがありません</string>
@@ -478,6 +478,10 @@
     <string name="batch_patch_no_selection">利用可能なパッチが何も選択されていません</string>
     <string name="batch_patch_policy_install">完了後にインストールする</string>
     <string name="batch_patch_policy_install_description">キューの処理が完了すると、パッチ適用済みアプリをすべて自動でインストールします。オフにすると、APK を保存して後でインストールできます</string>
+    <string name="batch_patch_policy_mount">完了したらマウント</string>
+    <string name="batch_patch_policy_mount_description">キューの処理が完了すると、すべてのパッチ適用済みアプリをマウントします。オフの場合は、後で使用するためにAPKを保持します。</string>
+    <string name="batch_patch_policy_install_mount">完了したらインストールまたはマウント</string>
+    <string name="batch_patch_policy_install_mount_description">キューの処理が完了すると、すべてのパッチ適用済みアプリをインストールまたはマウントします。オフの場合は、後で使用するためにAPKを保持します。</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">開始</string>
     <string name="batch_patch_stop_title">一括パッチを停止しますか？</string>
@@ -697,9 +701,9 @@
     <string name="failed_to_execute_patch">%s の実行に失敗しました</string>
     <string name="patched_app_save_failed_toast">パッチ適用済みアプリの保存に失敗しました</string>
     <string name="plugin_activity_dialog_body">このプラグインを続行するには、ユーザーの操作が必要です</string>
-    <string name="patcher_process_killed_message">システムがパッチ処理を完了する前に停止しました。これは、通常はメモリを解放するために発生しました。他のアプリを閉じて、もう一度お試しください</string>
+    <string name="patcher_process_killed_message">メモリを解放するためなどの理由で、システムがパッチ処理を完了前に停止しました。他のアプリを閉じて、もう一度お試しください</string>
     <!-- Shown when a run fills the heap it was given. "%1$s" is the heap in megabytes. -->
-    <string name="patcher_out_of_memory_message">%1$s MB のヒープではメモリ不足になりました。選択したパッチが多すぎます。パッチソースまたはパッチを減らして再度お試しください</string>
+    <string name="patcher_out_of_memory_message">ヒープメモリが %1$s MBの状態でメモリ不足が発生しました。選択したパッチが多すぎます。パッチソースまたは適用するパッチを減らしてください</string>
     <string name="install_app_success">正常にインストールされました</string>
     <string name="install_app_fail">アプリのインストールに失敗しました: %s</string>
     <string name="install_ignore_signature">そのままインストール</string>
@@ -784,7 +788,7 @@
     <string name="settings_appearance_color_accents">アプリとソースの色</string>
     <string name="settings_appearance_color_accents_description">アクセントカラーの代わりに、各アプリやソースの色を使用します</string>
     <string name="settings_appearance_outlines">アウトライン</string>
-    <string name="settings_appearance_outlines_description">カード、パネル、ボタンの周囲に細い枠線を描画します</string>
+    <string name="settings_appearance_outlines_description">カードやパネル、ボタンに細い枠線を表示します</string>
     <string name="settings_appearance_blur">ぼかし</string>
     <string name="settings_appearance_blur_description">ヘッダーやバー、パネルの下をスクロールする内容にぼかしをかけます</string>
     <!-- Settings - Appearance Tab - Language Selector -->
@@ -1063,9 +1067,9 @@ morphe_header_custom_dark.png
     <!-- Settings - System Tab - Performance Section -->
     <string name="settings_system_battery_optimization">バッテリーの最適化</string>
     <string name="settings_system_battery_optimization_description">アプリを閉じていても、パッチャーを実行し続けます</string>
-    <string name="settings_system_process_runtime">パッチャーの実行時環境</string>
-    <string name="settings_system_jvm_runtime_enable">埋め込みVMを使用する</string>
-    <string name="settings_system_jvm_runtime_description">Morphe が搭載する Java VM のパッチ。デバイスの空きメモリを最大限に使用できます。Android の実行時環境を使用してパッチを適用するには、この設定をオフにしてください</string>
+    <string name="settings_system_process_runtime">パッチャーのランタイム</string>
+    <string name="settings_system_jvm_runtime_enable">内蔵の実行環境を使用する</string>
+    <string name="settings_system_jvm_runtime_description">Morphe に内蔵された Java 仮想マシンでパッチを適用します。デバイスで使用できる空きメモリを最大限に利用できます。オフにすると、Android 標準の実行環境でパッチを適用します</string>
     <string name="settings_system_jvm_runtime_unavailable">ARM または 64 ビットで動作する x86 デバイスが必要です</string>
     <string name="settings_system_patcher_completion_sound">完了音</string>
     <string name="settings_system_patcher_completion_sound_description">パッチ完了時に、結果を知らせるサウンドを再生します</string>
@@ -1157,8 +1161,8 @@ morphe_header_custom_dark.png
     <string name="settings_system_storage_clear_all_description">削除可能なキャッシュをすべて消去します</string>
     <string name="settings_system_storage_clear_all_confirm">ネットワーク キャッシュとインストーラー用の一時コピー、一時ファイルを消去します。オリジナルの APK とパッチ適用済み APK は保持されます</string>
     <string name="settings_system_storage_cleared">%s 解放しました</string>
-    <string name="settings_system_storage_patch_running_warning">パッチが実行中でこれらのファイルを使用しています。今すぐ削除すると失敗します</string>
-    <string name="settings_system_storage_clear_anyway">それでもクリア</string>
+    <string name="settings_system_storage_patch_running_warning">現在パッチが実行されており、これらのファイルを使用しています。これらのファイルを削除すると、パッチの実行に失敗します</string>
+    <string name="settings_system_storage_clear_anyway">とにかく削除</string>
     <string name="settings_system_storage_nothing_to_clear">消去する物はありません</string>
     <string name="settings_system_storage_open_app_info_title">Android アプリのストレージを開く</string>
     <string name="settings_system_storage_open_app_info_description">システム設定から Morphe のデータを管理または消去します</string>
@@ -1389,7 +1393,7 @@ morphe_header_custom_dark.png
     <string name="changelog_for_app">%s の変更</string>
     <string name="changelog_general_changes">一般的な変更</string>
     <string name="whats_new">新着情報</string>
-    <string name="changelog_description">このバージョンの新機能を確認できます</string>
+    <string name="changelog_description">このバージョンの変更点</string>
     <string name="changelog_download_fail">変更履歴のダウンロードに失敗しました: %s</string>
     <string name="changelog_empty">利用可能な更新はありません</string>
     <string name="changelog_earlier_releases">過去のリリース</string>
@@ -1439,11 +1443,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s / %2$s</string>
     <string name="onboarding_sources_desc">パッチソースを管理します。各ソースから、アプリに適用できるパッチが提供されます</string>
+    <string name="onboarding_other_apps_desc">一覧にないアプリでも、APK ファイルまたはデバイスにインストール済みのアプリからパッチを適用できます</string>
+    <string name="onboarding_add_source_desc">リンクまたはパッチバンドル ファイルからパッチソースを追加できます</string>
+    <string name="onboarding_signing_key_desc">パッチ適用済みアプリの署名に使うキーをバックアップしてください。このキーがないと、アプリを更新するには一度アンインストールする必要があります</string>
     <string name="onboarding_swipe_title">ジェスチャー操作</string>
     <string name="onboarding_swipe_desc">アプリカードを右にスワイプすると、利用可能なパッチを表示できます。左にスワイプすると、ホーム画面からカードを非表示にできます</string>
     <string name="onboarding_settings_desc">Morphe の外観や詳細設定、システムツールをカスタマイズできます</string>
     <string name="onboarding_sources_patches_desc">タップすると、このソースで利用できるすべてのパッチを表示できます</string>
     <string name="onboarding_sources_version_desc">バージョンをタップすると、このソースの変更履歴を確認できます</string>
+    <string name="onboarding_sources_apps_desc">タップするとこのソースがパッチを提供しているアプリの一覧が表示され、どのアプリを対象にするか選択できます</string>
     <string name="onboarding_sources_prerelease_desc">有効にすると、このソースからプレリリース版のパッチを受け取れます</string>
     <string name="onboarding_appearance_tab_desc">アプリの見た目をカスタマイズします：テーマ、アクセント カラー、背景</string>
     <string name="onboarding_expert_mode_desc">エキスパート モードを有効にすると、パッチ セレクションや詳細設定などの高度な機能が利用できます</string>

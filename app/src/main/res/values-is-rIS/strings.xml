@@ -19,6 +19,7 @@
     <string name="home_app_patch_sources_description">Óvaldar uppsprettur eru ekki boðnar þegar þessi forrit eru plöstuð, og plástrar þeirra bætast aldrei við val af sjálfu sér. Hver uppspretta er áfram valin fyrir öll önnur forrit.</string>
     <string name="home_app_patch_sources_mixed">Í boði fyrir %1$s af %2$s</string>
     <string name="home_app_patch_sources_covers">Hefur plástra fyrir %1$s af %2$s</string>
+    <string name="home_app_patch_sources_last">Hver app hefur uppsprettur eftir til að patcha frá</string>
     <string name="android_11_bug_dialog_title">Android 11 galla</string>
     <string name="android_11_bug_dialog_description">Það er þörf á samningi um app uppsetningarheimildir til að forðast villu í Android 11 kerfinu sem mun hafa neikvæð áhrif á notendaupplifunina</string>
     <string name="deep_link_add_source_title">Bæta við gjafa</string>
@@ -454,6 +455,7 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="batch_patch_title">Batch patching</string>
     <string name="batch_patch_planning">Býr til biðröð…</string>
     <string name="batch_patch_preparing_next">Býr appið næst…</string>
+    <string name="batch_patch_progress_counter">Bætir %1$s af %2$s</string>
     <string name="batch_patch_summary">%1$s lagfært, %2$s mislukkaðist, %3$s sleppt</string>
     <string name="batch_patch_saved_hint">Pökkunarpakkarnir sem breyttu eru vistaðir. Settu þá upp núna, eða síðar frá listanum yfir breytt APK í stillingum</string>
     <string name="batch_patch_multiple_sources">Sumir appnotkunarpakkarnir sameina breytingar frá fleiri en einni uppruna, sem getur valdið átökum</string>
@@ -475,6 +477,10 @@ Fyrir bestu niðurstöður mælt er með því að breyta &lt;b&gt;fullu APK&lt;
     <string name="batch_patch_no_selection">Engin tiltæk viðbót er valin</string>
     <string name="batch_patch_policy_install">Settur upp þegar búið er</string>
     <string name="batch_patch_policy_install_description">Setur upp hvert breytt app þegar biðröðin er lokið. Slökkt heldur APK-skránum til síðara</string>
+    <string name="batch_patch_policy_mount">Tengja þegar lokið</string>
+    <string name="batch_patch_policy_mount_description">Tengir hvert plástrað forrit þegar biðröðinni lýkur. Slökkt heldur APK-skránum til síðar.</string>
+    <string name="batch_patch_policy_install_mount">Setja upp eða tengja þegar lokið</string>
+    <string name="batch_patch_policy_install_mount_description">Setur upp eða tengir hvert plástrað forrit þegar biðröðinni lýkur. Slökkt heldur APK-skránum til síðar.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Byrja</string>
     <string name="batch_patch_stop_title">Hætta við breytingum?</string>
@@ -1060,6 +1066,7 @@ Nánari upplýsingar: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher keyrt</string>
     <string name="settings_system_jvm_runtime_enable">Nota innbyggða VM</string>
     <string name="settings_system_jvm_runtime_description">Breytingar í Java VM sem Morhe ber, sem geta notið eins mikið af minni og tækið skilar. Slökkva til að breyta með keyrt Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Þarf ARM- eða 64 bita x86 tæki</string>
     <string name="settings_system_patcher_completion_sound">Ljós hljóð</string>
     <string name="settings_system_patcher_completion_sound_description">Spilar ákveðinn tón fyrir árangur eða misgengi þegar flakkast er lokið</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1318,6 +1325,7 @@ Nánari upplýsingar: %2$s"</string>
     <string name="reset_order">Endurstilla röð</string>
     <string name="reset_order_done">Pöntun endurstillt</string>
     <string name="accessibility_select_app">Veldu app</string>
+    <string name="accessibility_select_source">Veldu uppruna</string>
     <string name="accessibility_move_up">Færa upp</string>
     <string name="accessibility_move_down">Færa niður</string>
     <string name="accessibility_app_moved_announcement">%1$s flutt til staðar %2$s af %3$s</string>
@@ -1431,11 +1439,15 @@ Haltu samt sem áður?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s af %2$s</string>
     <string name="onboarding_sources_desc">Stjórna þínum uppsprettum. Hver uppspretta gefur breytingar sem hægt er að beita á þín forrit</string>
+    <string name="onboarding_other_apps_desc">Fletta app sem er ekki á listanum, frá APK-skrá eða app sem er uppsett á tækinu þínu</string>
+    <string name="onboarding_add_source_desc">Bættu við flettuuppspretta tengli eða flettu samsetnings skrá</string>
+    <string name="onboarding_signing_key_desc">Afturrita lykilinn sem undirritar flettuaðgerðirnar. Án þess, þau geta aðeins verið uppfærð eftir að hafa verið aftursett</string>
     <string name="onboarding_swipe_title">Hreyfingar fingrum</string>
     <string name="onboarding_swipe_desc">Stryndu til hægri á forritskorti til að skoða lausar breytingar. Stryndu til vinstri til að fela kortið af heimaskjánum</string>
     <string name="onboarding_settings_desc">Sérsniðu Morph: útlit, tæknilegar stillingar og kerfisverkfæri</string>
     <string name="onboarding_sources_patches_desc">Smelltu til að skoða allar breytingar sem eru tiltækar frá þessari uppsprettu</string>
     <string name="onboarding_sources_version_desc">Smelltu á útgáfuna til að skoða allar breytingar fyrir þessa uppsprettu</string>
+    <string name="onboarding_sources_apps_desc">Smelltu til að sjá hvaða apps þessa uppsprettan flettir og veldu hver þeirra býður upp á flettur</string>
     <string name="onboarding_sources_prerelease_desc">Virðu þetta til að fá forhlið breytingar frá þessari uppsprettu</string>
     <string name="onboarding_appearance_tab_desc">Sérsniðu útlit forritsins: þema, lit og bakgrunn</string>
     <string name="onboarding_expert_mode_desc">Virðu Expert Mode til að opna val á breytingum, sérstakar stillingar og annan tæknilegan eiginleika</string>

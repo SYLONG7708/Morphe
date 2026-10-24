@@ -479,6 +479,10 @@ Aby uzyskać najlepszy efekt, zalecamy zmodyfikowanie &lt;b&gt;pełnego pliku AP
     <string name="batch_patch_no_selection">Nie wybrano żadnej z dostępnych modyfikacji</string>
     <string name="batch_patch_policy_install">Zainstaluj po zakończeniu</string>
     <string name="batch_patch_policy_install_description">Instaluje każdą zmodyfikowaną aplikację zaraz po zakończeniu kolejki. Wyłączenie zachowa pliki APK na później</string>
+    <string name="batch_patch_policy_mount">Zamontuj po zakończeniu</string>
+    <string name="batch_patch_policy_mount_description">Montuje każdą zmodyfikowaną aplikację po zakończeniu kolejki. Wyłączenie tej opcji zachowuje pliki APK na później</string>
+    <string name="batch_patch_policy_install_mount">Zainstaluj lub zamontuj po zakończeniu</string>
+    <string name="batch_patch_policy_install_mount_description">Instaluje lub montuje każdą zmodyfikowaną aplikację po zakończeniu kolejki. Wyłączenie tej opcji zachowuje pliki APK na później</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Start</string>
     <string name="batch_patch_stop_title">Zatrzymać modyfikowanie grupowe?</string>
@@ -1439,11 +1443,15 @@ Czy mimo to chcesz kontynuować?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s z %2$s</string>
     <string name="onboarding_sources_desc">Zarządzaj źródłami. Każde z nich oferuje modyfikacje, które możesz zastosować w swoich aplikacjach</string>
+    <string name="onboarding_other_apps_desc">Zmodyfikuj aplikację spoza listy, używając pliku APK lub aplikacji zainstalowanej na urządzeniu</string>
+    <string name="onboarding_add_source_desc">Dodaj źródło modyfikacji z linku lub pliku pakietu modyfikacji</string>
+    <string name="onboarding_signing_key_desc">Utwórz kopię zapasową klucza podpisującego zmodyfikowane aplikacje. Bez niego ich aktualizacja będzie wymagała wcześniejszego odinstalowania</string>
     <string name="onboarding_swipe_title">Gesty przesunięcia</string>
     <string name="onboarding_swipe_desc">Przesuń kartę aplikacji w prawo, aby zobaczyć dostępne modyfikacje. Przesuń w lewo, aby ukryć ją z ekranu głównego</string>
     <string name="onboarding_settings_desc">Dostosuj Morphe: wygląd, opcje zaawansowane i narzędzia systemowe</string>
     <string name="onboarding_sources_patches_desc">Dotknij, aby zobaczyć wszystkie modyfikacje z tego źródła</string>
     <string name="onboarding_sources_version_desc">Dotknij numeru wersji, aby zobaczyć pełną listę zmian dla tego źródła</string>
+    <string name="onboarding_sources_apps_desc">Dotknij, aby zobaczyć aplikacje obsługiwane przez to źródło i wybrać, dla których z nich ma oferować modyfikacje</string>
     <string name="onboarding_sources_prerelease_desc">Włącz, aby otrzymywać przedpremierowe wersje modyfikacji z tego źródła</string>
     <string name="onboarding_appearance_tab_desc">Dostosuj wygląd aplikacji: motyw, kolor akcentu i tło</string>
     <string name="onboarding_expert_mode_desc">Włącz tryb eksperta, aby odblokować wybór modyfikacji, niestandardowe opcje i inne zaawansowane funkcje</string>

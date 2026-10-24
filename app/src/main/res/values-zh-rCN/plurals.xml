@@ -49,6 +49,9 @@
     <plurals name="batch_install_summary">
         <item quantity="other">已安装 %s 个应用</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="other">已挂载 %s 个应用</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="other">已重新安装 %s 个应用</item>
     </plurals>

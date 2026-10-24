@@ -311,7 +311,9 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Handle APK-family file shared via system share sheet (.apk/.apks/.xapk/.apkm)
+        // Handle APK-family file shared via system share sheet (.apk/.apks/.xapk/.apkm).
+        // The name is not checked: senders often drop or change the extension, and the file is
+        // read for what it is anyway, with a message when it turns out not to be an APK
         if (intent?.action == Intent.ACTION_SEND) {
             val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
@@ -319,9 +321,7 @@ class MainActivity : AppCompatActivity() {
                 @Suppress("DEPRECATION")
                 intent.getParcelableExtra(Intent.EXTRA_STREAM)
             }
-            if (uri != null && uri.hasApkExtension(contentResolver)) {
-                vm.pendingExternalApkUri = uri
-            }
+            uri?.let { vm.pendingExternalApkUri = it }
             return
         }
 
@@ -500,10 +500,7 @@ private fun MorpheManager(vm: MainViewModel) {
             navController.popBackStack(HomeScreen, false)
             navController.navigateComplex(
                 BatchPatcher,
-                BatchPatcher.ViewModelParams(
-                    targets = request.targets,
-                    useMount = false
-                )
+                BatchPatcher.ViewModelParams(targets = request.targets)
             )
         }
     }
@@ -531,11 +528,17 @@ private fun MorpheManager(vm: MainViewModel) {
     val onboardingState = remember { OnboardingState() }
 
     val onboardingSteps = remember(onboardingState) {
+        // Only the first step plays the swipe on the card, so every other one stops it
+        fun endSwipeHint() {
+            onboardingState.swipeActive = false
+            homeViewModel.apps.markSwipeGestureHintShown()
+        }
         // Each turns to its page and row, so stepping back from another page lands on it too
         fun targetStep(titleRes: Int, descRes: Int, page: MainPage, target: TourTarget) = StepDef(
             titleRes, descRes,
             getBounds = { onboardingState.targetBounds[target] },
             onShow = {
+                endSwipeHint()
                 onboardingState.page = page
                 onboardingState.target = target
             }
@@ -550,17 +553,19 @@ private fun MorpheManager(vm: MainViewModel) {
                     homeViewModel.apps.triggerSwipeGestureHint()
                 }
             ),
+            targetStep(R.string.home_other_apps_action, R.string.onboarding_other_apps_desc, MainPage.APPS, TourTarget.OTHER_APPS),
             StepDef(
                 R.string.sources_management_title, R.string.onboarding_sources_desc,
                 getBounds = { onboardingState.navigationBounds[MainPage.SOURCES] },
                 onShow = {
                     onboardingState.page = MainPage.APPS
-                    onboardingState.swipeActive = false
-                    homeViewModel.apps.markSwipeGestureHintShown()
+                    endSwipeHint()
                 }
             ),
+            targetStep(R.string.sources_dialog_add_source, R.string.onboarding_add_source_desc, MainPage.SOURCES, TourTarget.ADD_SOURCE),
             targetStep(R.string.patches, R.string.onboarding_sources_patches_desc, MainPage.SOURCES, TourTarget.SOURCE_PATCHES),
-            targetStep(R.string.changelog, R.string.onboarding_sources_version_desc, MainPage.SOURCES, TourTarget.SOURCE_VERSION),
+            targetStep(R.string.version, R.string.onboarding_sources_version_desc, MainPage.SOURCES, TourTarget.SOURCE_VERSION),
+            targetStep(R.string.sources_apps, R.string.onboarding_sources_apps_desc, MainPage.SOURCES, TourTarget.SOURCE_APPS),
             targetStep(
                 R.string.sources_management_prerelease_toggle, R.string.onboarding_sources_prerelease_desc,
                 MainPage.SOURCES, TourTarget.SOURCE_PRERELEASE
@@ -573,7 +578,8 @@ private fun MorpheManager(vm: MainViewModel) {
             targetStep(R.string.appearance, R.string.onboarding_appearance_tab_desc, MainPage.SETTINGS, TourTarget.APPEARANCE),
             targetStep(R.string.settings_advanced_expert_mode, R.string.onboarding_expert_mode_desc, MainPage.SETTINGS, TourTarget.EXPERT_MODE),
             targetStep(R.string.installer, R.string.onboarding_system_installer_desc, MainPage.SETTINGS, TourTarget.INSTALLER),
-            targetStep(R.string.settings_system_custom_file_picker, R.string.onboarding_system_file_picker_desc, MainPage.SETTINGS, TourTarget.FILE_PICKER)
+            targetStep(R.string.settings_system_custom_file_picker, R.string.onboarding_system_file_picker_desc, MainPage.SETTINGS, TourTarget.FILE_PICKER),
+            targetStep(R.string.settings_system_signing_key, R.string.onboarding_signing_key_desc, MainPage.SETTINGS, TourTarget.SIGNING_KEY)
         )
     }
 
@@ -654,15 +660,9 @@ private fun MorpheManager(vm: MainViewModel) {
                             navController.navigateComplex(Patcher, params)
                         }
                     },
-                    onStartBatchPatch = { targets, useMount ->
+                    onStartBatchPatch = { targets ->
                         entry.lifecycleScope.launch {
-                            navController.navigateComplex(
-                                BatchPatcher,
-                                BatchPatcher.ViewModelParams(
-                                    targets = targets,
-                                    useMount = useMount
-                                )
-                            )
+                            navController.navigateComplex(BatchPatcher, BatchPatcher.ViewModelParams(targets))
                         }
                     },
                     homeViewModel = homeViewModel,
@@ -678,7 +678,6 @@ private fun MorpheManager(vm: MainViewModel) {
                 val params = entry.getComplexArg<BatchPatcher.ViewModelParams>() ?: return@composable
                 BatchPatcherScreen(
                     targets = params.targets,
-                    useMount = params.useMount,
                     onBackClick = {
                         patchingCompleted.value = false
                         navController.popBackStack()

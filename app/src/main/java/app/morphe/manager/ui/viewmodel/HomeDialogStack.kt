@@ -37,7 +37,7 @@ sealed interface HomeDialog {
     data object InstalledAppPicker : ApkSource
 
     data class WrongPackage(val state: WrongPackageDialogState) : HomeDialog
-    data object SplitApkWarning : HomeDialog
+    data class SplitApkWarning(val packageName: String) : HomeDialog
     data class InvalidSignature(val state: InvalidSignatureDialogState) : HomeDialog
     data class UnsupportedVersion(val state: UnsupportedVersionDialogState) : HomeDialog
     data class ExperimentalVersion(val state: UnsupportedVersionDialogState) : HomeDialog

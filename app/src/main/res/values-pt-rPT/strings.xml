@@ -456,6 +456,7 @@ Para obteres os melhores resultados, este ficheiro recomenda a modificação de 
     <string name="batch_patch_title">Aplicação em lote</string>
     <string name="batch_patch_planning">Preparando a fila…</string>
     <string name="batch_patch_preparing_next">Preparando o próximo aplicativo…</string>
+    <string name="batch_patch_progress_counter">Aplicando modificação %1$s de %2$s</string>
     <string name="batch_patch_summary">%1$s corrigidos, %2$s falhados, %3$s ignorados</string>
     <string name="batch_patch_saved_hint">Os aplicativos corrigidos foram salvos. Instale-os agora ou mais tarde a partir da lista de APKs corrigidos nas configurações</string>
     <string name="batch_patch_multiple_sources">Alguns aplicativos combinam patches de mais de uma fonte, o que pode causar conflitos</string>
@@ -477,6 +478,10 @@ Para obteres os melhores resultados, este ficheiro recomenda a modificação de 
     <string name="batch_patch_no_selection">Nenhum dos patches disponíveis está selecionado</string>
     <string name="batch_patch_policy_install">Instalar quando terminar</string>
     <string name="batch_patch_policy_install_description">Instala cada aplicativo corrigido logo após o término da fila. Desativado mantém os APKs para mais tarde</string>
+    <string name="batch_patch_policy_mount">Montar quando terminar</string>
+    <string name="batch_patch_policy_mount_description">Monta todos os aplicativos corrigidos assim que a fila terminar. Desativado mantém os APKs para depois.</string>
+    <string name="batch_patch_policy_install_mount">Instalar ou montar quando terminar</string>
+    <string name="batch_patch_policy_install_mount_description">Instala ou monta todos os aplicativos corrigidos assim que a fila terminar. Desativado mantém os APKs para depois.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Início</string>
     <string name="batch_patch_stop_title">Parar correção em lote?</string>
@@ -1064,6 +1069,7 @@ Detalhes: %2$s"</string>
     <string name="settings_system_process_runtime">Execução do Patcher</string>
     <string name="settings_system_jvm_runtime_enable">Usar VM embutida</string>
     <string name="settings_system_jvm_runtime_description">Patches em uma JVM que a Morphe executa, que pode usar tanta memória quanto o dispositivo permitir. Desative para aplicar patches com a execução do Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Necessita de um dispositivo ARM ou x86 de 64 bits</string>
     <string name="settings_system_patcher_completion_sound">Som de conclusão</string>
     <string name="settings_system_patcher_completion_sound_description">Reproduz um tom distinto para sucesso ou falha quando o patch é concluído</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Detalhes: %2$s"</string>
     <string name="reset_order">Restaurar ordem</string>
     <string name="reset_order_done">Pedido redefinido</string>
     <string name="accessibility_select_app">Selecionar aplicativo</string>
+    <string name="accessibility_select_source">Selecionar fonte</string>
     <string name="accessibility_move_up">Mover para cima</string>
     <string name="accessibility_move_down">Mover para baixo</string>
     <string name="accessibility_app_moved_announcement">%1$s movido para a posição %2$s de %3$s</string>
@@ -1435,11 +1442,15 @@ Queres continuar na mesma?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s de %2$s</string>
     <string name="onboarding_sources_desc">Gerencie suas fontes de patch. Cada fonte fornece patches que podem ser aplicados aos seus aplicativos.</string>
+    <string name="onboarding_other_apps_desc">Aplicar patch em um app que não está na lista, a partir de um arquivo APK ou de um app instalado no seu dispositivo</string>
+    <string name="onboarding_add_source_desc">Adicionar uma fonte de patch a partir de um link ou um arquivo de pacote de patch</string>
+    <string name="onboarding_signing_key_desc">Faça backup da chave que assina seus apps com patch. Sem ela, eles só podem ser atualizados após desinstalá-los</string>
     <string name="onboarding_swipe_title">Gestos de deslizar</string>
     <string name="onboarding_swipe_desc">Deslize o dedo para a direita em um cartão de aplicativo para visualizar os patches disponíveis. Deslize para a esquerda para ocultar o cartão da tela inicial.</string>
     <string name="onboarding_settings_desc">Personalize o Morphe: aparência, opções avançadas e ferramentas do sistema.</string>
     <string name="onboarding_sources_patches_desc">Toque para ver todos os patches disponíveis desta fonte.</string>
     <string name="onboarding_sources_version_desc">Toque na versão para ver o changelog completo desta fonte.</string>
+    <string name="onboarding_sources_apps_desc">Toque para ver os apps que esta fonte aplica patch e escolha quais deles ela oferece patches para</string>
     <string name="onboarding_sources_prerelease_desc">Ative isso para receber versões de patch pré-lançadas desta fonte.</string>
     <string name="onboarding_appearance_tab_desc">Personalize a aparência do aplicativo: tema, cor de destaque e plano de fundo.</string>
     <string name="onboarding_expert_mode_desc">Ative o Modo Expert para desbloquear a seleção de patch, opções personalizadas e outros recursos avançados.</string>

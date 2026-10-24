@@ -479,6 +479,10 @@ Bersiap untuk perilaku aplikasi yang tidak biasa atau bug yang belum teridentifi
     <string name="batch_patch_no_selection">Tidak ada patch yang tersedia yang dipilih</string>
     <string name="batch_patch_policy_install">Pasang setelah selesai</string>
     <string name="batch_patch_policy_install_description">Pasang setiap aplikasi yang ditambal segera setelah antrean selesai. Jika nonaktif, APK akan disimpan untuk nanti</string>
+    <string name="batch_patch_policy_mount">Mount setelah selesai</string>
+    <string name="batch_patch_policy_mount_description">Setelah antrean selesai, setiap aplikasi yang telah di-patch di-mount. Jika nonaktif, APK disimpan untuk digunakan nanti.</string>
+    <string name="batch_patch_policy_install_mount">Instal atau mount setelah selesai</string>
+    <string name="batch_patch_policy_install_mount_description">Setelah antrean selesai, setiap aplikasi yang telah di-patch diinstal atau di-mount. Jika nonaktif, APK disimpan untuk digunakan nanti.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Mulai</string>
     <string name="batch_patch_stop_title">Hentikan penambalan massal?</string>
@@ -1439,11 +1443,15 @@ Apakah Anda masih ingin melanjutkan?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s dari %2$s</string>
     <string name="onboarding_sources_desc">Kelola sumber tambalan Anda. Setiap sumber menyediakan tambalan yang dapat diterapkan ke aplikasi Anda</string>
+    <string name="onboarding_other_apps_desc">Patch aplikasi yang tidak ada dalam daftar, dari file APK atau aplikasi yang terinstal di perangkat Anda</string>
+    <string name="onboarding_add_source_desc">Tambahkan sumber patch dari tautan atau file bundel patch</string>
+    <string name="onboarding_signing_key_desc">Cadangkan kunci yang menandatangani aplikasi hasil patch Anda. Tanpa kunci ini, aplikasi hanya dapat diperbarui setelah menghapusnya</string>
     <string name="onboarding_swipe_title">Gerakan usapan</string>
     <string name="onboarding_swipe_desc">Usap ke kanan pada kartu aplikasi untuk melihat tambalan yang tersedia. Usap ke kiri untuk menyembunyikan kartu dari layar beranda</string>
     <string name="onboarding_settings_desc">Sesuaikan Morphe: tampilan, pilihan lanjutan, dan peralatan sistem</string>
     <string name="onboarding_sources_patches_desc">Ketuk untuk melihat semua tambalan yang tersedia dari sumber ini</string>
     <string name="onboarding_sources_version_desc">Ketuk versi untuk melihat seluruh catatan perubahan untuk sumber ini</string>
+    <string name="onboarding_sources_apps_desc">Ketuk untuk melihat aplikasi apa saja yang dipatch oleh sumber ini dan pilih aplikasi mana yang ditawarkan untuk dipatch</string>
     <string name="onboarding_sources_prerelease_desc">Aktifkan ini untuk menerima versi tambalan pra-rilis dari sumber ini</string>
     <string name="onboarding_appearance_tab_desc">Sesuaikan tampilan aplikasi: tema, warna aksen, dan latar belakang</string>
     <string name="onboarding_expert_mode_desc">Aktifkan Mode Ahli untuk membuka pemilihan tambalan, opsi kustom, dan fitur lanjutan lainnya</string>

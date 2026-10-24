@@ -79,6 +79,11 @@
         <item quantity="few">Instalirane %s aplikacije</item>
         <item quantity="other">Instalirane %s aplikacija</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Montirana %s aplikacija</item>
+        <item quantity="few">Montirane %s aplikacije</item>
+        <item quantity="other">Montirano %s aplikacija</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Ponovo instalirana %s aplikacija</item>
         <item quantity="few">Ponovo instalirane %s aplikacije</item>

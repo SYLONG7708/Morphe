@@ -478,6 +478,10 @@
     <string name="batch_patch_no_selection">Жоден із доступних патчів не вибрано</string>
     <string name="batch_patch_policy_install">Встановити після завершення</string>
     <string name="batch_patch_policy_install_description">Встановлює кожен пропатчений застосунок одразу після завершення черги. Вимкнення зберігає APK на потім</string>
+    <string name="batch_patch_policy_mount">Змонтувати після завершення</string>
+    <string name="batch_patch_policy_mount_description">Монтує всі пропатчені застосунки після завершення черги. Якщо вимкнено, APK зберігаються на потім</string>
+    <string name="batch_patch_policy_install_mount">Встановити або змонтувати після завершення</string>
+    <string name="batch_patch_policy_install_mount_description">Встановлює або монтує всі пропатчені застосунки після завершення черги. Якщо вимкнено, APK зберігаються на потім</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Почати</string>
     <string name="batch_patch_stop_title">Зупинити пакетний патчинг?</string>
@@ -1063,7 +1067,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_battery_optimization">Оптимізація батареї</string>
     <string name="settings_system_battery_optimization_description">Утримує патчер активним під час згортання застосунку</string>
     <string name="settings_system_process_runtime">Середовище виконання патчера</string>
-    <string name="settings_system_jvm_runtime_enable">Використовувати вбудовану VM</string>
+    <string name="settings_system_jvm_runtime_enable">Вбудована віртуальна машина</string>
     <string name="settings_system_jvm_runtime_description">Патчить у віртуальній машині Java, яку Morphe містить у собі, і вона може використовувати стільки пам\'яті, скільки здатен виділити пристрій. Вимкніть, щоб патчити за допомогою середовища виконання Android</string>
     <string name="settings_system_jvm_runtime_unavailable">Потрібен пристрій ARM або 64-бітний x86</string>
     <string name="settings_system_patcher_completion_sound">Звук завершення</string>
@@ -1438,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s з %2$s</string>
     <string name="onboarding_sources_desc">Керуйте джерелами патчів. Кожне джерело надає патчі, які можна застосувати до ваших застосунків</string>
+    <string name="onboarding_other_apps_desc">Пропатчте застосунок, якого немає в списку, з APK-файлу або із застосунку, встановленого на вашому пристрої</string>
+    <string name="onboarding_add_source_desc">Додайте джерело патчів за посиланням або з файлу пакета патчів</string>
+    <string name="onboarding_signing_key_desc">Створіть резервну копію ключа, яким підписуються ваші пропатчені застосунки. Без нього їх можна оновити лише після видалення</string>
     <string name="onboarding_swipe_title">Жести свайпом</string>
     <string name="onboarding_swipe_desc">Проведіть праворуч по картці застосунку, щоб переглянути доступні патчі. Проведіть ліворуч, щоб приховати картку з головного екрана</string>
     <string name="onboarding_settings_desc">Налаштуйте Morphe: зовнішній вигляд, розширені параметри та системні інструменти</string>
     <string name="onboarding_sources_patches_desc">Натисніть, щоб переглянути всі патчі з цього джерела</string>
     <string name="onboarding_sources_version_desc">Натисніть на версію, щоб переглянути повний список змін для цього джерела</string>
+    <string name="onboarding_sources_apps_desc">Натисніть, щоб переглянути застосунки, які патчить це джерело, і вибрати, для яких із них воно пропонуватиме патчі</string>
     <string name="onboarding_sources_prerelease_desc">Увімкніть це, щоб отримувати передрелізні патчі із цього джерела</string>
     <string name="onboarding_appearance_tab_desc">Налаштуйте вигляд застосунку: тему, акцентний колір та фон</string>
     <string name="onboarding_expert_mode_desc">Увімкніть експертний режим, щоб розблокувати вибір патчів, власні параметри та інші розширені функції</string>

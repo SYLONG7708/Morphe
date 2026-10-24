@@ -456,6 +456,7 @@
     <string name="batch_patch_title">批量补丁</string>
     <string name="batch_patch_planning">正在准备队列…</string>
     <string name="batch_patch_preparing_next">正在准备下一个应用…</string>
+    <string name="batch_patch_progress_counter">正在修补 %2$s 个中的 %1$s 个</string>
     <string name="batch_patch_summary">%1$s 已修补，%2$s 个失败，%3$s 个已跳过</string>
     <string name="batch_patch_saved_hint">已修补的应用程序已保存。现在安装它们，或稍后从设置中的已修补 APK 列表中安装</string>
     <string name="batch_patch_multiple_sources">某些应用程序将来自多个来源的补丁组合在一起，这可能会导致冲突</string>
@@ -477,6 +478,10 @@
     <string name="batch_patch_no_selection">未选择任何可用补丁</string>
     <string name="batch_patch_policy_install">完成时安装</string>
     <string name="batch_patch_policy_install_description">队列完成后立即安装每个已修补的应用程序。关闭后，APK 将保留以供以后使用</string>
+    <string name="batch_patch_policy_mount">完成后挂载</string>
+    <string name="batch_patch_policy_mount_description">队列完成后挂载每个已修补的应用。关闭则保留 APK 以备后用</string>
+    <string name="batch_patch_policy_install_mount">完成后安装或挂载</string>
+    <string name="batch_patch_policy_install_mount_description">队列完成后，将安装或挂载每个已修补的应用。关闭则保留 APK 以供稍后使用。</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">开始</string>
     <string name="batch_patch_stop_title">停止批量修补？</string>
@@ -1064,6 +1069,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime">修补程序运行时</string>
     <string name="settings_system_jvm_runtime_enable">使用嵌入式虚拟机</string>
     <string name="settings_system_jvm_runtime_description">Morphe 携带的 Java 虚拟机中的补丁，可使用设备剩余的所有内存。关闭后将以 Android 运行时进行补丁操作</string>
+    <string name="settings_system_jvm_runtime_unavailable">需要 ARM 或 64 位 x86 设备</string>
     <string name="settings_system_patcher_completion_sound">完成提示音</string>
     <string name="settings_system_patcher_completion_sound_description">修补完成后，播放不同的提示音以表示成功或失败</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1434,11 +1440,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">第 %1$s 个，共 %2$s 个</string>
     <string name="onboarding_sources_desc">管理您的补丁源。每个源提供可应用于您的应用程序的补丁</string>
+    <string name="onboarding_other_apps_desc">为列表中的应用打补丁：通过APK文件或设备已安装的应用</string>
+    <string name="onboarding_add_source_desc">从链接或补丁包文件添加补丁源</string>
+    <string name="onboarding_signing_key_desc">备份签署您补丁应用的密钥。没有它，只能在卸载后更新这些应用</string>
     <string name="onboarding_swipe_title">滑动势</string>
     <string name="onboarding_swipe_desc">向右滑动应用程序卡片以查看其可用补丁。向左滑动可从主屏幕隐藏该卡片</string>
     <string name="onboarding_settings_desc">自定义 Morphe：外观、高级选项和系统工具</string>
     <string name="onboarding_sources_patches_desc">点击以查看此源可用的所有补丁</string>
     <string name="onboarding_sources_version_desc">点击版本以查看此源的完整更改日志</string>
+    <string name="onboarding_sources_apps_desc">点击查看该来源修补了哪些应用，并选择它提供补丁的目标</string>
     <string name="onboarding_sources_prerelease_desc">启用此选项以从此源接收预发布补丁版本</string>
     <string name="onboarding_appearance_tab_desc">自定义应用程序的外观：主题、强调色和背景</string>
     <string name="onboarding_expert_mode_desc">启用专家模式以解锁补丁选择、自定义选项和其他高级功能</string>

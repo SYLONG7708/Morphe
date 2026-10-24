@@ -64,6 +64,10 @@
         <item quantity="one">%s application installée</item>
         <item quantity="other">%s applications installées</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">%s application montée</item>
+        <item quantity="other">%s applications montées</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">%s application réinstallée</item>
         <item quantity="other">%s applications réinstallées</item>

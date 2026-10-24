@@ -478,6 +478,10 @@
     <string name="batch_patch_no_selection">لم يتم تحديد أي من التعديلات المتاحة</string>
     <string name="batch_patch_policy_install">التثبيت عند الانتهاء</string>
     <string name="batch_patch_policy_install_description">يقوم بتثبيت كل تطبيق تم تعديله مباشرة بعد انتهاء قائمة الإنتظار. وعند الإيقاف، تُحفظ ملفات APK للاستخدام لاحقًا</string>
+    <string name="batch_patch_policy_mount">التركيب عند الانتهاء</string>
+    <string name="batch_patch_policy_mount_description">يقوم بتركيب كل تطبيق تم تعديله بمجرد انتهاء قائمة الانتظار. وعند الإيقاف، تُحفظ ملفات APK للاستخدام لاحقًا</string>
+    <string name="batch_patch_policy_install_mount">التثبيت أو التركيب عند الانتهاء</string>
+    <string name="batch_patch_policy_install_mount_description">يقوم بتثبيت أو تركيب كل تطبيق تم تعديله بمجرد انتهاء قائمة الانتظار. وعند الإيقاف، تُحفظ ملفات APK للاستخدام لاحقًا</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">بدء</string>
     <string name="batch_patch_stop_title">إيقاف تعديل عدة تطبيقات؟</string>
@@ -698,7 +702,7 @@
     <string name="failed_to_execute_patch">فشل تطبيق %s</string>
     <string name="patched_app_save_failed_toast">فشل حفظ التطبيق المعدل</string>
     <string name="plugin_activity_dialog_body">يلزم تفاعل المستخدم للمتابعة باستخدام هذا المكون الإضافي</string>
-    <string name="patcher_process_killed_message">أوقف النظام أداة التعديل قبل إتمام عملها، وعادةً ما يحدث ذلك لتوفير مساحة في الذاكرة. أغلق التطبيقات الأخرى وحاول مجددًا.</string>
+    <string name="patcher_process_killed_message">أوقف النظام أداة التعديل قبل إتمام عملها، وعادةً ما يحدث ذلك لتوفير مساحة في الذاكرة. أغلق التطبيقات الأخرى وحاول مجددًا</string>
     <!-- Shown when a run fills the heap it was given. "%1$s" is the heap in megabytes. -->
     <string name="patcher_out_of_memory_message">نفدت ذاكرة أداة التعديل، حيث بلغ حجم الكومة %1$s ميجابايت. هذا التطبيق كبير جدًا بالنسبة للتعديلات المحددة. حاول التعديل باستخدام عدد أقل من مصادر التعديل، أو حدد عددًا أقل من التعديلات
 
@@ -1264,7 +1268,7 @@ morphe_adaptive_monochrome_custom.xml
     <!-- Sections the settings page lists, each opening a page of its own. A summary names what the section holds -->
     <string name="settings_section_patcher">أداة التعديل</string>
     <string name="settings_section_updates">التحديثات</string>
-    <string name="settings_section_patching">جارٍ التعديل</string>
+    <string name="settings_section_patching">التعديل</string>
     <string name="settings_section_appearance_summary">شكل تطبيق Morphe</string>
     <string name="settings_section_patch_options_summary">ما الذي يقوم الوضع البسيط بتعديله في التطبيقات؟</string>
     <string name="settings_section_general">عام</string>
@@ -1442,11 +1446,15 @@ morphe_adaptive_monochrome_custom.xml
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s من %2$s</string>
     <string name="onboarding_sources_desc">إدارة مصادر التعديلات الخاصة بك. يوفر كل مصدر تعديلات يمكن تطبيقها على تطبيقاتك</string>
+    <string name="onboarding_other_apps_desc">تعديل تطبيق غير موجود في القائمة، من ملف APK أو تطبيق مثبت على جهازك</string>
+    <string name="onboarding_add_source_desc">أضف مصدرًا للتعديل من رابط أو ملف حزمة تعديل</string>
+    <string name="onboarding_signing_key_desc">احفظ نسخة احتياطية من المفتاح الذي يوقّع تطبيقاتك المعدلة. بدونه، لا يمكن تحديثها إلا بعد إلغاء تثبيتها</string>
     <string name="onboarding_swipe_title">إيماءات التمرير</string>
     <string name="onboarding_swipe_desc">مرِّر لليمين على بطاقة التطبيق لعرض التعديلات المتاحة له. مرٍّر لليسار لإخفاء البطاقة من الشاشة الرئيسية</string>
     <string name="onboarding_settings_desc">تخصيص Morphe: المظهر، الخيارات المتقدمة، وأدوات النظام</string>
     <string name="onboarding_sources_patches_desc">انقر لعرض جميع التعديلات المتاحة من هذا المصدر</string>
     <string name="onboarding_sources_version_desc">انقر على الإصدار لعرض سجل التغييرات الكامل لهذا المصدر</string>
+    <string name="onboarding_sources_apps_desc">انقر لرؤية التطبيقات التي يوفر لها هذا المصدر التعديلات واختر أي منها تريد الحصول على تعديلات لها</string>
     <string name="onboarding_sources_prerelease_desc">قم بتمكين هذا لتلقي إصدارات تعديلات ما قبل الإطلاق من هذا المصدر</string>
     <string name="onboarding_appearance_tab_desc">تخصيص مظهر التطبيق: السمة، لون التمييز، والخلفية</string>
     <string name="onboarding_expert_mode_desc">قم بتمكين وضع الخبير لفتح اختيار التعديل، الخيارات المخصصة، والميزات المتقدمة الأخرى</string>

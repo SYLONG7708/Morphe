@@ -40,8 +40,7 @@ data object Licenses
 data object BatchPatcher : ComplexParameter<BatchPatcher.ViewModelParams> {
     @Parcelize
     data class ViewModelParams(
-        val targets: List<BatchTarget>,
-        val useMount: Boolean
+        val targets: List<BatchTarget>
     ) : Parcelable
 }
 

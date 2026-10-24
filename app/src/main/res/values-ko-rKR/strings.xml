@@ -478,6 +478,10 @@
     <string name="batch_patch_no_selection">사용 가능한 패치 중 아무것도 선택되지 않음</string>
     <string name="batch_patch_policy_install">완료 후 설치</string>
     <string name="batch_patch_policy_install_description">패치 목록이 완료되면 패치된 각 앱을 즉시 설치합니다. 비활성화하면 나중에 사용할 수 있도록 APK를 유지합니다</string>
+    <string name="batch_patch_policy_mount">완료 후 마운트</string>
+    <string name="batch_patch_policy_mount_description">패치 목록이 완료되면 패치된 각 앱을 마운트합니다. 비활성화하면 나중에 사용할 수 있도록 APK를 유지합니다</string>
+    <string name="batch_patch_policy_install_mount">완료 후 설치 또는 마운트</string>
+    <string name="batch_patch_policy_install_mount_description">패치 목록이 완료되면 패치된 모든 앱을 설치하거나 마운트합니다. 비활성화하면 나중에 사용할 수 있도록 APK를 유지합니다</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">시작</string>
     <string name="batch_patch_stop_title">일괄 패치 중지</string>
@@ -1438,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%2$s 단계 중 %1$s 단계</string>
     <string name="onboarding_sources_desc">앱에 적용할 패치를 제공하는 패치 소스를 관리할 수 있습니다. 각 소스는 앱에 적용할 수 있는 패치를 제공합니다</string>
+    <string name="onboarding_other_apps_desc">APK 파일이나 기기에 설치된 앱에서 목록에 없는 앱을 패치할 수 있습니다</string>
+    <string name="onboarding_add_source_desc">링크나 패치 번들 파일에서 패치 소스를 추가할 수 있습니다</string>
+    <string name="onboarding_signing_key_desc">패치한 앱에 서명하는 데 사용되는 키를 백업합니다. 이 키가 없으면 해당 앱을 업데이트하려면 기존 앱을 삭제한 후 다시 설치해야 합니다.</string>
     <string name="onboarding_swipe_title">스와이프 제스처</string>
     <string name="onboarding_swipe_desc">앱 카드를 오른쪽으로 스와이프하여 사용 가능한 패치를 확인할 수 있고, 왼쪽으로 스와이프하여 홈 화면에서 카드를 숨길 수 있습니다</string>
     <string name="onboarding_settings_desc">레이아웃, 고급 옵션 및 시스템 도구와 같은 Morphe 설정을 관리할 수 있습니다</string>
     <string name="onboarding_sources_patches_desc">패치 버튼을 탭하여 이 소스에서 사용할 수 있는 모든 패치를 볼 수 있습니다</string>
     <string name="onboarding_sources_version_desc">버전 버튼을 탭하여 이 소스의 전체 변경 사항을 볼 수 있습니다</string>
+    <string name="onboarding_sources_apps_desc">이 소스에서 패치할 수 있는 앱 목록을 확인하고 제공하는 앱을 선택하려면 탭하세요</string>
     <string name="onboarding_sources_prerelease_desc">이 옵션을 활성화하여 이 소스의 Pre-release 패치 버전을 수신할 수 있습니다</string>
     <string name="onboarding_appearance_tab_desc">테마, 강조 색상 및 배경을 변경하여 앱 디자인을 꾸며 볼 수 있습니다</string>
     <string name="onboarding_expert_mode_desc">전문가 모드를 활성화하여 패치 선택, 사용자 정의 패치 옵션 등의 다양한 고급 기능을 사용할 수 있습니다</string>

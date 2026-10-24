@@ -478,6 +478,10 @@ Para un mejor resultado, esta aplicación te recomienda parchear un &lt;b&gt;APK
     <string name="batch_patch_no_selection">Ninguno de los parches disponibles está seleccionado</string>
     <string name="batch_patch_policy_install">Instalar al finalizar</string>
     <string name="batch_patch_policy_install_description">Instala cada aplicación parcheada en cuanto finaliza la cola. Desactivado conserva los APK para más tarde</string>
+    <string name="batch_patch_policy_mount">Montar al finalizar</string>
+    <string name="batch_patch_policy_mount_description">Monta cada aplicación parcheada una vez que la cola finalice. Desactivado conserva los APK para más tarde.</string>
+    <string name="batch_patch_policy_install_mount">Instalar o montar al finalizar</string>
+    <string name="batch_patch_policy_install_mount_description">Instala o monta cada aplicación parcheada una vez que la cola finalice. Desactivado conserva los APK para más tarde.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Comenzar</string>
     <string name="batch_patch_stop_title">¿Detener el parcheo por lotes?</string>
@@ -1438,11 +1442,15 @@ Detalles: %2$s"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s de %2$s</string>
     <string name="onboarding_sources_desc">Administra tus fuentes de parches. Cada fuente proporciona parches que se pueden aplicar a tus aplicaciones</string>
+    <string name="onboarding_other_apps_desc">Parchea una aplicación que no está en la lista, desde un archivo APK o desde una aplicación instalada en tu dispositivo</string>
+    <string name="onboarding_add_source_desc">Añade una fuente de parches a partir de un enlace o de un archivo de paquete de parches</string>
+    <string name="onboarding_signing_key_desc">Hace un respaldo de la clave que firma sus aplicaciones parcheadas. Sin ella, solo se podrán actualizar después de desinstalarlas</string>
     <string name="onboarding_swipe_title">Gestos de deslizamiento</string>
     <string name="onboarding_swipe_desc">Desliza el dedo hacia la derecha en una tarjeta de aplicación para ver los parches disponibles. Desliza el dedo hacia la izquierda para ocultar la tarjeta de la pantalla de inicio</string>
     <string name="onboarding_settings_desc">Personaliza Morphe: apariencia, opciones avanzadas y herramientas del sistema</string>
     <string name="onboarding_sources_patches_desc">Pulsa para ver todos los parches disponibles de esta fuente</string>
     <string name="onboarding_sources_version_desc">Pulsa la versión para ver el registro de cambios completo de esta fuente</string>
+    <string name="onboarding_sources_apps_desc">Pulsa para ver las aplicaciones a las que esta fuente aplica parches y elige para cuáles de ellas ofrece parches</string>
     <string name="onboarding_sources_prerelease_desc">Activa esta opción para recibir versiones pre-lanzamiento de parches de esta fuente</string>
     <string name="onboarding_appearance_tab_desc">Personaliza el aspecto de la aplicación: tema, color de acento y fondo</string>
     <string name="onboarding_expert_mode_desc">Activa el modo Experto para desbloquear la selección de parches, opciones personalizadas y otras funciones avanzadas</string>

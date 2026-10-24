@@ -64,8 +64,9 @@ data class StepDef(
 
 /** Rows inside the pages the tour points at, each marked with [tourTarget]. */
 enum class TourTarget {
-    SOURCE_PATCHES, SOURCE_VERSION, SOURCE_PRERELEASE,
-    EXPERT_MODE, INSTALLER, FILE_PICKER, APPEARANCE
+    OTHER_APPS,
+    ADD_SOURCE, SOURCE_PATCHES, SOURCE_VERSION, SOURCE_APPS, SOURCE_PRERELEASE,
+    EXPERT_MODE, INSTALLER, FILE_PICKER, APPEARANCE, SIGNING_KEY
 }
 
 /**

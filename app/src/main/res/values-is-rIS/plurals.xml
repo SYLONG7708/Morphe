@@ -64,6 +64,10 @@
         <item quantity="one">%s app uppsett</item>
         <item quantity="other">%s app uppsett</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">%s forrit tengt</item>
+        <item quantity="other">%s forrit tengd</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">%s app endurskipt</item>
         <item quantity="other">%s app endurskipt</item>

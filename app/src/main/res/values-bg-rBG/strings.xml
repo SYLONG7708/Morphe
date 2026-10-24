@@ -456,6 +456,7 @@
     <string name="batch_patch_title">Пакетно прилагане на корекции</string>
     <string name="batch_patch_planning">Подготвя се опашката…</string>
     <string name="batch_patch_preparing_next">Подготвя се следващото приложение…</string>
+    <string name="batch_patch_progress_counter">Патчване на %1$s от %2$s</string>
     <string name="batch_patch_summary">%1$s коригирани, %2$s неуспешни, %3$s пропуснати</string>
     <string name="batch_patch_saved_hint">Пачните приложения са запазени. Инсталирайте ги сега или по-късно от списъка с пачните APK в настройките</string>
     <string name="batch_patch_multiple_sources">Някои приложения комбинират пачове от повече от един източник, което може да причини конфликти</string>
@@ -477,6 +478,10 @@
     <string name="batch_patch_no_selection">Нито един от наличните патчове не е избран</string>
     <string name="batch_patch_policy_install">Инсталиране при завършване</string>
     <string name="batch_patch_policy_install_description">Инсталира всяко закърпено приложение веднага след като приключи опашката. Изключването запазва APK файловете за по-късно</string>
+    <string name="batch_patch_policy_mount">Монтирай при завършване</string>
+    <string name="batch_patch_policy_mount_description">Монтира всяко пачнато приложение, след като опашката приключи. Изключеното състояние запазва APK файловете за по-късно</string>
+    <string name="batch_patch_policy_install_mount">Инсталирай или монтирай при завършване</string>
+    <string name="batch_patch_policy_install_mount_description">Инсталира или монтира всяко пачнато приложение, след като опашката приключи. \"Изключено\" запазва APK файловете за по-късно</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Начало</string>
     <string name="batch_patch_stop_title">Спиране на пакетното закърпване?</string>
@@ -1064,6 +1069,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime">Ръчен модул</string>
     <string name="settings_system_jvm_runtime_enable">Използвай вграден VM</string>
     <string name="settings_system_jvm_runtime_description">Поправки в Java VM, които Morhe носи и които могат да използват колкото паметта на устройството е свободна. Изключете за поправка с runtime на Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Изисква ARM или 64-битово x86 устройство</string>
     <string name="settings_system_patcher_completion_sound">Звук за завършване</string>
     <string name="settings_system_patcher_completion_sound_description">Възпроизвежда отделен тон при успех или неуспех, когато завърши прилагането на корекциите</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ morphe_header_custom_dark.png
     <string name="reset_order">Възстановяване на реда</string>
     <string name="reset_order_done">Заявката е възстановена</string>
     <string name="accessibility_select_app">Избор на приложение</string>
+    <string name="accessibility_select_source">Избери източник</string>
     <string name="accessibility_move_up">Преместване нагоре</string>
     <string name="accessibility_move_down">Преместване надолу</string>
     <string name="accessibility_app_moved_announcement">%1$s преместен на позиция %2$s от %3$s</string>
@@ -1435,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s от %2$s</string>
     <string name="onboarding_sources_desc">Управлявайте източниците на пакети. Всеки източник предоставя пакети, които могат да бъдат приложени към вашите приложения. </string>
+    <string name="onboarding_other_apps_desc">Осигурете приложение, което не е в списъка, от APK файл или приложение, инсталирано на вашето устройство</string>
+    <string name="onboarding_add_source_desc">Добавете източник на патч от връзка или файл за пакет с патчове</string>
+    <string name="onboarding_signing_key_desc">Архивирайте ключа, който подписва вашите патчнати приложения. Без него те могат да се актуализират само след деинсталирането им</string>
     <string name="onboarding_swipe_title">Жестове с плъзгане</string>
     <string name="onboarding_swipe_desc">Плъзнете надясно върху карта на приложение, за да видите наличните пакети. Плъзнете наляво, за да скриете картата от началния екран. </string>
     <string name="onboarding_settings_desc">Персонализирайте Morphe: външен вид, разширени опции и системни инструменти</string>
     <string name="onboarding_sources_patches_desc">Докоснете, за да видите всички пакети, налични от този източник</string>
     <string name="onboarding_sources_version_desc">Докоснете версията, за да видите пълния списък с промени за този източник</string>
+    <string name="onboarding_sources_apps_desc">Допрете, за да видите приложението, които този източник патчва и изберете кои от тях предлага патчове</string>
     <string name="onboarding_sources_prerelease_desc">Активирайте това, за да получавате версии на пакети преди тяхното официално пускане от този източник</string>
     <string name="onboarding_appearance_tab_desc">Персонализирайте външния вид на приложението: тема, цвят на акцента и фон</string>
     <string name="onboarding_expert_mode_desc">Активирайте Expert Mode, за да отключите избор на пакети, персонализирани опции и други разширени функции</string>

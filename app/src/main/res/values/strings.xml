@@ -493,6 +493,10 @@ For the best results, this app recommends patching a &lt;b&gt;full APK&lt;/b&gt;
     <string name="batch_patch_no_selection">None of the available patches is selected</string>
     <string name="batch_patch_policy_install">Install when finished</string>
     <string name="batch_patch_policy_install_description">Installs every patched app right after the queue finishes. Off keeps the APKs for later</string>
+    <string name="batch_patch_policy_mount">Mount when finished</string>
+    <string name="batch_patch_policy_mount_description">Mounts every patched app once the queue finishes. Off keeps the APKs for later</string>
+    <string name="batch_patch_policy_install_mount">Install or mount when finished</string>
+    <string name="batch_patch_policy_install_mount_description">Installs or mounts every patched app once the queue finishes. Off keeps the APKs for later</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Start</string>
     <string name="batch_patch_stop_title">Stop batch patching?</string>
@@ -1534,11 +1538,15 @@ Do you still want to continue?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s of %2$s</string>
     <string name="onboarding_sources_desc">Manage your patch sources. Each source provides patches that can be applied to your apps</string>
+    <string name="onboarding_other_apps_desc">Patch an app that is not on the list, from an APK file or an app installed on your device</string>
+    <string name="onboarding_add_source_desc">Add a patch source from a link or a patch bundle file</string>
+    <string name="onboarding_signing_key_desc">Back up the key that signs your patched apps. Without it, they can only be updated after uninstalling them</string>
     <string name="onboarding_swipe_title">Swipe gestures</string>
     <string name="onboarding_swipe_desc">Swipe right on an app card to view its available patches. Swipe left to hide the card from the home screen</string>
     <string name="onboarding_settings_desc">Customize Morphe: appearance, advanced options, and system tools</string>
     <string name="onboarding_sources_patches_desc">Tap to view all patches available from this source</string>
     <string name="onboarding_sources_version_desc">Tap the version to view the full changelog for this source</string>
+    <string name="onboarding_sources_apps_desc">Tap to see the apps this source patches and choose which of them it offers patches for</string>
     <string name="onboarding_sources_prerelease_desc">Enable this to receive pre-release patch versions from this source</string>
     <string name="onboarding_appearance_tab_desc">Customize the app\'s look: theme, accent color, and background</string>
     <string name="onboarding_expert_mode_desc">Enable Expert Mode to unlock patch selection, custom options, and other advanced features</string>

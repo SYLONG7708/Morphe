@@ -94,6 +94,12 @@
         <item quantity="many">Įdiegta %s programų</item>
         <item quantity="other">Įdiegta %s programų</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Prijungta %s programa</item>
+        <item quantity="few">Prijungtos %s programos</item>
+        <item quantity="many">Prijungta %s programų</item>
+        <item quantity="other">Prijungta %s programų</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Iš naujo įdiegta %s programa</item>
         <item quantity="few">Iš naujo įdiegtos %s programos</item>

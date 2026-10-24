@@ -456,6 +456,7 @@ Per ottenere i risultati migliori, questa app raccomanda di applicare una patch 
     <string name="batch_patch_title">Patching di gruppo</string>
     <string name="batch_patch_planning">Preparazione della coda…</string>
     <string name="batch_patch_preparing_next">Preparazione dell\'app successiva…</string>
+    <string name="batch_patch_progress_counter">Applicazione della patch %1$s di %2$s</string>
     <string name="batch_patch_summary">%1$s patchati, %2$s non riusciti, %3$s saltati</string>
     <string name="batch_patch_saved_hint">Le app modificate sono state salvate. Installale ora o in seguito dall\'elenco APK modificate nelle impostazioni</string>
     <string name="batch_patch_multiple_sources">Alcune app combinano patch da più fonti, il che può causare conflitti</string>
@@ -477,6 +478,10 @@ Per ottenere i risultati migliori, questa app raccomanda di applicare una patch 
     <string name="batch_patch_no_selection">Nessuno dei patch disponibili è selezionato</string>
     <string name="batch_patch_policy_install">Installa al termine</string>
     <string name="batch_patch_policy_install_description">Installa ogni app modificata subito dopo che la coda è terminata. Disattivato mantiene gli APK per dopo</string>
+    <string name="batch_patch_policy_mount">Monta al termine</string>
+    <string name="batch_patch_policy_mount_description">Monta ogni app patchata una volta terminata la coda. Se disattivato, conserva gli APK per dopo.</string>
+    <string name="batch_patch_policy_install_mount">Installa o monta al termine</string>
+    <string name="batch_patch_policy_install_mount_description">Installa o monta ogni app patchata una volta terminata la coda. Se disattivato, conserva gli APK per dopo.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Inizio</string>
     <string name="batch_patch_stop_title">Interrompi la modifica in batch?</string>
@@ -797,7 +802,7 @@ La disinstallazione cancellerà definitivamente tutti i dati dell'app."</string>
     <string name="settings_appearance_greeting_phrases">Frasi di saluto</string>
     <string name="settings_appearance_greeting_phrases_subtitle">Mostra un messaggio di saluto</string>
     <string name="settings_appearance_repatch_notice">Avviso di re-patch</string>
-    <string name="settings_appearance_repatch_notice_description">Mostra un banner quando le applicazionj modificate possono essere rimodificate</string>
+    <string name="settings_appearance_repatch_notice_description">Mostra un banner quando le applicazioni modificate possono essere rimodificate</string>
     <string name="settings_appearance_app_card_colors">Colori delle schede app</string>
     <string name="settings_appearance_app_card_colors_default">Predefinita</string>
     <string name="settings_appearance_app_card_colors_default_description">Assegna a ciascuna app il colore del proprio bundle</string>
@@ -1064,6 +1069,7 @@ Dettagli: %2$s"</string>
     <string name="settings_system_process_runtime">Runtime del patcher</string>
     <string name="settings_system_jvm_runtime_enable">Utilizza VM integrata</string>
     <string name="settings_system_jvm_runtime_description">Patch in una JVM che Morphe trasporta, che può utilizzare tutta la memoria disponibile dal dispositivo. Disattivare per applicare le patch con il runtime di Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Richiede un dispositivo con processore ARM oppure un processore x86 a 64 bit.</string>
     <string name="settings_system_patcher_completion_sound">Suono di completamento</string>
     <string name="settings_system_patcher_completion_sound_description">Riproduce un tono specifico per successo o fallimento al termine dell\'applicazione della patch</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1262,7 +1268,7 @@ Dettagli: %2$s"</string>
     <string name="settings_section_appearance_summary">Aspetto di Morphe</string>
     <string name="settings_section_patch_options_summary">Ciò che la modalità semplice patcha nelle app</string>
     <string name="settings_section_general">Generale</string>
-    <string name="settings_section_patcher_summary">Come le applicazionj vengono modificate su questo dispositivo</string>
+    <string name="settings_section_patcher_summary">Come le applicazioni vengono modificate su questo dispositivo</string>
     <string name="settings_section_help_info"><b>Help &amp; info</b></string>
     <string name="settings_section_about_summary">Maggiori informazioni su Morphe e come ottenere aiuto</string>
     <string name="settings_section_local_files">File</string>
@@ -1322,6 +1328,7 @@ Dettagli: %2$s"</string>
     <string name="reset_order">Ripristina ordine</string>
     <string name="reset_order_done">Ordine resettato</string>
     <string name="accessibility_select_app">Seleziona app</string>
+    <string name="accessibility_select_source">Seleziona la sorgente</string>
     <string name="accessibility_move_up">Sposta in alto</string>
     <string name="accessibility_move_down">Sposta in basso</string>
     <string name="accessibility_app_moved_announcement">%1$s spostato nella posizione %2$s di %3$s</string>
@@ -1435,11 +1442,15 @@ Vuoi comunque continuare?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s di %2$s</string>
     <string name="onboarding_sources_desc">Gestisci le tue sorgenti di patch. Ogni sorgente fornisce patch che possono essere applicate alle tue app</string>
+    <string name="onboarding_other_apps_desc">Aggiungi una patch a un\'app non presente nell\'elenco, da un file APK o da un\'app installata sul tuo dispositivo</string>
+    <string name="onboarding_add_source_desc">Aggiungi una fonte di patch tramite un link o un file bundle di patch</string>
+    <string name="onboarding_signing_key_desc">Effettua il backup della chiave che firma le tue app patchate. Senza di essa, potranno essere aggiornate solo dopo la disinstallazione</string>
     <string name="onboarding_swipe_title">Gesti di scorrimento</string>
     <string name="onboarding_swipe_desc">Scorri verso destra su una scheda app per visualizzare le patch disponibili. Scorri verso sinistra per nascondere la scheda dalla schermata Home</string>
     <string name="onboarding_settings_desc">Personalizza Morphe: aspetto, opzioni avanzate e strumenti di sistema</string>
     <string name="onboarding_sources_patches_desc">Tocca per visualizzare tutte le patch disponibili da questa sorgente</string>
     <string name="onboarding_sources_version_desc">Tocca la versione per visualizzare il changelog completo per questa sorgente</string>
+    <string name="onboarding_sources_apps_desc">Tocca per visualizzare le app patchate da questa fonte e scegliere quali di esse offre in patch</string>
     <string name="onboarding_sources_prerelease_desc">Abilita questa opzione per ricevere versioni di patch pre-release da questa sorgente</string>
     <string name="onboarding_appearance_tab_desc">Personalizza l\'aspetto dell\'app: tema, colore di accento e sfondo</string>
     <string name="onboarding_expert_mode_desc">Abilita la modalità esperto per sbloccare la selezione delle patch, le opzioni personalizzate e altre funzionalità avanzate</string>

@@ -480,6 +480,10 @@ Pour de meilleurs résultats, cette application recommande d'effectuer le patchi
     <string name="batch_patch_no_selection">Aucun des patchs disponibles n\'est sélectionné</string>
     <string name="batch_patch_policy_install">Installer une fois terminé</string>
     <string name="batch_patch_policy_install_description">Installe chaque application patchée juste après la fin de la file d\'attente. Désactivé conserve les APK pour plus tard</string>
+    <string name="batch_patch_policy_mount">Monter une fois terminé</string>
+    <string name="batch_patch_policy_mount_description">Monte chaque application patchée une fois la file d\'attente terminée. Désactivé conserve les APK pour plus tard</string>
+    <string name="batch_patch_policy_install_mount">Installer ou monter une fois terminé</string>
+    <string name="batch_patch_policy_install_mount_description">Installe ou monte chaque application patchée une fois la file d\'attente terminée. Désactivé conserve les APK pour plus tard.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Commencer</string>
     <string name="batch_patch_stop_title">Arrêter le patching par lots ?</string>
@@ -703,7 +707,7 @@ La désinstallation effacera définitivement toutes les données de l'applicatio
     <string name="plugin_activity_dialog_body">Une interaction de l\'utilisateur est nécessaire pour pouvoir poursuivre avec ce plugin</string>
     <string name="patcher_process_killed_message">Le système a arrêté le patcheur avant qu\'il ait terminé, généralement pour libérer de la mémoire. Fermez les autres applications et réessayez</string>
     <!-- Shown when a run fills the heap it was given. "%1$s" is the heap in megabytes. -->
-    <string name="patcher_out_of_memory_message">Le patcheur a manqué de mémoire avec un tas de %1$s Mo. Cette application est trop volumineuse pour les patchs sélectionnés. Essayez de patcher avec moins de sources de patchs, ou sélectionnez moins de patchs.</string>
+    <string name="patcher_out_of_memory_message">Le patcheur a manqué de mémoire avec un tas de %1$s Mo. Cette application est trop volumineuse pour les patchs sélectionnés. Essayez de patcher avec moins de sources de patchs, ou sélectionnez moins de patchs</string>
     <string name="install_app_success">Installé avec succès</string>
     <string name="install_app_fail">Impossible d\'installer l\'application : %s</string>
     <string name="install_ignore_signature">Installer quand même</string>
@@ -1445,11 +1449,15 @@ Voulez-vous tout de même continuer ?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s sur %2$s</string>
     <string name="onboarding_sources_desc">Gérez vos sources de patchs. Chaque source fournit des patchs pouvant être appliqués à vos applications</string>
+    <string name="onboarding_other_apps_desc">Patchez une application qui ne figure pas dans la liste, à partir d\'un fichier APK ou d\'une application installée sur votre appareil</string>
+    <string name="onboarding_add_source_desc">Ajouter une source de patchs à partir d\'un lien ou d\'un fichier bundle de patchs</string>
+    <string name="onboarding_signing_key_desc">Sauvegardez la clé qui signe vos applications patchées. Sans elle, elles ne pourront être mises à jour qu\'après avoir été désinstallées</string>
     <string name="onboarding_swipe_title">Gestes de balayage</string>
     <string name="onboarding_swipe_desc">Balayez vers la droite sur une carte d\'application pour afficher les patchs disponibles. Balayez vers la gauche pour la masquer de l\'écran d\'accueil</string>
     <string name="onboarding_settings_desc">Personnalisez Morphe : apparence, options avancées et outils système</string>
     <string name="onboarding_sources_patches_desc">Appuyez pour afficher tous les patchs disponibles depuis cette source</string>
     <string name="onboarding_sources_version_desc">Appuyez sur la version pour afficher l\'historique complet des modifications de cette source</string>
+    <string name="onboarding_sources_apps_desc">Appuyez pour voir les applications que cette source patche et choisir celles pour lesquelles elle propose des patchs</string>
     <string name="onboarding_sources_prerelease_desc">Activez cette option pour recevoir des versions de patchs en préversion de cette source</string>
     <string name="onboarding_appearance_tab_desc">Personnalisez l\'apparence de l\'application : thème, couleur d\'accentuation et arrière-plan</string>
     <string name="onboarding_expert_mode_desc">Activez le Mode Expert pour débloquer la sélection de patchs, les options personnalisées et d\'autres fonctionnalités avancées</string>

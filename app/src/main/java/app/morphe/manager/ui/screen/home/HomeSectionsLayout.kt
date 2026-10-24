@@ -156,7 +156,8 @@ internal fun SectionsLayout(
                 sortEnabled = !state.isEditing,
                 sortOpen = state.isListOptionsOpen,
                 onSortClick = { state.isListOptionsOpen = !state.isListOptionsOpen },
-                onPatchFileClick = chromeActions.onOtherAppsClick
+                onPatchFileClick = chromeActions.onOtherAppsClick,
+                tour = onboardingState
             )
         },
         scrollState = state.listState,

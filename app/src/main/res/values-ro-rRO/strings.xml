@@ -456,6 +456,7 @@ Pentru cele mai bune rezultate, această aplicație recomandă patch-uirea unui 
     <string name="batch_patch_title">Patch-uri în lot</string>
     <string name="batch_patch_planning">Se pregătește coada…</string>
     <string name="batch_patch_preparing_next">Se pregătește următoarea aplicație…</string>
+    <string name="batch_patch_progress_counter">Se aplică patch-ul %1$s din %2$s</string>
     <string name="batch_patch_summary">%1$s patch-uit, %2$s eșuat, %3$s omis</string>
     <string name="batch_patch_saved_hint">Aplicațiile modificate au fost salvate. Instalați-le acum sau mai târziu din lista de aplicații modificate din setări</string>
     <string name="batch_patch_multiple_sources">Unele aplicații combină patch-uri din mai multe surse, ceea ce poate cauza conflicte</string>
@@ -477,6 +478,10 @@ Pentru cele mai bune rezultate, această aplicație recomandă patch-uirea unui 
     <string name="batch_patch_no_selection">Niciunul dintre patch-urile disponibile nu este selectat</string>
     <string name="batch_patch_policy_install">Instalează când este finalizat</string>
     <string name="batch_patch_policy_install_description">Instalează fiecare aplicație modificată imediat ce coada se termină. Oprire păstrează APK-urile pentru mai târziu</string>
+    <string name="batch_patch_policy_mount">Montează la finalizare</string>
+    <string name="batch_patch_policy_mount_description">Montează fiecare aplicație cu patch aplicat după ce coada se termină. Dacă este oprit, păstrează APK-urile pentru mai târziu.</string>
+    <string name="batch_patch_policy_install_mount">Instalează sau montează la finalizare</string>
+    <string name="batch_patch_policy_install_mount_description">Instalează sau montează fiecare aplicație cu patch aplicat după ce coada se termină. Dacă este oprit, păstrează APK-urile pentru mai târziu.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Pornire</string>
     <string name="batch_patch_stop_title">Oprește aplicarea patch-urilor în masă?</string>
@@ -1064,6 +1069,7 @@ Detalii: %2$s"</string>
     <string name="settings_system_process_runtime">Runtime-ul Patcher</string>
     <string name="settings_system_jvm_runtime_enable">Utilizează VM integrat</string>
     <string name="settings_system_jvm_runtime_description">Patch-uri într-un Java VM pe care Morphe îl poartă, care pot consuma cât timp memoria device-ului permite. Oprește-l pentru a face patch cu runtime Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Necesită un dispozitiv ARM sau x86 pe 64 de biți</string>
     <string name="settings_system_patcher_completion_sound">Sunet de finalizare</string>
     <string name="settings_system_patcher_completion_sound_description">Redă un ton distinct pentru succes sau eșec la finalizarea aplicării patch-ului</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Detalii: %2$s"</string>
     <string name="reset_order">Resetează ordinea</string>
     <string name="reset_order_done">Comanda resetată</string>
     <string name="accessibility_select_app">Selectează aplicația</string>
+    <string name="accessibility_select_source">Selectați sursa</string>
     <string name="accessibility_move_up">Mută în sus</string>
     <string name="accessibility_move_down">Mută în jos</string>
     <string name="accessibility_app_moved_announcement">%1$s a fost mutat pe poziția %2$s din %3$s</string>
@@ -1435,11 +1442,15 @@ Doriți totuși să continuați?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s din %2$s</string>
     <string name="onboarding_sources_desc">Gestionează sursele de patch-uri. Fiecare sursă oferă patch-uri care pot fi aplicate aplicațiilor tale</string>
+    <string name="onboarding_other_apps_desc">Aplică o modificare unei aplicații care nu se află pe listă, dintr-un fișier APK sau o aplicație instalată pe dispozitivul tău</string>
+    <string name="onboarding_add_source_desc">Adaugă o sursă de modificări dintr-un link sau un fișier pachet de modificări</string>
+    <string name="onboarding_signing_key_desc">Realizează o copie de siguranță a cheii care semnează aplicațiile tale modificate. Fără ea, acestea pot fi actualizate doar după dezinstalare</string>
     <string name="onboarding_swipe_title">Gesturi de glisare</string>
     <string name="onboarding_swipe_desc">Glisează spre dreapta pe o carte de aplicație pentru a vedea patch-urile disponibile. Glisează spre stânga pentru a ascunde cardul de pe ecranul principal</string>
     <string name="onboarding_settings_desc">Personalizează Morphe: aspect, opțiuni avansate și instrumente de sistem</string>
     <string name="onboarding_sources_patches_desc">Atinge pentru a vedea toate patch-urile disponibile din această sursă</string>
     <string name="onboarding_sources_version_desc">Atinge versiunea pentru a vedea istoricul complet al modificărilor pentru această sursă</string>
+    <string name="onboarding_sources_apps_desc">Atinge pentru a vedea aplicațiile pe care le modifică această sursă și alege dintre care oferă patch-uri</string>
     <string name="onboarding_sources_prerelease_desc">Activează această opțiune pentru a primi versiuni de patch-uri pre-lansare de la această sursă</string>
     <string name="onboarding_appearance_tab_desc">Personalizează aspectul aplicației: temă, culoare de accent și fundal</string>
     <string name="onboarding_expert_mode_desc">Activează Modul Expert pentru a debloca selecția patch-urilor, opțiuni personalizate și alte funcții avansate</string>

@@ -49,6 +49,9 @@
     <plurals name="batch_install_summary">
         <item quantity="other">%s aplikasi terpasang</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="other">Terpasang %s aplikasi</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="other">%s aplikasi dipasang ulang</item>
     </plurals>

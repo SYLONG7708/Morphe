@@ -115,10 +115,6 @@ fun Uri.copyApkInto(dir: File, prefix: String, contentResolver: ContentResolver)
 fun Uri.hasMppExtension(contentResolver: ContentResolver): Boolean =
     displayName(contentResolver)?.endsWith(".mpp", ignoreCase = true) == true
 
-/** Whether the URI names an APK-family file, so generic octet-stream shares can be told apart. */
-fun Uri.hasApkExtension(contentResolver: ContentResolver): Boolean =
-    displayName(contentResolver)?.substringAfterLast('.', "")?.lowercase() in APK_EXTENSIONS
-
 /**
  * The manifest of a .mpp patch bundle, or null when it cannot be read. Values of "na" in any case
  * count as absent.

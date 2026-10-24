@@ -478,6 +478,10 @@
     <string name="batch_patch_no_selection">未選取任何可用的修補程式</string>
     <string name="batch_patch_policy_install">完成後安裝</string>
     <string name="batch_patch_policy_install_description">佇列完成後會立即安裝每個已修補的應用程式。關閉後保留 APK 以供日後使用</string>
+    <string name="batch_patch_policy_mount">完成後掛載</string>
+    <string name="batch_patch_policy_mount_description">一旦隊列完成，將掛載每個已修補的應用程式。關閉則保留 APK 以供後用</string>
+    <string name="batch_patch_policy_install_mount">完成後安裝或掛載</string>
+    <string name="batch_patch_policy_install_mount_description">佇列處理完成後，會安裝或掛載每個已修補的應用程式。關閉時則會保留 APK 以供稍後使用。,</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">開始</string>
     <string name="batch_patch_stop_title">停止批次修補？</string>
@@ -1439,11 +1443,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%2$s 中的 %1$s</string>
     <string name="onboarding_sources_desc">管理您的修補檔案來源。每個來源都提供可用於您應用程式的修補檔案</string>
+    <string name="onboarding_other_apps_desc">為列表以外的應用程式安裝修補程式，可從 APK 檔案或已安裝於裝置上的應用程式進行</string>
+    <string name="onboarding_add_source_desc">從連結或修補程式封裝檔新增修補來源</string>
+    <string name="onboarding_signing_key_desc">備份簽署您修補後應用程式的金鑰。若無此金鑰，則必須先解除安裝才能更新這些應用程式</string>
     <string name="onboarding_swipe_title">手勢</string>
     <string name="onboarding_swipe_desc">向右滑動應用程式卡片以查看其可用的修補。向左滑動可從主螢幕隱藏卡片</string>
     <string name="onboarding_settings_desc">自訂 Morphe：外觀、進階選項和系統工具</string>
     <string name="onboarding_sources_patches_desc">點擊以查看此來源提供的可用修補</string>
     <string name="onboarding_sources_version_desc">點擊版本以查看此來源的完整變更紀錄</string>
+    <string name="onboarding_sources_apps_desc">輕觸即可查看此來源支援修補的應用程式，並選擇要提供哪些修補程式</string>
     <string name="onboarding_sources_prerelease_desc">啟用此選項可從此來源接收預先發佈版</string>
     <string name="onboarding_appearance_tab_desc">自訂應用程式的外觀：主題、重點顏色和背景</string>
     <string name="onboarding_expert_mode_desc">啟用專家模式以解鎖修補選擇、自訂選項和其他進階功能</string>

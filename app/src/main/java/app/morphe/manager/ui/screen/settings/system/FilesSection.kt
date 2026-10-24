@@ -148,6 +148,7 @@ fun FilesSection(
         SettingsGroup {
             ImportExportItems(
                 importExportViewModel = importExportViewModel,
+                tour = tour,
                 onImportKeystore = { importKeystoreLauncher() },
                 onExportKeystore = {
                     if (isTV) importExportViewModel.exportKeystoreToDownloads()
@@ -170,6 +171,7 @@ fun FilesSection(
 @Composable
 private fun ImportExportItems(
     importExportViewModel: ImportExportViewModel,
+    tour: OnboardingState?,
     onImportKeystore: () -> Unit,
     onExportKeystore: () -> Unit,
     onImportSettings: () -> Unit,
@@ -228,7 +230,8 @@ private fun ImportExportItems(
         onClick = { showSigningKeyDialog = true },
         leadingContent = { ThemedIcon(icon = MaterialSymbols.Rounded.Key) },
         title = stringResource(R.string.settings_system_signing_key),
-        subtitle = stringResource(R.string.settings_system_signing_key_description)
+        subtitle = stringResource(R.string.settings_system_signing_key_description),
+        modifier = Modifier.tourTarget(TourTarget.SIGNING_KEY, tour)
     )
 
     SettingsItem(

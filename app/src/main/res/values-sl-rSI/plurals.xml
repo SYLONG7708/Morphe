@@ -94,6 +94,12 @@
         <item quantity="few">Nameščene %s aplikacije</item>
         <item quantity="other">Nameščenih %s aplikacij</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Pripeta %s aplikacija</item>
+        <item quantity="two">Pripeti %s aplikaciji</item>
+        <item quantity="few">Pripete %s aplikacije</item>
+        <item quantity="other">Pripetih %s aplikacij</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Ponovno nameščena %s aplikacija</item>
         <item quantity="two">Ponovno nameščeni %s aplikaciji</item>

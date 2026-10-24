@@ -456,6 +456,7 @@ Norint gauti geriausią rezultatą, ši programa rekomenduoja pataisyti &lt;b&gt
     <string name="batch_patch_title">Paketinis pataisymas</string>
     <string name="batch_patch_planning">Ruošiama eilė…</string>
     <string name="batch_patch_preparing_next">Ruošiama kita programa…</string>
+    <string name="batch_patch_progress_counter">Taikoma pataisa %1$s iš %2$s</string>
     <string name="batch_patch_summary">%1$s pataisyta, %2$s nepavyko, %3$s praleista</string>
     <string name="batch_patch_saved_hint">Pataisytos programos išsaugotos. Įdiekite jas dabar arba vėliau iš pataisytų APK sąrašo nustatymuose</string>
     <string name="batch_patch_multiple_sources">Kai kurios programos sujungia pataisas iš daugiau nei vieno šaltinio, o tai gali sukelti konfliktų</string>
@@ -477,6 +478,10 @@ Norint gauti geriausią rezultatą, ši programa rekomenduoja pataisyti &lt;b&gt
     <string name="batch_patch_no_selection">Nė vienas iš prieinamų pataisų nėra pažymėtas</string>
     <string name="batch_patch_policy_install">Įdiegti, kai baigsis</string>
     <string name="batch_patch_policy_install_description">Įdiegia kiekvieną pataisytą programą iškart po eilės pabaigos. Išjungus APK išsaugomi vėlesniam laikui</string>
+    <string name="batch_patch_policy_mount">Montuoti pabaigus</string>
+    <string name="batch_patch_policy_mount_description">Montuoja kiekvieną pataisytą programėlę, kai eilė baigiasi. Išjungus, APK failai išlieka vėlesniam naudojimui</string>
+    <string name="batch_patch_policy_install_mount">Įdiegti arba montuoti pabaigus</string>
+    <string name="batch_patch_policy_install_mount_description">Baigus eilės apdorojimą, įdiegia arba sumontuoja visas pataisytas programėles. Išjungus, APK failai išsaugomi vėliau</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Pradėti</string>
     <string name="batch_patch_stop_title">Sustabdyti paketinį pataisymą?</string>
@@ -1064,6 +1069,7 @@ Išsami informacija: %2$s"</string>
     <string name="settings_system_process_runtime">Patcherio veikimo laikas</string>
     <string name="settings_system_jvm_runtime_enable">Naudoti integruotą VM</string>
     <string name="settings_system_jvm_runtime_description">Morphe pernešamojo Java VM taisyklės, kurios gali užimti tiek atminties, kiek turimi įrenginyje. Išjunkite, kad taisyklei naudoti Android veikimo aplinką</string>
+    <string name="settings_system_jvm_runtime_unavailable">Reikalingas ARM arba 64 bitų x86 įrenginys</string>
     <string name="settings_system_patcher_completion_sound">Užbaigimo garsas</string>
     <string name="settings_system_patcher_completion_sound_description">Kai pataisymas baigiasi, groja skirtingą toną sėkmės arba nesėkmės atveju</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Išsami informacija: %2$s"</string>
     <string name="reset_order">Atstatyti eilę</string>
     <string name="reset_order_done">Eilė atstatyta</string>
     <string name="accessibility_select_app">Pasirinkti programą</string>
+    <string name="accessibility_select_source">Pasirinkite šaltinį</string>
     <string name="accessibility_move_up">Perkelti aukštyn</string>
     <string name="accessibility_move_down">Perkelti žemyn</string>
     <string name="accessibility_app_moved_announcement">%1$s perkelta į %2$s poziciją iš %3$s</string>
@@ -1435,11 +1442,15 @@ Ar vis tiek norite tęsti?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s iš %2$s</string>
     <string name="onboarding_sources_desc">Tvarkykite savo pataisų šaltinius. Kiekvienas šaltinis pateikia pataisas, kurias galima pritaikyti jūsų programoms</string>
+    <string name="onboarding_other_apps_desc">Taikykite pataisymus programėlėms, kurių nėra sąraše, iš APK failo arba programėlės, įdiegtos jūsų įrenginyje</string>
+    <string name="onboarding_add_source_desc">Pridėkite pataisymų šaltinį pagal nuorodą arba pataisymų paketo failą</string>
+    <string name="onboarding_signing_key_desc">Atsisiųskite rakto atsarginę kopiją, pasirašančią jūsų pataisytas programėles. Jei jo neturėsite, jos bus atnaujintos tik jas pašalinus</string>
     <string name="onboarding_swipe_title">Braukimo gestai</string>
     <string name="onboarding_swipe_desc">Braukite dešinėn programos kortelėje, kad pamatytumėte galimas pataisas. Braukite kairėn, kad paslėptumėte kortelę iš pradinio ekrano</string>
     <string name="onboarding_settings_desc">Tinkinkite „Morphe“: išvaizdą, išplėstines parinktis ir sistemos įrankius</string>
     <string name="onboarding_sources_patches_desc">Palieskite, kad pamatytumėte visas iš šio šaltinio prieinamas pataisas</string>
     <string name="onboarding_sources_version_desc">Palieskite versiją, kad pamatytumėte visą šio šaltinio pakeitimų žurnalą</string>
+    <string name="onboarding_sources_apps_desc">Paspauskite, kad peržiūrėtumėte šaltinio pataisyamas programėles ir pasirinktumėte, kurios iš jų siūlo pataisymus</string>
     <string name="onboarding_sources_prerelease_desc">Įjunkite, jei norite gauti išankstines šio šaltinio pataisų versijas</string>
     <string name="onboarding_appearance_tab_desc">Tinkinkite programos išvaizdą: temą, akcento spalvą ir foną</string>
     <string name="onboarding_expert_mode_desc">Įjunkite eksperto režimą, kad atrakintumėte pataisų pasirinkimą, pasirinktines parinktis ir kitas išplėstines funkcijas</string>

@@ -57,7 +57,9 @@ internal fun HomeHeader(
     sortEnabled: Boolean,
     sortOpen: Boolean,
     onSortClick: () -> Unit,
-    onPatchFileClick: () -> Unit
+    onPatchFileClick: () -> Unit,
+    // Set while the tour runs, which points at the button for other apps
+    tour: OnboardingState? = null
 ) {
     val appName = stringResource(R.string.app_name)
     HeaderBar(
@@ -119,7 +121,8 @@ internal fun HomeHeader(
                 icon = MaterialSymbols.Rounded.File_open,
                 contentDescription = stringResource(R.string.home_other_apps_action),
                 onClick = onPatchFileClick,
-                style = TitleActionStyle.Accent
+                style = TitleActionStyle.Accent,
+                modifier = Modifier.tourTarget(TourTarget.OTHER_APPS, tour)
             )
         }
     )

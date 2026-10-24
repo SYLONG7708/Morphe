@@ -4,10 +4,10 @@
     <string name="home_other_apps">Egyéb alkalmazások</string>
     <string name="home_other_apps_action">Más alkalmazás kiválasztása</string>
     <string name="home_not_patched_yet">Még nincs módosítva</string>
-    <string name="home_unpatched_version_installed">Nem módosított verzió van telepítve</string>
+    <string name="home_unpatched_version_installed">A telepített verzió módosítatlan</string>
     <string name="home_unpatched_badge">Nincs módosítva</string>
     <string name="home_no_patches_available">Nincsenek elérhető módosítások</string>
-    <string name="home_app_hide_title">Elrejted az alkalmazást?</string>
+    <string name="home_app_hide_title">Elrejti az alkalmazást?</string>
     <string name="home_app_hide_message">Az alkalmazás el lesz rejtve a főképernyőről. Később visszaállíthatod a lista alján található gomb segítségével.</string>
     <string name="home_app_will_be_hidden">Az alkalmazás nem lesz látható</string>
     <string name="home_app_hidden_named">%s rejtett</string>
@@ -456,6 +456,7 @@ A legjobb eredmény érdekében az alkalmazás javasolja a &lt;b&gt;teljes APK&l
     <string name="batch_patch_title">Batch patching</string>
     <string name="batch_patch_planning">A sor előkészítése…</string>
     <string name="batch_patch_preparing_next">A következő alkalmazás előkészítése…</string>
+    <string name="batch_patch_progress_counter">%1$s patchelése a %2$s-ból</string>
     <string name="batch_patch_summary">%1$s javítva, %2$s sikertelen, %3$s kihagyva</string>
     <string name="batch_patch_saved_hint">A javított alkalmazások elmentve. Telepítse őket most, vagy később a javított APK listából a beállításokban</string>
     <string name="batch_patch_multiple_sources">Néhány alkalmazás több forrásból származó javításokat kombinál, ami konfliktusokat okozhat</string>
@@ -477,6 +478,10 @@ A legjobb eredmény érdekében az alkalmazás javasolja a &lt;b&gt;teljes APK&l
     <string name="batch_patch_no_selection">A rendelkezésre álló javítások közül egyik sem lett kiválasztva</string>
     <string name="batch_patch_policy_install">Telepítés a befejezés után</string>
     <string name="batch_patch_policy_install_description">Minden javított alkalmazás a soron következő befejezése után azonnal települ. A kikapcsolás esetén az APK-k későbbre megmaradnak</string>
+    <string name="batch_patch_policy_mount">Helyezze csatolítással a befejezés után</string>
+    <string name="batch_patch_policy_mount_description">Minden módosított alkalmazást csatolít, amint a sor befejeződik. A kikapcsolás megőrzi az APK-kat későbbi időpontra</string>
+    <string name="batch_patch_policy_install_mount">Telepítse vagy csatolítsa a befejezés után</string>
+    <string name="batch_patch_policy_install_mount_description">Telepíti vagy csatolja minden módosított alkalmazást a sor befejezése után. A Kikapcsolva beállítással az APK-k később lesznek kezelve</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Kezdet</string>
     <string name="batch_patch_stop_title">Megállítsa a csoportos javítást?</string>
@@ -1064,6 +1069,7 @@ Részletek: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher futásideje</string>
     <string name="settings_system_jvm_runtime_enable">Beágyazott VM használata</string>
     <string name="settings_system_jvm_runtime_description">A Morphe által futtatott Java VM-mel kapcsolatos javítások, amelyek felhasználhatják a készüléken elérhető memóriát. A letiltással az Android futásidejével történik a javítás</string>
+    <string name="settings_system_jvm_runtime_unavailable">ARM vagy 64-bit x86 eszköz szükséges</string>
     <string name="settings_system_patcher_completion_sound">Befejezés hangja</string>
     <string name="settings_system_patcher_completion_sound_description">Jellegzetes hangot játszik le a sikeres vagy sikertelen javítás befejezésekor</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1436,11 +1442,15 @@ Szeretnéd folytatni?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s / %2$s</string>
     <string name="onboarding_sources_desc">A patch források kezelése. Minden forrás olyan patcheket biztosít, amelyek alkalmazhatók az alkalmazásaidra</string>
+    <string name="onboarding_other_apps_desc">Javítson fel egy alkalmazást, amely nincs a listán, egy APK-fájlból vagy egy eszközön telepített alkalmazásból</string>
+    <string name="onboarding_add_source_desc">Adjon hozzá forrást hivatkozásból vagy javítási csomagfájlból</string>
+    <string name="onboarding_signing_key_desc">Biztosítson biztonsági mentést az aláíró kulcsról, amellyel módosított alkalmazásait jelöli. Enélkül csak az alkalmazások eltávolítása után frissíthetők</string>
     <string name="onboarding_swipe_title">Gesztusvezérléses ujjmozdulatok</string>
     <string name="onboarding_swipe_desc">Csúsztass jobbra egy alkalmazáskártyán a rendelkezésre álló patchekért. Csúsztass balra, hogy elrejtsd a kártyát a kezdőképernyőről</string>
     <string name="onboarding_settings_desc">A Morphe testreszabása: megjelenés, haladó beállítások és rendszereszközök</string>
     <string name="onboarding_sources_patches_desc">Érintsd meg a forrásból elérhető összes patch megtekintéséhez</string>
     <string name="onboarding_sources_version_desc">Érintsd meg a verziót a forráshoz tartozó teljes változási napló megtekintéséhez</string>
+    <string name="onboarding_sources_apps_desc">Koppintson, hogy megtekinthesse ezeket a források által javított alkalmazásokat, és válassza ki, melyikhez kínál javításokat</string>
     <string name="onboarding_sources_prerelease_desc">Ezt engedélyezd, ha a forrásból előzetes patch verziókat szeretnél fogadni</string>
     <string name="onboarding_appearance_tab_desc">Az alkalmazás megjelenésének testreszabása: téma, kiemelő szín és háttér</string>
     <string name="onboarding_expert_mode_desc">Engedélyezd a szakértői módot a patch-ek kiválasztásához, egyéni beállításokhoz és egyéb haladó funkciókhoz</string>

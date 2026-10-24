@@ -79,6 +79,11 @@
         <item quantity="two">הותקנו %s אפליקציות</item>
         <item quantity="other">הותקנו %s אפליקציות</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">הורכבה %s אפליקציה</item>
+        <item quantity="two">הורכבו %s אפליקציות</item>
+        <item quantity="other">הורכבו %s אפליקציות</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">הותקנו מחדש %s אפליקציה</item>
         <item quantity="two">הותקנו מחדש %s אפליקציות</item>

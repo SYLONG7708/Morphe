@@ -456,6 +456,7 @@ Za najboljše rezultate ta aplikacija priporoča popravljanje &lt;b&gt;polnega A
     <string name="batch_patch_title">Serijsko popravljanje</string>
     <string name="batch_patch_planning">Pripravljam vrsto…</string>
     <string name="batch_patch_preparing_next">Pripravljam naslednji program…</string>
+    <string name="batch_patch_progress_counter">Popravljanje %1$s od %2$s</string>
     <string name="batch_patch_summary">%1$s popravljenih, %2$s neuspelih, %3$s preskočenih</string>
     <string name="batch_patch_saved_hint">Popravljene aplikacije so shranjene. Namestite jih zdaj ali pozneje iz seznama popravljenih APK-jev v nastavitvah</string>
     <string name="batch_patch_multiple_sources">Nekatere aplikacije združujejo popravke iz več virov, kar lahko povzroči konflikte</string>
@@ -477,6 +478,10 @@ Za najboljše rezultate ta aplikacija priporoča popravljanje &lt;b&gt;polnega A
     <string name="batch_patch_no_selection">Noben od razpoložljivih popravkov ni izbran</string>
     <string name="batch_patch_policy_install">Namestite po končanem postopku</string>
     <string name="batch_patch_policy_install_description">Vsaka popravljena aplikacija se namesti takoj po končanem postopku. Izklopljeno shrani APK-je za kasnejšo uporabo</string>
+    <string name="batch_patch_policy_mount">Priklopi po zaključku</string>
+    <string name="batch_patch_policy_mount_description">Priklopi vsako zakrpano aplikacijo, ko se čakalna vrsta zaključi. Izklopljeno ohrani APK-je za pozneje</string>
+    <string name="batch_patch_policy_install_mount">Namesti ali priklopi po zaključku</string>
+    <string name="batch_patch_policy_install_mount_description">Namesti ali priklopi vsako zakrpano aplikacijo, ko se čakalna vrsta zaključi. Izklopljeno ohrani APK-je za pozneje</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Začetek</string>
     <string name="batch_patch_stop_title">Ustavite množično popravljanje?</string>
@@ -1064,6 +1069,7 @@ Podrobnosti: %2$s"</string>
     <string name="settings_system_process_runtime">Časovno delovanje popravljalnika</string>
     <string name="settings_system_jvm_runtime_enable">Uporabljaj vdelani VM</string>
     <string name="settings_system_jvm_runtime_description">Popravki v navideznem stroju Java, ki ga uporablja Morphe, ki lahko porabi toliko pomnilnika, kot ga naprava omogoča. Izključite za popravljanje z časovnim delovanjem Androida</string>
+    <string name="settings_system_jvm_runtime_unavailable">Zahteva napravo s procesorjem ARM ali 64-bitnim x86</string>
     <string name="settings_system_patcher_completion_sound">Zvočni signal ob zaključku</string>
     <string name="settings_system_patcher_completion_sound_description">Predvaja ločen ton za uspeh ali neuspeh ob koncu popravka</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Podrobnosti: %2$s"</string>
     <string name="reset_order">Ponastavi vrstni red</string>
     <string name="reset_order_done">Vrstni red ponastavljen</string>
     <string name="accessibility_select_app">Izberite aplikacijo</string>
+    <string name="accessibility_select_source">Izberite vir</string>
     <string name="accessibility_move_up">Pomakni se gor</string>
     <string name="accessibility_move_down">Pomakni se dol</string>
     <string name="accessibility_app_moved_announcement">%1$s je pomaknjeno na položaj %2$s od %3$s</string>
@@ -1433,11 +1440,15 @@ Podrobnosti: %2$s"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s od %2$s</string>
     <string name="onboarding_sources_desc">Upravljajte vire popravkov. Vsak vir zagotavlja popravke, ki jih je mogoče uporabiti za vaše aplikacije</string>
+    <string name="onboarding_other_apps_desc">Popravi aplikacijo, ki ni na seznamu, iz datoteke APK ali nameščene aplikacije na tvoji napravi</string>
+    <string name="onboarding_add_source_desc">Dodaj vir popravkov s povezave ali datoteke paketa popravkov</string>
+    <string name="onboarding_signing_key_desc">Varnostno kopiraj ključ, ki podpiše tvoje popravljen aplikacije. Brez njega jih je mogoče posodobiti le po odstranitvi</string>
     <string name="onboarding_swipe_title">Drsne poteze</string>
     <string name="onboarding_swipe_desc">Podrsajte v desno po kartici aplikacije, da si ogledate razpoložljive popravke. Podrsajte v levo, da skrijete kartico z začetnega zaslona</string>
     <string name="onboarding_settings_desc">Prilagodite Morphe: videz, napredne možnosti in sistemska orodja</string>
     <string name="onboarding_sources_patches_desc">Dotaknite se, da si ogledate vse popravke, ki so na voljo iz tega vira</string>
     <string name="onboarding_sources_version_desc">Dotaknite se različice, da si ogledate celoten seznam sprememb za ta vir</string>
+    <string name="onboarding_sources_apps_desc">Dotakni se za ogled aplikacij, ki jih ta vir popravlja, in izberi, katere ima na voljo popravke</string>
     <string name="onboarding_sources_prerelease_desc">Omogočite to, da prejemate predizdajne različice popravkov iz tega vira</string>
     <string name="onboarding_appearance_tab_desc">Prilagodite videz aplikacije: temo, barvo poudarka in ozadje</string>
     <string name="onboarding_expert_mode_desc">Omogočite način strokovnjaka, da odklepate izbor popravkov, možnosti po meri in druge napredne funkcije</string>

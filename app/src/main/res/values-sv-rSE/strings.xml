@@ -456,6 +456,7 @@ För bästa resultat rekommenderar den här appen att du modifierar en &lt;b&gt;
     <string name="batch_patch_title">Gruppmodifiering</string>
     <string name="batch_patch_planning">Förbereder kön …</string>
     <string name="batch_patch_preparing_next">Förbereder nästa app …</string>
+    <string name="batch_patch_progress_counter">Modifierar %1$s av %2$s</string>
     <string name="batch_patch_summary">%1$s modifierades, %2$s misslyckades, %3$s hoppades över</string>
     <string name="batch_patch_saved_hint">De modifierade apparna har sparats. Installera dem nu eller senare från listan över modifierade APK-filer i inställningarna</string>
     <string name="batch_patch_multiple_sources">Vissa appar kombinerar tillägg från fler än en källa, vilket kan orsaka konflikter</string>
@@ -477,6 +478,10 @@ För bästa resultat rekommenderar den här appen att du modifierar en &lt;b&gt;
     <string name="batch_patch_no_selection">Ingen av de tillgängliga patcharna är vald</string>
     <string name="batch_patch_policy_install">Installera när modifieringen är klar</string>
     <string name="batch_patch_policy_install_description">Installerar alla modifierade appar direkt efter att kön är klar. Om det här alternativet är inaktiverat sparas APK-filerna till senare.</string>
+    <string name="batch_patch_policy_mount">Montera när det är klart</string>
+    <string name="batch_patch_policy_mount_description">Monterar varje patchad app när kön är klar. Av innebär att APK-filerna behålls för senare.</string>
+    <string name="batch_patch_policy_install_mount">Installera eller montera när det är klart</string>
+    <string name="batch_patch_policy_install_mount_description">Installerar eller monterar varje patchad app när kön är klar. Av innebär att APK-filerna behålls för senare.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Starta</string>
     <string name="batch_patch_stop_title">Stoppa gruppmodifiering?</string>
@@ -1064,6 +1069,7 @@ Information: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher-tidskörning</string>
     <string name="settings_system_jvm_runtime_enable">Använd inbäddad VM</string>
     <string name="settings_system_jvm_runtime_description">Patchar i en Java-VM som Morphe kör, vilket kan använda lika mycket minne som enheten har tillgängligt. Stäng av för att patcha med Androids tidskörning</string>
+    <string name="settings_system_jvm_runtime_unavailable">Kräver en ARM- eller 64-bitars x86-enhet</string>
     <string name="settings_system_patcher_completion_sound">Ljud för slutförande</string>
     <string name="settings_system_patcher_completion_sound_description">Spelar upp en distinkt ton för att indikera om modifieringen har lyckats eller misslyckats när den är klar</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Information: %2$s"</string>
     <string name="reset_order">Återställ ordning</string>
     <string name="reset_order_done">Ordningen har återställts</string>
     <string name="accessibility_select_app">Välj app</string>
+    <string name="accessibility_select_source">Välj källa</string>
     <string name="accessibility_move_up">Flytta uppåt</string>
     <string name="accessibility_move_down">Flytta nedåt</string>
     <string name="accessibility_app_moved_announcement">%1$s flyttades till position %2$s av %3$s</string>
@@ -1435,11 +1442,15 @@ Vill du fortsätta ändå?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s av %2$s</string>
     <string name="onboarding_sources_desc">Hantera dina tilläggskällor. Varje källa tillhandahåller tillägg som kan tillämpas i dina appar</string>
+    <string name="onboarding_other_apps_desc">Uppdatera en app som inte finns på listan, från en APK-fil eller en app som är installerad på din enhet</string>
+    <string name="onboarding_add_source_desc">Lägg till en patch-källa från en länk eller en patch-bundelfil</string>
+    <string name="onboarding_signing_key_desc">Säkerhetskopiera nyckeln som signerar dina uppdaterade appar. Utan den kan de endast uppdateras efter att du avinstallerat dem</string>
     <string name="onboarding_swipe_title">Svepgester</string>
     <string name="onboarding_swipe_desc">Svep åt höger på ett appkort om du vill visa dess tillgängliga tillägg. Svep åt vänster om du vill dölja kortet från startskärmen</string>
     <string name="onboarding_settings_desc">Anpassa Morphe: utseende, avancerade alternativ och systemverktyg</string>
     <string name="onboarding_sources_patches_desc">Tryck om du vill visa alla tillägg som är tillgängliga från den här källan</string>
     <string name="onboarding_sources_version_desc">Tryck på versionen om du vill visa den fullständiga ändringsloggen för den här källan</string>
+    <string name="onboarding_sources_apps_desc">Tryck för att se vilka appar denna källa patchar och välja vilka av dem den erbjuder patchar för</string>
     <string name="onboarding_sources_prerelease_desc">Aktivera det här alternativet om du vill få förhandsversioner av tillägg från den här källan</string>
     <string name="onboarding_appearance_tab_desc">Anpassa appens utseende: tema, accentfärg och bakgrund</string>
     <string name="onboarding_expert_mode_desc">Aktivera expertläget om du vill välja bland tillägg, få tillgång till anpassade alternativ och andra avancerade funktioner</string>

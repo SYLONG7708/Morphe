@@ -94,6 +94,12 @@
         <item quantity="many">Установлено %s приложений</item>
         <item quantity="other">Установлено %s приложений</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Установлено приложение %s</item>
+        <item quantity="few">Установлено приложений %s</item>
+        <item quantity="many">Установлено приложений %s</item>
+        <item quantity="other">Установлено приложений %s</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Переустановлено %s приложений</item>
         <item quantity="few">Переустановлено %s приложения</item>

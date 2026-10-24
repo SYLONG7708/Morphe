@@ -94,6 +94,12 @@
         <item quantity="many">Nainstalovány %s aplikace</item>
         <item quantity="other">Nainstalovány %s aplikace</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Připojena %s aplikace</item>
+        <item quantity="few">Připojeny %s aplikace</item>
+        <item quantity="many">Připojeno %s aplikace</item>
+        <item quantity="other">Připojeno %s aplikací</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Přeinstalována %s aplikace</item>
         <item quantity="few">Přeinstalovány %s aplikace</item>

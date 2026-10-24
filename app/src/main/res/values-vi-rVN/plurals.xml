@@ -25,6 +25,9 @@
     <plurals name="home_app_patch_sources_title">
         <item quantity="other">Nguồn vá cho %s ứng dụng</item>
     </plurals>
+    <plurals name="home_apk_availability_hidden_sources">
+        <item quantity="other">%s nguồn bị ẩn cho ứng dụng này. Chọn ứng dụng trong tab Ứng dụng và mở Nguồn vá lỗi để hiển thị lại chúng</item>
+    </plurals>
     <plurals name="expert_mode_hidden_sources_notice">
         <item quantity="other">%s nguồn bị ẩn. Nhấn để hiển thị</item>
     </plurals>
@@ -45,6 +48,9 @@
     </plurals>
     <plurals name="batch_install_summary">
         <item quantity="other">Đã cài đặt %s ứng dụng</item>
+    </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="other">Đã gắn %s ứng dụng</item>
     </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="other">Đã cài đặt lại %s ứng dụng</item>
@@ -81,6 +87,9 @@
     </plurals>
     <plurals name="home_apps_shown_count">
         <item quantity="other">%s ứng dụng đã hiện</item>
+    </plurals>
+    <plurals name="home_apps_unhide_title">
+        <item quantity="other">Hiện %s ứng dụng?</item>
     </plurals>
     <plurals name="home_app_show_hidden_count">
         <item quantity="other">%s ứng dụng đang ẩn</item>

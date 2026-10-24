@@ -456,6 +456,7 @@
     <string name="batch_patch_title">बैच पैचिंग</string>
     <string name="batch_patch_planning">कतार तैयार की जा रही है…</string>
     <string name="batch_patch_preparing_next">अगला ऐप तैयार किया जा रहा है…</string>
+    <string name="batch_patch_progress_counter">%2$s में से %1$s को पैच किया जा रहा है</string>
     <string name="batch_patch_summary">%1$s पैच किए गए, %2$s विफल रहे, %3$s को छोड़ दिया गया</string>
     <string name="batch_patch_saved_hint">पैच किए गए ऐप्स सहेजे गए हैं। उन्हें अभी इंस्टॉल करें, या सेटिंग्स में पैच किए गए APK सूची से बाद में इंस्टॉल करें</string>
     <string name="batch_patch_multiple_sources">कुछ ऐप एक से अधिक स्रोत से पैच को जोड़ते हैं, जिससे टकराव हो सकता है</string>
@@ -477,6 +478,10 @@
     <string name="batch_patch_no_selection">सब उपलब्ध पैच में से कोई भी नहीं चुना गया है</string>
     <string name="batch_patch_policy_install">पूरा होने पर इंस्टॉल करें</string>
     <string name="batch_patch_policy_install_description">क्यू खत्म होने के तुरंत बाद हर पैच किए गए ऐप को इंस्टॉल करता है। बंद रखने से APK बाद के लिए बच जाते हैं</string>
+    <string name="batch_patch_policy_mount">पूरा होने पर माउंट करें</string>
+    <string name="batch_patch_policy_mount_description">कतार समाप्त होने के बाद हर पैच किए गए ऐप को माउंट करता है। बंद रखने पर APKs बाद के लिए सुरक्षित रहते हैं</string>
+    <string name="batch_patch_policy_install_mount">पूरा होने पर इंस्टॉल या माउंट करें</string>
+    <string name="batch_patch_policy_install_mount_description">एक बार जब क्यू पूरी हो जाती है, तो हर पैच किए गए ऐप को इंस्टॉल या माउंट करता है। Off रखने पर APKs बाद के लिए सुरक्षित रहते हैं</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">शुरू करें</string>
     <string name="batch_patch_stop_title">बैच पैचिंग रोकें?</string>
@@ -1064,6 +1069,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime">पैचर रनटाइम</string>
     <string name="settings_system_jvm_runtime_enable">एम्बेडेड VM का उपयोग करें</string>
     <string name="settings_system_jvm_runtime_description">जैव VM में मोर्फ द्वारा वाहक पैचेस जो डिवाइस स्पेयर के इतना ही मेमोरी उपयोग कर सकते हैं। एंड्रॉइड रनटाइम के साथ पैच करने के लिए इसे बंद करें</string>
+    <string name="settings_system_jvm_runtime_unavailable">ARM या 64-bit x86 डिवाइस की आवश्यकता है</string>
     <string name="settings_system_patcher_completion_sound">पूर्ण होने की ध्वनि</string>
     <string name="settings_system_patcher_completion_sound_description">पैचिंग समाप्त होने पर सफलता या विफलता के लिए एक विशिष्ट टोन चलाता है</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1167,10 +1173,12 @@ morphe_header_custom_dark.png
     <string name="settings_system_patched_apks_title">पैच किए गए एपीके</string>
     <string name="settings_system_patched_apks_empty">अभी तक कोई सहेजा गया पैच किया गया एपीके नहीं है</string>
     <string name="settings_system_patched_apks_delete_title">सहेजे गए पैच किए गए एपीके को हटाएं?</string>
+    <string name="settings_system_patched_apks_deleted">Patched APK सफलतापूर्वक हटा दिया गया</string>
     <string name="settings_system_patched_apks_delete_all_title">क्या आप सभी पैच किए गए APK हटाना चाहते हैं?</string>
     <!-- Settings - System Tab - Storage Management - Original APKs Management -->
     <string name="settings_system_original_apks_title">अरिजनल एपीके</string>
     <string name="settings_system_original_apks_empty">कोई सहेजा गया अरिजनल एपीके नहीं है</string>
+    <string name="settings_system_original_apks_deleted">Original APK सफलतापूर्वक हटा दिया गया</string>
     <string name="settings_system_original_apks_delete_title">अरिजनल एपीके को हटाएं?</string>
     <string name="settings_system_original_apks_delete_notice">नया APK दिए बिना आप दोबारा पैच नहीं कर पाएंगे</string>
     <string name="settings_system_original_apks_delete_all_title">क्या आप सभी मूल APK हटाना चाहते हैं?</string>
@@ -1320,6 +1328,7 @@ morphe_header_custom_dark.png
     <string name="reset_order">क्रम रीसेट करें</string>
     <string name="reset_order_done">ऑर्डर रीसेट हो गया</string>
     <string name="accessibility_select_app">ऐप चुनें</string>
+    <string name="accessibility_select_source">स्रोत चुनें</string>
     <string name="accessibility_move_up">ऊपर ले जाएं</string>
     <string name="accessibility_move_down">नीचे ले जाएं</string>
     <string name="accessibility_app_moved_announcement">%1$s को %3$s के %2$s स्थान पर ले जाया गया</string>
@@ -1433,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%2$s में से %1$s</string>
     <string name="onboarding_sources_desc">अपने पैच स्रोतों का प्रबंधन करें। प्रत्येक स्रोत पैच प्रदान करता है जिन्हें आपके ऐप्स पर लागू किया जा सकता है।</string>
+    <string name="onboarding_other_apps_desc">APK फ़ाइल या आपके डिवाइस पर इंस्टॉल एक ऐप से लिस्ट में नहीं हैं एक ऐप को पच करें</string>
+    <string name="onboarding_add_source_desc">लिंक या पच बंडल फ़ाइल से एक पच स्रोत जोड़ें</string>
+    <string name="onboarding_signing_key_desc">अपके पंचेड ऐप्स को सिग्म की कुंजी को बैक अप करें। इसके बिना, उन्हें अनइनस्टॉल करने के बाद ही अपडेट किया जा सकता है</string>
     <string name="onboarding_swipe_title">स्वाइप इशारे</string>
     <string name="onboarding_swipe_desc">अपने उपलब्ध पैच देखने के लिए किसी ऐप कार्ड पर दाईं ओर स्वाइप करें। होम स्क्रीन से कार्ड को छिपाने के लिए बाईं ओर स्वाइप करें।</string>
     <string name="onboarding_settings_desc">SyMorphe को अनुकूलित करें: दिखावट, उन्नत विकल्प और सिस्टम उपकरण।</string>
     <string name="onboarding_sources_patches_desc">इस स्रोत से उपलब्ध सभी पैच देखने के लिए टैप करें।</string>
     <string name="onboarding_sources_version_desc">इस स्रोत के लिए पूर्ण चेंजलॉग देखने के लिए संस्करण पर टैप करें।</string>
+    <string name="onboarding_sources_apps_desc">इस स्रोद द्वारा पच किए गए ऐप्स देखने और उनके लिए पचों के साथ आ रहा है वह चुनने टैप करें</string>
     <string name="onboarding_sources_prerelease_desc">इस स्रोत से प्री-रिलीज़ पैच संस्करण प्राप्त करने के लिए इसे सक्षम करें।</string>
     <string name="onboarding_appearance_tab_desc">ऐप के लुक को अनुकूलित करें: थीम, एक्सेंट रंग और पृष्ठभूमि।</string>
     <string name="onboarding_expert_mode_desc">पैच चयन, कस्टम विकल्पों और अन्य उन्नत सुविधाओं को अनलॉक करने के लिए विशेषज्ञ मोड सक्षम करें।</string>

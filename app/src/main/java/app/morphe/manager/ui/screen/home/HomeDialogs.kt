@@ -268,6 +268,10 @@ private fun DialogHostScope.PatchFlowDialog(
     // Held so a dialog leaves as it stood, color included, as the run is let go of while it closes
     val session = held(flow.session)
     val dismiss = flow::dismiss
+    // A file shared to the app starts the run without a session, so the app is named by package.
+    // Observed, as the sources may still be naming their apps when the first dialog opens
+    val appNames by homeViewModel.appDisplayNamesFlow.collectAsStateWithLifecycle()
+    fun appName(packageName: String) = session?.appName ?: flow.appNameFor(packageName, appNames)
 
     when (dialog) {
         is HomeDialog.AppInfo -> {
@@ -374,7 +378,7 @@ private fun DialogHostScope.PatchFlowDialog(
         }
 
         is HomeDialog.ExperimentalVersion -> ExperimentalVersionWarningDialog(
-            appName = session?.appName ?: KnownApps.getAppName(dialog.state.packageName),
+            appName = appName(dialog.state.packageName),
             packageName = dialog.state.packageName,
             onDismiss = dismiss,
             onProceed = { flow.proceedDespiteVersion(dialog) }
@@ -388,15 +392,14 @@ private fun DialogHostScope.PatchFlowDialog(
 
         // Shown when every declared version requires a higher SDK
         is HomeDialog.NoCompatibleVersions -> NoCompatibleVersionsDialog(
-            appName = session?.appName ?: KnownApps.getAppName(dialog.packageName),
+            appName = appName(dialog.packageName),
             packageName = dialog.packageName,
             onDismiss = dismiss
         )
 
         // Shown when user picks a split APK for an app that prefers full APK
-        HomeDialog.SplitApkWarning -> SplitApkWarningDialog(
-            appName = session?.appName.orEmpty(),
-            packageName = session?.packageName,
+        is HomeDialog.SplitApkWarning -> SplitApkWarningDialog(
+            packageName = dialog.packageName,
             onProceed = flow::proceedWithSplitApk,
             onPickAnother = storagePickerLauncher,
             onDismiss = dismiss
@@ -439,11 +442,10 @@ private fun DialogHostScope.PatchFlowDialog(
         HomeDialog.ExpertMode -> {
             val selection = flow.expertMode
             val selectedApp = held(selection.app) ?: return
-            val appName = session?.appName ?: return
             ProvideAccent(rememberAppColor(selectedApp.packageName)) {
                 ExpertModeDialog(
                     packageName = selectedApp.packageName,
-                    appName = appName,
+                    appName = appName(selectedApp.packageName),
                     appIcon = flow.expertModeAppIcon,
                     selection = ExpertPatchSelection(
                         allPatchesInfo = selection.allPatchesInfo,

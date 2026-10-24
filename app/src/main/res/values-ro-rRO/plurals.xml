@@ -79,6 +79,11 @@
         <item quantity="few">A instalat %s aplicaţii</item>
         <item quantity="other">A instalat %s de aplicaţii</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">A fost montată %s aplicație</item>
+        <item quantity="few">Au fost montate %s aplicații</item>
+        <item quantity="other">Au fost montate %s de aplicații</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">A reinstalat %s aplicaţie</item>
         <item quantity="few">A reinstalat %s aplicaţii</item>

@@ -109,6 +109,13 @@
         <item quantity="many">%s aipanna suiteáilte</item>
         <item quantity="other">%s aipanna suiteáilte</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Gléasadh %s aip</item>
+        <item quantity="two">Gléasadh %s aip</item>
+        <item quantity="few">Gléasadh %s aip</item>
+        <item quantity="many">Gléasadh %s n-aip</item>
+        <item quantity="other">Gléasadh %s aip</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Athshuiteáladh %s aip</item>
         <item quantity="two">Athshuiteáladh %s aipeanna</item>

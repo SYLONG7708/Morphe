@@ -164,6 +164,7 @@
     <string name="sources_filter_enabled_description">Zakrpe za izvore su preuzete sa</string>
     <string name="sources_filter_disabled_description">Izviisci isključeni</string>
     <string name="sources_filter_updates">Ažuriranja</string>
+    <string name="sources_filter_updates_description">Izvori sa novijom verzijom za preuzimanje</string>
     <string name="sources_filter_issues">Potrebna pažnja</string>
     <string name="sources_filter_issues_description">Izvori koji su blokirani, nisu se učitavali ili zahtevaju noviju verziju Morphe-a</string>
     <string name="sources_sort_manual">Ručna postavka</string>
@@ -455,6 +456,7 @@ Da li ste sigurni da želite nastaviti?"</string>
     <string name="batch_patch_title">Masovno zakrpljivanje</string>
     <string name="batch_patch_planning">Priprema reda…</string>
     <string name="batch_patch_preparing_next">Priprema sledeće aplikacije…</string>
+    <string name="batch_patch_progress_counter">Zakrpljivanje %1$s od %2$s</string>
     <string name="batch_patch_summary">%1$s popravljeno, %2$s neuspešno, %3$s preskočeno</string>
     <string name="batch_patch_saved_hint">Zakrpljene aplikacije su sačuvane. Instalirajte ih sada ili kasnije sa liste zakrpljenih APK-ova u podešavanjima</string>
     <string name="batch_patch_multiple_sources">Neke aplikacije kombinuju zakrpe iz više izvora, što može uzrokovati sukobe</string>
@@ -476,6 +478,10 @@ Da li ste sigurni da želite nastaviti?"</string>
     <string name="batch_patch_no_selection">Nijedna od dostupnih zakrpi nije odabrana</string>
     <string name="batch_patch_policy_install">Instaliraj kada je završeno</string>
     <string name="batch_patch_policy_install_description">Instalira svaku zakrpljenu aplikaciju odmah nakon završetka reda. Isključeno čuva APK-ove za kasnije</string>
+    <string name="batch_patch_policy_mount">Montiraj kada završi</string>
+    <string name="batch_patch_policy_mount_description">Montira svaku zakrpljenu aplikaciju nakon što red završi. Isključeno čuva APK fajlove za kasnije</string>
+    <string name="batch_patch_policy_install_mount">Instaliraj ili montiraj kada završi</string>
+    <string name="batch_patch_policy_install_mount_description">Instalira ili montira svaku zakrpljenu aplikaciju nakon što se red završi. Isključeno čuva APK fajlove za kasnije</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Početak</string>
     <string name="batch_patch_stop_title">Zaustavi masovno zakrpljivanje?</string>
@@ -1047,6 +1053,7 @@ Detalji: %2$s"</string>
     <string name="settings_system_process_runtime">Vremensko izvođenje patchera</string>
     <string name="settings_system_jvm_runtime_enable">Koristi ugrađeni VM</string>
     <string name="settings_system_jvm_runtime_description">Ispravke u Java VM-u koju Morphe nosi, koja može koristiti koliko god memorije uređaj ima. Isključite za ispravljanje sa runtime-om Androida</string>
+    <string name="settings_system_jvm_runtime_unavailable">Potreban je ARM ili 64-bitni x86 uređaj</string>
     <string name="settings_system_patcher_completion_sound">Zvuk završetka</string>
     <string name="settings_system_patcher_completion_sound_description">Reprodukuje poseban ton za uspeh ili neuspeh kada se patchovanje završi</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1156,6 +1163,7 @@ Detalji: %2$s"</string>
     <string name="settings_system_original_apks_title">Originalni APK(s)</string>
     <string name="settings_system_original_apks_empty">Nema sačuvanih originalnih APK fajlova</string>
     <string name="settings_system_original_apks_deleted">Da li zaista želite da obrišete ovaj originalni APK?</string>
+    <string name="settings_system_original_apks_delete_title">Izbrisati originalni APK?</string>
     <string name="settings_system_original_apks_delete_notice">Nećete moći ponovo da zakrpate bez obezbeđivanja novog APK-a</string>
     <string name="settings_system_original_apks_delete_all_title">Brisati sve originalne APK-ove?</string>
     <!-- Settings - System Tab - Storage Management - Patch Selection Management -->
@@ -1242,6 +1250,7 @@ Detalji: %2$s"</string>
     <string name="settings_section_updates">Ažuriranja</string>
     <string name="settings_section_patching">Zakrpljivanje</string>
     <string name="settings_section_appearance_summary">Kako Morphe izgleda</string>
+    <string name="settings_section_patch_options_summary">Čime jednostavni režim zakrpljuje aplikacije</string>
     <string name="settings_section_general">Opšte</string>
     <string name="settings_section_patcher_summary">Način zakrpljivanja aplikacija na ovom uređaju</string>
     <string name="settings_section_help_info"><b>Help &amp; info</b></string>
@@ -1303,6 +1312,7 @@ Detalji: %2$s"</string>
     <string name="reset_order">Vrati redosled</string>
     <string name="reset_order_done">Narudžba je resetovana</string>
     <string name="accessibility_select_app">Izaberi aplikaciju</string>
+    <string name="accessibility_select_source">Izaberite izvor</string>
     <string name="accessibility_move_up">Pomeri se nagore</string>
     <string name="accessibility_move_down">Pomeri se nadole</string>
     <string name="accessibility_app_moved_announcement">%1$s je pomeren/a na poziciju %2$s od %3$s</string>
@@ -1416,11 +1426,15 @@ Da li i dalje želite da nastavite?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s od %2$s</string>
     <string name="onboarding_sources_desc">Upravljajte izvorima zakrpa. Svaki izvor obezbeđuje zakrpe koje se mogu primeniti na vaše aplikacije.</string>
+    <string name="onboarding_other_apps_desc">Zakači aplikaciju koja nije na listi, iz APK fajla ili aplikacije instalirane na tvom uređaju</string>
+    <string name="onboarding_add_source_desc">Dodaj izvor zakrpe iz linka ili fajla paketa zakrpa</string>
+    <string name="onboarding_signing_key_desc">Napravi rezervnu kopiju ključa kojim potpisuješ svoje zakačene aplikacije. Bez njega, one se mogu ažurirati samo nakon što ih deinstaliraš</string>
     <string name="onboarding_swipe_title">Gestovi prevlačenja</string>
     <string name="onboarding_swipe_desc">Prevučite prstom udesno na kartici aplikacije da biste videli dostupne zakrpe. Prevučite prstom ulevo da biste sakrili karticu sa početnog ekrana.</string>
     <string name="onboarding_settings_desc">Prilagodite Morphe: izgled, napredne opcije i sistemske alate.</string>
     <string name="onboarding_sources_patches_desc">Dodirnite da biste videli sve zakrpe dostupne iz ovog izvora.</string>
     <string name="onboarding_sources_version_desc">Dodirnite verziju da biste videli kompletan spisak izmena za ovaj izvor.</string>
+    <string name="onboarding_sources_apps_desc">Dodirni da vidiš koje aplikacije ovaj izvor zahteva i odaberi koje od njih on nudi zakrpe za</string>
     <string name="onboarding_sources_prerelease_desc">Omogućite ovo da biste primali verzije zakrpa u beta fazi iz ovog izvora.</string>
     <string name="onboarding_appearance_tab_desc">Prilagodite izgled aplikacije: temu, boju naglaska i pozadinu.</string>
     <string name="onboarding_expert_mode_desc">Omogućite režim eksperta da biste otključali izbor zakrpa, prilagođene opcije i druge napredne funkcije.</string>

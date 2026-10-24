@@ -28,12 +28,24 @@ import com.composables.icons.materialsymbols.rounded.*
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.sign
 
 /** The places the main screen pages between, in the order its pager lays them out. */
 enum class MainPage(@param:StringRes val titleRes: Int, val icon: ImageVector) {
     SOURCES(R.string.sources, MaterialSymbols.Rounded.Folder_code),
     APPS(R.string.apps, MaterialSymbols.Rounded.Apps),
     SETTINGS(R.string.settings, MaterialSymbols.Rounded.Settings)
+}
+
+/**
+ * Turns the main pager to [page], sliding across one page at most. A page further away is jumped
+ * next to first, so the pages between are never drawn on the way and the slide costs what a swipe does.
+ */
+suspend fun PagerState.turnTo(page: MainPage) {
+    val distance = page.ordinal - currentPage
+    if (abs(distance) > 1) scrollToPage(page.ordinal - distance.sign)
+    animateScrollToPage(page.ordinal)
 }
 
 /**
@@ -68,7 +80,7 @@ fun MainPagerScaffold(
     val scope = rememberCoroutineScope()
     val current = MainPage.entries[pagerState.currentPage]
     val select: (MainPage) -> Unit = { target ->
-        scope.launch { pagerState.animateScrollToPage(target.ordinal) }
+        scope.launch { pagerState.turnTo(target) }
     }
     BackHandler(enabled = current != MainPage.APPS) { select(MainPage.APPS) }
 

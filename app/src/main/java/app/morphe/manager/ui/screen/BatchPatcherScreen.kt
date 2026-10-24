@@ -44,6 +44,7 @@ import app.morphe.manager.ui.screen.patcher.SimplePatchingInProgress
 import app.morphe.manager.ui.screen.patcher.game.MiniGameState
 import app.morphe.manager.ui.screen.patcher.rememberDisplayedPatchProgress
 import app.morphe.manager.ui.screen.settings.system.InstallerFlowDialogs
+import app.morphe.manager.ui.screen.settings.system.PrePatchInstallerDialog
 import app.morphe.manager.ui.screen.shared.*
 import app.morphe.manager.ui.viewmodel.BatchPatcherViewModel
 import app.morphe.manager.ui.viewmodel.InstallViewModel
@@ -66,7 +67,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun BatchPatcherScreen(
     targets: List<BatchTarget>,
-    useMount: Boolean,
     onBackClick: () -> Unit,
     onStartTour: () -> Unit = {},
     onDeclineTour: () -> Unit = {},
@@ -82,8 +82,8 @@ fun BatchPatcherScreen(
     val scope = rememberCoroutineScope()
     val miniGameState = remember { MiniGameState(prefs, scope) }
 
-    LaunchedEffect(targets, useMount) {
-        viewModel.ensurePlan(targets, useMount)
+    LaunchedEffect(targets) {
+        viewModel.ensurePlan(targets)
     }
 
     KeepScreenOn(state?.isActive == true)
@@ -120,6 +120,7 @@ fun BatchPatcherScreen(
             item.id to InstallQueueRequest(
                 file = file,
                 originalPackageName = item.packageName,
+                builtForMount = item.useMount,
                 onPersistApp = { packageName, installType ->
                     viewModel.persistInstalled(item, packageName, installType)
                 },
@@ -280,7 +281,7 @@ fun BatchPatcherScreen(
                     compatibleVersions = choice.compatible,
                     selectedDownloadVersion = choice.selectedVersion,
                     onVersionSelect = viewModel::selectApkVersion,
-                    usingMountInstall = false,
+                    usingMountInstall = choice.item.useMount,
                     stockAppInstalled = choice.hasStockInstall,
                     isExpertMode = useExpertMode,
                     savedApkInfo = choice.saved,
@@ -310,7 +311,7 @@ fun BatchPatcherScreen(
                     packageName = search.item.packageName,
                     downloadUrl = search.url,
                     requestedVersion = search.version,
-                    usingMountInstall = false,
+                    usingMountInstall = search.item.useMount,
                     stockAppInstalled = search.item.source is BatchApkSource.Installed,
                     downloadColor = metadata?.downloadColor ?: KnownApps.DEFAULT_DOWNLOAD_COLOR,
                     isApkBundle = metadata?.apkFileType?.isApk == false,
@@ -404,6 +405,22 @@ fun BatchPatcherScreen(
     fun share(items: List<BatchPatchItem>) {
         val names = items.mapNotNull { item -> item.patchedFile?.let { it to item.exportFileName() } }.toMap()
         scope.launch { context.shareApks(names.keys.toList()) { names.getValue(it) } }
+    }
+
+    // The question a rooted device asks before a single-app patch, asked here per queued app
+    var targetItem by remember { mutableStateOf<BatchPatchItem?>(null) }
+    DialogHost(target = targetItem) { item ->
+        fun choose(useMount: Boolean) {
+            targetItem = null
+            viewModel.setInstallTarget(item.id, useMount)
+        }
+        PrePatchInstallerDialog(
+            packageName = item.packageName,
+            onSelectMount = { choose(useMount = true) },
+            onSelectStandard = { choose(useMount = false) },
+            onDismiss = { targetItem = null },
+            showPromptHint = false
+        )
     }
 
     // Cards clamp the failure text, so the full reason lives in the patcher's own error dialog
@@ -610,6 +627,8 @@ fun BatchPatcherScreen(
                     item {
                         BatchPolicyCard(
                             policy = current.policy,
+                            mountCount = current.runnable.count { it.useMount },
+                            runnableCount = current.runnable.size,
                             onPolicyChange = viewModel::setPolicy
                         )
                     }
@@ -624,6 +643,8 @@ fun BatchPatcherScreen(
                         onToggleExcluded = { viewModel.toggleExcluded(item.id) },
                         onForceVersion = { viewModel.forceVersion(item.id) },
                         onAcceptSignature = { viewModel.acceptUnverifiedSignature(item.id) },
+                        // Asked only where mounting is possible at all, since nothing else has a choice
+                        onChooseTarget = { targetItem = item }.takeIf { viewModel.canMount },
                         // Simple mode never exposes individual patches, and the options edited
                         // here would not be persisted for it. Nothing to choose from until an
                         // APK resolves either, the patch list is scoped to its exact version
@@ -757,8 +778,16 @@ private fun batchSummary(state: BatchRunState): String = when (state.phase) {
 @Composable
 private fun BatchPolicyCard(
     policy: BatchInstallPolicy,
+    // How many of the apps to run are mounted rather than installed, which the wording names
+    mountCount: Int,
+    runnableCount: Int,
     onPolicyChange: (BatchInstallPolicy) -> Unit
 ) {
+    val (title, subtitle) = when {
+        mountCount == 0 -> R.string.batch_patch_policy_install to R.string.batch_patch_policy_install_description
+        mountCount == runnableCount -> R.string.batch_patch_policy_mount to R.string.batch_patch_policy_mount_description
+        else -> R.string.batch_patch_policy_install_mount to R.string.batch_patch_policy_install_mount_description
+    }
     SettingsGroup {
         SettingsSwitchItem(
             checked = policy == BatchInstallPolicy.INSTALL_AFTER,
@@ -772,8 +801,8 @@ private fun BatchPolicyCard(
                 )
             },
             icon = MaterialSymbols.Rounded.Install_mobile,
-            title = stringResource(R.string.batch_patch_policy_install),
-            subtitle = stringResource(R.string.batch_patch_policy_install_description)
+            title = stringResource(title),
+            subtitle = stringResource(subtitle)
         )
     }
 }
@@ -786,6 +815,7 @@ private fun BatchItemCard(
     onToggleExcluded: () -> Unit,
     onForceVersion: () -> Unit,
     onAcceptSignature: () -> Unit,
+    onChooseTarget: (() -> Unit)? = null,
     onEditPatches: (() -> Unit)? = null,
     onInstall: (() -> Unit)? = null,
     onExport: (() -> Unit)? = null,
@@ -837,11 +867,17 @@ private fun BatchItemCard(
                             VersionTagBadge(VersionTag.Experimental)
                         }
 
+                        // The build only works mounted over the stock app, which is worth knowing
+                        // before it is installed or shared
+                        if (item.useMount) {
+                            StatusBadge(text = stringResource(R.string.mount), tone = SemanticTone.Neutral)
+                        }
+
                         // Once installing has been tried, its outcome is the newer and more
                         // useful fact about the app than how the patching went
                         when (item.installOutcome) {
                             BatchInstallOutcome.INSTALLED -> StatusBadge(
-                                text = stringResource(R.string.installed),
+                                text = stringResource(if (item.useMount) R.string.mounted else R.string.installed),
                                 tone = SemanticTone.Success
                             )
 
@@ -915,6 +951,20 @@ private fun BatchItemCard(
                             contentDescription = selectApkLabel,
                             tooltip = selectApkLabel
                         )
+
+                        if (onChooseTarget != null) {
+                            val targetLabel = stringResource(R.string.root_pre_patch_installer_title)
+                            ActionPillButton(
+                                onClick = onChooseTarget,
+                                icon = if (item.useMount) {
+                                    MaterialSymbols.Rounded.Link
+                                } else {
+                                    MaterialSymbols.Rounded.Install_mobile
+                                },
+                                contentDescription = targetLabel,
+                                tooltip = targetLabel
+                            )
+                        }
 
                         if (onEditPatches != null) {
                             val editLabel = stringResource(R.string.batch_patch_edit_patches)
@@ -1033,13 +1083,11 @@ private fun BatchItemCard(
 
 /** The name a saved or shared APK of [this] item goes by, the one the single-app flow gives it. */
 private fun BatchPatchItem.exportFileName(): String = ExportNameFormatter.format(
-    null,
     PatchedAppExportData(
         appName = appName,
         packageName = id,
         appVersion = version,
-        patchBundleVersions = bundles.mapNotNull { it.version?.takeIf(String::isNotBlank) },
-        patchBundleNames = bundles.map { it.name }
+        sources = bundles.map { PatchSourceRef(it.name, it.version) }
     )
 )
 

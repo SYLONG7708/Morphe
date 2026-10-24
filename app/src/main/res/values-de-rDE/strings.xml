@@ -456,6 +456,7 @@ Für optimale Ergebnisse empfiehlt diese App, eine &lt;b&gt;vollständige APK&lt
     <string name="batch_patch_title">Patches im Batch anwenden</string>
     <string name="batch_patch_planning">Warteschlange wird vorbereitet…</string>
     <string name="batch_patch_preparing_next">Nächste App wird vorbereitet…</string>
+    <string name="batch_patch_progress_counter">Patche %1$s von %2$s</string>
     <string name="batch_patch_summary">%1$s gepatcht, %2$s fehlgeschlagen, %3$s übersprungen</string>
     <string name="batch_patch_saved_hint">Die gepatchten Apps sind gespeichert. Installiere sie jetzt oder später aus der Liste der gepatchten APKs in den Einstellungen</string>
     <string name="batch_patch_multiple_sources">Einige Apps kombinieren Patches aus mehr als einer Quelle, was zu Konflikten führen kann</string>
@@ -477,6 +478,10 @@ Für optimale Ergebnisse empfiehlt diese App, eine &lt;b&gt;vollständige APK&lt
     <string name="batch_patch_no_selection">Keines der verfügbaren Patches ist ausgewählt</string>
     <string name="batch_patch_policy_install">Beim Fertigstellen installieren</string>
     <string name="batch_patch_policy_install_description">Installiert jede gepatchte App direkt nach Abschluss der Warteschlange. Aus deaktiviert behält die APKs für später bei</string>
+    <string name="batch_patch_policy_mount">Nach Abschluss mounten</string>
+    <string name="batch_patch_policy_mount_description">Mountet jede gepatchte App, sobald die Warteschlange beendet ist. „Aus“ bewahrt die APKs für später auf</string>
+    <string name="batch_patch_policy_install_mount">Nach Abschluss installieren oder mounten</string>
+    <string name="batch_patch_policy_install_mount_description">Installiert oder mountet jede gepatchte App, sobald die Warteschlange abgearbeitet ist. Bei Aus bleiben die APKs für später erhalten.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Start</string>
     <string name="batch_patch_stop_title">Batch-Patchen anhalten?</string>
@@ -1065,6 +1070,7 @@ Details: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher-Laufzeit</string>
     <string name="settings_system_jvm_runtime_enable">Eingebettete VM verwenden</string>
     <string name="settings_system_jvm_runtime_description">Patches in einer Java-VM, die Morphe bereitstellt und so viel Speicher nutzen kann, wie das Gerät hergibt. Schalten Sie dies aus, um mit der Android-Laufzeit zu patchen</string>
+    <string name="settings_system_jvm_runtime_unavailable">Benötigt ein ARM- oder 64-Bit-x86-Gerät</string>
     <string name="settings_system_patcher_completion_sound">Erfolgsmeldung</string>
     <string name="settings_system_patcher_completion_sound_description">Spielt einen bestimmten Ton bei Erfolg oder Misserfolg ab, wenn das Patchen abgeschlossen ist</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1323,6 +1329,7 @@ Details: %2$s"</string>
     <string name="reset_order">Reihenfolge zurücksetzen</string>
     <string name="reset_order_done">Bestellung zurückgesetzt</string>
     <string name="accessibility_select_app">App auswählen</string>
+    <string name="accessibility_select_source">Quelle auswählen</string>
     <string name="accessibility_move_up">Nach oben verschieben</string>
     <string name="accessibility_move_down">Nach unten verschieben</string>
     <string name="accessibility_app_moved_announcement">%1$s wurde an Position %2$s von %3$s verschoben</string>
@@ -1436,11 +1443,15 @@ Wollen Sie trotzdem fortfahren?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s von %2$s</string>
     <string name="onboarding_sources_desc">Verwalten Sie Ihre Patch-Quellen. Jede Quelle stellt Patches bereit, die auf Ihre Apps angewendet werden können</string>
+    <string name="onboarding_other_apps_desc">Patchen Sie eine App, die nicht in der Liste steht, aus einer APK-Datei oder einer auf Ihrem Gerät installierten App</string>
+    <string name="onboarding_add_source_desc">Fügen Sie eine Patchquelle aus einem Link oder einer Patch-Bündel-Datei hinzu</string>
+    <string name="onboarding_signing_key_desc">Sichern Sie den Schlüssel, der Ihre gepatchten Apps signiert. Ohne ihn können sie nur nach dem Deinstallieren aktualisiert werden</string>
     <string name="onboarding_swipe_title">Wischgesten</string>
     <string name="onboarding_swipe_desc">Wischen Sie mit dem Finger nach rechts über eine App-Karte, um die verfügbaren Patches anzuzeigen. Wischen Sie nach links, um die Karte vom Startbildschirm auszublenden</string>
     <string name="onboarding_settings_desc">Passen Sie Morphe an: Aussehen, erweiterte Optionen und Systemtools</string>
     <string name="onboarding_sources_patches_desc">Tippen Sie, um alle Patches anzuzeigen, die aus dieser Quelle verfügbar sind</string>
     <string name="onboarding_sources_version_desc">Tippen Sie auf die Version, um den vollständigen Änderungsprotokoll für diese Quelle anzuzeigen</string>
+    <string name="onboarding_sources_apps_desc">Tippen Sie hier, um die Apps anzuzeigen, die von dieser Quelle gepatcht werden, und wählen Sie aus, für welche von ihnen Patches angeboten werden</string>
     <string name="onboarding_sources_prerelease_desc">Aktivieren Sie dies, um vorab veröffentlichte Patch-Versionen von dieser Quelle zu erhalten</string>
     <string name="onboarding_appearance_tab_desc">Passen Sie das Aussehen der App an: Design, Akzentfarbe und Hintergrund</string>
     <string name="onboarding_expert_mode_desc">Aktivieren Sie den Expertenmodus, um die Patch-Auswahl, benutzerdefinierte Optionen und andere erweiterte Funktionen freizuschalten</string>

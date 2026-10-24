@@ -212,6 +212,7 @@
     <!-- Home Screen - Sources Dialogs -->
     <string name="sources_dialog_display_name">Назив за приказ</string>
     <string name="sources_dialog_rename">Преименујте изворни извор</string>
+    <string name="sources_dialog_duplicate_name_error">Извор за патчевање са овим именом већ постоји</string>
     <string name="sources_dialog_missing_error">Nije moguće ažurirati ovaj patch izvor</string>
     <string name="sources_dialog_add_source">Додај извор</string>
     <string name="sources_dialog_delete_confirm_body">Ово се не може поништити</string>
@@ -455,6 +456,7 @@
     <string name="batch_patch_title">Групно закрпљивање</string>
     <string name="batch_patch_planning">Припрема се редова…</string>
     <string name="batch_patch_preparing_next">Припрема се следећа апликација…</string>
+    <string name="batch_patch_progress_counter">Патчовање %1$s од %2$s</string>
     <string name="batch_patch_summary">%1$s закрпљено, %2$s неуспешно, %3$s прескочено</string>
     <string name="batch_patch_saved_hint">Печене апликације су сачуване. Инсталирајте их сада или касније из листе печених APK-ова у подешавањима</string>
     <string name="batch_patch_multiple_sources">Неке апликације комбинују печеве из више извора, што може изазвати сукобе</string>
@@ -476,6 +478,10 @@
     <string name="batch_patch_no_selection">Ниједан од доступних патчева није изабран</string>
     <string name="batch_patch_policy_install">Инсталирај када се заврши</string>
     <string name="batch_patch_policy_install_description">Инсталира сваку печену апликацију одмах након што се заврши ред. Искључено задржава APK-ове за касније</string>
+    <string name="batch_patch_policy_mount">Монтирај по завршетку</string>
+    <string name="batch_patch_policy_mount_description">Прикачује сваку пачовану апликацију једном када се ред заврши. Isključeno чува APK датотеке за касније</string>
+    <string name="batch_patch_policy_install_mount">Инсталирај или прикачи када заврши</string>
+    <string name="batch_patch_policy_install_mount_description">Инсталира или монтира сваку пачовану апликацију након завршетка реде. Изабрана опција \"Искинуто\" чува APK датотеке за касније</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Početak</string>
     <string name="batch_patch_stop_title">Заустави групно печење?</string>
@@ -1063,6 +1069,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime">Рунтајни поправник</string>
     <string name="settings_system_jvm_runtime_enable">Користи уграђени ВМ</string>
     <string name="settings_system_jvm_runtime_description">Поправке у Јава ВМ које носи Морфе, која може да користи толико меморије колико уређај има на располагању. Искључите да бисте поправили са рунтајним Андроидом</string>
+    <string name="settings_system_jvm_runtime_unavailable">Потребан је ARM или 64-битни x86 уређај</string>
     <string name="settings_system_patcher_completion_sound">Звук завршетка</string>
     <string name="settings_system_patcher_completion_sound_description">Пушта посебан тон за успех или неуспех када се заврши закачивање</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1321,6 +1328,7 @@ morphe_header_custom_dark.png
     <string name="reset_order">Ресетуј ред</string>
     <string name="reset_order_done">Ресет поруџбине</string>
     <string name="accessibility_select_app">Изаберите апликацију</string>
+    <string name="accessibility_select_source">Изаберите извор</string>
     <string name="accessibility_move_up">Помери нагоре</string>
     <string name="accessibility_move_down">Помери надоле</string>
     <string name="accessibility_app_moved_announcement">%1$s је померен на позицију %2$s од %3$s</string>
@@ -1434,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s од %2$s</string>
     <string name="onboarding_sources_desc">Управљајте изворима за закрпе. Сваки извор пружа закрпе које могу да се примене на ваше апликације</string>
+    <string name="onboarding_other_apps_desc">Закрпи апликацију која није на листи, из APK фајла или апликације инсталиране на вашем уређају</string>
+    <string name="onboarding_add_source_desc">Додајте извор закрпи из линка или фајла са пакетом закрпа</string>
+    <string name="onboarding_signing_key_desc">Направите резервну копију кључа који потписује ваше закрпиане апликације. Без њега, оне се могу надоградити само након уклањања</string>
     <string name="onboarding_swipe_title">Покрети превлачења</string>
     <string name="onboarding_swipe_desc">Превуците удесно преко картице апликације да бисте видели доступне закрпе. Превуците улево да бисте сакрили картицу са почетног екрана</string>
     <string name="onboarding_settings_desc">Прилагодите Морфе: изглед, напредне опције и системске алатке</string>
     <string name="onboarding_sources_patches_desc">Додирните да бисте видели све закрпе доступне из овог извора</string>
     <string name="onboarding_sources_version_desc">Додирните верзију да бисте видели комплетне промене за овај извор</string>
+    <string name="onboarding_sources_apps_desc">Доприните да видите које апликације овај извор закрпива и одаберите које од њих нуди закрпе</string>
     <string name="onboarding_sources_prerelease_desc">Омогућите ово да бисте примали верзије закрпа у припреми из овог извора</string>
     <string name="onboarding_appearance_tab_desc">Прилагодите изглед апликације: тему, боју акцента и позадину</string>
     <string name="onboarding_expert_mode_desc">Омогућите Експертни режим да бисте откључали избор закрпа, прилагођене опције и друге напредне функције</string>

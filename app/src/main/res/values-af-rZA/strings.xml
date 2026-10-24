@@ -456,6 +456,7 @@ Vir die beste resultate beveel hierdie app aan om 'n &lt;b&gt;volle APK&lt;/b&gt
     <string name="batch_patch_title">Groepbedekking</string>
     <string name="batch_patch_planning">Besig om die tou voor te berei…</string>
     <string name="batch_patch_preparing_next">Besig om die volgende app voor te berei…</string>
+    <string name="batch_patch_progress_counter">Patch %1$s van %2$s</string>
     <string name="batch_patch_summary">%1$s gepatch, %2$s gefaal, %3$s oorgeslaan</string>
     <string name="batch_patch_saved_hint">Die gepatchte programme is gestoor. Installeer hulle nou, of later vanaf die lys van gepatchde APK\'s in instellings</string>
     <string name="batch_patch_multiple_sources">Sommige programme kombineer pleisters van meer as een bron, wat konflik kan veroorsaak</string>
@@ -477,6 +478,10 @@ Vir die beste resultate beveel hierdie app aan om 'n &lt;b&gt;volle APK&lt;/b&gt
     <string name="batch_patch_no_selection">Geen van die beskiklike wysigings is gekies nie</string>
     <string name="batch_patch_policy_install">Installeer wanneer voltooi</string>
     <string name="batch_patch_policy_install_description">Installeer elke gepatchte program direk nadat die tou voltooi is. Af skakel die APK\'s vir later af</string>
+    <string name="batch_patch_policy_mount">Koppel wanneer klaar</string>
+    <string name="batch_patch_policy_mount_description">Koppel elke gepatchte toepassing sodra die tou klaar is. \'Af\' hou die APK\'s vir later</string>
+    <string name="batch_patch_policy_install_mount">Installeer of koppel wanneer klaar</string>
+    <string name="batch_patch_policy_install_mount_description">Installeer of monteer elke gepatchte toepassing sodra die tou klaar is. \"Af\" hou die APK\'s vir later</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Begin</string>
     <string name="batch_patch_stop_title">Stop batch pleister?</string>
@@ -1064,6 +1069,7 @@ Besonderhede: %2$s"</string>
     <string name="settings_system_process_runtime">Patcher-runtime</string>
     <string name="settings_system_jvm_runtime_enable">Gebruik ingeboude VM</string>
     <string name="settings_system_jvm_runtime_description">Vlekke in \'n Java-VM wat Morphe dra, wat soveel geheue kan gebruik as wat die toestel oor het. Skakel af om met Android se tydeloop te flikker</string>
+    <string name="settings_system_jvm_runtime_unavailable">Benodig \'n ARM- of 64-bis x86-toestel</string>
     <string name="settings_system_patcher_completion_sound">Voltooiingklank</string>
     <string name="settings_system_patcher_completion_sound_description">Speel \'n kenmerkende toon vir sukses of mislukking wanneer die patching voltooi is</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1227,6 +1233,7 @@ Besonderhede: %2$s"</string>
     <string name="file_picker_show_hidden_files">Wys versteekte lêers</string>
     <!-- Settings - System Tab - About Section -->
     <string name="settings_system_about">Oor</string>
+    <string name="settings_system_manager_description">\'n Openbron-projek vir moderne, gestroomlijnde patching van gewilde Android-toepassings, gedryf deur gemeenskapterugvoer en bydraes</string>
     <string name="credits">Krediete</string>
     <string name="credits_description">Die mense agter Morphe</string>
     <string name="settings_about_section_project">Projek</string>
@@ -1321,6 +1328,7 @@ Besonderhede: %2$s"</string>
     <string name="reset_order">Herstel volgorde</string>
     <string name="reset_order_done">Bestelling terugstel</string>
     <string name="accessibility_select_app">Kies program</string>
+    <string name="accessibility_select_source">Kies bron</string>
     <string name="accessibility_move_up">Beweeg op</string>
     <string name="accessibility_move_down">Beweeg af</string>
     <string name="accessibility_app_moved_announcement">%1$s het na posisie %2$s van %3$s verskuif</string>
@@ -1434,11 +1442,15 @@ Wil jy voortgaan?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s van %2$s</string>
     <string name="onboarding_sources_desc">Bestuur jou bronne vir pleisters. Elke bron verskaf pleisters wat op jou programme toegepas kan word.</string>
+    <string name="onboarding_other_apps_desc">Herstel \'n app wat nie op die lys is nie, vanaf \'n APK-lêer of \'n app wat op jou toestel geïnstalleer is</string>
+    <string name="onboarding_add_source_desc">Voeg \'n herstelbron by vanaf \'n skakel of \'n herstelbundellêer</string>
+    <string name="onboarding_signing_key_desc">Maak \'n rugsteun van die sleutel wat jou herstelde apps teken. Sonder dit kan hulle slegs opgedateer word nadat jy hede verwyder het</string>
     <string name="onboarding_swipe_title">Swiepgebare</string>
     <string name="onboarding_swipe_desc">Swiep regs op \'n programkaart om die beskikbare pleisters te besigtig. Swiep links om die kaart van die hoofskerm te verberg.</string>
     <string name="onboarding_settings_desc">Pas Morphe aan: voorkoms, gevorderde opsies en stelselgereedskap</string>
     <string name="onboarding_sources_patches_desc">Tik om alle pleisters wat van hierdie bron beskikbaar is, te besigtig.</string>
     <string name="onboarding_sources_version_desc">Tik op die weergawe om die volledige veranderingslogboek vir hierdie bron te besigtig.</string>
+    <string name="onboarding_sources_apps_desc">Tik om die apps te sien wat hierdie bron herstel en kies watter een dit vir patches aanbied</string>
     <string name="onboarding_sources_prerelease_desc">Aktiveer dit om voorlopige weergawe pleisters van hierdie bron te ontvang.</string>
     <string name="onboarding_appearance_tab_desc">Pas die voorkoms van die program aan: tema, aksentkleur en agtergrond.</string>
     <string name="onboarding_expert_mode_desc">Aktiveer Ekspermodus om pleisterkeuse, pasgemaakte opsies en ander gevorderde funksies te ontsluit.</string>

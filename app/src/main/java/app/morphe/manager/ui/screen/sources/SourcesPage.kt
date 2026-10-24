@@ -390,7 +390,8 @@ private fun SourcesPageContent(
                     icon = MaterialSymbols.RoundedFilled.Add,
                     contentDescription = stringResource(R.string.add),
                     onClick = onAddSource,
-                    style = TitleActionStyle.Accent
+                    style = TitleActionStyle.Accent,
+                    modifier = Modifier.tourTarget(TourTarget.ADD_SOURCE, onboardingState)
                 )
             }
         },
@@ -760,7 +761,12 @@ private class SourceCardActions(
 )
 
 /** Rows of the first card the tour points at. */
-private val SourceTourTargets = setOf(TourTarget.SOURCE_PATCHES, TourTarget.SOURCE_VERSION, TourTarget.SOURCE_PRERELEASE)
+private val SourceTourTargets = setOf(
+    TourTarget.SOURCE_PATCHES,
+    TourTarget.SOURCE_VERSION,
+    TourTarget.SOURCE_APPS,
+    TourTarget.SOURCE_PRERELEASE
+)
 
 /**
  * Card for individual bundle management.
@@ -1025,6 +1031,7 @@ private fun BundleManagementCard(
                                         listedApps.toString()
                                     }
                                     InfoRow(
+                                        modifier = Modifier.tourTarget(TourTarget.SOURCE_APPS, tour),
                                         icon = MaterialSymbols.Rounded.Apps,
                                         label = stringResource(R.string.sources_apps),
                                         value = if (unseenApps > 0) {

@@ -94,6 +94,12 @@
         <item quantity="many">Zainstalowano %s aplikacji</item>
         <item quantity="other">Zainstalowano %s aplikacji</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Zamontowano %s aplikację</item>
+        <item quantity="few">Zamontowano %s aplikacje</item>
+        <item quantity="many">Zamontowano %s aplikacji</item>
+        <item quantity="other">Zamontowano %s aplikacji</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Ponownie zainstalowano %s aplikację</item>
         <item quantity="few">Ponownie zainstalowano %s aplikacje</item>

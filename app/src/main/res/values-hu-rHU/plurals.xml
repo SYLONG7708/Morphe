@@ -64,6 +64,10 @@
         <item quantity="one">%s alkalmazás telepítve</item>
         <item quantity="other">%s alkalmazás telepítve</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">%s alkalmazás csatlakoztatva</item>
+        <item quantity="other">%s alkalmazás csatlakoztatva</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">%s alkalmazás újra telepítve</item>
         <item quantity="other">%s alkalmazás újra telepítve</item>

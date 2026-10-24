@@ -50,6 +50,7 @@ import app.morphe.manager.patcher.split.SplitApkPreparer
 import app.morphe.manager.ui.model.*
 import app.morphe.manager.ui.model.navigation.Patcher
 import app.morphe.manager.ui.screen.shared.UserMessages
+import app.morphe.manager.ui.screen.shared.readableLabel
 import app.morphe.manager.util.*
 import app.morphe.manager.util.PatchSelectionUtils.applyAvailability
 import app.morphe.manager.util.PatchSelectionUtils.restrictTo
@@ -288,13 +289,14 @@ class PatchFlow(
     // The redirect being resolved, given up for the next one when the user comes back for another version
     private var downloadRedirectJob: Job? = null
 
-    private var pickedApkIcon by mutableStateOf<Pair<File, Drawable>?>(null)
+    // The file picked last, with the icon and label read from it
+    private var pickedApk by mutableStateOf<ApkLoadResult.Success?>(null)
 
     /** Icon read from the file picked for expert mode, for an app no source has one for yet. */
     val expertModeAppIcon: Drawable?
-        get() = pickedApkIcon
-            ?.takeIf { (file, _) -> (expertMode.app as? SelectedApp.Local)?.file == file }
-            ?.second
+        get() = pickedApk
+            ?.takeIf { it.app.file == (expertMode.app as? SelectedApp.Local)?.file }
+            ?.icon
 
     // Counts the openings of the app information, so each one starts afresh
     private var appInfoOpenings = 0
@@ -346,10 +348,24 @@ class PatchFlow(
         guardPatching { showPatchDialogInternal(packageName) }
     }
 
+    /**
+     * What the run calls [packageName]: the name the sources give it, see
+     * [PatchBundleRepository.appDisplayNames], or else the label of the file picked for it, which
+     * is at hand before the sources are and names an app they do not.
+     *
+     * @param names The names the sources give, passed in by a caller that observes them.
+     */
+    fun appNameFor(
+        packageName: String,
+        names: Map<String, String> = patchBundleRepository.appDisplayNames.value
+    ): String = names[packageName]
+        ?: pickedApk?.takeIf { it.app.packageName == packageName }?.label
+        ?: KnownApps.getAppName(packageName)
+
     /** A fresh run for [packageName], seeded from the current bundle data. */
     private fun sessionFor(packageName: String, repatchedPackageName: String? = null) = PatchFlowSession(
         packageName = packageName,
-        appName = patchBundleRepository.appDisplayNames.value[packageName] ?: KnownApps.getAppName(packageName),
+        appName = appNameFor(packageName),
         repatchPackageName = repatchedPackageName,
         recommendedVersion = recommendedVersions.value[packageName],
         compatibleVersions = compatibleVersions.value[packageName].orEmpty()
@@ -1158,7 +1174,7 @@ class PatchFlow(
 
                 when (result) {
                     is ApkLoadResult.Success -> {
-                        pickedApkIcon = result.icon?.let { result.app.file to it }
+                        pickedApk = result
                         // Picked in place of the one held for a warning, which it takes the run over from
                         heldApp?.discard()
                         heldApp = null
@@ -1265,7 +1281,7 @@ class PatchFlow(
             val isSplitFile = SplitApkPreparer.isSplitArchive(selectedApp.file)
 
             if (isSplitFile && requiredApkFileType?.isApk == true && requiredApkFileType.isRequired) {
-                holdFor(HomeDialog.SplitApkWarning, selectedApp)
+                holdFor(HomeDialog.SplitApkWarning(selectedApp.packageName), selectedApp)
                 return
             }
 
@@ -1289,7 +1305,7 @@ class PatchFlow(
                             HomeDialog.InvalidSignature(
                                 InvalidSignatureDialogState(
                                     packageName = selectedApp.packageName,
-                                    appName = session?.appName ?: KnownApps.getAppName(selectedApp.packageName)
+                                    appName = session?.appName ?: appNameFor(selectedApp.packageName)
                                 )
                             ),
                             selectedApp
@@ -2029,40 +2045,35 @@ class PatchFlow(
             val tempFile = uri.copyApkInto(filesystem.uiTempDir, "temp_apk", app.contentResolver)
                 ?: return@withContext ApkLoadResult.Unreadable
 
-            // A split archive is read through its base module, deleted after the call, so the icon is read in it
-            val (packageInfo, icon, patched) = SplitApkInspector.withRepresentativeApk(
+            // A split archive is read through its base module, deleted after the call, so the icon
+            // and the label are read in it
+            val result = SplitApkInspector.withRepresentativeApk(
                 source = tempFile,
                 workspace = filesystem.uiTempDir
             ) { apk ->
-                val info = pm.getPackageInfo(apk)
-                Triple(
-                    info,
-                    info?.let(appDataResolver::detachedArchiveIcon),
-                    info != null && localApkSources.isPatchedApk(apk, info.packageName)
-                )
+                val packageInfo = pm.getPackageInfo(apk)
+                when {
+                    packageInfo == null -> ApkLoadResult.NotAnApk
+                    localApkSources.isPatchedApk(apk, packageInfo.packageName) -> ApkLoadResult.AlreadyPatched
+                    else -> ApkLoadResult.Success(
+                        SelectedApp.Local(
+                            packageName = packageInfo.packageName,
+                            version = packageInfo.versionName ?: "unknown",
+                            versionCode = pm.getVersionCode(packageInfo),
+                            file = tempFile,
+                            temporary = true
+                        ),
+                        icon = appDataResolver.detachedArchiveIcon(packageInfo),
+                        label = packageInfo.readableLabel(app.packageManager)
+                    )
+                }
             }
 
-            if (packageInfo == null) {
+            if (result == ApkLoadResult.NotAnApk) {
                 Log.w(tag, "Picked file ${tempFile.name} could not be parsed as an APK")
-                tempFile.delete()
-                return@withContext ApkLoadResult.NotAnApk
             }
-
-            if (patched) {
-                tempFile.delete()
-                return@withContext ApkLoadResult.AlreadyPatched
-            }
-
-            ApkLoadResult.Success(
-                SelectedApp.Local(
-                    packageName = packageInfo.packageName,
-                    version = packageInfo.versionName ?: "unknown",
-                    versionCode = pm.getVersionCode(packageInfo),
-                    file = tempFile,
-                    temporary = true
-                ),
-                icon
-            )
+            if (result !is ApkLoadResult.Success) tempFile.delete()
+            result
         } catch (e: Exception) {
             Log.e(tag, "Failed to load APK", e)
             ApkLoadResult.IoError
@@ -2077,8 +2088,8 @@ private fun SelectedApp.discard() {
 
 /** Result of attempting to load a local APK file. */
 private sealed interface ApkLoadResult {
-    /** File was read and parsed successfully, with the app's icon where it carries one. */
-    data class Success(val app: SelectedApp.Local, val icon: Drawable?) : ApkLoadResult
+    /** File was read and parsed successfully, with the app's icon and label where it carries them. */
+    data class Success(val app: SelectedApp.Local, val icon: Drawable?, val label: String?) : ApkLoadResult
     /** File could not be read - provider returned null stream or zero bytes. */
     data object Unreadable : ApkLoadResult
     /** File was read but is not a valid APK/split archive. */

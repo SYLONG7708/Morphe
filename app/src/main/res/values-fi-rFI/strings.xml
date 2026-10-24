@@ -457,6 +457,7 @@ Sovelluksen &lt;b&gt;%s&lt;/b&gt; tässä versiossa on varhainen kokeellinen tuk
     <string name="batch_patch_title">Ryhmäkorjaus</string>
     <string name="batch_patch_planning">Jonon valmistelu…</string>
     <string name="batch_patch_preparing_next">Seuraavan sovelluksen valmistelu…</string>
+    <string name="batch_patch_progress_counter">Paikataan %1$s / %2$s</string>
     <string name="batch_patch_summary">%1$s korjattu, %2$s epäonnistui, %3$s ohitettu</string>
     <string name="batch_patch_saved_hint">Korjatut sovellukset on tallennettu. Asenna ne nyt tai myöhemmin korjattujen APK-tiedostojen luettelosta asetuksista</string>
     <string name="batch_patch_multiple_sources">Jotkut sovellukset yhdistävät korjauksia useista lähteistä, mikä voi aiheuttaa ristiriitoja</string>
@@ -478,6 +479,10 @@ Sovelluksen &lt;b&gt;%s&lt;/b&gt; tässä versiossa on varhainen kokeellinen tuk
     <string name="batch_patch_no_selection">Yhdenkään saatavilla olevan korjauksen tilaa ei ole valittu</string>
     <string name="batch_patch_policy_install">Asenna valmistuttua</string>
     <string name="batch_patch_policy_install_description">Asentaa jokaisen korjatun sovelluksen heti jonon valmistuttua. Pois käytöstä pitää APK-tiedostot myöhempää käyttöä varten</string>
+    <string name="batch_patch_policy_mount">Asenna, kun valmistunut</string>
+    <string name="batch_patch_policy_mount_description">Asentaa jokaisen muokatun sovelluksen, kun jono on valmis. Pois-asetus säilyttää APK-tiedostot myöhempää käyttöä varten</string>
+    <string name="batch_patch_policy_install_mount">Asenna tai asenna levyksi, kun on valmis</string>
+    <string name="batch_patch_policy_install_mount_description">Asentaa tai mounttaa kaikki paikatut sovellukset heti, kun jono valmistuu. Pois-vaihtoehto säilyttää APK:t myöhempää käyttöä varten.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Alku</string>
     <string name="batch_patch_stop_title">Lopeta eräkorjaus?</string>
@@ -1063,6 +1068,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="settings_system_process_runtime">Patterin ajoaika</string>
     <string name="settings_system_jvm_runtime_enable">Käytä sisällytettyä VM:iä</string>
     <string name="settings_system_jvm_runtime_description">Morpheen käyttämässä Java-VM:ssä olevat korjaukset, jotka voivat käyttää yhtä paljon muistia kuin laite säästää. Kytke pois päältä, jotta korjaus tapahtuu Androidin ajoajan kanssa</string>
+    <string name="settings_system_jvm_runtime_unavailable">Vaatii ARM- tai 64-bittisen x86-laitteen</string>
     <string name="settings_system_patcher_completion_sound">Valmistumisen ääni</string>
     <string name="settings_system_patcher_completion_sound_description">Toistaa erillisen äänen onnistumisesta tai epäonnistumisesta paikkauksen valmistuttua</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1321,6 +1327,7 @@ Yksityiskohdat: %2$s"</string>
     <string name="reset_order">Palauta järjestys</string>
     <string name="reset_order_done">Tilaus nollattu</string>
     <string name="accessibility_select_app">Valitse sovellus</string>
+    <string name="accessibility_select_source">Valitse lähde</string>
     <string name="accessibility_move_up">Siirrä ylös</string>
     <string name="accessibility_move_down">Siirrä alas</string>
     <string name="accessibility_app_moved_announcement">%1$s siirrettiin kohtaan %2$s %3$s:sta</string>
@@ -1434,11 +1441,15 @@ Haluatko silti jatkaa?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s / %2$s</string>
     <string name="onboarding_sources_desc">Hallitse korjauslähteitäsi. Jokainen lähde tarjoaa korjauksia, jotka voidaan soveltaa sovelluksiisi</string>
+    <string name="onboarding_other_apps_desc">Paikenna sovellus, jota ei ole luettelossa, APK-tiedostosta tai laitteesi asennetusta sovelluksesta</string>
+    <string name="onboarding_add_source_desc">Lisää korjauksen lähde linkin tai korjauspaketin tiedoston kautta</string>
+    <string name="onboarding_signing_key_desc">Varmuuskopioi sovellustesi allekirjoitusavain. Ilman sitä niitä voi päivittää vain poistamalla ne kokonaan.</string>
     <string name="onboarding_swipe_title">Pyyhkäisyeleet</string>
     <string name="onboarding_swipe_desc">Pyyhkäise oikealle sovelluskortissa nähdäksesi sen käytettävissä olevat korjaukset. Pyyhkäise vasemmalle piilottaaksesi kortin aloitusnäytöltä</string>
     <string name="onboarding_settings_desc">Muokkaa Morphea: ulkoasua, lisäasetuksia ja järjestelmätyökaluja</string>
     <string name="onboarding_sources_patches_desc">Napauta nähdäksesi kaikki tästä lähteestä saatavilla olevat korjaukset</string>
     <string name="onboarding_sources_version_desc">Napauta versiota nähdäksesi tämän lähteen täydelliset muutoshistoria</string>
+    <string name="onboarding_sources_apps_desc">Napsauta nähdäksesi sovellukset, jotka tämä lähde paikantaa ja valitse, mihin niistä se tarjoaa paikkauksia</string>
     <string name="onboarding_sources_prerelease_desc">Ota tämä käyttöön saadaksesi ennakkokorjauksia tästä lähteestä</string>
     <string name="onboarding_appearance_tab_desc">Muokkaa sovelluksen ulkoasua: teemaa, korostusväriä ja taustaa</string>
     <string name="onboarding_expert_mode_desc">Ota asiantuntijatila käyttöön avataksesi korjausvalinnan, mukautetut asetukset ja muut lisäominaisuudet</string>

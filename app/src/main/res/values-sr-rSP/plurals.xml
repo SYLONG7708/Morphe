@@ -79,6 +79,11 @@
         <item quantity="few">Инсталиране %s апликације</item>
         <item quantity="other">Инсталиране %s апликација</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Монтирана %s апликација</item>
+        <item quantity="few">Монтиране %s апликације</item>
+        <item quantity="other">Монтирано %s апликација</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Поново инсталирана %s апликација</item>
         <item quantity="few">Поново инсталиране %s апликације</item>
@@ -103,6 +108,11 @@
         <item quantity="one">%s апликација је у реду за пацовање</item>
         <item quantity="few">%s апликације су у реду за пацовање</item>
         <item quantity="other">%s апликација је у реду за пацовање</item>
+    </plurals>
+    <plurals name="home_alerts_snoozed_count">
+        <item quantity="one">%s сакривено обавештење, додирните да га прикажете</item>
+        <item quantity="few">%s сакривена обавештења, додирните да их прикажете</item>
+        <item quantity="other">%s сакривених обавештења, додирните да их прикажете</item>
     </plurals>
     <plurals name="repatch_available_count">
         <item quantity="one">%s апликација се може поново закрпити</item>

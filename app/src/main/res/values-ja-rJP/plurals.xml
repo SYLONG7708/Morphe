@@ -49,6 +49,9 @@
     <plurals name="batch_install_summary">
         <item quantity="other">%s 個のアプリをインストールしました</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="other">マウント済みアプリ %s 個</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="other">%s 個のアプリを再インストールしました</item>
     </plurals>
@@ -62,7 +65,7 @@
         <item quantity="other">%s 個のアプリがパッチ適用可能です</item>
     </plurals>
     <plurals name="batch_queue_pending_count">
-        <item quantity="other">%s 個のアプリがパッチ適用待ち</item>
+        <item quantity="other">%s 個のアプリがパッチ適用待ちです</item>
     </plurals>
     <plurals name="home_alerts_snoozed_count">
         <item quantity="other">%s 件の非表示通知があります。タップして表示します</item>
@@ -123,7 +126,7 @@
         <item quantity="other">%s 件の新規リリース</item>
     </plurals>
     <plurals name="app_links_count_enabled">
-        <item quantity="other">%d 件のアプリリンクが有効です</item>
+        <item quantity="other">%d 件のアプリリンクが有効</item>
     </plurals>
     <plurals name="app_links_count_unverified">
         <item quantity="other">%d 件の未検証のアプリリンク</item>

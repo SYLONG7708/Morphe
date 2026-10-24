@@ -64,6 +64,10 @@
         <item quantity="one">Installeret %s app</item>
         <item quantity="other">Installeret %s apps</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Monterede %s app</item>
+        <item quantity="other">Monterede %s apps</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Geninstalleret %s app</item>
         <item quantity="other">Geninstalleret %s apps</item>

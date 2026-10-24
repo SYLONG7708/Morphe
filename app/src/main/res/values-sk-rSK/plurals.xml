@@ -94,6 +94,12 @@
         <item quantity="many">Nainštalované %s aplikácie</item>
         <item quantity="other">Nainštalované %s aplikácie</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Namontovaná %s aplikácia</item>
+        <item quantity="few">Namontovaných %s aplikácií</item>
+        <item quantity="many">Namontovaných %s aplikácií</item>
+        <item quantity="other">Namontovaných %s aplikácií</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Znovu nainštalovaná %s aplikácia</item>
         <item quantity="few">Znovu nainštalované %s aplikácie</item>

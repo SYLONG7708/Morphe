@@ -119,24 +119,10 @@ class BatchPatchCoordinator(
     }
 
     /**
-     * Builds a plan for [targets] and parks it in the preflight phase so the user can
-     * attach missing APKs or drop items before anything is patched.
-     */
-    fun plan(
-        targets: List<BatchTarget>,
-        useMount: Boolean,
-        policy: BatchInstallPolicy
-    ) {
-        if (isRunning) return
-        runJob?.cancel()
-        runJob = scope.launch { planFresh(targets, useMount, policy, excludedIds = emptySet()) }
-    }
-
-    /**
      * Adds [targets] to the queue being prepared, or plans a new one around them. A queue stored
      * before the process died is planned again first, so the apps added to it earlier stay.
      */
-    fun enqueue(targets: List<BatchTarget>, useMount: Boolean) {
+    fun enqueue(targets: List<BatchTarget>) {
         if (isRunning) return
         val pending = runJob
         runJob = scope.launch {
@@ -150,7 +136,6 @@ class BatchPatchCoordinator(
                     val saved = if (hasPlanned) null else decodeQueue(prefs.batchQueue.get())
                     planFresh(
                         targets = (saved?.targets.orEmpty() + targets).distinctBy { it.id },
-                        useMount = saved?.useMount ?: useMount,
                         policy = saved?.policy ?: BatchInstallPolicy.SAVE_ONLY,
                         excludedIds = saved?.excluded.orEmpty()
                     )
@@ -161,7 +146,6 @@ class BatchPatchCoordinator(
 
     private suspend fun planFresh(
         targets: List<BatchTarget>,
-        useMount: Boolean,
         policy: BatchInstallPolicy,
         excludedIds: Set<String>
     ) {
@@ -171,10 +155,9 @@ class BatchPatchCoordinator(
         _state.value = BatchRunState(
             items = targets.map { placeholder(it).withExclusion() },
             phase = BatchPhase.PLANNING,
-            policy = policy,
-            useMount = useMount
+            policy = policy
         )
-        val items = resolver.resolve(targets, useMount).map { it.withExclusion() }
+        val items = resolver.resolve(targets).map { it.withExclusion() }
         _state.update { it.copy(items = items, phase = BatchPhase.PREFLIGHT) }
     }
 
@@ -185,7 +168,7 @@ class BatchPatchCoordinator(
         if (added.isEmpty()) return
 
         _state.update { it.copy(items = it.items + added.map(::placeholder), phase = BatchPhase.PLANNING) }
-        val resolved = resolver.resolve(added, current.useMount).associateBy { it.id }
+        val resolved = resolver.resolve(added).associateBy { it.id }
         _state.update { state ->
             state.copy(items = state.items.map { resolved[it.id] ?: it }, phase = BatchPhase.PREFLIGHT)
         }
@@ -212,7 +195,7 @@ class BatchPatchCoordinator(
         if (stale.isEmpty()) return
 
         val refreshed = coroutineScope {
-            stale.map { async { replan(it, current.useMount) } }.awaitAll()
+            stale.map { async { replan(it) } }.awaitAll()
         }.associateBy { it.id }
 
         _state.update { state ->
@@ -222,8 +205,8 @@ class BatchPatchCoordinator(
     }
 
     /** Plans [item] again, still left out of the run if the user left it out. */
-    private suspend fun replan(item: BatchPatchItem, useMount: Boolean): BatchPatchItem {
-        val resolved = resolver.refresh(item, useMount)
+    private suspend fun replan(item: BatchPatchItem): BatchPatchItem {
+        val resolved = resolver.refresh(item)
         return if (item.state == BatchItemState.EXCLUDED) resolved.excluded() else resolved
     }
 
@@ -231,7 +214,7 @@ class BatchPatchCoordinator(
     private fun reresolveItem(
         itemId: String,
         expectedState: BatchItemState? = null,
-        resolve: suspend (item: BatchPatchItem, useMount: Boolean) -> BatchPatchItem
+        resolve: suspend (item: BatchPatchItem) -> BatchPatchItem
     ): Job? {
         val current = _state.value ?: return null
         if (current.phase != BatchPhase.PREFLIGHT) return null
@@ -239,7 +222,7 @@ class BatchPatchCoordinator(
         if (expectedState != null && item.state != expectedState) return null
 
         val job = scope.launch {
-            val resolved = resolve(item, current.useMount)
+            val resolved = resolve(item)
             // The queue may have started meanwhile, and an item it runs must not be swapped out
             _state.update { state ->
                 if (state.phase != BatchPhase.PREFLIGHT) return@update state
@@ -252,11 +235,18 @@ class BatchPatchCoordinator(
 
     /** Re-resolves a single item against a manually attached APK. */
     fun attachApk(itemId: String, file: File) =
-        reresolveItem(itemId) { item, useMount -> resolver.reattach(item, file, useMount) }
+        reresolveItem(itemId) { item -> resolver.reattach(item, file) }
 
     /** Re-resolves one item against the APK the user picked, saved original or installed app. */
     fun useSource(itemId: String, preferInstalled: Boolean) =
-        reresolveItem(itemId) { item, useMount -> resolver.useSource(item, useMount, preferInstalled) }
+        reresolveItem(itemId) { item -> resolver.useSource(item, preferInstalled) }
+
+    /**
+     * Patches one queued app for the install target the user picked, the question a rooted device
+     * asks before a single-app patch. Planned again, since the patches available differ per target.
+     */
+    fun setInstallTarget(itemId: String, useMount: Boolean) =
+        reresolveItem(itemId) { item -> replan(item.copy(useMount = useMount)) }
 
     /** Toggles an item between excluded and its resolved state. */
     fun toggleExcluded(itemId: String) {
@@ -428,11 +418,10 @@ class BatchPatchCoordinator(
             _state.value = BatchRunState(
                 items = unfinished.map { placeholder(it.target) },
                 phase = BatchPhase.PLANNING,
-                policy = current.policy,
-                useMount = current.useMount
+                policy = current.policy
             )
             val items = unfinished.map { item ->
-                val resolved = resolver.refresh(item, current.useMount)
+                val resolved = resolver.refresh(item)
                 if (!item.selectionEdited) return@map resolved
                 resolved.copy(
                     selection = item.selection,
@@ -478,6 +467,8 @@ class BatchPatchCoordinator(
 
         for (item in items) {
             if (item.installOutcome == BatchInstallOutcome.INSTALLED) continue
+            // A mount build is only of use mounted over its app, which the summary does
+            if (item.useMount) continue
             val file = item.patchedFile?.takeIf { it.exists() } ?: continue
             val info = pm.getPackageInfo(file)
             val targetPackage = info?.packageName ?: item.packageName
@@ -614,7 +605,7 @@ class BatchPatchCoordinator(
             patchSources = patchSources,
             announceCompletion = false,
             queuePosition = _state.value?.let { it.position to it.total },
-            useMount = _state.value?.useMount == true
+            useMount = item.useMount
         )
 
         val workId = workerRepository.launchExpedited<PatcherWorker, PatcherWorker.Args>(args)

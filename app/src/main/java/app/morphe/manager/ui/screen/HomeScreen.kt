@@ -44,6 +44,7 @@ import app.morphe.manager.ui.screen.shared.MainPage
 import app.morphe.manager.ui.screen.shared.MainPagerScaffold
 import app.morphe.manager.ui.screen.shared.UserMessages
 import app.morphe.manager.ui.screen.shared.rememberInstallQueue
+import app.morphe.manager.ui.screen.shared.turnTo
 import app.morphe.manager.ui.screen.sources.SourcesPage
 import app.morphe.manager.ui.screen.sources.rememberSourcesPageState
 import app.morphe.manager.ui.theme.SeasonalEvent
@@ -68,7 +69,7 @@ import kotlin.time.Duration.Companion.milliseconds
 fun HomeScreen(
     settingsNavigation: SettingsNavigation,
     onStartQuickPatch: (Patcher.ViewModelParams) -> Unit,
-    onStartBatchPatch: (List<BatchTarget>, Boolean) -> Unit,
+    onStartBatchPatch: (List<BatchTarget>) -> Unit,
     homeViewModel: HomeViewModel = koinViewModel(),
     prefs: PreferencesManager = koinInject(),
     homeAppButtonPrefs: HomeAppButtonPreferences = koinInject(),
@@ -89,7 +90,7 @@ fun HomeScreen(
 
     val pagerState = rememberPagerState(initialPage = MainPage.APPS.ordinal) { MainPage.entries.size }
     val openPage: (MainPage) -> Unit = { page ->
-        scope.launch { pagerState.animateScrollToPage(page.ordinal) }
+        scope.launch { pagerState.turnTo(page) }
     }
     // Turns to each step's page, and back to the apps once the tour ends
     val tourPage = onboardingState?.page
@@ -101,13 +102,13 @@ fun HomeScreen(
                 tourShown = true
                 onboardingState.pageShown = null
                 tourPage?.let {
-                    pagerState.animateScrollToPage(it.ordinal)
+                    pagerState.turnTo(it)
                     onboardingState.pageShown = it
                 }
             }
             tourShown -> {
                 tourShown = false
-                pagerState.animateScrollToPage(MainPage.APPS.ordinal)
+                pagerState.turnTo(MainPage.APPS)
             }
         }
     }
@@ -262,7 +263,7 @@ fun HomeScreen(
     }
 
     val batchInProgressText = stringResource(R.string.batch_patch_in_progress)
-    val openBatchQueue: (List<BatchTarget>, Boolean) -> Unit = { targets, useMount ->
+    val openBatchQueue: (List<BatchTarget>) -> Unit = { targets ->
         when {
             availablePatches <= 0 -> messages.show(sourcesLoadingText)
             homeViewModel.android11BugActive -> homeViewModel.showAndroid11Dialog = true
@@ -270,16 +271,13 @@ fun HomeScreen(
             // A live queue keeps its own selection, so open it instead of swapping the apps
             homeViewModel.batchPatchRunning -> {
                 messages.show(batchInProgressText)
-                onStartBatchPatch(targets, useMount)
+                onStartBatchPatch(targets)
             }
-            else -> onStartBatchPatch(targets, useMount)
+            else -> onStartBatchPatch(targets)
         }
     }
     val startBatchPatch: (List<HomeAppItem>) -> Unit = { items ->
-        val targets = items.map { it.batchTarget() }
-        // The queue installs through the standard installer, never by mounting, so the
-        // single-app mount choice must not carry over into the patches it resolves
-        openBatchQueue(targets, false)
+        openBatchQueue(items.map { it.batchTarget() })
     }
 
     // Handle patch trigger from dialog
@@ -354,8 +352,8 @@ fun HomeScreen(
             val run = batchRun
             val saved = savedBatchQueue
             when {
-                run != null -> onStartBatchPatch(run.targets, run.useMount)
-                saved != null -> openBatchQueue(saved.targets, saved.useMount)
+                run != null -> onStartBatchPatch(run.targets)
+                saved != null -> openBatchQueue(saved.targets)
             }
         },
         bundleUpdate = BundleUpdateState(

@@ -456,6 +456,7 @@
     <string name="batch_patch_title">پچ‌کردن گروهی</string>
     <string name="batch_patch_planning">در حال آماده‌سازی صف…</string>
     <string name="batch_patch_preparing_next">در حال آماده‌سازی برنامهٔ بعدی…</string>
+    <string name="batch_patch_progress_counter">در حال پچ کردن %1$s از %2$s</string>
     <string name="batch_patch_summary">%1$s پچ شد، %2$s شکست خورد، %3$s رد شد</string>
     <string name="batch_patch_saved_hint">برنامه‌های پچ‌شده ذخیره شدند. همین حالا نصبشان کنید یا بعداً از فهرست APKهای پچ‌شده در تنظیمات نصب کنید</string>
     <string name="batch_patch_multiple_sources">بعضی برنامه‌ها پچ‌هایی را از بیش از یک منبع ترکیب می‌کنند که ممکن است باعث تداخل شود</string>
@@ -477,6 +478,10 @@
     <string name="batch_patch_no_selection">هیچ‌یک از پچ‌های موجود انتخاب نشده‌اند</string>
     <string name="batch_patch_policy_install">پس از پایان نصب شود</string>
     <string name="batch_patch_policy_install_description">هر برنامهٔ پچ‌شده را بلافاصله پس از پایان صف نصب می‌کند. خاموش‌کردن آن APKها را برای بعد نگه می‌دارد</string>
+    <string name="batch_patch_policy_mount">پس از پایان مونت شود</string>
+    <string name="batch_patch_policy_mount_description">هر برنامهٔ پچ‌شده را پس از پایان صف مونت می‌کند. خاموش‌کردن آن APKها را برای بعد نگه می‌دارد</string>
+    <string name="batch_patch_policy_install_mount">پس از پایان نصب یا مونت شود</string>
+    <string name="batch_patch_policy_install_mount_description">هر برنامهٔ پچ‌شده را پس از پایان صف نصب یا مانت می‌کند. خاموش‌کردن آن APKها را برای بعد نگه می‌دارد</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">آغاز</string>
     <string name="batch_patch_stop_title">پچ‌کردن گروهی متوقف شود؟</string>
@@ -1064,6 +1069,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime">زمان اجرای اصلاح‌کننده</string>
     <string name="settings_system_jvm_runtime_enable">استفاده از VM تعبیه‌شده</string>
     <string name="settings_system_jvm_runtime_description">اصلاحاتی در VM جاوا که Morphe حمل می‌کند، که می‌تواند تا حد حافظه موجود دستگاه استفاده کند. برای اعمال اصلاحات با زمان اجرای Android غیرفعال کنید</string>
+    <string name="settings_system_jvm_runtime_unavailable">به دستگاه ARM یا x86 ۶۴ بیتی نیاز دارد</string>
     <string name="settings_system_patcher_completion_sound">صدای پایان</string>
     <string name="settings_system_patcher_completion_sound_description">هنگام پایان پچ‌کردن، برای موفقیت یا شکست صدایی متمایز پخش می‌کند</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1155,6 +1161,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_storage_clear_all_confirm">پاسخ‌های کش‌شدهٔ شبکه، نسخه‌های آماده‌شدهٔ نصب‌کننده و فایل‌های موقت پاک می‌شوند. APKهای اصلی و پچ‌شده نگه داشته می‌شوند</string>
     <string name="settings_system_storage_cleared">%s آزاد شد</string>
     <string name="settings_system_storage_patch_running_warning">یک پچ در حال اجرا است و از این فایل‌ها استفاده می‌کند. پاک کردن آن‌ها اکنون باعث شکست عملیات می‌شود</string>
+    <string name="settings_system_storage_clear_anyway">در هر صورت پاک کن</string>
     <string name="settings_system_storage_nothing_to_clear">موردی برای پاک‌کردن نیست</string>
     <string name="settings_system_storage_open_app_info_title">بازکردن فضای ذخیره‌سازی برنامهٔ Android</string>
     <string name="settings_system_storage_open_app_info_description">همهٔ داده‌های Morphe را از طریق تنظیمات سیستم مدیریت یا پاک کنید</string>
@@ -1321,6 +1328,7 @@ morphe_header_custom_dark.png
     <string name="reset_order">بازنشانی ترتیب</string>
     <string name="reset_order_done">ترتیب بازنشانی شد</string>
     <string name="accessibility_select_app">انتخاب برنامه</string>
+    <string name="accessibility_select_source">انتخاب منبع</string>
     <string name="accessibility_move_up">حرکت به بالا</string>
     <string name="accessibility_move_down">حرکت به پایین</string>
     <string name="accessibility_app_moved_announcement">%1$s به جایگاه %2$s از %3$s منتقل شد</string>
@@ -1434,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s از %2$s</string>
     <string name="onboarding_sources_desc">منابع پچ خود را مدیریت کنید. هر منبع پچ‌هایی فراهم می‌کند که می‌توان روی برنامه‌ها اعمال کرد</string>
+    <string name="onboarding_other_apps_desc">پچ کردن برنامه‌ای که در لیست نیست، از یک فایل APK یا یک برنامه نصب شده روی دستگاهتان</string>
+    <string name="onboarding_add_source_desc">افزودن منبع پچ از طریق پیوند یا فایل بسته پچ</string>
+    <string name="onboarding_signing_key_desc">از کلیدی که برنامه‌های پچ شما را امضا می‌کند پشتیبان تهیه کنید. بدون آن، آنها فقط پس از حذف نصب قابل به روز رسانی هستند</string>
     <string name="onboarding_swipe_title">حرکت‌های کشیدنی</string>
     <string name="onboarding_swipe_desc">برای دیدن پچ‌های موجود، روی کارت برنامه به راست بکشید. برای پنهان‌کردن کارت از صفحهٔ اصلی، به چپ بکشید</string>
     <string name="onboarding_settings_desc">Morphe را سفارشی کنید: ظاهر، گزینه‌های پیشرفته و ابزارهای سیستم</string>
     <string name="onboarding_sources_patches_desc">برای دیدن همهٔ پچ‌های موجود از این منبع، ضربه بزنید</string>
     <string name="onboarding_sources_version_desc">برای دیدن تغییرات کامل این منبع، روی نسخه ضربه بزنید</string>
+    <string name="onboarding_sources_apps_desc">برای مشاهده برنامه‌هایی که این منبع پچ می‌کند و انتخاب اینکه کدام یک برای آنها پچ ارائه می‌دهد، ضربه بزنید</string>
     <string name="onboarding_sources_prerelease_desc">برای دریافت نسخه‌های پیش‌انتشار پچ از این منبع، آن را فعال کنید</string>
     <string name="onboarding_appearance_tab_desc">ظاهر برنامه را سفارشی کنید: پوسته، رنگ تأکیدی و پس‌زمینه</string>
     <string name="onboarding_expert_mode_desc">حالت حرفه‌ای را فعال کنید تا انتخاب پچ، گزینه‌های سفارشی و دیگر ویژگی‌های پیشرفته باز شوند</string>

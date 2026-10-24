@@ -109,7 +109,7 @@ class PatcherViewModel(
             packageName = packageName,
             appVersion = version ?: "unspecified"
         )
-        ExportNameFormatter.format(null, data)
+        ExportNameFormatter.format(data)
     }
     private var appliedSelection: PatchSelection = input.selectedPatches.mapValues { it.value.toSet() }
     private var appliedOptions: Options = input.options
@@ -387,15 +387,13 @@ class PatcherViewModel(
     // Parsing the patched APK stalls a frame, and export reaches here from the main thread
     private suspend fun buildExportMetadata(packageInfo: PackageInfo?): PatchedAppExportData? = withContext(Dispatchers.IO) {
         val info = packageInfo ?: pm.getPackageInfo(outputFile) ?: return@withContext null
-        val sources = collectSelectedBundleMetadata()
         val label = runCatching { with(pm) { info.label() } }.getOrNull()
         val versionName = info.versionName?.takeUnless { it.isBlank() } ?: version ?: "unspecified"
         PatchedAppExportData(
             appName = label,
             packageName = info.packageName,
             appVersion = versionName,
-            patchBundleVersions = sources.mapNotNull { it.version },
-            patchBundleNames = sources.map { it.name }
+            sources = collectSelectedBundleMetadata()
         )
     }
 

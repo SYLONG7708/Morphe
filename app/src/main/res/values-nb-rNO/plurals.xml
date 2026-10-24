@@ -64,6 +64,10 @@
         <item quantity="one">Installerte %s app</item>
         <item quantity="other">Installerte %s apper</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Montert %s app</item>
+        <item quantity="other">Monterte %s apper</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Installerte %s app på nytt</item>
         <item quantity="other">Installerte %s apper på nytt</item>

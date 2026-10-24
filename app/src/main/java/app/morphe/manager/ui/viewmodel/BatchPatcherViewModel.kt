@@ -27,6 +27,7 @@ import app.morphe.manager.domain.bundles.AppVersionCatalog
 import app.morphe.manager.domain.bundles.BundledAppTarget
 import app.morphe.manager.domain.bundles.patchableBy
 import app.morphe.manager.domain.bundles.recommended
+import app.morphe.manager.domain.installer.RootInstaller
 import app.morphe.manager.domain.manager.DownloadUrlResolver
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.InstalledAppRepository
@@ -105,7 +106,7 @@ class BatchPatchEdit(
     private val patchesByName = bundles.associate { it.uid to it.patches.associateBy { patch -> patch.name } }
 
     /**
-     * Lock state of [patch] for the install target this queue runs against.
+     * Lock state of [patch] for the install target this app is patched for.
      *
      * A REQUIRED patch only locks while the item draws its patches from one bundle, see
      * [PatchSelectionUtils.applyAvailability].
@@ -222,6 +223,7 @@ class BatchPatcherViewModel(
     private val versionCatalog: AppVersionCatalog,
     private val localApkSources: LocalApkSources,
     private val prefs: PreferencesManager,
+    rootInstaller: RootInstaller,
     /** Picker behind the copy-from-another-bundle action of the editor. */
     val editCopy: CopySelectionController
 ) : ViewModel(), ApkDownloadHelperHost {
@@ -238,7 +240,7 @@ class BatchPatcherViewModel(
      * Adds [targets] to the queue being prepared, so re-entering the screen with the same apps
      * changes nothing. A finished run is kept for its own apps and replaced for any others.
      */
-    fun ensurePlan(targets: List<BatchTarget>, useMount: Boolean) {
+    fun ensurePlan(targets: List<BatchTarget>) {
         // Two cards can stand for the same install, such as a mount and a renamed build of one
         // app, and the queue lists each install once
         val queued = targets.distinctBy { it.id }
@@ -247,7 +249,7 @@ class BatchPatcherViewModel(
             if (current.targets == queued) return
             coordinator.clear()
         }
-        coordinator.enqueue(queued, useMount)
+        coordinator.enqueue(queued)
     }
 
     fun requestAttach(packageName: String) {
@@ -442,7 +444,7 @@ class BatchPatcherViewModel(
             versionName = search.version,
             compatible = search.compatible,
             metadata = patchBundleRepository.appMetadata.value[packageName],
-            stockInstallRequired = state.value?.useMount == true &&
+            stockInstallRequired = search.item.useMount &&
                     search.item.source !is BatchApkSource.Installed,
             fallbackWebUrl = downloadUrlResolver.webSearchUrl(packageName, search.version)
         )
@@ -552,9 +554,9 @@ class BatchPatcherViewModel(
             savedSelection = item.selection,
             newPatches = newPatches,
             initialOptions = item.options,
-            // The queue resolved its plan against one install target, so the editor has to
+            // The plan was resolved against this app's install target, so the editor has to
             // lock patches by the same rules the run will be executed with
-            installerType = installerTypeFor(state.value?.useMount == true),
+            installerType = installerTypeFor(item.useMount),
             // Read from the same APK the plan was resolved against, so an edit answers the
             // architecture rules with what the run will hand the patcher
             apkArchitecture = source.apkArchitecture(),
@@ -662,6 +664,11 @@ class BatchPatcherViewModel(
     }
 
     fun toggleExcluded(itemId: String) = coordinator.toggleExcluded(itemId)
+
+    /** Whether the device can mount builds, which is when the install target is worth asking about. */
+    val canMount = rootInstaller.isDeviceRooted()
+
+    fun setInstallTarget(itemId: String, useMount: Boolean) = coordinator.setInstallTarget(itemId, useMount)
 
     /**
      * Accepts an unsupported version. Confirmed with a message because the card only swaps a

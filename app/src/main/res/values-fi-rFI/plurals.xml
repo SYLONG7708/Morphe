@@ -64,6 +64,10 @@
         <item quantity="one">Asennettu %s sovellus</item>
         <item quantity="other">Asennettu %s sovellusta</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Liitetty %s sovellus</item>
+        <item quantity="other">Liitetty %s sovellusta</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Asennettu uudelleen %s sovellus</item>
         <item quantity="other">Asennettu uudelleen %s sovellusta</item>

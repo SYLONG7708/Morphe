@@ -265,6 +265,7 @@
     <string name="home_app_info_patches_name_default">Поправки</string>
     <string name="home_app_info_patches_name_fallback">Без име</string>
     <string name="home_app_info_patches_replace_fail">Не успеа да се увезуваат поправки: %s</string>
+    <string name="home_app_info_repatch_no_original_apk">Оригиналниот APK не е пронајден. Не може повторно да се пропатчи оваа апликација</string>
     <string name="home_app_info_original_package_name">Оригинално име на пакет</string>
     <string name="home_app_info_applied_patches">Применети поправки</string>
     <string name="home_app_info_patch_source_used">Извор на закрпување што се користи</string>

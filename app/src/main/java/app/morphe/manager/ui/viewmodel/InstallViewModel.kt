@@ -553,7 +553,6 @@ class InstallViewModel(
 
         onPersistApp(targetPackageName, InstallType.ROOT_PLAY_STORE)
         handleInstallSuccess(targetPackageName)
-        messages.show(R.string.install_app_success)
     }
 
     private suspend fun confirmInstallCompleted(
@@ -616,7 +615,6 @@ class InstallViewModel(
                     if (asPlayStore) InstallType.SHIZUKU_PLAY_STORE else InstallType.SHIZUKU
                 )
                 handleInstallSuccess(targetPackageName)
-                messages.show(R.string.install_app_success)
             }
             result is InstallResult.Conflict -> handleConflict(targetPackageName, result.message)
             result is InstallResult.Failure -> {

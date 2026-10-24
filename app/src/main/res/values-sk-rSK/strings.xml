@@ -456,6 +456,7 @@ Pre najlepšie výsledky sa odporúča záplatovať &lt;b&gt;úplný APK&lt;/b&g
     <string name="batch_patch_title">Hromadné záplatovanie</string>
     <string name="batch_patch_planning">Pripravuje sa front…</string>
     <string name="batch_patch_preparing_next">Pripravuje sa ďalšia aplikácia…</string>
+    <string name="batch_patch_progress_counter">Patchovanie %1$s z %2$s</string>
     <string name="batch_patch_summary">%1$s opravených, %2$s zlyhaných, %3$s preskočených</string>
     <string name="batch_patch_saved_hint">Aplikované záplaty boli uložené. Nainštalujte ich teraz alebo neskôr zo zoznamu záplat APK v nastaveniach</string>
     <string name="batch_patch_multiple_sources">Niektoré aplikácie kombinujú záplaty z viac ako jedného zdroja, čo môže spôsobiť konflikty</string>
@@ -477,6 +478,10 @@ Pre najlepšie výsledky sa odporúča záplatovať &lt;b&gt;úplný APK&lt;/b&g
     <string name="batch_patch_no_selection">Žiadny z dostupných záplat nie je vybraný</string>
     <string name="batch_patch_policy_install">Inštalovať po dokončení</string>
     <string name="batch_patch_policy_install_description">Inštaluje každú záplatanú aplikáciu ihneď po dokončení fronty. Vypnutie ponechá APK pre neskôr</string>
+    <string name="batch_patch_policy_mount">Pripojiť po dokončení</string>
+    <string name="batch_patch_policy_mount_description">Po dokončení fronty pripojí každú upravenú aplikáciu. Vypnutie ponechá súbory APK na neskôr</string>
+    <string name="batch_patch_policy_install_mount">Inštalovať alebo pripojiť po dokončení</string>
+    <string name="batch_patch_policy_install_mount_description">Po dokončení fronty nainštaluje alebo namontuje každú upravenú aplikáciu. Vypnuté ponechá súbory APK na neskôr</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Začiatok</string>
     <string name="batch_patch_stop_title">Zrušiť dávkové záplatovanie?</string>
@@ -1064,6 +1069,7 @@ Podrobnosti: %2$s"</string>
     <string name="settings_system_process_runtime">Runtime patchera</string>
     <string name="settings_system_jvm_runtime_enable">Použiť embednutý VM</string>
     <string name="settings_system_jvm_runtime_description">Záplaty v Java VM, ktoré Morphe prevádzkuje a ktorá môže využiť toľko pamäte, koľko je dostupné zariadení. Vypnutím zápuíte pomocou runtime Androidu</string>
+    <string name="settings_system_jvm_runtime_unavailable">Vyžaduje zariadenie s ARM alebo 64-bitovým x86</string>
     <string name="settings_system_patcher_completion_sound">Zvuk úspešného dokončenia</string>
     <string name="settings_system_patcher_completion_sound_description">Prehráva odlišný tón pre úspech alebo zlyhanie po dokončení záplatovania</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ Podrobnosti: %2$s"</string>
     <string name="reset_order">Obnoviť poradie</string>
     <string name="reset_order_done">Objednávka resetovaná</string>
     <string name="accessibility_select_app">Vybrať aplikáciu</string>
+    <string name="accessibility_select_source">Vybrať zdroj</string>
     <string name="accessibility_move_up">Presunúť hore</string>
     <string name="accessibility_move_down">Presunúť dole</string>
     <string name="accessibility_app_moved_announcement">%1$s presunuté na pozíciu %2$s z %3$s</string>
@@ -1435,11 +1442,15 @@ Chcete aj tak pokračovať?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s z %2$s</string>
     <string name="onboarding_sources_desc">Spravujte svoje zdroje záplat. Každý zdroj poskytuje záplaty, ktoré je možné použiť na vaše aplikácie</string>
+    <string name="onboarding_other_apps_desc">Opravte aplikáciu, ktorá nie je na zozname, zo súboru APK alebo aplikácie nainštrovanej v zariadení</string>
+    <string name="onboarding_add_source_desc">Pridajte zdroj opravy z odkazu alebo súboru balíka opráv</string>
+    <string name="onboarding_signing_key_desc">Zálohujte kľúč, ktorý podpisuje vaše opravené aplikácie. Bez neho ich možno aktualizovať iba po odstránení</string>
     <string name="onboarding_swipe_title">Gestá pre posúvanie prstom</string>
     <string name="onboarding_swipe_desc">Posúňte prstom doprava na kartičke aplikácie, aby ste zobrazili dostupné záplaty. Posúňte prstom doľava, aby ste skryli kartičku z domovskej obrazovky</string>
     <string name="onboarding_settings_desc">Prispôsobte si Morphe: vzhľad, pokročilé možnosti a systémové nástroje</string>
     <string name="onboarding_sources_patches_desc">Ťuknite na obrazovku, aby ste zobrazili všetky záplaty dostupné z tohto zdroja</string>
     <string name="onboarding_sources_version_desc">Ťuknite na verziu, aby ste zobrazili úplný zoznam zmien pre tento zdroj</string>
+    <string name="onboarding_sources_apps_desc">Klepnutím zobrazíte aplikácie, ktoré tento zdroj opravuje, a vyberiete si, pre ktoré z nich ponúka opravy</string>
     <string name="onboarding_sources_prerelease_desc">Povolením tohto nastavenia budete dostávať predbežné verzie záplat z tohto zdroja</string>
     <string name="onboarding_appearance_tab_desc">Prispôsobte si vzhľad aplikácie: téma, farba akcentu a pozadie</string>
     <string name="onboarding_expert_mode_desc">Povolením režimu experta odomknete výber záplat, vlastné možnosti a ďalšie pokročilé funkcie</string>

@@ -478,6 +478,10 @@ Davam etmək istədiyinizə əminsiniz?"</string>
     <string name="batch_patch_no_selection">Mövcud yamaqlardan heç biri seçilməyib</string>
     <string name="batch_patch_policy_install">Bitdikdə quraşdır</string>
     <string name="batch_patch_policy_install_description">Növbə bitdikdən dərhal sonra hər bir yamaqlanmış tətbiqi quraşdırır. Qapalıdırsa, APK-lar daha sonra üçün saxlanılır</string>
+    <string name="batch_patch_policy_mount">Bitdikdə mount et</string>
+    <string name="batch_patch_policy_mount_description">Növbə bitdikdə hər yamaqlanmış tətbiqi mount edir. Off seçimi APK-ları sonraya saxlayır.</string>
+    <string name="batch_patch_policy_install_mount">Bitdikdə quraşdır və ya mount et</string>
+    <string name="batch_patch_policy_install_mount_description">Növbə bitdikdə hər yamaqlanmış tətbiqi quraşdırır və ya mount edir. Off seçimi APK-ları sonraya saxlayır.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Başlat</string>
     <string name="batch_patch_stop_title">Toplu yamaqlama dayandırılsın?</string>
@@ -1437,11 +1441,15 @@ Hələ də davam etmək istəyirsiniz?"</string>
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%2$s -dən %1$s</string>
     <string name="onboarding_sources_desc">Yamaq mənbələrinizi idarə edin. Hər mənbə tətbiqlərinizə tətbiq oluna bilən yamaqlar təmin edir</string>
+    <string name="onboarding_other_apps_desc">APK faylından və ya cihazınızda quraşdırılmış tətbiqdən siyahıda olmayan tətbiqi yamaqlayın</string>
+    <string name="onboarding_add_source_desc">Linkdən və ya yamaq paketi faylından yamaq mənbəyi əlavə et</string>
+    <string name="onboarding_signing_key_desc">Yamaqlanmış tətbiqlərinizi imzalayan açarın ehtiyat nüsxəsini çıxarın. Bu olmadan, onlar yalnız silindikdən sonra yenilənə bilər</string>
     <string name="onboarding_swipe_title">Sürüşdürmə jestləri</string>
     <string name="onboarding_swipe_desc">Mövcud yamaqlara baxmaq üçün tətbiq kartında sağa sürüşdür. Kartı əsas ekrandan gizlətmək üçün sola sürüşdür</string>
     <string name="onboarding_settings_desc">Morphe-ni fərdiləşdir: görünüş, qabaqcıl seçimlər və sistem alətləri</string>
     <string name="onboarding_sources_patches_desc">Bu mənbədən əlçatan bütün yamaqlara baxmaq üçün toxun</string>
     <string name="onboarding_sources_version_desc">Bu mənbə üçün tam dəyişiklik jurnalına baxmaq məqsədilə versiyaya toxun</string>
+    <string name="onboarding_sources_apps_desc">Bu mənbənin yamaqladığı tətbiqləri görmək və hansılara yamaq təklif etdiyini seçmək üçün toxunun</string>
     <string name="onboarding_sources_prerelease_desc">Bu mənbədən ilkin buraxılış yamaq versiyalarını almaq üçün bunu aktivləşdir</string>
     <string name="onboarding_appearance_tab_desc">Tətbiq görünüşünü fərdiləşdir: kolorit, cila rəngi və fon</string>
     <string name="onboarding_expert_mode_desc">Yamaq seçimini, fərdi seçimləri və digər qabaqcıl xüsusiyyətləri açmaq üçün Mütəxəssis Rejimin aktivləşdir</string>

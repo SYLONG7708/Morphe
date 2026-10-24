@@ -753,7 +753,9 @@ fun DialogHostScope.PrePatchInstallerDialog(
     packageName: String?,
     onSelectMount: () -> Unit,
     onSelectStandard: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    // The hint names the setting that raises the dialog, which is not what opened it everywhere
+    showPromptHint: Boolean = true
 ) {
     AppDialog(
         onDismissRequest = onDismiss,
@@ -792,10 +794,12 @@ fun DialogHostScope.PrePatchInstallerDialog(
             )
 
             // Info hint
-            Footnote(
-                text = stringResource(R.string.root_pre_patch_installer_hint),
-                tone = SemanticTone.Primary
-            )
+            if (showPromptHint) {
+                Footnote(
+                    text = stringResource(R.string.root_pre_patch_installer_hint),
+                    tone = SemanticTone.Primary
+                )
+            }
         }
     }
 }

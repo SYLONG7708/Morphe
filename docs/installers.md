@@ -10,15 +10,17 @@ Google Play keeps trying to overwrite your patched build.
 
 ## Where the setting lives
 
-Open **Settings → System → Installer → Default installer**. The **Select installer** dialog
-lists everything available on your device, with the shared options underneath.
+Open **Settings → Installation**. The **Default installer** section lists everything available
+on your device, with the shared options underneath. The row in the settings shows the installer
+you picked.
 
 <p align="center">
-  <img src="images/installers/01-select-installer.jpg" width="320" alt="Select installer dialog" />
+  <img src="images/installers/01-select-installer.jpg" width="320" alt="Installation settings with the default installer list" />
 </p>
 
 Options your device cannot use are greyed out with the reason underneath, for example
-**Requires root access**. Pick one and tap **Confirm**.
+**Install Shizuku or Sui to use this option**. Tap one to select it, there is nothing to
+confirm.
 
 ## The installers
 
@@ -60,6 +62,7 @@ over and waits for that app to report the result.
 ## The shared options
 
 Below the installer list are the settings that apply to whichever installer you selected.
+**Install as Play Store** sits right under the list, the rest are grouped under **Patching**.
 
 ### Install as Play Store
 
@@ -104,8 +107,9 @@ framework. Without one, the install is rejected and the conflict dialog comes ba
 
 ### Installer selection prompt
 
-Shows the installer dialog every time a patched app is installed, so you can choose per
-install instead of committing to one default.
+Asks how to install every app instead of committing to one default. On a rooted device the
+question comes before patching, since root mount has to be decided then, otherwise it comes
+when the patched app is installed.
 
 ## Root mount in detail
 
@@ -136,8 +140,8 @@ Morphe shows a **Choose patch mode** dialog when you start patching:
   installer setting is used afterwards.
 
 > [!IMPORTANT]
-> The patch mode is separate from **Settings → System → Installer** and cannot be changed
-> after patching. To switch, patch the app again in the other mode.
+> The patch mode is separate from **Settings → Installation** and cannot be changed after
+> patching. To switch, patch the app again in the other mode.
 
 In root mount mode the APK download step also changes: you **do** install the original APK,
 because the stock app has to be present for the patched one to mount over it. In standard
@@ -159,7 +163,7 @@ with a **Mount** chip and offers **Remount** and **Unmount**, an unmounted one o
 - **KernelSU and APatch users**: disable module unmounting or hiding for apps installed with
   root mount. Otherwise the stock app may keep running even though Morphe reports it as
   mounted.
-- The **Root mount** entry in the installer dialog only handles apps that were patched in
+- The **Root mount** entry in the installer list only handles apps that were patched in
   root mount mode. Standard patched APKs still go through whichever other installer you
   selected.
 

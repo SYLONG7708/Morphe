@@ -94,6 +94,12 @@
         <item quantity="many">Встановлено %s застосунків</item>
         <item quantity="other">Встановлено %s застосунків</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">Змонтовано %s застосунок</item>
+        <item quantity="few">Змонтовано %s застосунки</item>
+        <item quantity="many">Змонтовано %s застосунків</item>
+        <item quantity="other">Змонтовано %s застосунків</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">Перевстановлено %s застосунок</item>
         <item quantity="few">Перевстановлено %s застосунки</item>

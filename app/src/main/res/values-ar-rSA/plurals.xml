@@ -124,6 +124,14 @@
         <item quantity="many">تم تثبيت %s تطبيق</item>
         <item quantity="other">تم تثبيت %s تطبيق</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="zero">تم تركيب %s تطبيقات</item>
+        <item quantity="one">تم تركيب %s تطبيق</item>
+        <item quantity="two">تم تركيب %s تطبيقين</item>
+        <item quantity="few">تم تركيب %s تطبيقات</item>
+        <item quantity="many">تم تركيب %s تطبيقًا</item>
+        <item quantity="other">تم تركيب %s تطبيق</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="zero">تم إعادة تثبيت %s تطبيق</item>
         <item quantity="one">تم إعادة تثبيت %s تطبيق</item>

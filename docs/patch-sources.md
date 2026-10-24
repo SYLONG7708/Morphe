@@ -4,28 +4,30 @@ A patch source is the bundle of patches Morphe applies to an app. Morphe ships w
 pre-installed source, **Morphe Patches**, and that is all most people ever need. You can add
 more if you want patches from another maintainer, or a bundle you built yourself.
 
-## The Patch sources sheet
+## The Sources page
 
-Tap **Sources** at the bottom of the home screen. The sheet lists every source you have, with
-the count in the subtitle and a **+** button to add another.
+Tap **Sources** in the bottom bar. The page lists every source you have, with the count in the
+subtitle, a **+** button to add another, and a search through sources and their patches.
 
 <p align="center">
-  <img src="images/patch-sources/01-sources-sheet.jpg" width="320" alt="Patch sources sheet with the pre-installed source expanded" />
+  <img src="images/patch-sources/01-sources-sheet.jpg" width="320" alt="Sources page with the pre-installed source" />
 </p>
 
 Each card shows when the source was last updated, and a **Pre-installed** badge on the one
-that ships with Morphe.
+that ships with Morphe. With more than one source the cards fold, tap one to open it.
 
 ### What is on a source card
 
-- **Patches** - how many patches the source provides. **Details** lists them all.
-- **Version** - the version currently installed. **Details** opens its changelog.
+- **Patches** - how many patches the source provides. Tap the row to list them all.
+- **Version** - the version currently installed. Tap the row to open its changelog.
 - **Apps** - how many apps the source brings, shown as `3/232` once some are unticked, and as
   `3/232 · 2 new` while apps it started supporting wait to be looked at. Tapping it opens the
   list described in [Choosing which apps a source brings](#choosing-which-apps-a-source-brings).
 - **Open in browser** - opens the source's repository or metadata URL.
 - **Report an issue** - opens the issue tracker of that source, so a broken patch is reported
   to the people who wrote it rather than to Morphe.
+- **Share** - shares a link that adds the source on another device, see the deep links under
+  [Remote](#remote). Offered for sources added from a repository.
 
 A card can also carry a badge explaining why the source is not pulling its weight:
 
@@ -43,8 +45,9 @@ With it off you only receive stable releases. It appears on sources that publish
 pre-releases at all.
 
 > [!NOTE]
-> This is per source. The **Pre-release updates** setting in **Settings → Advanced → Updates**
-> is a different thing, it controls early access to new versions of the Morphe app itself.
+> This is per source. The **Pre-release updates** setting in the **Updates** section of the
+> settings is a different thing, it controls early access to new versions of the Morphe app
+> itself.
 
 **Experimental app versions** makes this source patch experimental app targets when it has
 them, so Morphe recommends a newer app version whose patches are still being refined. It
@@ -63,12 +66,16 @@ The pill row at the bottom of a card holds the actions available for that source
 
 | Icon | Action | Shown for |
 | --- | --- | --- |
-| circular arrow | **Update** - fetch the newest version now | Remote sources |
+| circular arrow | **Update** - fetch the newest version now, or pick a replacement file for a local source | Remote and local sources |
 | crossed circle / check | **Disable** or **Enable** - keep the source without using its patches | Any source, once you have more than one |
 | pencil | **Rename** - give the source your own display name | Sources you added |
 | trash | **Delete** - remove the source, with a confirmation | Sources you added |
 
 The pre-installed source cannot be renamed or deleted.
+
+Long-press a card to select it, then tap other cards to add them. The bar that appears updates,
+disables, enables, or deletes every selected source at once, and **Reorder list** lets you drag
+them into place.
 
 ## Adding a source
 
@@ -80,8 +87,8 @@ Tap **+** and pick where the bundle comes from.
   <img src="images/patch-sources/02-add-remote.jpg" width="320" alt="Add patch source dialog, Remote tab" />
 </p>
 
-Paste the address. Morphe accepts a GitHub or GitLab repository, or a direct link to a
-bundle's JSON metadata:
+Paste the address, or several at once to add them all. Morphe accepts a GitHub or GitLab
+repository, or a direct link to a bundle's JSON metadata:
 
 ```
 github.com/owner/repo
@@ -104,8 +111,12 @@ the source for that one app: its other apps, the ones it adds later included, ar
 the start, see [New apps](#new-apps). The **Add** button next to an app on the community
 patches website opens such a link. If the source is already added, the link brings that app
 back to it instead. Opening a link hands the repository to Morphe, which asks **Do you want to
-add this patch source?** before anything is added. Only GitHub and GitLab repositories are
+add this patch source to Morphe?** before anything is added. Only GitHub and GitLab repositories are
 accepted this way.
+
+**Community patches** opens the community patches website, where third-party sources can be
+added with one tap through such a link. Morphe reminds you first that it does not review or
+verify those patches.
 
 > [!WARNING]
 > Only add sources you trust. A patch source decides what ends up inside your patched apps.
@@ -116,14 +127,15 @@ accepted this way.
   <img src="images/patch-sources/03-add-local.jpg" width="320" alt="Add patch source dialog, Local tab" />
 </p>
 
-Pick a `.mpp` patch bundle from storage. Local sources never update on their own, you replace
-the file yourself when a new one comes out.
+Pick one or more `.mpp` patch bundles from storage, **Add more files** adds further ones to the
+same step. Local sources never update on their own: when a new file comes out, tap **Update**
+on the source card and pick it.
 
 ### Choosing which apps a source brings
 
-Some sources carry patches for hundreds of apps when you only want one or two. Turn on
-**Choose apps** before tapping **Add**, and once the source has loaded Morphe opens a list of
-every app it has patches for. The same choice is offered in the confirmation shown for a deep link or a
+Some sources carry patches for hundreds of apps when you only want one or two. Tick **Pick
+which of its apps to keep once the source has loaded** before tapping **Add**, and once the
+source has loaded Morphe opens a list of every app it has patches for. The same choice is offered in the confirmation shown for a deep link or a
 `.mpp` file opened from a file manager, and the list is always one tap away from the **Apps**
 row on the source card.
 
@@ -193,13 +205,16 @@ The **Update** badge on a home card is tied to the source the app was patched wi
 
 ## Keeping sources up to date
 
-Remote sources refresh in the background on the schedule set in
-**Settings → Advanced → Updates**, and the **Update** pill on a card forces a check right
-away. If **Mobile data updates** is off and you are not on Wi-Fi, checks are skipped and
-Morphe warns you before patching with what may be an outdated bundle.
+Remote sources refresh in the background, and the **Update** pill on a card forces a check
+right away. On devices without Google Play services the schedule is set by **Check frequency**
+in **Settings → Notifications**. If **Mobile data updates** is off and you are not on Wi-Fi,
+checks are skipped and Morphe warns you before patching with what may be an outdated bundle.
 
-Sorting is available from the sheet: **Manual order** (long-press a card to drag it),
-**Last updated**, or **Enabled first**.
+With two or more sources the header gets a sort button. **Sort** offers **Manual order**
+(long-press a card to reorder), **Last updated**, **Name (A-Z)** and **(Z-A)**, and **Enabled
+first**. **Filter** narrows the page to enabled or disabled sources, the ones with an update
+waiting, or the ones that **Need attention** because they are blocked, failed to load, or need
+a newer Morphe.
 
 ## Troubleshooting
 

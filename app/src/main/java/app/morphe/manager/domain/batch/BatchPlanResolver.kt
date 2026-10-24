@@ -9,9 +9,13 @@ import android.content.pm.PackageInfo
 import android.os.Build
 import android.util.Log
 import app.morphe.manager.data.platform.Filesystem
+import app.morphe.manager.data.room.apps.installed.InstallType
+import app.morphe.manager.data.room.apps.installed.reinstallsByMount
 import app.morphe.manager.data.room.apps.installed.trackingKey
 import app.morphe.manager.domain.apk.LocalApkSources
 import app.morphe.manager.domain.bundles.AppVersionCatalog
+import app.morphe.manager.domain.installer.InstallerManager
+import app.morphe.manager.domain.installer.RootInstaller
 import app.morphe.manager.domain.manager.PatchOptionsPreferencesManager
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.repository.InstalledAppRepository
@@ -149,25 +153,19 @@ class BatchPlanResolver(
     private val appDataResolver: AppDataResolver,
     private val versionCatalog: AppVersionCatalog,
     private val localApkSources: LocalApkSources,
+    private val installerManager: InstallerManager,
+    private val rootInstaller: RootInstaller,
     private val pm: PM
 ) {
-    /**
-     * Resolves every package in parallel and returns the items in the requested order.
-     *
-     * @param useMount Picks the install target every selection is resolved against, so patches
-     *   that declare themselves unavailable for it are dropped just like the single-app flow does.
-     */
-    suspend fun resolve(
-        targets: List<BatchTarget>,
-        useMount: Boolean
-    ): List<BatchPatchItem> = coroutineScope {
+    /** Resolves every package in parallel and returns the items in the requested order. */
+    suspend fun resolve(targets: List<BatchTarget>): List<BatchPatchItem> = coroutineScope {
         // Built once for the whole plan: it is derived from every patch of every source, and
         // resolving it per app would repeat that work for each one of them
         val recommended = versionCatalog.recommendedVersions.first()
         targets
             .map { target ->
                 async {
-                    resolve(target, useMount, suggestedVersion = recommended[target.packageName]?.version)
+                    resolve(target, suggestedVersion = recommended[target.packageName]?.version)
                 }
             }
             .awaitAll()
@@ -177,6 +175,9 @@ class BatchPlanResolver(
      * Resolves a single target. [attachedFile] overrides source discovery and is used when
      * the user attaches an APK from the preflight screen.
      *
+     * @param useMount The install target the selection is resolved against, so patches that declare
+     *   themselves unavailable for it are dropped just like the single-app flow does. Null picks
+     *   the one the app is installed with, see [mountsByDefault].
      * @param suggestedVersion Passed in when the whole plan already resolved it, so the version
      *   catalog is not rebuilt once per app; looked up here otherwise.
      * @param allowUnverifiedSignature Set once the user has accepted an APK whose signing
@@ -185,7 +186,7 @@ class BatchPlanResolver(
      */
     suspend fun resolve(
         target: BatchTarget,
-        useMount: Boolean,
+        useMount: Boolean? = null,
         attachedFile: File? = null,
         suggestedVersion: String? = null,
         allowIncompatible: Boolean = false,
@@ -196,6 +197,7 @@ class BatchPlanResolver(
         val packageName = target.packageName
         val appName = resolveAppName(target)
         val suggested = suggestedVersion ?: versionCatalog.recommendedVersion(packageName)
+        val mount = useMount ?: mountsByDefault(target)
 
         val attached = try {
             attachedFile?.let { readAttachedApk(it) }
@@ -221,6 +223,7 @@ class BatchPlanResolver(
             bundles = emptyList(),
             suggestedVersion = suggested,
             state = state,
+            useMount = mount,
             message = message
         )
 
@@ -242,7 +245,8 @@ class BatchPlanResolver(
                     options = emptyMap(),
                     bundles = emptyList(),
                     suggestedVersion = suggested,
-                    state = BatchItemState.UNVERIFIED_SIGNATURE
+                    state = BatchItemState.UNVERIFIED_SIGNATURE,
+                    useMount = mount
                 )
             }
         }
@@ -251,7 +255,7 @@ class BatchPlanResolver(
             target = target,
             appName = appName,
             source = source,
-            useMount = useMount,
+            useMount = mount,
             suggested = suggested,
             forceIncompatible = allowIncompatible,
             chosenBundleUid = chosenBundleUid
@@ -297,50 +301,49 @@ class BatchPlanResolver(
      * swapping its APK, so the user does not have to confirm the same version warning twice, and
      * keeps the patches that came with it. The new file has its signature checked afresh.
      */
-    suspend fun reattach(item: BatchPatchItem, file: File, useMount: Boolean): BatchPatchItem =
-        reresolve(item, useMount, attachedFile = file, acceptSignature = false)
+    suspend fun reattach(item: BatchPatchItem, file: File): BatchPatchItem =
+        reresolve(item, attachedFile = file, acceptSignature = false)
 
     /**
      * Re-resolves an app against the APK the user picked in the availability dialog. Only the
      * order of preference changes: the file itself is still discovered the usual way.
      */
-    suspend fun useSource(item: BatchPatchItem, useMount: Boolean, preferInstalled: Boolean): BatchPatchItem =
-        reresolve(item, useMount, attachedFile = null, preferInstalled = preferInstalled, acceptSignature = false)
+    suspend fun useSource(item: BatchPatchItem, preferInstalled: Boolean): BatchPatchItem =
+        reresolve(item, attachedFile = null, preferInstalled = preferInstalled, acceptSignature = false)
 
     /**
      * Re-resolves an app the user accepted an unsupported version for, this time keeping the
      * patches that declare a different version.
      */
-    suspend fun forceVersion(item: BatchPatchItem, useMount: Boolean): BatchPatchItem =
-        reresolve(item, useMount, forceVersion = true)
+    suspend fun forceVersion(item: BatchPatchItem): BatchPatchItem =
+        reresolve(item, forceVersion = true)
 
     /**
      * Re-resolves an app whose attached APK the user accepted despite its unknown signing
      * certificate. The file is reused rather than asked for again, so accepting costs a tap
      * instead of a second download.
      */
-    suspend fun acceptUnverifiedSignature(item: BatchPatchItem, useMount: Boolean): BatchPatchItem =
-        reresolve(item, useMount, acceptSignature = true)
+    suspend fun acceptUnverifiedSignature(item: BatchPatchItem): BatchPatchItem =
+        reresolve(item, acceptSignature = true)
 
     /**
      * Re-resolves an app against sources that changed under it, keeping every choice the user
      * made on it: the attached file or the installed app, a forced version, an accepted
-     * signature, the source it is patched from.
+     * signature, the source it is patched from, the install target.
      */
-    suspend fun refresh(item: BatchPatchItem, useMount: Boolean): BatchPatchItem =
-        reresolve(item, useMount, preferInstalled = item.source is BatchApkSource.Installed)
+    suspend fun refresh(item: BatchPatchItem): BatchPatchItem =
+        reresolve(item, preferInstalled = item.source is BatchApkSource.Installed)
 
     /** Resolves [item] again, carrying over the choices the caller does not override. */
     private suspend fun reresolve(
         item: BatchPatchItem,
-        useMount: Boolean,
         attachedFile: File? = (item.source as? BatchApkSource.UserFile)?.file,
         preferInstalled: Boolean = false,
         forceVersion: Boolean = item.forceVersionMismatch,
         acceptSignature: Boolean = item.forceUnverifiedSignature
     ): BatchPatchItem = resolve(
         target = item.target,
-        useMount = useMount,
+        useMount = item.useMount,
         attachedFile = attachedFile,
         allowIncompatible = forceVersion,
         allowUnverifiedSignature = acceptSignature,
@@ -403,7 +406,8 @@ class BatchPlanResolver(
                 versionMismatch -> BatchItemState.VERSION_MISMATCH
                 nothingSelected -> BatchItemState.NO_SELECTION
                 else -> BatchItemState.NO_PATCHES
-            }
+            },
+            useMount = useMount
         )
 
         if (!hasCompatible && !hasIncompatible && !hasUniversal) return blocked()
@@ -441,7 +445,8 @@ class BatchPlanResolver(
             experimentalVersion = experimental,
             suggestedVersion = suggested,
             unreadableOptionPaths = unreadablePaths,
-            state = if (versionMismatch) BatchItemState.VERSION_MISMATCH else BatchItemState.READY
+            state = if (versionMismatch) BatchItemState.VERSION_MISMATCH else BatchItemState.READY,
+            useMount = useMount
         )
     }
 
@@ -454,6 +459,22 @@ class BatchPlanResolver(
             .filter { it.declaresPackageName }
             .mapTo(mutableSetOf()) { it.name }
     )
+
+    /**
+     * Whether [target] is patched for a root mount when the user picked nothing else. An install
+     * already on the device keeps the way it was made, so a mounted app is mounted again and a
+     * renamed GmsCore build stays one. Only an app with no tracked install follows the primary
+     * installer, as a single-app run on a rooted device does.
+     */
+    private suspend fun mountsByDefault(target: BatchTarget): Boolean {
+        if (!rootInstaller.isDeviceRooted()) return false
+        val primaryMounts = installerManager.getPrimaryToken().isRootMount
+        // A build that was only saved says nothing about how the app is installed
+        val installs = installedAppRepository.getAll().first()
+            .filter { it.trackingKey == target.id && it.installType != InstallType.SAVED }
+        if (installs.isEmpty()) return primaryMounts
+        return installs.any { it.reinstallsByMount(primaryMounts) }
+    }
 
     /**
      * Mirrors the single-app selection rules across every contributing bundle: a validated

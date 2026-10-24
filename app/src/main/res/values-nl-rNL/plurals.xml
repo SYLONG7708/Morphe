@@ -64,6 +64,10 @@
         <item quantity="one">%s app geïnstalleerd</item>
         <item quantity="other">%s apps geïnstalleerd</item>
     </plurals>
+    <plurals name="batch_mount_summary">
+        <item quantity="one">%s app gekoppeld</item>
+        <item quantity="other">%s apps gekoppeld</item>
+    </plurals>
     <plurals name="batch_reinstall_summary">
         <item quantity="one">%s app opnieuw geïnstalleerd</item>
         <item quantity="other">%s apps opnieuw geïnstalleerd</item>

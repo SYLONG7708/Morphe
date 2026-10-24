@@ -478,6 +478,10 @@
     <string name="batch_patch_no_selection">Ни один из доступных патчей не выбран</string>
     <string name="batch_patch_policy_install">Устанавливать по завершении</string>
     <string name="batch_patch_policy_install_description">Устанавливает каждое пропатченное приложение сразу после завершения очереди. Выкл. сохраняет APK для последующей установки</string>
+    <string name="batch_patch_policy_mount">Смонтировать по завершении</string>
+    <string name="batch_patch_policy_mount_description">Смонтирует каждое пропатченное приложение после завершения очереди. Если выключено, APK-файлы сохраняются на потом.</string>
+    <string name="batch_patch_policy_install_mount">Установить или смонтировать по завершении</string>
+    <string name="batch_patch_policy_install_mount_description">Установит или смонтирует каждое пропатченное приложение после завершения очереди. Если выключено, APK-файлы сохраняются на потом.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Начало</string>
     <string name="batch_patch_stop_title">Остановить массовый патчинг?</string>
@@ -1265,7 +1269,7 @@ morphe_header_custom_dark.png
     <string name="settings_section_patch_options_summary">Какие приложения поддерживают патчи в простом режиме</string>
     <string name="settings_section_general">Общие</string>
     <string name="settings_section_patcher_summary">Как приложения патчатся на этом устройстве</string>
-    <string name="settings_section_help_info">Помощь и <b>&amp;</b> информация</string>
+    <string name="settings_section_help_info">Помощь и  информация</string>
     <string name="settings_section_about_summary">Больше о Morphe и как получить помощь</string>
     <string name="settings_section_local_files">Файлы</string>
     <string name="settings_section_backup">Резервная копия</string>
@@ -1438,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s из %2$s</string>
     <string name="onboarding_sources_desc">Управляйте источниками патчей. Каждый источник предоставляет патчи, которые можно применить к вашим приложениям</string>
+    <string name="onboarding_other_apps_desc">Запатчите приложение, которого нет в списке, из APK-файла или приложения, установленного на вашем устройстве</string>
+    <string name="onboarding_add_source_desc">Добавьте источник патча по ссылке или из файла пакета патчей</string>
+    <string name="onboarding_signing_key_desc">Сделайте резервную копию ключа подписи ваших запатченных приложений. Без него их можно будет обновлять только после удаления</string>
     <string name="onboarding_swipe_title">Жесты смахивания</string>
     <string name="onboarding_swipe_desc">Смахните вправо по карте приложения, чтобы просмотреть доступные патчи. Смахните влево, чтобы скрыть карту с главного экрана</string>
     <string name="onboarding_settings_desc">Настройте Morphe: внешний вид, дополнительные параметры и системные инструменты</string>
     <string name="onboarding_sources_patches_desc">Нажмите, чтобы просмотреть все патчи, доступные из этого источника</string>
     <string name="onboarding_sources_version_desc">Нажмите на версию, чтобы просмотреть полный журнал изменений для этого источника</string>
+    <string name="onboarding_sources_apps_desc">Нажмите, чтобы увидеть приложения, которые патчит этот источник, и выбрать, для каких из них он предлагает патчи</string>
     <string name="onboarding_sources_prerelease_desc">Включите это, чтобы получать версии патчей, выпущенные до релиза, из этого источника</string>
     <string name="onboarding_appearance_tab_desc">Настройте внешний вид приложения: тему, цвет акцента и фон</string>
     <string name="onboarding_expert_mode_desc">Включите режим эксперта, чтобы разблокировать выбор патчей, пользовательские параметры и другие расширенные функции</string>

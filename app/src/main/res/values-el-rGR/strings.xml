@@ -456,6 +456,7 @@
     <string name="batch_patch_title">Μαζική τροποποίηση</string>
     <string name="batch_patch_planning">Προετοιμασία της ουράς…</string>
     <string name="batch_patch_preparing_next">Προετοιμασία της επόμενης εφαρμογής…</string>
+    <string name="batch_patch_progress_counter">Εφαρμογή διορθώματος %1$s από τα %2$s</string>
     <string name="batch_patch_summary">%1$s επιδιορθώθηκε, %2$s απέτυχε, %3$s παρακάμφθηκαν</string>
     <string name="batch_patch_saved_hint">Οι διορθωμένες εφαρμογές έχουν αποθηκευτεί. Εγκαταστήστε τες τώρα, ή αργότερα από τη λίστα των διορθωμένων APK στις ρυθμίσεις</string>
     <string name="batch_patch_multiple_sources">Ορισμένες εφαρμογές συνδυάζουν διορθώσεις από περισσότερες από μία πηγές, κάτι που μπορεί να προκαλέσει συγκρούσεις</string>
@@ -477,6 +478,10 @@
     <string name="batch_patch_no_selection">Κανένα από τα διαθέσιμα patches δεν έχει επιλεγεί</string>
     <string name="batch_patch_policy_install">Εγκατάσταση μετά την ολοκλήρωση</string>
     <string name="batch_patch_policy_install_description">Εγκαθιστά κάθε διορθωμένη εφαρμογή αμέσως μετά την ολοκλήρωση της ουράς. Η απενεργοποίηση διατηρεί τα APK για αργότερα</string>
+    <string name="batch_patch_policy_mount">Υπομοντάρισμα κατά τη λήξη</string>
+    <string name="batch_patch_policy_mount_description">Εγκαθιστά κάθε τροποποιημένη εφαρμογή μόλις ολοκληρωθεί η ουρά. Η απενεργοποίηση διατηρεί τα APK για αργότερα</string>
+    <string name="batch_patch_policy_install_mount">Εγκατάσταση ή τοποθέτηση κατά την ολοκλήρωση</string>
+    <string name="batch_patch_policy_install_mount_description">Εγκαθιστά ή προσαρτά κάθε τροποποιημένη εφαρμογή μόλις ολοκληρωθεί η ουρά. Η επιλογή Off διατηρεί τα APK για αργότερα.</string>
     <!-- Label of a footer button beside "Close". Keep it short, a longer one moves the buttons onto two rows -->
     <string name="batch_patch_start">Αρχή</string>
     <string name="batch_patch_stop_title">Διακοπή ομαδικής διόρθωσης;</string>
@@ -1064,6 +1069,7 @@ morphe_header_custom_dark.png
     <string name="settings_system_process_runtime">Χρόνος εκτέλεσης Patcher</string>
     <string name="settings_system_jvm_runtime_enable">Ενεργοποίηση ενσωματωμένης JVM</string>
     <string name="settings_system_jvm_runtime_description">Τροποποιήσεις σε μια Java VM που φέρνει ο Morphe, η οποία μπορεί να χρησιμοποιήσει όσο μνήμη διαθέτει η συσκευή. Απενεργοποιήστε για τροποποίηση με τον χρόνο εκτέλεσης του Android</string>
+    <string name="settings_system_jvm_runtime_unavailable">Απαιτείται συσκευή ARM ή x86 64-bit</string>
     <string name="settings_system_patcher_completion_sound">Ήχος ολοκλήρωσης</string>
     <string name="settings_system_patcher_completion_sound_description">Αναπαράγει έναν διακριτό τόνο για επιτυχία ή αποτυχία κατά την ολοκλήρωση της επιδιόρθωσης</string>
     <!-- Settings - System Tab - Notifications Section -->
@@ -1322,6 +1328,7 @@ morphe_header_custom_dark.png
     <string name="reset_order">Επαναφορά σειράς</string>
     <string name="reset_order_done">Επαναφορά παραγγελίας</string>
     <string name="accessibility_select_app">Επιλογή εφαρμογής</string>
+    <string name="accessibility_select_source">Επίλεξε πηγή</string>
     <string name="accessibility_move_up">Μετακίνηση προς τα πάνω</string>
     <string name="accessibility_move_down">Μετακίνηση προς τα κάτω</string>
     <string name="accessibility_app_moved_announcement">Το %1$s μετακινήθηκε στη θέση %2$s του/της %3$s</string>
@@ -1435,11 +1442,15 @@ morphe_header_custom_dark.png
     <!-- %1$s = current step number, %2$s = total number of steps (e.g. "3 of 13") -->
     <string name="onboarding_step_of">%1$s σε %2$s</string>
     <string name="onboarding_sources_desc">Διαχείριση των πηγών ενημερώσεων. Κάθε πηγή παρέχει ενημερώσεις που μπορούν να εφαρμοστούν στις εφαρμογές σας</string>
+    <string name="onboarding_other_apps_desc">Τροποποίησε μια εφαρμογή που δεν υπάρχει στη λίστα, από αρχείο APK ή μια εφαρμογή εγκατεστημένη στη συσκευή σου</string>
+    <string name="onboarding_add_source_desc">Πρόσθεσε μια πηγή τροποποίησης από σύνδεσμο ή αρχείο δέσμης τροποποιήσεων</string>
+    <string name="onboarding_signing_key_desc">Κάνε αντίγραφο ασφαλείας του κλειδιού υπογραφής των τροποποιημένων εφαρμογών σου. Χωρίς αυτό, μπορούν να ενημερωθούν μόνο μετά την απεγκατάστασή τους</string>
     <string name="onboarding_swipe_title">Ζεστοί χειρισμοί</string>
     <string name="onboarding_swipe_desc">Σύρετε προς τα δεξιά σε μια κάρτα εφαρμογής για να δείτε τις διαθέσιμες ενημερώσεις της. Σύρετε προς τα αριστερά για να αποκρύψετε την κάρτα από την αρχική οθόνη</string>
     <string name="onboarding_settings_desc">Προσαρμόστε το Morphe: εμφάνιση, προχωρημένες επιλογές και εργαλεία συστήματος</string>
     <string name="onboarding_sources_patches_desc">Πατήστε για να δείτε όλες τις ενημερώσεις που είναι διαθέσιμες από αυτήν την πηγή</string>
     <string name="onboarding_sources_version_desc">Πατήστε στην έκδοση για να δείτε το πλήρες αρχείο αλλαγών για αυτήν την πηγή</string>
+    <string name="onboarding_sources_apps_desc">Πάτησε για να δεις τις εφαρμογές που τροποποιεί αυτή η πηγή και επίλεξε ποιες από αυτές προσφέρει τροποποιήσεις</string>
     <string name="onboarding_sources_prerelease_desc">Ενεργοποιήστε το για να λαμβάνετε εκδόσεις ενημερώσεων πριν από την επίσημη κυκλοφορία από αυτήν την πηγή</string>
     <string name="onboarding_appearance_tab_desc">Προσαρμόστε την εμφάνιση της εφαρμογής: θέμα, χρώμα έμφασης και φόντο</string>
     <string name="onboarding_expert_mode_desc">Ενεργοποιήστε την Εξειδικευμένη Λειτουργία για να ξεκλειδώσετε την επιλογή ενημερώσεων, προσαρμοσμένες επιλογές και άλλες προηγμένες λειτουργίες</string>
