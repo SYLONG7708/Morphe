@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "channel": "blue-m-stable",
-  "sequence": 2026100904,
-  "published_at": "2026-10-22T18:49:37.580517+00:00",
+  "sequence": 2026100905,
+  "published_at": "2026-10-25T12:48:10.315259+00:00",
   "upstream": {
     "policy": "morphe-recommended-stable",
     "patches_version": "1.48.0",
@@ -15,10 +15,10 @@
   "packages": [
     {
       "package": "app.morphe.android.youtube",
-      "version_code": 2026100904,
+      "version_code": 2026100905,
       "version_name": "21.20.405",
       "size": 199888692,
-      "sha256": "85bd2c9b50f9354793ddd97df6d0be1430e0bf2c74315e697b84e1aedae73125",
+      "sha256": "21a838f6d1f43388d6232a6bd1b357dd57bd7cfa71964a9a0bf16a46e3c08891",
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
@@ -27,7 +27,7 @@
       ],
       "min_sdk": 28,
       "signer_sha256": "7cee829c140e3ba32767e541e98d99a87214b80c7b3095692549131a2d6ebf02",
-      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100904/BlueM-21.20.405-2026100904.apk"
+      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100905/BlueM-21.20.405-2026100905.apk"
     },
     {
       "package": "app.revanced.android.gms",
@@ -43,13 +43,13 @@
       ],
       "min_sdk": 21,
       "signer_sha256": "0b6c9515afb195fac59601696ba0a7907a0b217ccf720b43148427ccf64343e7",
-      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100904/MicroG-7.2.2.apk"
+      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100905/MicroG-7.2.2.apk"
     }
   ],
   "client": {
     "revision": 4,
-    "fingerprint": "f43c95c663265b987286b38402a4f9942eb8171596e3cec14618a4eb963bfa8d",
-    "source_commit": "4fb372b427939e3364c95e936e69c09ec67cc106"
+    "fingerprint": "6ab995066640ccf46e86dc8d90bb59ce8c103fa6d21f0f71f74f9a1f07414481",
+    "source_commit": "cf813a24d35ff4fda46e56a6cab02e2d01a6c633"
   },
   "playback": {
     "schema": 1,
