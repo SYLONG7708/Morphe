@@ -28,7 +28,10 @@ public final class CheckRecoveryContract {
             method(classes, "youtube/shared/PlayerType", "getCurrent", "Lapp/morphe/extension/youtube/shared/PlayerType;");
             method(classes, "shared/spoof/SpoofVideoStreamsPatch", "setClientsToUse", "V",
                    "Ljava/util/List;", "Lapp/morphe/extension/shared/spoof/ClientType;");
-            for (String field : List.of("TV_SABR", "ANDROID_CREATOR", "TV_SIMPLY"))
+            method(classes, "shared/spoof/SpoofVideoStreamsPatch", "getPreferredClient", "Lapp/morphe/extension/shared/spoof/ClientType;");
+            method(classes, "shared/spoof/js/JavaScriptEngineSupport", "supportsJavaScriptEngine", "Z");
+            method(classes, "shared/spoof/requests/StreamingDataRequest", "getLastSpoofedClientName", "Ljava/lang/String;");
+            for (String field : List.of("TV_SABR", "ANDROID_CREATOR", "TV_SIMPLY", "VISIONOS_1_02"))
                 field(classes, "shared/spoof/ClientType", field);
             field(classes, "youtube/settings/Settings", "SPOOF_VIDEO_STREAMS");
             field(classes, "youtube/settings/Settings", "SPOOF_VIDEO_STREAMS_CLIENT_TYPE");

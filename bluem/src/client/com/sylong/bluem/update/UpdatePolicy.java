@@ -19,6 +19,10 @@ public final class UpdatePolicy {
     public static final int MAX_MANIFEST = 131072;
     public static final int MAX_UPSTREAM = 2 * 1024 * 1024;
     public static final String POLICY = "morphe-recommended-stable";
+    public static final int MIN_RECOVERY_REVISION = 5;
+    public static boolean preservesRecovery(String pkg, int revision) {
+        return MICROG.equals(pkg) || (YOUTUBE.equals(pkg) && revision >= MIN_RECOVERY_REVISION);
+    }
 
     public static final class Recommendation {
         public final String patchesVersion, youtubeVersion;
@@ -120,10 +124,12 @@ public final class UpdatePolicy {
     }
     public static final class Release {
         public final long sequence;
+        public final int clientRevision;
         public final List<Item> items;
         public final Recommendation recommendation;
-        Release(long sequence, List<Item> items, Recommendation recommendation) {
+        Release(long sequence, List<Item> items, Recommendation recommendation, int clientRevision) {
             this.sequence = sequence; this.items = items; this.recommendation = recommendation;
+            this.clientRevision = clientRevision;
         }
     }
     public static Release verify(byte[] bytes, byte[] signature, byte[] certificate, long minimumSequence, boolean qa) throws Exception {
@@ -156,7 +162,10 @@ public final class UpdatePolicy {
         }
         // Install the companion first, so replacing YouTube never loses a queued companion update.
         items.sort((a, b) -> MICROG.equals(a.pkg) ? -1 : 1);
-        return new Release(seq, Collections.unmodifiableList(items), recommendation);
+        JSONObject client = root.optJSONObject("client");
+        int revision = client != null && client.opt("revision") instanceof Number ? client.optInt("revision", 0) : 0;
+        require(revision >= 0 && revision <= 10000, "Invalid recovery revision");
+        return new Release(seq, Collections.unmodifiableList(items), recommendation, revision);
     }
     public static URL allowedUrl(String value, boolean qa) throws Exception {
         URI uri = new URI(value);

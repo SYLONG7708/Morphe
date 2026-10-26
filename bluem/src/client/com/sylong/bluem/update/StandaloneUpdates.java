@@ -99,13 +99,19 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
     }
     private void verifyArchive(File file, UpdatePolicy.Item item) throws Exception {
         UpdatePolicy.require(file.length() == item.size && UpdatePolicy.hash(file).equals(item.sha256), "APK hash or size mismatch");
-        PackageInfo archive = app.getPackageManager().getPackageArchiveInfo(file.getAbsolutePath(), PackageManager.GET_SIGNING_CERTIFICATES);
+        PackageInfo archive = app.getPackageManager().getPackageArchiveInfo(file.getAbsolutePath(), PackageManager.GET_SIGNING_CERTIFICATES | PackageManager.GET_META_DATA);
         UpdatePolicy.require(archive != null && item.pkg.equals(archive.packageName) && archive.getLongVersionCode() == item.code && item.versionName.equals(archive.versionName),
             "Wrong APK package or version");
         UpdatePolicy.require(ApkTrust.signedBy(file, item.cert), "Invalid APK signing block or untrusted certificate");
         Log.i(TAG, "APK_SIGNATURE_VERIFIED " + item.pkg);
         UpdatePolicy.require(archive.applicationInfo != null && archive.applicationInfo.minSdkVersion <= Build.VERSION.SDK_INT,
             "Incompatible APK SDK");
+        if (UpdatePolicy.YOUTUBE.equals(item.pkg)) {
+            Bundle metadata = archive.applicationInfo.metaData;
+            Object value = metadata == null ? null : metadata.get("com.sylong.bluem.UPDATE_CLIENT_REVISION");
+            int revision = value == null ? 0 : Integer.parseInt(String.valueOf(value));
+            UpdatePolicy.require(UpdatePolicy.preservesRecovery(item.pkg, revision), "Update would remove playback compatibility repair");
+        }
         UpdatePolicy.require(item.compatible(Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS), "Incompatible APK ABI");
         // PackageManager parses APK signing details; the platform installer verifies all signature blocks again.
         PackageInfo existing = installed(item.pkg);
@@ -211,16 +217,17 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         List<String> clients = new ArrayList<>();
         for (int i = 0; i < list.length(); i++) {
             String item = list.getString(i);
-            UpdatePolicy.require(Arrays.asList("TV_SABR", "ANDROID_CREATOR", "TV_SIMPLY").contains(item)
+            UpdatePolicy.require(ClientPolicy.ALLOWED.contains(item)
                 && !clients.contains(item), "Invalid recovery client");
             clients.add(item);
         }
-        UpdatePolicy.require(clients.size() >= 2 && clients.size() <= 3, "Recovery clients missing");
+        UpdatePolicy.require(clients.size() >= 2 && clients.size() <= ClientPolicy.ALLOWED.size(), "Recovery clients missing");
         prefs.edit().putLong("buffering_ms", timeout).putString("playback_clients", String.join(",", clients)).apply();
         Log.i(TAG, "SIGNED_RECOVERY_POLICY_APPLIED");
     }
     private void evaluate(UpdatePolicy.Release release) throws Exception {
         List<UpdatePolicy.Item> updates = new ArrayList<>();
+        boolean incompatibleRecovery = false;
         for (UpdatePolicy.Item item : release.items) {
             PackageInfo present = installed(item.pkg);
             if (present != null && !signedBy(present, item.cert)) {
@@ -228,13 +235,20 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 continue;
             }
             long code = present == null ? 0 : present.getLongVersionCode();
+            if (code < item.code && !UpdatePolicy.preservesRecovery(item.pkg, release.clientRevision)) {
+                incompatibleRecovery = true;
+                Log.w(TAG, "UPDATE_REQUIRES_RECOVERY_REVISION " + UpdatePolicy.MIN_RECOVERY_REVISION);
+                continue;
+            }
             if (code < item.code && item.compatible(Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS)) updates.add(item);
         }
+        final boolean waitingCompatible = incompatibleRecovery;
         main.post(() -> {
             busy = false; latest = release; ready = null;
             if (updates.isEmpty()) {
                 prefs.edit().remove("accepted_sequence").commit();
-                Log.i(TAG, "UP_TO_DATE " + release.sequence);
+                prefs.edit().putString("update_status", waitingCompatible ? "waiting_for_compatible_recovery_update" : "up_to_date").apply();
+                Log.i(TAG, (waitingCompatible ? "UPDATE_HELD_TO_PRESERVE_RECOVERY " : "UP_TO_DATE ") + release.sequence);
                 return;
             }
             if (activity() == null) return;

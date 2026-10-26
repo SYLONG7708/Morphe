@@ -10,6 +10,8 @@ public final class QaReceiver extends BroadcastReceiver {
             if ("check".equals(intent.getStringExtra("action"))) StandaloneUpdates.requestCheck();
             if ("error".equals(intent.getStringExtra("action"))) PlaybackRecovery.qaError("播放時發生問題\n輕觸以重試");
             if ("account".equals(intent.getStringExtra("action"))) PlaybackRecovery.qaError("請登入以確認你不是機器人");
+            if ("server".equals(intent.getStringExtra("action"))) PlaybackRecovery.qaError("無法連接伺服器，請稍後再試");
+            if ("status".equals(intent.getStringExtra("action"))) PlaybackRecovery.qaStatus();
             if ("offline".equals(intent.getStringExtra("action"))) PlaybackRecovery.qaOffline = true;
             if ("online".equals(intent.getStringExtra("action"))) PlaybackRecovery.qaOffline = false;
             if ("clear".equals(intent.getStringExtra("action"))) PlaybackRecovery.qaError(null);

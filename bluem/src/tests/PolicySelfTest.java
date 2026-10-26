@@ -16,6 +16,11 @@ public final class PolicySelfTest {
         UpdatePolicy.Release r = UpdatePolicy.verify(valid, sig, cert, 0, false);
         check(r.sequence >= 2026092402L && r.items.size() == 2, "signed production release accepted");
         check(r.items.get(0).pkg.equals(UpdatePolicy.MICROG), "MicroG precedes self replacement");
+        check(!UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 4), "higher APK code cannot restore legacy JS-only recovery");
+        check(!UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 0), "missing recovery metadata cannot replace repaired APK");
+        check(UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 5), "repaired future updates remain allowed");
+        check(UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 6), "future compatible recovery revision allowed");
+        check(UpdatePolicy.preservesRecovery(UpdatePolicy.MICROG, 0), "MicroG updates remain independent of YouTube recovery revision");
         check(r.items.get(1).compatible(33,new String[]{"arm64-v8a"}), "UIS7870 Android 13 arm64 compatible");
         check(r.items.get(1).compatible(36,new String[]{"x86_64"}), "clean emulator compatible");
         check(!r.items.get(1).compatible(27,new String[]{"arm64-v8a"}), "older Android excluded");

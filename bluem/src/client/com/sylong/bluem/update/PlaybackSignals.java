@@ -5,6 +5,9 @@ import java.util.Locale;
 /** Pure classification; does not change accounts or bypass content restrictions. */
 public final class PlaybackSignals {
     public enum Failure { NONE, TRANSIENT, NETWORK, ACCOUNT, CONTENT }
+    public static boolean progressing(long previous, long position) {
+        return previous >= 0 && position - previous >= 250 && position - previous < 5000;
+    }
     public static boolean watchActivity(String name) {
         return name.equals("com.google.android.apps.youtube.app.watchwhile.MainActivity")
             || name.equals("com.google.android.apps.youtube.app.watchwhile.InternalMainActivity");
@@ -20,7 +23,7 @@ public final class PlaybackSignals {
                 "已移除", "已刪除", "已删除", "會員專屬", "会员专享",
                 "購買", "购买", "版權", "版权", "國家/地區", "国家/地区")) return Failure.CONTENT;
         if (contains(value, "no internet", "network", "offline", "connection", "connect to the internet",
-                "網路", "网络", "離線", "离线", "連線", "连接")) return Failure.NETWORK;
+                "server", "timed out", "timeout", "網路", "网络", "離線", "离线", "連線", "連接", "连接", "伺服器", "服務器", "服务器", "逾時")) return Failure.NETWORK;
         return Failure.TRANSIENT;
     }
     private static boolean contains(String value, String... phrases) {

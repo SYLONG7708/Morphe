@@ -24,6 +24,12 @@ public final class PlaybackSignalsTest {
         check(!PlaybackSignals.activePlayback(false,false,false,true,false,true,false,true),"exhausted buffering can receive a repair update after idle grace");
         check(PlaybackSignals.activePlayback(false,true,false,true,false,true,false,true),"resumed playback still blocks installation");
         check(!PlaybackSignals.activePlayback(true,false,false,false,false,false,false,true),"paused player can update after idle grace");
-        System.out.println("PlaybackSignalsTest: 21 lifecycle/error/media/position/update-idle regressions PASS");
+        check(PlaybackSignals.failure(true,"無法連接伺服器，請稍後再試",false)==Failure.NETWORK,"traditional Chinese server connection failure");
+        check(PlaybackSignals.failure(true,"Connection timed out",false)==Failure.NETWORK,"server timeout classification");
+        check(PlaybackSignals.failure(true,"Server error: sign in to verify your age",true)==Failure.ACCOUNT,"account restrictions take priority over server wording");
+        check(!PlaybackSignals.progressing(-1,0),"uninitialized zero is not healthy playback");
+        check(!PlaybackSignals.progressing(0,10000),"seeking is not confirmed playback");
+        check(PlaybackSignals.progressing(15000,16000),"sustained position advancement is playback");
+        System.out.println("PlaybackSignalsTest: 27 lifecycle/error/media/position/update-idle regressions PASS");
     }
 }
