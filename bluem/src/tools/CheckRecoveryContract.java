@@ -24,12 +24,15 @@ public final class CheckRecoveryContract {
             method(classes, video, "lastVideoIdIsShort", "Z");
             method(classes, "youtube/patches/LoadVideoPatch", "initializeReloadVideo", "V");
             method(classes, "youtube/patches/LoadVideoPatch", "openVideoIntent", "V", "Ljava/lang/String;", "Z");
+            method(classes, "youtube/patches/LoadVideoPatch", "openVideoIntentWithInternalContext", "V", "Ljava/lang/String;");
+            method(classes, "youtube/patches/playback/speed/RememberPlaybackSpeedPatch", "preservePlaybackParametersForReload", "V");
             method(classes, "youtube/shared/VideoState", "getCurrent", "Lapp/morphe/extension/youtube/shared/VideoState;");
             method(classes, "youtube/shared/PlayerType", "getCurrent", "Lapp/morphe/extension/youtube/shared/PlayerType;");
             method(classes, "shared/spoof/SpoofVideoStreamsPatch", "setClientsToUse", "V",
                    "Ljava/util/List;", "Lapp/morphe/extension/shared/spoof/ClientType;");
             method(classes, "shared/spoof/SpoofVideoStreamsPatch", "getPreferredClient", "Lapp/morphe/extension/shared/spoof/ClientType;");
             method(classes, "shared/spoof/js/JavaScriptEngineSupport", "supportsJavaScriptEngine", "Z");
+            method(classes, "shared/spoof/js/JavaScriptEngineSupport", "setDeviceSupportsJsEngine", "V", "Z");
             method(classes, "shared/spoof/requests/StreamingDataRequest", "getLastSpoofedClientName", "Ljava/lang/String;");
             for (String field : List.of("TV_SABR", "ANDROID_CREATOR", "TV_SIMPLY", "VISIONOS_1_02"))
                 field(classes, "shared/spoof/ClientType", field);

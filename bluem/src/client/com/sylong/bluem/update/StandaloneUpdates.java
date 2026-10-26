@@ -45,6 +45,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         try {
             if (instance == null) {
                 instance = new StandaloneUpdates(activity.getApplicationContext());
+                PlaybackRecovery.prepare(activity.getApplicationContext());
                 activity.getApplication().registerActivityLifecycleCallbacks(instance);
             }
         } catch (Throwable e) { Log.w(TAG, "Updater initialization unavailable: " + e.getClass().getSimpleName()); }

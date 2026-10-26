@@ -1,14 +1,19 @@
 # 藍色 M：播放恢復與穩定更新
 
-2026-10-26 客戶端 revision 5：以 Morphe 1.48.0／YouTube 21.20.405 為基底。
-啟動時實際詢問 JavaScriptEngineSupport；不支援的 WebView 不再選 TV／TV Simply，
+2026-10-26 客戶端 revision 6：以 Morphe 1.48.0／YouTube 21.20.405 為基底。
+播放入口建立前先確認串流能力。JavaScript 沙箱也必須支援大型腳本傳輸；
+首次未確認時先用非 JS 來源，背景檢查實際 feature，依 WebView 套件版本保存結果。
+只有存在沙箱但缺少大型腳本能力的 WebView 109，不再因 Binder 傳輸限制重複失敗。
+確認後下次啟動才啟用 JS；暫時檢查失敗不永久快取，執行期間上游停用 JS 也會重新過濾。
+不支援的 WebView 不再選 TV／TV Simply，
 自動保留不需 JavaScript 的 visionOS 1.02／Android Studio 路徑。舊簽署頻道清單也不能
 重新啟用不相容來源。只有連續正常進度確認實際取流來源後才記住它；暫時失敗的來源
 冷卻十分鐘，既有每次故障與全域重試上限保留。錯誤容器內的文字也會辨識登入、內容
 限制與伺服器錯誤。單靠狀態初始值或跳轉位置不算播放成功。
 
-後續 YouTube 自動更新必須同時具備簽署清單 client.revision >= 5，以及 APK metadata
-com.sylong.bluem.UPDATE_CLIENT_REVISION >= 5，避免只有版本號較高的舊復原程式覆蓋本次修正。
+重新取流使用上游內部播放器入口，保留清單、時間與速度，避免相同外部網址重新開啟時返回首頁。
+後續 YouTube 自動更新必須同時具備簽署清單 client.revision >= 6，以及 APK metadata
+com.sylong.bluem.UPDATE_CLIENT_REVISION >= 6，避免只有版本號較高的舊復原程式覆蓋本次修正。
 MicroG 更新仍獨立判斷。若共用頻道尚未包含本次程式碼，保留目前可用 APK，並記錄
 waiting_for_compatible_recovery_update；不能將此狀態稱為全部最新。
 
@@ -78,3 +83,14 @@ QA 注入的伺服器提示約 2.02 秒啟動重取，約 8.17 秒恢復播放�
 約 4.28 秒取得驗證連線；當時影片仍有緩衝，不能當作長時間斷網恢復測試。
 最終 APK 已從實機拉回逐位元組雜湊核對；原 HOME 與兩 App 首次安裝日期相同，
 未卸載、未清除資料。這是本機修正與實機驗收，尚未將 revision 5 推送共用頻道。
+
+2026-10-26 後續相容修正（revision 6 / code2026100909）：
+Android 13 模擬器的 WebView109 重現大型 JS 腳本傳輸失敗，新增真正 feature 檢查及
+播放入口建立前的來源選擇；內部重新載入的參數依 URI 編碼，保留時間與清單。
+Android 10 實機與 Android 13 模擬器的 QA908 均通過受控錯誤恢復、保留進度、
+暫停及登入提示保護；同時保留正式 Manifest 不註冊 QA Receiver。
+正式909本台冷啟動首次觀察 PLAYING 為3.532秒，Wi-Fi關閉8秒後恢復驗證連線約5.734秒，
+離線未重取。持續播放60秒與暫停12秒通過，兩APK已從車機讀回核對，原HOME與首次安裝日保留。
+Android 11、12、13、14 正式包的安裝與播放已驗證；四者為x86_64模擬器，實機仍僅Android10。
+模擬器冷開機曾有系統服務及應用 ANR，保留環境限制，不作為實體車機效能數據。
+自動更新的清單與APK最低 revision 改為6；共用頻道尚未發布本次修正。

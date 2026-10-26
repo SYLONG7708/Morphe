@@ -83,7 +83,7 @@ public final class PlaybackRecovery {
         return ClientPolicy.compatible(Arrays.asList(value.split(",")), supportedClients, jsClients, jsSupported);
     }
     private static void inspectCapabilities() throws Exception {
-        jsSupported = Boolean.TRUE.equals(call(JS, "supportsJavaScriptEngine"));
+        jsSupported = StreamRuntime.supportsScripts(app);
         for (String name : ALLOWED) {
             try {
                 Object value = client(name);
@@ -125,6 +125,17 @@ public final class PlaybackRecovery {
         prefs.edit().putString("active_client", name).apply();
         Log.i(TAG, "CLIENT_SELECTED " + name);
     }
+    static void prepare(Context context) {
+        app = context.getApplicationContext();
+        prefs = app.getSharedPreferences("bluem_updates", Context.MODE_PRIVATE);
+        try {
+            inspectCapabilities();
+            String initial = selectInitialClient();
+            if (initial != null) applyClient(initial);
+        } catch (Exception error) {
+            Log.w(TAG, "EARLY_PREPARE_DEFERRED " + error.getClass().getSimpleName());
+        }
+    }
     public static void resume(Activity a) {
         activity = new WeakReference<>(a);
         Log.i(TAG, "WATCH_ATTACHED " + a.getClass().getSimpleName());
@@ -136,6 +147,7 @@ public final class PlaybackRecovery {
                 // Resolve required APIs before changing a setting. A future incompatible upstream fails safely.
                 call(VIDEO, "getVideoTime"); call(VIDEO, "getVideoId"); call(STATE, "getCurrent");
                 Class.forName(LOAD).getMethod("openVideoIntent", String.class, boolean.class);
+                Class.forName(LOAD).getMethod("openVideoIntentWithInternalContext", String.class);
                 call(VIDEO, "getPlayerResponseVideoId"); call(VIDEO, "getPlaylistId");
                 Class.forName(SHARED).getMethod("setClientsToUse", List.class, Class.forName(CLIENT));
                 saveSetting("SPOOF_VIDEO_STREAMS", Boolean.TRUE);
@@ -267,12 +279,14 @@ public final class PlaybackRecovery {
         }
     }
     private static void reload(String id, long position) throws Exception {
-        Uri.Builder url = new Uri.Builder().scheme("https").authority("www.youtube.com").path("watch")
-            .appendQueryParameter("v", id);
+        Uri.Builder target = new Uri.Builder().scheme("vnd.youtube").authority(id);
         String playlist = (String) call(VIDEO, "getPlaylistId");
-        if (playlist != null && !playlist.isEmpty()) url.appendQueryParameter("list", playlist);
-        if (position > 0) url.appendQueryParameter("t", (position / 1000) + "s");
-        Class.forName(LOAD).getMethod("openVideoIntent", String.class, boolean.class).invoke(null, url.toString(), true);
+        if (playlist != null && !playlist.isEmpty()) target.appendQueryParameter("list", playlist);
+        if (position > 0) target.appendQueryParameter("t", (position / 1000) + "s");
+        call("app.morphe.extension.youtube.patches.playback.speed.RememberPlaybackSpeedPatch", "preservePlaybackParametersForReload");
+        // The internal API prepends vnd.youtube://, so query parameters must start with '?'.
+        Class.forName(LOAD).getMethod("openVideoIntentWithInternalContext", String.class)
+            .invoke(null, target.build().toString().substring("vnd.youtube://".length()));
     }
     private static final Runnable tick = new Runnable() {
         @Override public void run() {
@@ -283,6 +297,12 @@ public final class PlaybackRecovery {
     };
     private static void sample() throws Exception {
         if (!available) return;
+        if (jsSupported && !StreamRuntime.supportsScripts(app)) {
+            inspectCapabilities();
+            String compatible = selectInitialClient();
+            if (compatible != null && !order().contains(chosen)) applyClient(compatible);
+            Log.i(TAG, "SCRIPT_RUNTIME_DISABLED_AFTER_FAILURE");
+        }
         Activity a = activity.get();
         long now = SystemClock.elapsedRealtime();
         String id = (String) call(VIDEO, "getVideoId");

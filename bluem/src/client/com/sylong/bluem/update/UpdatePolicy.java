@@ -19,7 +19,7 @@ public final class UpdatePolicy {
     public static final int MAX_MANIFEST = 131072;
     public static final int MAX_UPSTREAM = 2 * 1024 * 1024;
     public static final String POLICY = "morphe-recommended-stable";
-    public static final int MIN_RECOVERY_REVISION = 5;
+    public static final int MIN_RECOVERY_REVISION = 6;
     public static boolean preservesRecovery(String pkg, int revision) {
         return MICROG.equals(pkg) || (YOUTUBE.equals(pkg) && revision >= MIN_RECOVERY_REVISION);
     }
