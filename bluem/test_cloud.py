@@ -4,9 +4,14 @@ from cloud import asset, next_code, variants, validate_source, validate_patch_re
 
 class CloudPolicyTest(unittest.TestCase):
     def test_old_channel_migrates_monotonically(self):
-        self.assertEqual(next_code({'sequence':2026092404}),2026100901)
+        self.assertEqual(next_code({'sequence':2026092404}),2026100910)
+    def test_cloud_release_upgrades_locally_delivered_recovery(self):
+        current = {'sequence':2026100905, 'packages':[
+            {'package':'app.morphe.android.youtube','version_code':2026100905},
+            {'package':'app.revanced.android.gms','version_code':255070225}]}
+        self.assertGreater(next_code(current), 2026100909)
     def test_future_channel_never_downgrades(self):
-        self.assertEqual(next_code({'sequence':2026100900}),2026100901)
+        self.assertEqual(next_code({'sequence':2026100999}),2026101000)
     def test_installed_release_code_also_counted(self):
         self.assertEqual(next_code({'packages':[{'package':'app.morphe.android.youtube','version_code':2026100999}]}),2026101000)
     def test_exhaustion_is_safe(self):
