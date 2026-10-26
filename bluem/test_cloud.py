@@ -3,6 +3,16 @@ import unittest
 from cloud import asset, next_code, variants, validate_source, validate_patch_result, GOOGLE_CERTS, ABIS
 
 class CloudPolicyTest(unittest.TestCase):
+    def test_playback_manifest_keeps_revision4_update_path_open(self):
+        from publish import PLAYBACK_POLICY
+        # The deployed 2026100905 parser rejects unknown/duplicate names or >3
+        # clients before evaluating either YouTube or MicroG updates.
+        self.assertEqual(PLAYBACK_POLICY['schema'], 1)
+        self.assertTrue(4000 <= PLAYBACK_POLICY['buffering_ms'] <= 30000)
+        clients = PLAYBACK_POLICY['clients']
+        self.assertTrue(2 <= len(clients) <= 3)
+        self.assertEqual(len(set(clients)), len(clients))
+        self.assertTrue(set(clients) <= {'TV_SABR','ANDROID_CREATOR','TV_SIMPLY'})
     def test_old_channel_migrates_monotonically(self):
         self.assertEqual(next_code({'sequence':2026092404}),2026100910)
     def test_cloud_release_upgrades_locally_delivered_recovery(self):

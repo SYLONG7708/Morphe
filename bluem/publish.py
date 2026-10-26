@@ -15,6 +15,10 @@ from cloud import ROOT, REPO, MICROG_CERT, ABIS, write, fingerprint
 
 DIST = ROOT/'dist'
 READY = ROOT/'build/publish-ready'
+# Revision 4 validates these names before checking APK updates. Keep the wire
+# policy compatible; revision 6 adds VisionOS locally according to JS capability.
+PLAYBACK_POLICY = {'schema': 1, 'buffering_ms': 6000,
+                   'clients': ['TV_SABR', 'ANDROID_CREATOR', 'TV_SIMPLY']}
 
 
 def gh(*args, data=None, missing=False):
@@ -77,7 +81,7 @@ def prepare(local=False):
             'published_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'upstream':plan['selection'], 'packages':packages,
             'client':{'revision':6,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
-            'playback':{'schema':1,'buffering_ms':6000,'clients':['TV_SABR','ANDROID_CREATOR','TV_SIMPLY','VISIONOS_1_02']}}
+            'playback':PLAYBACK_POLICY}
         write(READY/'blue-m-stable.json', manifest)
         # Compile only our small standard-library signer in the secret-bearing job.
         (ROOT/'build/tools').mkdir(parents=True, exist_ok=True)
