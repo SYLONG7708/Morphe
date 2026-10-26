@@ -5,22 +5,16 @@
 
 package app.morphe.manager.ui.screen
 
-import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -37,6 +31,7 @@ import app.morphe.manager.ui.screen.home.*
 import app.morphe.manager.ui.screen.settings.SettingsPage
 import app.morphe.manager.ui.screen.settings.SettingsNavigation
 import app.morphe.manager.ui.screen.settings.system.InstallerFlowDialogs
+import app.morphe.manager.ui.screen.shared.AppPullToRefreshBox
 import app.morphe.manager.ui.screen.shared.Defaults
 import app.morphe.manager.ui.screen.shared.DialogHost
 import app.morphe.manager.ui.screen.shared.InstallQueueRequest
@@ -64,7 +59,6 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @param settingsNavigation Where the settings page leads out to.
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
     settingsNavigation: SettingsNavigation,
@@ -81,7 +75,6 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val messages = koinInject<UserMessages>()
-    val view = LocalView.current
     val scope = rememberCoroutineScope()
     val sourcesLoadingText = stringResource(R.string.home_sources_are_loading)
     val otherAppsText = stringResource(R.string.home_other_apps)
@@ -125,6 +118,7 @@ fun HomeScreen(
     // Reactively observe the preference so the greeting updates immediately
     val showGreetingPhrases by prefs.showGreetingPhrases.getAsState()
     val showRepatchNotice by prefs.showRepatchNotice.getAsState()
+    val showMoreAppsCard by prefs.showMoreAppsCard.getAsState()
     val seasonalThemes by prefs.seasonalThemes.getAsState()
     val seasonalEvent = remember(seasonalThemes) { SeasonalEvent.on().takeIf { seasonalThemes } }
 
@@ -136,11 +130,9 @@ fun HomeScreen(
     }
     val greetingMessage = greetingResId?.let { stringResource(it) }
 
-    // Handle refresh with haptic feedback.
     // showPatchingPhrases is read from the reactive state captured in the
     // outer scope so the lambda always uses the current value at invocation.
     val onRefresh: () -> Unit = {
-        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
         HomeAndPatcherMessages.resetHomeMessage()
         greetingResId = if (showGreetingPhrases) HomeAndPatcherMessages.getHomeMessage(context, seasonalEvent) else null
         homeViewModel.refresh()
@@ -366,8 +358,10 @@ fun HomeScreen(
     // Each page's header, which the alerts hang under on whichever page is on screen
     val pageHeaderHeights = remember { mutableStateMapOf<MainPage, Dp>() }
     val alertsTopTarget = pageHeaderHeights[MainPage.entries[pagerState.currentPage]]
+    // How far down the alerts reach under the header, which the lists keep clear of. Read only
+    // where a list is laid out, so the cards easing in and out do not recompose the screen
+    val alertsHeight = remember { mutableStateOf(0.dp) }
 
-    val pullToRefreshState = rememberPullToRefreshState()
     MainPagerScaffold(
         pagerState = pagerState,
         // By whatever the page on screen docks over its lower edge
@@ -393,7 +387,8 @@ fun HomeScreen(
                     modifier = Modifier
                         .widthIn(max = Defaults.ContentMaxWidth)
                         .align(Alignment.TopCenter)
-                        .padding(top = alertsTop)
+                        .padding(top = alertsTop),
+                    onHeightChange = { alertsHeight.value = it }
                 )
             }
         }
@@ -404,6 +399,7 @@ fun HomeScreen(
                 bottomBarHeight = bottomBarHeight,
                 state = sourcesPageState,
                 onboardingState = onboardingState,
+                alertsHeight = { alertsHeight.value },
                 onHeaderHeightChange = { pageHeaderHeights[MainPage.SOURCES] = it }
             )
 
@@ -415,21 +411,12 @@ fun HomeScreen(
                 onHeaderHeightChange = { pageHeaderHeights[MainPage.SETTINGS] = it }
             )
 
-            MainPage.APPS -> PullToRefreshBox(
+            MainPage.APPS -> AppPullToRefreshBox(
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh,
                 modifier = Modifier.fillMaxSize(),
-                state = pullToRefreshState,
-                indicator = {
-                    PullToRefreshDefaults.LoadingIndicator(
-                        state = pullToRefreshState,
-                        isRefreshing = isRefreshing,
-                        // Drawn out from under the header rather than the status bar, as the list is
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = pageHeaderHeights[MainPage.APPS] ?: 0.dp)
-                    )
-                }
+                // Drawn out from under the header and the alerts rather than the status bar, as the list is
+                indicatorTop = { (pageHeaderHeights[MainPage.APPS] ?: 0.dp) + alertsHeight.value }
             ) {
                 SectionsLayout(
                     apps = HomeAppListUi(
@@ -442,7 +429,8 @@ fun HomeScreen(
                         categoryState = homeAppCategoryState,
                         categoryViewMode = homeAppCategoryViewMode,
                         sourceGroups = homeAppSourceGroups,
-                        batchQueuePending = savedBatchQueue != null
+                        batchQueuePending = savedBatchQueue != null,
+                        showMoreAppsCard = showMoreAppsCard
                     ),
                     appActions = HomeAppActions(
                         onAppClick = { item ->
@@ -517,12 +505,14 @@ fun HomeScreen(
                             }
                         },
                         onOpenSources = { openPage(MainPage.SOURCES) },
-                        onRefreshGreeting = onRefresh
+                        onRefreshGreeting = onRefresh,
+                        onHideMoreAppsCard = { scope.launch { prefs.showMoreAppsCard.update(false) } }
                     ),
                     greetingMessage = greetingMessage,
                     state = sectionState,
                     bottomBarHeight = bottomBarHeight,
                     alerts = alerts,
+                    alertsHeight = { alertsHeight.value },
                     onboardingState = onboardingState,
                     onHeaderHeightChange = { pageHeaderHeights[MainPage.APPS] = it }
                 )

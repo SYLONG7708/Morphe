@@ -125,6 +125,10 @@ private fun PatcherScreenContent(
         if (showSuccessScreen) miniGameState.pauseActiveGame()
     }
 
+    // An auto-install runs under a game still in play, so whatever it has to ask waits for the
+    // success screen, the one place an install started by the user comes from as well
+    val installPromptsShown = showSuccessScreen
+
     // A run that finishes mid-round waits for the player instead of taking the screen away. The
     // action bar below the game turns into an install button meanwhile, so the way on is in reach
     LaunchedEffect(miniGameState) {
@@ -334,7 +338,7 @@ private fun PatcherScreenContent(
         )
     }
 
-    DialogHost(visible = showInstalledSourceConflictDialog.value) {
+    DialogHost(visible = showInstalledSourceConflictDialog.value && installPromptsShown) {
         val conflict = installState as? InstallViewModel.InstallState.Conflict
 
         SignatureConflictDialog(
@@ -361,12 +365,14 @@ private fun PatcherScreenContent(
         )
     }
 
-    PostPatchPromptDialogs(
-        prompts = patcherViewModel.postPatchPrompts,
-        onStartTour = onStartTour,
-        onDeclineTour = onDeclineTour,
-        onLeave = onBackClick
-    )
+    if (installPromptsShown) {
+        PostPatchPromptDialogs(
+            prompts = patcherViewModel.postPatchPrompts,
+            onStartTour = onStartTour,
+            onDeclineTour = onDeclineTour,
+            onLeave = onBackClick
+        )
+    }
 
     // Activity launcher for handling plugin activities or external installs
     val activityLauncher = rememberLauncherForActivityResult(
@@ -455,7 +461,7 @@ private fun PatcherScreenContent(
     }
 
     // Where the finished APK will actually install, when that is not what the run was aimed at
-    DialogHost(target = heldInstall) { held ->
+    DialogHost(target = heldInstall?.takeIf { installPromptsShown }) { held ->
         RenameWarningDialog(
             warning = held.warning,
             onContinue = {
@@ -489,7 +495,7 @@ private fun PatcherScreenContent(
         )
     }
 
-    InstallerFlowDialogs(installViewModel)
+    if (installPromptsShown) InstallerFlowDialogs(installViewModel)
 
     // Named on the success screen, read once since the run's selection no longer changes
     val patchSources by produceState(emptyList(), patcherViewModel) {
