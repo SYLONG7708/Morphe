@@ -1,0 +1,18 @@
+--- a/app/src/main/java/app/morphe/manager/ui/viewmodel/PatchFlow.kt
++++ b/app/src/main/java/app/morphe/manager/ui/viewmodel/PatchFlow.kt
+@@ -677,9 +677,13 @@
+                         .firstOrNull { it.target.version == current.recommendedVersion?.version }
+                         ?.bundleUid ?: candidates.first().first.uid
+                     val recommended = current.compatibleVersions
+-                        .filter { it.bundleUid == preferredUid }.recommended()
++                        .filter { it.bundleUid == preferredUid }.recommendedEntry()
+                     session = if (recommended == null) current.copy(bundleUid = preferredUid)
+-                    else current.copy(bundleUid = preferredUid, recommendedVersion = recommended, selectedVersion = recommended)
++                    else current.copy(
++                        bundleUid = preferredUid,
++                        recommendedVersion = recommended.target,
++                        selectedVersion = recommended
++                    )
+                     continueApkSelectionFlow(packageName)
+                     return
+                 }

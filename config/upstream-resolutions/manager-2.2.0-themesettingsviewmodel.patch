@@ -1,0 +1,13 @@
+--- a/app/src/main/java/app/morphe/manager/ui/viewmodel/ThemeSettingsViewModel.kt
++++ b/app/src/main/java/app/morphe/manager/ui/viewmodel/ThemeSettingsViewModel.kt
+@@ -84,6 +84,10 @@
+         prefs.groupPatchesByCategory.update(!current)
+     }
+ 
++    fun toggleShowMoreAppsCard(current: Boolean) = viewModelScope.launch {
++        prefs.showMoreAppsCard.update(!current)
++    }
++
+     fun setPureBlackTheme(enabled: Boolean) = viewModelScope.launch {
+         prefs.pureBlackTheme.update(enabled)
+     }

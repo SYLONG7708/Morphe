@@ -1,0 +1,63 @@
+--- a/app/src/test/java/app/morphe/manager/domain/update/YouTubeArchitectureTest.kt
++++ b/app/src/test/java/app/morphe/manager/domain/update/YouTubeArchitectureTest.kt
+@@ -1,6 +1,8 @@
+ package app.morphe.manager.domain.update
+ 
+ import app.morphe.manager.domain.bundles.extractAppTargets
++import app.morphe.manager.domain.bundles.recommendedEntry
++import app.morphe.manager.domain.bundles.supportedFor
+ import app.morphe.manager.patcher.patch.PatchBundleInfo
+ import app.morphe.manager.patcher.patch.PatchInfo
+ import app.morphe.patcher.patch.AppTarget
+@@ -51,19 +53,24 @@
+         assertEquals("x86_64", YouTubeSourceResolver.abiName("X86_64"))
+     }
+ 
+-    @Test fun `bundle metadata retains ABI mapping through the catalog and download selection`() {
++    private fun catalogBundle(uid: Int, version: String = "21.07.247"): PatchBundleInfo.Global {
+         val patch = bytecodePatch(name = "Architecture fixture") {
+             compatibleWith(Compatibility(
+                 packageName = YouTubeSourceResolver.YOUTUBE_PACKAGE,
+                 name = "YouTube",
+                 targets = listOf(AppTarget(
+-                    version = "21.07.247",
++                    version = version,
+                     versionCodes = mapOf(SupportedAbi.ARMEABI_V7A to 101, SupportedAbi.ARM64_V8A to 102),
+                 )),
+             ))
+         }
+-        val bundle = PatchBundleInfo.Global("Fixture", "1.0", 0, true, listOf(PatchInfo(patch)))
+-        val entries = extractAppTargets(mapOf(0 to bundle), mapOf(0 to "Fixture"))
++        return PatchBundleInfo.Global("Fixture", "1.0", uid, true, listOf(PatchInfo(patch)))
++    }
++
++    @Test fun `bundle metadata retains ABI mapping through the catalog and download selection`() {
++        val entries = extractAppTargets(
++            mapOf(0 to catalogBundle(0)), mapOf(0 to "Fixture"), sourceOrder = mapOf(0 to 0),
++        )
+             .getValue(YouTubeSourceResolver.YOUTUBE_PACKAGE)
+         val candidates = entries.map { entry ->
+             YouTubeVersionBuild(entry.target.version, entry.bundleUid, entry.buildCodes,
+@@ -75,6 +82,22 @@
+         assertEquals(listOf(102), YouTubeSourceResolver.resolve(
+             "21.07.247", 0, candidates, listOf("arm64-v8a"),
+         ).map { it.versionCode })
++    }
++
++    @Test fun `catalog follows source order and excludes disabled sources`() {
++        val bundles = mapOf(
++            0 to catalogBundle(0),
++            1 to catalogBundle(1, "21.06.123"),
++            2 to catalogBundle(2, "99.0.0"),
++        )
++        val names = mapOf(0 to "A", 1 to "Z", 2 to "Disabled")
++        val entries = extractAppTargets(bundles, names, sourceOrder = mapOf(1 to 0, 0 to 1))
++            .getValue(YouTubeSourceResolver.YOUTUBE_PACKAGE)
++        assertEquals(listOf(1, 0), entries.map { it.bundleUid })
++        assertEquals(1, entries.recommendedEntry()?.bundleUid)
++        assertEquals("21.06.123", entries.recommendedEntry()?.target?.version)
++        assertEquals("21.07.247", entries.supportedFor(setOf(0))?.version)
++        assertTrue(extractAppTargets(bundles, names, sourceOrder = emptyMap()).isEmpty())
+     }
+ 
+     @Test fun `new official versions without build codes can discover a candidate`() {

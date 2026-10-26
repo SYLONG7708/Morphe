@@ -1280,6 +1280,142 @@
       "patch_sha256": "c9d79a48c3721942930cd77e65b0ab86b1f8559a5041e94931bf0b772858aeed",
       "result_sha256": "7cd02fdd2c2220e49b77d00992720f8a5f7968f6cc96875e996b7bc403287e8d",
       "patch_base": "upstream"
+    },
+    {
+      "id": "manager-2.2.0-proguard",
+      "path": "app/proguard-rules.pro",
+      "inputs": {
+        "base": "105ee130b6b4fbc098f8779ad8d2db72218ce92a6172a88cd6f72c54db7527be",
+        "local": "4c4cb9cffbd7e9e295217463c78ce7f3615480484aaf8d8bf825d1791da53064",
+        "upstream": "6919efd7c531520e44ded8c1e45d689f104f04ec1adece2785e2b53622522115"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-proguard.patch",
+      "patch_sha256": "efada659821e79519be3890ce9487140b1ce12340b8b8947009c63e2f95472e4",
+      "result_sha256": "468f0cab12ecd4077000c0a00fe3ea544669df94f5b0d7a839eef2dd38e7ff35",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.2.0-appversioncatalog"
+      ]
+    },
+    {
+      "id": "manager-2.2.0-androidmanifest",
+      "path": "app/src/main/AndroidManifest.xml",
+      "inputs": {
+        "base": "ab2141f6fc6d67f9da4335d93198ec2d2358af0e211d342afe2f9d6ca056d37d",
+        "local": "480a5dfbd5b6a757d54f86a17bfdd9833aab5dffd2d2195e4bdedc14ab6c5cc6",
+        "upstream": "2e7a53bbe3edc97f68ef4196e2d1a5850babbe4f6fe6cf71bcbc00a76f1c900a"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-androidmanifest.patch",
+      "patch_sha256": "9c14ca76faa28c3d9a4d63ef806b76d6bfe3c36223ace3f007dda062ac13850a",
+      "result_sha256": "bbc2c674c60dda3ef0681824b092d22331ae7727f822e4fbfadae1ad69b158c8",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.2.0-appversioncatalog"
+      ]
+    },
+    {
+      "id": "manager-2.2.0-appversioncatalog",
+      "path": "app/src/main/java/app/morphe/manager/domain/bundles/AppVersionCatalog.kt",
+      "inputs": {
+        "base": "09d868ecba927970757deeb6a392109f7954b88620473b7ab3fe5e24d5d11c2b",
+        "local": "78d1863becbfb355ecce9085ff773bb54c1858f1d40403a68024ad38e9aae53a",
+        "upstream": "378354e5a2aa4c1b20102858947e2bdf861db5630aa8bf8a79103277e325d829"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-appversioncatalog.patch",
+      "patch_sha256": "ffa800385ed4ce209a5b6efb8652d76bdc0ee0557417c9edd7a42be996a50820",
+      "result_sha256": "999839b1f0ccae717f2ccbb72da406b18e36b8cb20cc85debaea3eab7e3767b9",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.2.0-proguard",
+        "manager-2.2.0-androidmanifest",
+        "manager-2.2.0-appearancesettings",
+        "manager-2.2.0-themesettingsviewmodel",
+        "manager-2.2.0-libs-versions",
+        "manager-2.2.0-patchflow",
+        "manager-2.2.0-youtubearchitecturetest"
+      ]
+    },
+    {
+      "id": "manager-2.2.0-appearancesettings",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/settings/AppearanceSettings.kt",
+      "inputs": {
+        "base": "2ba6f5a65fd6dd4975d8e3c6aa42138aeaf1a783ac7d3f4963fac45a35d5cae1",
+        "local": "6aaedc0dff0d28f64c07a51c9674ff6fb207847402cdad415c9a4508ce5f745c",
+        "upstream": "ecf9ea730097ab41c011648ea8b998292ab420a5c4f4eb05645ec11d2b511bce"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-appearancesettings.patch",
+      "patch_sha256": "77e492ce14b471749d9294b512690888fcf0ccc5236651c258ee69bd44fc26cc",
+      "result_sha256": "3dda850cb0556647a5c6a7c659fd7205e761a0dbcb6bc65e6a21a4b23e1cf916",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.2.0-appversioncatalog"
+      ]
+    },
+    {
+      "id": "manager-2.2.0-themesettingsviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/ThemeSettingsViewModel.kt",
+      "inputs": {
+        "base": "202016df36afe0b38ec26c0f2632f079b6ce45b558fb2498b56fc3ae125668dc",
+        "local": "21232aaaa67266b3e1932072d96b903645dc47251f009fea1ec3fce346353847",
+        "upstream": "0cb84fa0568f575c368c75a286eb73512d9ae781548ef8340f94dff09b32f892"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-themesettingsviewmodel.patch",
+      "patch_sha256": "81f8b7b1dc4887cef46680891abe3ba07168cf4d593a00a82cab07e5880e1402",
+      "result_sha256": "13fbb0ef34e4c1338987aea4ad0b33d8a3a6c10d301a1bc5ac5ee6f8f0f593b9",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.2.0-appversioncatalog"
+      ]
+    },
+    {
+      "id": "manager-2.2.0-libs-versions",
+      "path": "gradle/libs.versions.toml",
+      "inputs": {
+        "base": "c8c8a9150cc2fdb5fc322a07223968d1132305c716788387ad2b879e378a09da",
+        "local": "f9dcfcd5c27641c68898afab082986788ae3d92d7fecff619b85ccc5c53eddd3",
+        "upstream": "c4bd022e945c486afb4e9b63e638a90172c23299501b9090e23b8e8f403456ec"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-libs-versions.patch",
+      "patch_sha256": "5ee43fbf3ae022dfc32b02c31de7f25703f209aa286df9bb128b00033b8f44bd",
+      "result_sha256": "d8d8b6571cb5703e36167eff996c7c9b3fd1222b59bd06725d07e58f9d42bde3",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.2.0-appversioncatalog"
+      ]
+    },
+    {
+      "id": "manager-2.2.0-patchflow",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/PatchFlow.kt",
+      "inputs": {
+        "base": "88a1f8a4d575de759ffd56287a604843cd824989d873fc8ac80392e7b9a76345",
+        "local": "ec234a4343667bef97be2cba0efce4da018a52211954e62eea769cfa81b12c9e",
+        "upstream": "90978512604dac158ec7de929d01998eca23cbc9a2e8cea8aeb01a3ae824e8e0",
+        "merged": "22fd97e2ed0da9768f8f22f4425af14d4d895687cad9ea5caf132c960c18bbc5"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-patchflow.patch",
+      "patch_sha256": "7a302f83b2500dbb2b02fe952e291512e55e25bb42f52249254905a4fea4468c",
+      "result_sha256": "a70aaa8121a373f8919053cd44d6019630689096efd0ab924aea85aac57db85d",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.2.0-appversioncatalog"
+      ]
+    },
+    {
+      "id": "manager-2.2.0-youtubearchitecturetest",
+      "path": "app/src/test/java/app/morphe/manager/domain/update/YouTubeArchitectureTest.kt",
+      "inputs": {
+        "base": null,
+        "local": "9798befb5b90dbcd76acbb948c7221f315f1331825079d73c75a71d0b9d6696f",
+        "upstream": null,
+        "merged": "9798befb5b90dbcd76acbb948c7221f315f1331825079d73c75a71d0b9d6696f"
+      },
+      "patch": "config/upstream-resolutions/manager-2.2.0-youtubearchitecturetest.patch",
+      "patch_sha256": "1ab3524f7f41acdcf574a36296955d7bc0f49588f919d7350c99a16c7aa5c0a0",
+      "result_sha256": "0f9e13f5e7fa25f122df833458a69c98b78fccf8f56abffea2e991e0fb11875c",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.2.0-appversioncatalog"
+      ]
     }
   ]
 }
