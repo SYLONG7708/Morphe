@@ -1,24 +1,24 @@
 {
   "schema": 1,
   "channel": "blue-m-stable",
-  "sequence": 2026100911,
-  "published_at": "2026-10-26T10:50:08.534714+00:00",
+  "sequence": 2026100912,
+  "published_at": "2026-10-30T23:14:04.935723+00:00",
   "upstream": {
     "policy": "morphe-recommended-stable",
-    "patches_version": "1.48.0",
-    "youtube_version": "21.20.405",
+    "patches_version": "2.0.0",
+    "youtube_version": "21.23.492",
     "prerelease": false,
     "experimental": false,
     "source": "MorpheApp/morphe-patches",
-    "default_patch_support_count": 104
+    "default_patch_support_count": 108
   },
   "packages": [
     {
       "package": "app.morphe.android.youtube",
-      "version_code": 2026100911,
-      "version_name": "21.20.405",
-      "size": 199896884,
-      "sha256": "bf22673880bab4b0384b7050ea9c4574762c2895521a086e1f1c0d7c43352900",
+      "version_code": 2026100912,
+      "version_name": "21.23.492",
+      "size": 210414729,
+      "sha256": "680e1c7c7c1511e0b38814eabadbf5872027a5610dd2b5489965104165524539",
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
@@ -27,7 +27,7 @@
       ],
       "min_sdk": 28,
       "signer_sha256": "7cee829c140e3ba32767e541e98d99a87214b80c7b3095692549131a2d6ebf02",
-      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100911/BlueM-21.20.405-2026100911.apk"
+      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100912/BlueM-21.23.492-2026100912.apk"
     },
     {
       "package": "app.revanced.android.gms",
@@ -43,13 +43,13 @@
       ],
       "min_sdk": 21,
       "signer_sha256": "0b6c9515afb195fac59601696ba0a7907a0b217ccf720b43148427ccf64343e7",
-      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100911/MicroG-7.2.2.apk"
+      "url": "https://github.com/SYLONG7708/Morphe/releases/download/blue-m-2026100912/MicroG-7.2.2.apk"
     }
   ],
   "client": {
     "revision": 6,
-    "fingerprint": "81fa14dee416aa710db9cdc460f32c3541674da24390c4e6ee149e4f59e613f1",
-    "source_commit": "008a2d6e5dfb87b9778f7b983952b471c466be2b"
+    "fingerprint": "b5397123605a620e2c50f7a2917400b03f1b675eec95f014fcd5448ec0436bff",
+    "source_commit": "a1133e6c345c117df43fe7203f9402e87b001e5d"
   },
   "playback": {
     "schema": 1,
