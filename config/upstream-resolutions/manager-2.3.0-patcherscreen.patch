@@ -1,14 +1,6 @@
 --- a/app/src/main/java/app/morphe/manager/ui/screen/PatcherScreen.kt
 +++ b/app/src/main/java/app/morphe/manager/ui/screen/PatcherScreen.kt
-@@ -11,7 +11,6 @@
- import android.view.HapticFeedbackConstants
- import androidx.activity.compose.BackHandler
- import androidx.activity.compose.rememberLauncherForActivityResult
--import androidx.activity.result.contract.ActivityResultContracts
- import androidx.compose.animation.AnimatedContent
- import androidx.compose.animation.EnterTransition
- import androidx.compose.animation.ExitTransition
-@@ -46,6 +45,7 @@
+@@ -46,6 +46,7 @@
  import app.morphe.manager.util.EventEffect
  import app.morphe.manager.util.RequestInstallAppsContract
  import app.morphe.manager.util.tag
@@ -16,7 +8,7 @@
  import app.morphe.manager.util.shareApks
  import kotlinx.coroutines.delay
  import kotlinx.coroutines.launch
-@@ -206,7 +206,9 @@
+@@ -206,7 +207,9 @@
                      outputFile = outputFile,
                      originalPackageName = patcherViewModel.packageName,
                      onPersistApp = patcherViewModel::persistPatchedApp,
@@ -27,7 +19,7 @@
                  )
              }
          }
-@@ -253,11 +255,7 @@
+@@ -253,11 +256,7 @@
  
      KeepScreenOn(patcherViewModel.isPatching)
  
@@ -40,7 +32,7 @@
      var showExportDestination by rememberSaveable { mutableStateOf(false) }
      DialogHost(visible = showExportDestination) {
          AppDialog(
-@@ -283,7 +281,7 @@
+@@ -283,7 +282,7 @@
                      modifier = Modifier.fillMaxWidth(),
                      onClick = {
                          showExportDestination = false
@@ -49,7 +41,7 @@
                      },
                  ) {
                      Text(stringResource(R.string.save_apk_choose_location))
-@@ -398,10 +396,11 @@
+@@ -398,10 +397,11 @@
      // Cancel patching confirmation dialog
      DialogHost(visible = showCancelDialog) {
          ConfirmDialog(
@@ -65,7 +57,7 @@
              onConfirm = {
                  showCancelDialog = false
                  patcherViewModel.cancelPatching()
-@@ -609,7 +608,7 @@
+@@ -609,7 +609,7 @@
                                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                      showExportDestination = true
                                  } else {

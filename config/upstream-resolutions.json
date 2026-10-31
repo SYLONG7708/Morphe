@@ -1484,8 +1484,8 @@
         "upstream": "fd780b27dffa72e9181c6f610d8dcb468d49eb539079b554afdd7468af78a747"
       },
       "patch": "config/upstream-resolutions/manager-2.3.0-patcherscreen.patch",
-      "patch_sha256": "4cd895f93921afc02418a75710fc7fcc77b9a1bfa42a7a0f595dacaae99ba3eb",
-      "result_sha256": "9f2d89aa589639587d0852989ec5238c90e540785790f55a051d3492dd8f4c08",
+      "patch_sha256": "7777aa76334f82227bc400468f7c4e53048162328229707c262e98c1f24b1422",
+      "result_sha256": "811a3883afbc0eef4dde372931505f180fe53a0ab7d9d755222ccd63611dc78f",
       "patch_base": "local",
       "requires": [
         "manager-2.3.0-remotepatchbundle"
