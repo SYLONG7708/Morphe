@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-gu-rIN/strings.xml
++++ b/app/src/main/res/values-gu-rIN/strings.xml
+@@ -82,7 +82,7 @@
+     <!-- Patcher Screen - Patcher Worker -->
+     <!-- Keeps the run going, the way out of a dialog that asks whether to stop it -->
+     <!-- Patcher Screen - Patcher Messages -->
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <!-- "bytecode" can be translated from "the app code" -->
+     <!-- Space flight communications callout. -->
+     <!-- Quantum physics (box emoji is a reference to Schrödinger's cat). -->

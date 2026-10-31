@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-et-rEE/strings.xml
++++ b/app/src/main/res/values-et-rEE/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">Vaata välja, seal on ilus ilm… 🌤️</string>
+     <string name="patcher_message_7">Kohandatakse 1-id ja 0-id… 🤖</string>
+     <string name="patcher_message_8">Lahti poolitakse digitaalset spagettikoodi… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Parandatakse vigu patchimata rakenduses… 🪲</string>
+     <string name="patcher_message_10">Head uuendused on ootamise väärt… ⏳</string>
+     <string name="patcher_message_11">Poleeritakse piksleid, kuni need säravad… 💎</string>

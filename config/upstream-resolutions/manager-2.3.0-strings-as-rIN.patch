@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-as-rIN/strings.xml
++++ b/app/src/main/res/values-as-rIN/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">বাহিৰলৈ চাওক, বাহিৰত বতৰটো ধুনীয়া হৈছে… 🌤️</string>
+     <string name="patcher_message_7">1 আৰু 0 সমূহৰ সামঞ্জস্য কৰা হৈছে… 🤖</string>
+     <string name="patcher_message_8">ডিজিটেল স্পেগেটিবোৰ সৰাই থিৰাং কৰা হৈছে… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">আনপেচড এপৰ বগসমূহ ঠিক কৰা হৈছে… 🪲</string>
+     <string name="patcher_message_10">ভাল পেচবোৰৰ বাবে অপেক্ষা কৰাটো সৰ্থক… ⏳</string>
+     <string name="patcher_message_11">পিক্সেলবোৰ জিলিকি উঠালৈকে পালিশ কৰা হৈছে… 💎</string>

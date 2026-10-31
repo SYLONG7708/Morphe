@@ -1,0 +1,11 @@
+--- a/app/src/main/java/app/morphe/manager/network/dto/MorpheAsset.kt
++++ b/app/src/main/java/app/morphe/manager/network/dto/MorpheAsset.kt
+@@ -20,6 +20,8 @@
+     val downloadUrl: String,
+     @SerialName("created_at")
+     val createdAt: LocalDateTime,
++    @SerialName("signature_download_url")
++    val signatureDownloadUrl: String? = null,
+     /** Key the bundles of the source are signed with, see PatchBundleSignature. */
+     @SerialName("public_key")
+     val publicKey: String? = null,

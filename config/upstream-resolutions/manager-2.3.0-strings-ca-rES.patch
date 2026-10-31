@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-ca-rES/strings.xml
++++ b/app/src/main/res/values-ca-rES/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">Mireu fora, fa molt bo… 🌤️</string>
+     <string name="patcher_message_7">Ajustant 1s i 0s… 🤖</string>
+     <string name="patcher_message_8">Desenredant espaguetis digitals… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Corregint errors a l\'app sense pegar… 🪲</string>
+     <string name="patcher_message_10">Els millors mosaics valen la pena l\'espera… ⏳</string>
+     <string name="patcher_message_11">Polint píxels fins que brillin… 💎</string>

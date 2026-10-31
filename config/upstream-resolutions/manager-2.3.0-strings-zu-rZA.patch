@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-zu-rZA/strings.xml
++++ b/app/src/main/res/values-zu-rZA/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">Bheka ngaphandle, kuzinhle kakhulu lapho… 🌤️</string>
+     <string name="patcher_message_7">Kulungiswa ama-1 nama-0… 🤖</string>
+     <string name="patcher_message_8">Sihlukanisa u-spaghetti wedijithali… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Kulungiswa amaphutha ohlelo olungakapatchwa… 🪲</string>
+     <string name="patcher_message_10">Ama-patch amahle afanele ukulinda… ⏳</string>
+     <string name="patcher_message_11">Sihlanza ama-pixel aze acwebezela… 💎</string>

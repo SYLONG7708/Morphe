@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-hy-rAM/strings.xml
++++ b/app/src/main/res/values-hy-rAM/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">Նայեք դուրս, դրսում հրաշալի եղանակ է… 🌤️</string>
+     <string name="patcher_message_7">Կարգավորվում են 1-երը և 0-երը… 🤖</string>
+     <string name="patcher_message_8">Թ unravel-ում ենք թվային «սպագետիները»… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Ուղղվում են չպատչված հավելվածի սխալները… 🪲</string>
+     <string name="patcher_message_10">Լավ թարմացումները արժեն սպասելը… ⏳</string>
+     <string name="patcher_message_11">Հղկում ենք պիքսելները, մինչև փայլեն… 💎</string>

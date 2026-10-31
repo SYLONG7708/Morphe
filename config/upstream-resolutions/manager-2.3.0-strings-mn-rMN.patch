@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-mn-rMN/strings.xml
++++ b/app/src/main/res/values-mn-rMN/strings.xml
+@@ -697,7 +697,7 @@
+     <string name="patcher_message_6">Гадаа хараарай, сайхан цаг агаартай байна… 🌤️</string>
+     <string name="patcher_message_7">1 болон 0-ийг тохируулаж байна… 🤖</string>
+     <string name="patcher_message_8">Дижитал \"спагетти\"-г тайлж байна… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Засаагүй аппликейшны алдааг засаж байна… 🪲</string>
+     <string name="patcher_message_10">Сайн патч хүлээхэд үнэ цэнтэй… ⏳</string>
+     <string name="patcher_message_11">Пиксель бүрийг гялалзаж байна… 💎</string>

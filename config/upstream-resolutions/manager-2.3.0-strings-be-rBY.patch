@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-be-rBY/strings.xml
++++ b/app/src/main/res/values-be-rBY/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">Паглядзіце ў акно, там цудоўная пагода… 🌤️</string>
+     <string name="patcher_message_7">Карэктуем 1 і 0… 🤖</string>
+     <string name="patcher_message_8">Расплятаем лічбавыя спагэты… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Выпраўленне памылак у непатчанай праграме… 🪲</string>
+     <string name="patcher_message_10">Выдатныя патчы вартыя чакання… ⏳</string>
+     <string name="patcher_message_11">Паліруем пікселі, пакуль яны не заблескнуць… 💎</string>

@@ -1416,6 +1416,484 @@
       "requires": [
         "manager-2.2.0-appversioncatalog"
       ]
+    },
+    {
+      "id": "manager-2.3.0-androidmanifest",
+      "path": "app/src/main/AndroidManifest.xml",
+      "inputs": {
+        "base": "2e7a53bbe3edc97f68ef4196e2d1a5850babbe4f6fe6cf71bcbc00a76f1c900a",
+        "local": "bbc2c674c60dda3ef0681824b092d22331ae7727f822e4fbfadae1ad69b158c8",
+        "upstream": "b27d735b76ce7d4c651c50b7ae252d53dbf051fb017c3d60819bc7c9b97cd62b"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-androidmanifest.patch",
+      "patch_sha256": "3cb11852c7ce001dfe26970c0363fc7a351b80aa52f5b275e5bb6af46477630f",
+      "result_sha256": "ae8ea7ca6059bf145776143f4426205a9961cabe536c174d260aef11c82db091",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-remotepatchbundle",
+      "path": "app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt",
+      "inputs": {
+        "base": "f61c8c0a8dede63dd99b6c40a89be34fec13c5b789a450581e7c699d69082389",
+        "local": "6374e8a5809aeba9b2011ce476d8fa49ac37c330e656d2fe3d9c9a79c5b27394",
+        "upstream": "93079243efb26dbc1e8b6434642516b82ca3e9300108f60d8925c4bfad5a62d1"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-remotepatchbundle.patch",
+      "patch_sha256": "35f05ac745508a2efa1daf293f1672e5a91f8e71553346880f47fad6506bebed",
+      "result_sha256": "0e31ee161b5a077da6b418fdcf098f340b44435aa57d035b4070f3b6f17481ab",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-androidmanifest",
+        "manager-2.3.0-patcherscreen",
+        "manager-2.3.0-copyselectionfrombundledialog",
+        "manager-2.3.0-homeviewmodel",
+        "manager-2.3.0-patchflow",
+        "manager-2.3.0-constants",
+        "manager-2.3.0-strings-am-rET",
+        "manager-2.3.0-strings-as-rIN",
+        "manager-2.3.0-strings-be-rBY",
+        "manager-2.3.0-strings-ca-rES",
+        "manager-2.3.0-strings-et-rEE",
+        "manager-2.3.0-strings-eu-rES",
+        "manager-2.3.0-strings-gu-rIN",
+        "manager-2.3.0-strings-hy-rAM",
+        "manager-2.3.0-strings-ka-rGE",
+        "manager-2.3.0-strings-kk-rKZ",
+        "manager-2.3.0-strings-ky-rKG",
+        "manager-2.3.0-strings-lv-rLV",
+        "manager-2.3.0-strings-mn-rMN",
+        "manager-2.3.0-strings-sw-rKE",
+        "manager-2.3.0-strings-te-rIN",
+        "manager-2.3.0-strings-zu-rZA",
+        "manager-2.3.0-libs-versions",
+        "manager-2.3.0-morpheapi",
+        "manager-2.3.0-morpheasset",
+        "manager-2.3.0-managerreleaseinfo",
+        "manager-2.3.0-patchesreleaseinfo"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-patcherscreen",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/PatcherScreen.kt",
+      "inputs": {
+        "base": "a153a3eef6a33655af943093e8fc2bba89843d7ea868773284e3978938cb2748",
+        "local": "f07cf600125ce7c4b371b90881ceeeb21b1ed73e21435c9d3221baaf52a9fb9e",
+        "upstream": "fd780b27dffa72e9181c6f610d8dcb468d49eb539079b554afdd7468af78a747"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-patcherscreen.patch",
+      "patch_sha256": "4cd895f93921afc02418a75710fc7fcc77b9a1bfa42a7a0f595dacaae99ba3eb",
+      "result_sha256": "9f2d89aa589639587d0852989ec5238c90e540785790f55a051d3492dd8f4c08",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-copyselectionfrombundledialog",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/shared/CopySelectionFromBundleDialog.kt",
+      "inputs": {
+        "base": "ea9ca0b7bf29e67918c930ac48bb9e414f33f88886e13972f63aebd9b66023ce",
+        "local": "ffcd74fba4a2c936babef70098c8314311465d74700b4c38cf5fa5a957585c00",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-copyselectionfrombundledialog.patch",
+      "patch_sha256": "895887e40a91b5e4dbd0430ca0637b7f347623dc310c68ddfa82a1257360aa77",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-homeviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt",
+      "inputs": {
+        "base": "6b3cc04b99240abb9c776497ba87123ad67b240b318bdd2c43c178c92c935e3f",
+        "local": "1854c6d06daf98821cabcac5f471ce95bd98804539695a045b5c745365b1e159",
+        "upstream": "f67b7e6306bff49d5ae2c6eb77b077f740e38ab6f838e39f64c8e65834130977"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-homeviewmodel.patch",
+      "patch_sha256": "2c472484261f33982a0d56890fd0ef3b031d15af9938a209b3110500b84f0686",
+      "result_sha256": "1b2e56f8b68634e2404baccf47375080c015e769feca2d6e2828ac254a226384",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-patchflow",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/PatchFlow.kt",
+      "inputs": {
+        "base": "90978512604dac158ec7de929d01998eca23cbc9a2e8cea8aeb01a3ae824e8e0",
+        "local": "a70aaa8121a373f8919053cd44d6019630689096efd0ab924aea85aac57db85d",
+        "upstream": "bdc2498a6b7c5263216d6616f2e2bd3f81f436a33cc29720442e9f15b1910a8b"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-patchflow.patch",
+      "patch_sha256": "862241928417a49ba86c4affb7c3c24c881ecd0d2b3c49b4f37e06efe48848bc",
+      "result_sha256": "5de0d07c1643a00b9b06d1f6913133950702e69b839cf6bb9f4a8cefc90d44fe",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-constants",
+      "path": "app/src/main/java/app/morphe/manager/util/Constants.kt",
+      "inputs": {
+        "base": "020b55edec2df0fb0419ca7af57ae428651d162d27f1d84b721fbe067adaee45",
+        "local": "d2dd39de03035bed3b14ad359daabc3a5f15165d98d795b2eb030ada2c802be8",
+        "upstream": "d1d808e1b0a3f69b43d2abe53140b95a3bad706cbadc9ce7d59a9be8e727a42d"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-constants.patch",
+      "patch_sha256": "0122815873795a16e330e80bb726e5a4c6f9ae8227e569c8920d0826ae814388",
+      "result_sha256": "5d8bfafa134b13e47d2aaab9f0fd07222a88de1298e8e4aa658c78912fefea90",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-am-rET",
+      "path": "app/src/main/res/values-am-rET/strings.xml",
+      "inputs": {
+        "base": "cf9b48efa8e677f73baa36ce4b648fabf33b1b5498b32b00913f7a8cb6c7291c",
+        "local": "d6e99ab21a664929ffa9a8b294140011594a4e4d30b6e17e3f6a891dac6c7d66",
+        "upstream": "cda9317337eeb25c347e491fba7fc8322b0f11af762437b44f68927b84846e66"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-am-rET.patch",
+      "patch_sha256": "101c0020c7155359f67c21522c4b22d4954db26e76ef6039b2c10426cadedf11",
+      "result_sha256": "168c9fa2f25689f79818a1f763ec153a3575d68e15a0349858b1facd98643dc5",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-as-rIN",
+      "path": "app/src/main/res/values-as-rIN/strings.xml",
+      "inputs": {
+        "base": "25530fc4377084e3a0b007dad884b43d3cc1aa9dc0f21b05c4a4795709208739",
+        "local": "2c6643bc90cb668560bd158f991f18826cef65a0046a86bc507f18b46d2a9489",
+        "upstream": "4f6285afcdd336a5dc7f1139c4a8d9ff2f415854ef54c4a3bed24226899b2b3a"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-as-rIN.patch",
+      "patch_sha256": "52c396b1b7cb38b65059f802fa063c10a0552b244f34a9804ec3819cd60d729d",
+      "result_sha256": "f271cbaf584bb35db922af7702ca5e361202090fce93d3f7854c7905ae93c2d3",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-be-rBY",
+      "path": "app/src/main/res/values-be-rBY/strings.xml",
+      "inputs": {
+        "base": "a4be3163f612674d1029dc54511923255a2a9c5bee42d5546b48dd48fb53729f",
+        "local": "5962d87633841eaa9142c58840c8c53b6e0e1f70f3a43d4acfcc25b92dd462d5",
+        "upstream": "4a6ff45a2612a5639c21ae6a10cffd6268b39cc326030ca0637ae819f9c09fbd"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-be-rBY.patch",
+      "patch_sha256": "c8b5093353f4994dc2b32384a166074cd014ae0685fd3bd69c51b53d52b8caf0",
+      "result_sha256": "8364eba000351849404b85a8d062c8f427a9c37636dd0dd41f0b87cc57babb3f",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-ca-rES",
+      "path": "app/src/main/res/values-ca-rES/strings.xml",
+      "inputs": {
+        "base": "88d2b7eff96a29ccc5831547cfb2a72ab988bbbf5864fe871794c43009da998d",
+        "local": "74781395344c73b7bb4d59a3348b806fe0a2a2be6a0c11516f11dc1005ff174c",
+        "upstream": "2a9bb4444e5e9e78ef465d875b4f5f7189ed37cdcc06d01576ecdac521953a49"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-ca-rES.patch",
+      "patch_sha256": "90ab2a038bb9db189d97e0593a39679804a63e56daf5acf1bdfc34c085d98482",
+      "result_sha256": "f973c5fd34a67f7cff009dcee5307e232be4ca26d43937f460d64349665931a7",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-et-rEE",
+      "path": "app/src/main/res/values-et-rEE/strings.xml",
+      "inputs": {
+        "base": "88c8c20512251836de5393617abed8e0e7ff6a9f16f37959af37366bb926d1bf",
+        "local": "e9c37ddb01d7dd2c5c6a8f087a78ad9aa43060c8e8a3a7e66d92929b41f622ed",
+        "upstream": "c7e25f7cbcbd0512c4c7159036c81e6544319f485853768318f5a125a0af484b"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-et-rEE.patch",
+      "patch_sha256": "3f722ae8bdde16663e92e706e5b11cd67cac09ab0efb3c7958ca82e39ae93b3d",
+      "result_sha256": "3cb959d2ae40439cb4888b71f6d142205d74bbf0e0c776967139707cc6dfee75",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-eu-rES",
+      "path": "app/src/main/res/values-eu-rES/strings.xml",
+      "inputs": {
+        "base": "f3f6434c3092f3aeea3b1f2df2fe051c25a14a7c7a760a32c235f6277923d58e",
+        "local": "26431143bbf599836e99ee9f269867609f4a455ec520e22587f6c60a4c0e893c",
+        "upstream": "8d94d1d37598d65b57d159a7812f66eadf016cacd469a81b9056ab184543e81c"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-eu-rES.patch",
+      "patch_sha256": "cfaf2a533f6be2d7ef1192a3a83a3f01c8dbbbee58f3f148d19ff73ed408813d",
+      "result_sha256": "fafcf7ab21b05209e8ff0e0f324e16876e471ef2a813d0f2bf4570faa0a8005a",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-gu-rIN",
+      "path": "app/src/main/res/values-gu-rIN/strings.xml",
+      "inputs": {
+        "base": "1a580de79ee6f4b0c155dca9e2f6b23ac314c811c1b0b0ead4bdc5dd945a02c0",
+        "local": "8e0c6150b91693a57e0868f9e424605774c5a64b7364de4eb46a267baa19ccaa",
+        "upstream": "b813029775838ea8bf3d72fbb19bf1714268ea1ee2d3b29175f48b61c2f625b1"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-gu-rIN.patch",
+      "patch_sha256": "3074294aad232a8facbe6cf39993becb93dc44df78c847534f1c26b7475e0763",
+      "result_sha256": "1171648745f26a5cdd2725caa3ed4bdbec62d5b5ebcfba6b582f66f5edfe6f71",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-hy-rAM",
+      "path": "app/src/main/res/values-hy-rAM/strings.xml",
+      "inputs": {
+        "base": "88c8c20512251836de5393617abed8e0e7ff6a9f16f37959af37366bb926d1bf",
+        "local": "e9c37ddb01d7dd2c5c6a8f087a78ad9aa43060c8e8a3a7e66d92929b41f622ed",
+        "upstream": "9bf5519d5d738a482a94593ceebeda068e0d80b52b185b42e82065643a651bae"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-hy-rAM.patch",
+      "patch_sha256": "1f8a9d52b325b825677a8341da0bd8ef0b4c47c9c95d785ec697e5ecfd1178ee",
+      "result_sha256": "45c4f664dde156b335967325f5c52cac0ff56d68e990689841ce3b0c0dcb1945",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-ka-rGE",
+      "path": "app/src/main/res/values-ka-rGE/strings.xml",
+      "inputs": {
+        "base": "836a28d93339ae247959e9738392d9bc8cd40c67a2a4b641b2ba6f017f3434e5",
+        "local": "b560ab076794840b133970243931492507b2bce387248eda8eccfa680dd4f5a3",
+        "upstream": "fa521a951fc48eed5030588987a3ad1cc9d64f4973dd894544bdfcc8c55fbde9"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-ka-rGE.patch",
+      "patch_sha256": "f49f96d492dd7512814f5bafeff89cf672c4ac7e2b6aa0417e58770d7520210a",
+      "result_sha256": "52b5519b7aa2f10cd93d76b29d72494decd179d1da6e7990fe8c2717c6c45c61",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-kk-rKZ",
+      "path": "app/src/main/res/values-kk-rKZ/strings.xml",
+      "inputs": {
+        "base": "055a6038ba8a18e13e778227d7be77e0d61638706ab55dbcc61ba9558e108b99",
+        "local": "d3c514089e2b3d76e639a4f5e6cb33b8e4f0c3b4757537189c5599d142699a9a",
+        "upstream": "a5137df4be1b96cbec6e7a1ec2ba955f51a4f6ff10ee513c036cf4cd648831e8"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-kk-rKZ.patch",
+      "patch_sha256": "eccaf80f267d5e8e37c3c049bbe74f626341f0c265e0fd020e85c3ce03144d83",
+      "result_sha256": "e3dc1b0ec5c26237edff96651f3bf868c0a2483e3f63fcaf22a47c5f17c29101",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-ky-rKG",
+      "path": "app/src/main/res/values-ky-rKG/strings.xml",
+      "inputs": {
+        "base": "ab4c8bddc9ec88c5a4d979a164b387358e31b7e1d8b0e320452940b6fdd4c558",
+        "local": "a5cf8ab2337c579ce3b06ff05e8b4142b3aec174be840e8898ea69714c1181e1",
+        "upstream": "04e6e2031e3b526cca5ca9729476ecfd0944a51bd5ef29c31bd7f8538f61664b"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-ky-rKG.patch",
+      "patch_sha256": "b8cbe5d1513aa9f0b784d1df51b59cad5154cf9aea21df5a8a7ec15951f0f730",
+      "result_sha256": "b9027286d58d1d27cf713dc1435ca5720b00d60181c063ffa2b695829db1a690",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-lv-rLV",
+      "path": "app/src/main/res/values-lv-rLV/strings.xml",
+      "inputs": {
+        "base": "28d9d360a8527540553d70330a54daa1ff6ed8c6e6cda999ee2022d690133a88",
+        "local": "06dbb7e03c36d91bf750a6cb828099c23fdc8afc9ea1a9f6ce1c8a7b978e80fb",
+        "upstream": "9aa435292b404a0c79f650e879d190eb8435c8381c6e96bf19b8984fed9894c2"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-lv-rLV.patch",
+      "patch_sha256": "47a4c3ce0b150519cc231f18d080a1b8420330a85a3e772fd73b43bdda2a793e",
+      "result_sha256": "44b5c69935c9b3b1cff81dfae7cd75d9dbff4d25512c50226c9158438b334ee2",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-mn-rMN",
+      "path": "app/src/main/res/values-mn-rMN/strings.xml",
+      "inputs": {
+        "base": "88c8c20512251836de5393617abed8e0e7ff6a9f16f37959af37366bb926d1bf",
+        "local": "e9c37ddb01d7dd2c5c6a8f087a78ad9aa43060c8e8a3a7e66d92929b41f622ed",
+        "upstream": "097f29b2b1dd7a095f58a2aad1974862d25f92b3fbcbc3526147ef430fa6e5b2"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-mn-rMN.patch",
+      "patch_sha256": "1b695c701f40fe31689419ee33585f08ce81b8284c8a6ee2b4fbab5a2dacda2e",
+      "result_sha256": "e701e2a8c7dfc3cbb1188c084ce992f9c162beb00d144991e97c053329f25d12",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-sw-rKE",
+      "path": "app/src/main/res/values-sw-rKE/strings.xml",
+      "inputs": {
+        "base": "88c8c20512251836de5393617abed8e0e7ff6a9f16f37959af37366bb926d1bf",
+        "local": "e9c37ddb01d7dd2c5c6a8f087a78ad9aa43060c8e8a3a7e66d92929b41f622ed",
+        "upstream": "03f729634c6118924f43561d49bd489dd313589273da605784a05939f18ad052"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-sw-rKE.patch",
+      "patch_sha256": "9a8b080303519890697f909a90229951e0d3ef8ed134c8db92516cc66c9db4d0",
+      "result_sha256": "3cf0a1a3b09c15521ba288831b4e849bd682ead3271e7d6bcbd4fcc84ebccfc1",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-te-rIN",
+      "path": "app/src/main/res/values-te-rIN/strings.xml",
+      "inputs": {
+        "base": "8383955019c0e87bbd487c796125797a6d3057a1fa3b2d872e06dc3fecb8b516",
+        "local": "109a99990519203960eb9e385e9f2c80a563a00f4f080b492414e0bd6d3147fa",
+        "upstream": "b813029775838ea8bf3d72fbb19bf1714268ea1ee2d3b29175f48b61c2f625b1"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-te-rIN.patch",
+      "patch_sha256": "519c530d83539970dc2bb5998dd850875e49b550ae5c409a749ae8c833da7ee5",
+      "result_sha256": "1171648745f26a5cdd2725caa3ed4bdbec62d5b5ebcfba6b582f66f5edfe6f71",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-strings-zu-rZA",
+      "path": "app/src/main/res/values-zu-rZA/strings.xml",
+      "inputs": {
+        "base": "88c8c20512251836de5393617abed8e0e7ff6a9f16f37959af37366bb926d1bf",
+        "local": "e9c37ddb01d7dd2c5c6a8f087a78ad9aa43060c8e8a3a7e66d92929b41f622ed",
+        "upstream": "6152004f6a95cd366cedfb3a729648a7ac8c351d475b5edc3bdabad010b384c7"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-strings-zu-rZA.patch",
+      "patch_sha256": "fecff0f881048965e899c34b737766187b06a4522ced3603698fb553b499cb14",
+      "result_sha256": "d8e2ab2079bdd18d46e599e0f47092986173d7a4d980529a910683dc8fe74833",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-libs-versions",
+      "path": "gradle/libs.versions.toml",
+      "inputs": {
+        "base": "c4bd022e945c486afb4e9b63e638a90172c23299501b9090e23b8e8f403456ec",
+        "local": "d8d8b6571cb5703e36167eff996c7c9b3fd1222b59bd06725d07e58f9d42bde3",
+        "upstream": "68d4fc6137b1478d6a215b7c2eda87aa77ed6dfb00209c25ee4c3f095b081354"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-libs-versions.patch",
+      "patch_sha256": "949a069d37143eabaa926014adbd10f950b5cc33ad100122bd4c385d7749dae4",
+      "result_sha256": "6a402714dfd0c538f869ec949ca6b98620dfbfaa755f47f2531dba33f82faa09",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-morpheapi",
+      "path": "app/src/main/java/app/morphe/manager/network/api/MorpheAPI.kt",
+      "inputs": {
+        "base": "7754e3e5faa4ab7fdbc86d18148efa081a29b40bc04e653000f8a6ce3b930ad6",
+        "local": "e9a6f972bab017b024035f33ad310cc711545187a41335fd96b60a2a4a9cd821",
+        "upstream": "655c826e272ea607382e23cfb1af99c62fb87f54c01b9e383b1cc8cfc38fa9a5",
+        "merged": "fd925d71bb41898ed51ebaa434872b17067f566f9beedda8f96c8f0c0e88e33c"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-morpheapi.patch",
+      "patch_sha256": "d62f21bccf41bf1fc5eb9a7e16e226322b2220a05428be2b65882c12f31cf884",
+      "result_sha256": "18a86d1157993760c5ecbadff1f1c622088f41bdfae6c27b074f568f00c87bf0",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-morpheasset",
+      "path": "app/src/main/java/app/morphe/manager/network/dto/MorpheAsset.kt",
+      "inputs": {
+        "base": "031f9adcafbe9b9af29a160a870ccdf47e366bd4bd0af65509f1dfd7b16b3b97",
+        "local": "031f9adcafbe9b9af29a160a870ccdf47e366bd4bd0af65509f1dfd7b16b3b97",
+        "upstream": "078f7a515cb29ff7e678b041cb9a2f0d4de9331a7d10d16226324900ce090c0c",
+        "merged": "078f7a515cb29ff7e678b041cb9a2f0d4de9331a7d10d16226324900ce090c0c"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-morpheasset.patch",
+      "patch_sha256": "63bcc887210296333c9770e1333576e2867e33139b31f7a91de1f014fa94cbe1",
+      "result_sha256": "3cd1facdc4fb701d41cd76facc712f9e64a538cac5b8c729eae60f0ef46e0e70",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-managerreleaseinfo",
+      "path": "app/src/main/java/app/morphe/manager/network/dto/ManagerReleaseInfo.kt",
+      "inputs": {
+        "base": "6f3f4862becb2a55d66a7e426cd6cdb6653f21289eb29763d29d0f73cee61447",
+        "local": "6f3f4862becb2a55d66a7e426cd6cdb6653f21289eb29763d29d0f73cee61447",
+        "upstream": "46381a46e30759729818f78f9d12b4ef05d8debce9a708b3e1cb0c90942d23d1",
+        "merged": "46381a46e30759729818f78f9d12b4ef05d8debce9a708b3e1cb0c90942d23d1"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-managerreleaseinfo.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "6f3f4862becb2a55d66a7e426cd6cdb6653f21289eb29763d29d0f73cee61447",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
+    },
+    {
+      "id": "manager-2.3.0-patchesreleaseinfo",
+      "path": "app/src/main/java/app/morphe/manager/network/dto/PatchesReleaseInfo.kt",
+      "inputs": {
+        "base": "436d71d9335a795d0e1a48a1e23fa9aacde1e7e10ab6c5973d632a8530c558e1",
+        "local": "436d71d9335a795d0e1a48a1e23fa9aacde1e7e10ab6c5973d632a8530c558e1",
+        "upstream": "52b75ea465e184827072911b89ec5f62aa85e4165f7bd7b06a18ee8812cb4795",
+        "merged": "52b75ea465e184827072911b89ec5f62aa85e4165f7bd7b06a18ee8812cb4795"
+      },
+      "patch": "config/upstream-resolutions/manager-2.3.0-patchesreleaseinfo.patch",
+      "patch_sha256": "3708c058df1824a02038318d857c23b5b35437a2e96841259f8c9e5f11a5a047",
+      "result_sha256": "e30310e7edc6eeb11ad9b76c6b83aecd389781f3c5b19fc308f2817e83802761",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.3.0-remotepatchbundle"
+      ]
     }
   ]
 }

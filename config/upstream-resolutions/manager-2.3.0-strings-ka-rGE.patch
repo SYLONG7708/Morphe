@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-ka-rGE/strings.xml
++++ b/app/src/main/res/values-ka-rGE/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">გាកვირეთ გარეთ, სასიამოვნო ამინდია... 🌤️</string>
+     <string name="patcher_message_7">1-იანებისა და 0-იანების კორექტირება... 🤖</string>
+     <string name="patcher_message_8">ციფრული „სპაგეტის“ გახსნა... 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">არაპატჩირებული აპლიკაციის ხარვეზების გამოსწორება... 🪲</string>
+     <string name="patcher_message_10">საუკეთესო პატჩები ლოდინის ღირს... ⏳</string>
+     <string name="patcher_message_11">პიქსელების გაპრიალება ბზინვარებამდე... 💎</string>

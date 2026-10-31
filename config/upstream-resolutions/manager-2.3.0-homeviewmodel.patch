@@ -1,0 +1,32 @@
+--- a/app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt
++++ b/app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt
+@@ -14,6 +14,8 @@
+ import androidx.compose.runtime.*
+ import androidx.lifecycle.ViewModel
+ import androidx.lifecycle.viewModelScope
++import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
++import app.morphe.manager.domain.update.VerifiedYouTubeSourceDownloader
+ import app.morphe.manager.R
+ import app.morphe.manager.data.platform.Filesystem
+ import app.morphe.manager.data.platform.NetworkInfo
+@@ -89,6 +91,8 @@
+ ) : ViewModel(), KoinComponent {
+     // Past the parameters viewModelOf takes
+     private val patcherProcesses: PatcherProcesses by inject()
++    private val ecosystemUpdateCoordinator: EcosystemUpdateCoordinator by inject()
++    private val verifiedYouTubeSourceDownloader: VerifiedYouTubeSourceDownloader by inject()
+ 
+     /** The app list on the home screen. */
+     val apps = HomeApps(
+@@ -321,7 +325,10 @@
+         compatibleVersions = compatibleVersionsFlow,
+         recommendedVersions = recommendedVersionsFlow,
+         expertModePanel = expertModePanel,
+-        patcherProcesses = patcherProcesses
++        patcherProcesses = patcherProcesses,
++        ecosystemUpdateCoordinator = ecosystemUpdateCoordinator,
++        verifiedYouTubeSourceDownloader = verifiedYouTubeSourceDownloader,
++        requestInstallPermission = { showAndroid11Dialog = true },
+     )
+ 
+     init {

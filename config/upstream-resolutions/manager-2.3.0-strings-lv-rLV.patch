@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-lv-rLV/strings.xml
++++ b/app/src/main/res/values-lv-rLV/strings.xml
+@@ -697,7 +697,7 @@
+     <string name="patcher_message_6">Paskatieties ārā, tur ir skaisti… 🌤️</string>
+     <string name="patcher_message_7">Koreģē 1 vai 0… 🤖</string>
+     <string name="patcher_message_8">Atšķiret digitālas spageti… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Labojam kļūdas nepielāgotajā lietotnē… 🪲</string>
+     <string name="patcher_message_10">Lielos patchiem ir vērts pagaidīt… ⏳</string>
+     <string name="patcher_message_11">Pulvejam pikseļus, līdz tie spīd… 💎</string>

@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-eu-rES/strings.xml
++++ b/app/src/main/res/values-eu-rES/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">Begiratu kanpora, eguraldi ona egiten ari da… 🌤️</string>
+     <string name="patcher_message_7">1ak eta 0ak egokitzen ari zara… 🤖</string>
+     <string name="patcher_message_8">Espaguetti digitala desestukatzen… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Patchatu gabeko aplikazioaren akatsak konpontzen ari gara… 🪲</string>
+     <string name="patcher_message_10">Patch ongi eginak zain egiteko baliokoak dira… ⏳</string>
+     <string name="patcher_message_11">Pixeleak dirbildu arte plasta… 💎</string>

@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-ky-rKG/strings.xml
++++ b/app/src/main/res/values-ky-rKG/strings.xml
+@@ -698,7 +698,7 @@
+     <string name="patcher_message_6">Сыртка караңыз, аба ырайы сонун… 🌤️</string>
+     <string name="patcher_message_7">1дер менен 0дерди жөндөө... 🤖</string>
+     <string name="patcher_message_8">Санариптик түйүндөрдү чечип жатабыз… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Патчтелбеген тиркемедеги каталар оңдолууда… 🪲</string>
+     <string name="patcher_message_10">Жакшы патчтар күтүүгө татыктуу… ⏳</string>
+     <string name="patcher_message_11">Пикселдер жылтыраганча жылдоодобуз… 💎</string>

@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-am-rET/strings.xml
++++ b/app/src/main/res/values-am-rET/strings.xml
+@@ -701,7 +701,7 @@
+     <string name="patcher_message_6">ወደ ውጭ ይመልከቱ፣ አየሩ ደስ ይላል… 🌤️</string>
+     <string name="patcher_message_7">1ዎችን እና 0ዎችን በማስተካከል ላይ… 🤖</string>
+     <string name="patcher_message_8">የዲጂታል ስፓጌቲን በማላላት ላይ… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">ያልተስተካከሉ መተግበሪያዎችን ስህተቶች እየታረሙ ነው… 🪲</string>
+     <string name="patcher_message_10">ጥሩ ፓቾች መጠበቅ ዋጋ አላቸው… ⏳</string>
+     <string name="patcher_message_11">ፒክሰሎችን እስከሚብረቀር ድረስ በማጥራት ላይ… 💎</string>

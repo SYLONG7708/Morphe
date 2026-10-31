@@ -1,0 +1,11 @@
+--- a/app/src/main/res/values-sw-rKE/strings.xml
++++ b/app/src/main/res/values-sw-rKE/strings.xml
+@@ -697,7 +697,7 @@
+     <string name="patcher_message_6">Tazama nje, kuna hali nzuri huko… 🌤️</string>
+     <string name="patcher_message_7">Inarekebisha 1 na 0… 🤖</string>
+     <string name="patcher_message_8">Tunatengua nyuzi za kidijitali… 🍝</string>
+-    <!-- Morphe patches fix YouTube bugs that Google still has not fixed. -->
++    <!-- SyMorphe patches fix YouTube bugs that Google still has not fixed. -->
+     <string name="patcher_message_9">Kurekebisha hitilafu katika programu ambayo haijapathewa… 🪲</string>
+     <string name="patcher_message_10">Marekebisho mazuri yanastahili kusubiri… ⏳</string>
+     <string name="patcher_message_11">Tunapaka rangi pikseli hadi zing’are… 💎</string>
