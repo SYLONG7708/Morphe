@@ -23,6 +23,7 @@ import app.morphe.manager.network.service.HttpService
 import app.morphe.manager.network.utils.APIFailure
 import app.morphe.manager.network.utils.APIResponse
 import app.morphe.manager.network.utils.getOrNull
+import app.morphe.manager.network.utils.transform
 import app.morphe.manager.util.*
 import io.ktor.client.request.header
 import io.ktor.client.request.url
@@ -375,6 +376,7 @@ class MorpheAPI(
             createdAt = parseTimestamp(releaseInfo.createdAt),
             // Treat empty string the same as absent — some JSON files emit ""
             signatureDownloadUrl = releaseInfo.signatureDownloadUrl?.ifBlank { null },
+            publicKey = releaseInfo.publicKey,
             pageUrl = releasePageUrl(config.htmlUrl, version),
             description = releaseInfo.description,
             version = version
@@ -508,7 +510,10 @@ class MorpheAPI(
      */
     private suspend fun getPatchesFromApi(usePrerelease: Boolean): APIResponse<MorpheAsset> {
         val route = if (usePrerelease) "patches/prerelease" else "patches"
-        return apiRequest(route)
+        // This endpoint is official; do not assign its key to the derived JSON channel.
+        return apiRequest<MorpheAsset>(route).transform {
+            it.copy(publicKey = it.publicKey ?: SOURCE_SIGNING_KEY)
+        }
     }
 
     /**
