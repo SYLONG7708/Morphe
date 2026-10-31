@@ -73,10 +73,21 @@ def transform_class_utf8(class_bytes: bytes, old: bytes, new: bytes) -> tuple[by
 
 
 def replace_manifest_once(text: str, old: str, new: str) -> str:
-    count = text.count(old)
-    if count != 1:
-        raise ValueError(f"Expected one manifest field {old!r}, found {count}")
-    return text.replace(old, new)
+    # Version and Patcher-Version can have the same value. Match the whole
+    # field, retaining all unrelated attributes and the original line endings.
+    lines = text.splitlines(keepends=True)
+    prefix = old.split(": ", 1)[0] + ": "
+    matches = [index for index, line in enumerate(lines) if line.startswith(prefix)]
+    if len(matches) != 1:
+        raise ValueError(f"Expected one manifest field {old!r}, found {len(matches)}")
+    index = matches[0]
+    line = lines[index]
+    if line.rstrip("\r\n") != old or (
+        index + 1 < len(lines) and lines[index + 1].startswith(" ")
+    ):
+        raise ValueError(f"Expected complete manifest field {old!r}")
+    lines[index] = new + line[len(old):]
+    return "".join(lines)
 
 
 def rebuild_dex(class_entries: dict[str, bytes], d8_path: Path) -> bytes:

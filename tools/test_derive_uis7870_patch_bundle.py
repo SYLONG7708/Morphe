@@ -13,7 +13,9 @@ from derive_uis7870_patch_bundle import (
     YOUTUBE_GMS_CLASS,
     YOUTUBE_GMS_CONSTANTS_CLASS,
     derive_bundle,
+    replace_manifest_once,
 )
+from check_patch_bundle_compat import required_patcher_version
 
 
 def minimal_class(*values: bytes) -> bytes:
@@ -25,18 +27,73 @@ def minimal_class(*values: bytes) -> bytes:
     return b"\xca\xfe\xba\xbe\x00\x00\x00\x3d" + struct.pack(">H", len(values) + 1) + pool
 
 
+class ManifestReplacementTest(unittest.TestCase):
+    def test_replaces_only_complete_field_and_preserves_other_bytes(self):
+        for newline in ("\n", "\r\n", "\r"):
+            for trailing_newline in ("", newline):
+                with self.subTest(newline=newline, trailing_newline=trailing_newline):
+                    lines = [
+                        "Manifest-Version: 1.0",
+                        "Version: 2.0.0",
+                        "Patcher-Version: 2.0.0",
+                        "Notes: Version: 2.0.0",
+                        "License: GNU General Public License v3.0, with additional GPL section 7 ",
+                        " requirements",
+                    ]
+                    original = newline.join(lines) + trailing_newline
+                    lines[1] = "Version: 2.0.0.7870.2"
+                    self.assertEqual(
+                        replace_manifest_once(original, "Version: 2.0.0", lines[1]),
+                        newline.join(lines) + trailing_newline,
+                    )
+
+    def test_rejects_missing_changed_duplicate_or_continued_version(self):
+        for manifest in (
+            "Patcher-Version: 2.0.0\n",
+            "Version: 2.0.01\n",
+            "Version: 2.0.0-dev\n",
+            "Version: 2.0.0\nVersion: 2.0.0\n",
+            "Version: 2.0.0\nVersion: 2.0.1\n",
+            "Version: 2.0.0\n -dev\n",
+            "Notes: version follows\n Version: 2.0.0\n",
+        ):
+            with self.subTest(manifest=manifest):
+                with self.assertRaises(ValueError):
+                    replace_manifest_once(manifest, "Version: 2.0.0", "Version: 2.0.0.7870.2")
+
+
 class DeriveUis7870PatchBundleTest(unittest.TestCase):
-    def fixture_bundle(self, root, extra):
+    def fixture_bundle(self, root, extra, *, version="1.47.0", patcher_version="1.14.0"):
         source = root / "official.mpp"
         with zipfile.ZipFile(source, "w") as bundle:
             bundle.writestr(GMS_CLASS, minimal_class(b"app.revanced", b"app.revanced.android.gms"))
             for name in (YOUTUBE_GMS_CLASS, YOUTUBE_GMS_CONSTANTS_CLASS):
                 bundle.writestr(name, minimal_class(b"app.morphe.android.youtube"))
-            bundle.writestr(MANIFEST, "Name: Morphe Patches\nDescription: Patches for Morphe\nVersion: 1.47.0\nSource: git@github.com:MorpheApp/morphe-patches.git\n")
+            bundle.writestr(MANIFEST, f"Name: Morphe Patches\nDescription: Patches for Morphe\nVersion: {version}\nSource: git@github.com:MorpheApp/morphe-patches.git\nPatcher-Version: {patcher_version}\n")
             bundle.writestr(GMS_EXTENSION, b"official-extension")
             for name, content in extra.items():
                 bundle.writestr(name, content)
         return source
+
+    @patch("derive_uis7870_patch_bundle.derive_runtime", return_value=b"derived-extension")
+    def test_bundle_version_can_equal_required_patcher_version(self, runtime):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = self.fixture_bundle(root, {}, version="2.0.0", patcher_version="2.0.0")
+            output = root / "derived.mpp"
+            version = derive_bundle(
+                source, output, "2.0.0",
+                {"vendorGroup": "com.sylong.autopatch", "profileRevision": "2", "microgSignerSha256": "test-pin"},
+            )
+            self.assertEqual(version, "2.0.0.7870.2")
+            self.assertEqual(required_patcher_version(output), "2.0.0")
+            with zipfile.ZipFile(output) as bundle:
+                self.assertEqual(bundle.read(MANIFEST).decode(),
+                                 "Name: SyMorphe UIS7870 Patches\n"
+                                 "Description: Morphe patches derived for safe UIS7870 coexistence\n"
+                                 "Version: 2.0.0.7870.2\n"
+                                 "Source: https://github.com/SYLONG7708/Morphe\n"
+                                 "Patcher-Version: 2.0.0\n")
 
     @patch("derive_uis7870_patch_bundle.derive_runtime", return_value=b"derived-extension")
     def test_new_package_visibility_query_matches_derived_microg_and_dex(self, runtime):
