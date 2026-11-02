@@ -80,7 +80,7 @@ def prepare(local=False):
         manifest = {'schema':1, 'channel':'blue-m-stable', 'sequence':plan['code'],
             'published_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'upstream':plan['selection'], 'packages':packages,
-            'client':{'revision':7,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
+            'client':{'revision':8,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
             'playback':PLAYBACK_POLICY}
         write(READY/'blue-m-stable.json', manifest)
         # Compile only our small standard-library signer in the secret-bearing job.
@@ -99,7 +99,8 @@ YouTube {plan['selection']['youtube_version']} / Morphe patches {plan['selection
 - 安裝完成後等待系統交易完成再進入 YouTube；車機缺少電池設定入口時提供替代設定頁。
 - 修正首頁預載資訊誤判成正在播放、導致更新一直等待的問題；真正播放中仍保護播放。
 - 已驗證 APK 可離線接續安裝；保留帳號與設定，沿用正式簽章。
-- 後續 YouTube 更新必須包含 revision 7 以上，避免舊更新器覆蓋本次修正。
+- 修正首次設定重新啟動／程序中斷後遺失系統安裝確認的情況，從原系統交易繼續安裝，無須重新下載或等待一小時。
+- 後續 YouTube 更新必須包含 revision 8 以上，避免舊更新器覆蓋本次修正。
 
 保留既有播放錯誤恢復。Android 首次安裝來源授權及必要的系統安裝確認仍須操作；系統替換套件時可能關閉 App，完成後可重新開啟。
 相容 Android 9 以上及四種 ABI；實際設備驗收範圍請參照交付紀錄。

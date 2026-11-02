@@ -20,7 +20,8 @@ public final class PolicySelfTest {
         check(!UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 0), "missing recovery metadata cannot replace repaired APK");
         check(!UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 5), "legacy sandbox and reload behavior cannot replace revision 6");
         check(!UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 6), "silent install and browser exit cannot replace in-app update repair");
-        check(UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 7), "future compatible recovery revision allowed");
+        check(!UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 7), "lost installer confirmation cannot replace restart recovery");
+        check(UpdatePolicy.preservesRecovery(UpdatePolicy.YOUTUBE, 8), "future compatible recovery revision allowed");
         check(UpdatePolicy.preservesRecovery(UpdatePolicy.MICROG, 0), "MicroG updates remain independent of YouTube recovery revision");
         check(r.items.get(1).compatible(33,new String[]{"arm64-v8a"}), "UIS7870 Android 13 arm64 compatible");
         check(r.items.get(1).compatible(36,new String[]{"x86_64"}), "clean emulator compatible");

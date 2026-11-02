@@ -25,9 +25,9 @@ GOOGLE_CERTS = {
     '3257d599a49d2c961a471ca9843f59d341a405884583fc087df4237b733bbd6d',
 }
 ABIS = {'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'}
-# Code 2026100915 was delivered locally with the in-app update and startup repair.
+# Code 2026100916 includes the in-app update and interrupted installer repair.
 # The next public release must also upgrade those installations.
-MIN_RELEASE_CODE = 2026100916
+MIN_RELEASE_CODE = 2026100917
 KNOWN_GOOGLE = {'21.16.256': '724d2bf15d31dac98db00d82914db3876edf66e62fe2845001f204209ecf4c00'}
 
 

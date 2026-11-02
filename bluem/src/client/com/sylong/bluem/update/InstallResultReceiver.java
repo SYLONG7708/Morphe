@@ -19,10 +19,11 @@ public final class InstallResultReceiver extends BroadcastReceiver {
         Log.i("BlueMUpdates", "INSTALL_RESULT session=" + id + " status=" + status);
         if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
             pendingAction = intent.getParcelableExtra(Intent.EXTRA_INTENT);
-            p.edit().putString("update_status", "system_confirmation_required").apply();
+            p.edit().putBoolean("install_confirmation_pending", true)
+                .putString("update_status", "system_confirmation_required").commit();
         } else {
             pendingAction = null;
-            p.edit().remove("install_session").remove("installer_launched")
+            p.edit().remove("install_session").remove("installer_launched").remove("install_confirmation_pending")
                 .putString("update_status", status == PackageInstaller.STATUS_SUCCESS ? "installed" : "install_retry_later")
                 .putLong("install_retry_after", status == PackageInstaller.STATUS_SUCCESS ? 0 : System.currentTimeMillis() + 3600000)
                 .apply();

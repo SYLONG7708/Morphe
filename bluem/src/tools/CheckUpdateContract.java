@@ -49,7 +49,7 @@ public final class CheckUpdateContract {
     ResXmlElement element=(ResXmlElement)children.next();ResXmlAttribute name=element.searchAttributeByResourceId(android.R.attr.name);
     if(name==null)continue;String n=name.getValueAsString();
     if("com.sylong.bluem.update.QaReceiver".equals(n))qa++;
-    if("com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(n))revision="7".equals(element.searchAttributeByResourceId(android.R.attr.value).getValueAsString());
+    if("com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(n))revision="8".equals(element.searchAttributeByResourceId(android.R.attr.value).getValueAsString());
     if("com.sylong.bluem.update.SetupActivity".equals(n)){
      setupManifest=true;require(element.searchAttributeByResourceId(android.R.attr.exported).getData()==0,"Setup activity must be private");
     }
@@ -57,6 +57,6 @@ public final class CheckUpdateContract {
    require(qa==(Boolean.parseBoolean(args[1])?1:0),"QA receiver exposure mismatch");
    require(revision&&setupManifest&&setup&&checked==3&&mainHooks==1,"Incomplete startup/update contract");
   }
-  System.out.println("In-app update contract PASS: 3 native routes, no browser/exit, one startup hook, private setup, revision 7, original services, QA boundary");
+  System.out.println("In-app update contract PASS: 3 native routes, no browser/exit, one startup hook, private setup, revision 8, original services, QA boundary");
  }
 }

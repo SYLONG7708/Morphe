@@ -458,18 +458,37 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             try {
                 a.startActivity(confirmation);
                 prefs.edit().putLong("install_retry_after", System.currentTimeMillis() + 3600000).apply();
-            } catch (RuntimeException e) { Log.w(TAG, "SYSTEM_CONFIRMATION_DEFERRED"); }
+            } catch (RuntimeException e) {
+                InstallResultReceiver.pendingAction = confirmation;
+                Log.w(TAG, "SYSTEM_CONFIRMATION_DEFERRED");
+                showRetry("繼續安裝更新", "系統確認畫面尚未開啟，請按重試。已驗證的下載會保留。", this::installReady);
+            }
             return;
         }
         int prior = prefs.getInt("install_session", -1);
         if (prior >= 0) {
             PackageInstaller.SessionInfo info = app.getPackageManager().getPackageInstaller().getSessionInfo(prior);
             if (info != null && System.currentTimeMillis() - prefs.getLong("install_started", 0) < 3600000) {
-                nextCheck = SystemClock.elapsedRealtime() + 60000; return;
+                nextCheck = SystemClock.elapsedRealtime() + 60000;
+                if (info.isActive() && !prefs.getBoolean("install_confirmation_pending", false)) {
+                    showRetry("系統正在處理安裝", "請等候系統完成；若確認畫面被關閉，可稍後按重試。", this::installReady);
+                    return;
+                }
+                // A process restart loses the in-memory confirmation Intent, but
+                // the sealed OS session survives. Recommit that same owned session
+                // to obtain a fresh OS callback; do not discard the staged APK.
+                try (PackageInstaller.Session session = app.getPackageManager().getPackageInstaller().openSession(prior)) {
+                    session.commit(installCallback(prior).getIntentSender());
+                    Log.i(TAG, "INSTALL_SESSION_RESUMED " + prior);
+                } catch (Exception e) {
+                    Log.w(TAG, "INSTALL_RESUME_RETRY " + e.getClass().getSimpleName());
+                    showRetry("繼續安裝更新", "系統暫時無法繼續安裝，請稍後重試。下載檔案已保留。", this::installReady);
+                }
+                return;
             }
             try { app.getPackageManager().getPackageInstaller().abandonSession(prior); }
             catch (RuntimeException ignored) { }
-            prefs.edit().remove("install_session").apply();
+            prefs.edit().remove("install_session").remove("install_confirmation_pending").apply();
         }
         if (!app.getPackageManager().canRequestPackageInstalls()) {
             if (System.currentTimeMillis() < prefs.getLong("permission_prompt_after", 0)) return;
@@ -512,13 +531,10 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                         return;
                     }
                     try (PackageInstaller.Session session = installer.openSession(committedId)) {
-                        Intent result = new Intent(app, InstallResultReceiver.class).setAction("com.sylong.bluem.INSTALL_RESULT");
-                        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-                        if (Build.VERSION.SDK_INT >= 31) flags |= PendingIntent.FLAG_MUTABLE;
-                        PendingIntent callback = PendingIntent.getBroadcast(app, committedId, result, flags);
                         prefs.edit().putInt("install_session", committedId).putBoolean("installer_launched", true)
+                            .putBoolean("install_confirmation_pending", false)
                             .putLong("install_started", System.currentTimeMillis()).putString("update_status", "installing").commit();
-                        session.commit(callback.getIntentSender());
+                        session.commit(installCallback(committedId).getIntentSender());
                         Log.i(TAG, "INSTALL_SESSION_COMMITTED " + item.pkg + " " + item.code);
                         nextCheck = SystemClock.elapsedRealtime() + 60000;
                     } catch (Exception e) {
@@ -534,6 +550,12 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                     showRetry("尚未完成安裝", "下載檔案已保留，請確認系統安裝權限與可用空間後重試。", this::installReady); });
             }
         });
+    }
+    private PendingIntent installCallback(int sessionId) {
+        Intent result = new Intent(app, InstallResultReceiver.class).setAction("com.sylong.bluem.INSTALL_RESULT");
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= 31) flags |= PendingIntent.FLAG_MUTABLE;
+        return PendingIntent.getBroadcast(app, sessionId, result, flags);
     }
     private void showError(String title, String message) {
         Activity a = activity();
