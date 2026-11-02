@@ -185,6 +185,7 @@ public final class UpdatePolicy {
         URL url = allowedUrl(address, qa);
         for (int redirects = 0; redirects < 6; redirects++) {
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
+            configureHttps(c);
             c.setInstanceFollowRedirects(false);
             c.setConnectTimeout(12000);
             c.setReadTimeout(20000);
@@ -203,6 +204,17 @@ public final class UpdatePolicy {
             return c;
         }
         throw new IOException("Too many redirects");
+    }
+    public static void configureHttps(HttpURLConnection connection) throws Exception {
+        if (!(connection instanceof javax.net.ssl.HttpsURLConnection)) return;
+        // YouTube replaces the process-wide default socket factory with SslGuard,
+        // which refuses connections before MicroG is installed. Give only our
+        // updater connection its own TLS context, retaining platform CA trust and
+        // the HTTPS connection's normal hostname verification. Never change the
+        // global factory or install a permissive TrustManager/HostnameVerifier.
+        javax.net.ssl.SSLContext tls = javax.net.ssl.SSLContext.getInstance("TLS");
+        tls.init(null, null, null);
+        ((javax.net.ssl.HttpsURLConnection) connection).setSSLSocketFactory(tls.getSocketFactory());
     }
     public static byte[] fetch(String url, int maximum, boolean qa) throws Exception {
         HttpURLConnection c = connect(url, qa);

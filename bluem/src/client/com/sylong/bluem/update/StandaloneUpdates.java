@@ -200,7 +200,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 prefs.edit().putLong("sequence", release.sequence).commit();
                 evaluate(release);
             } catch (Exception e) {
-                Log.w(TAG, "CHECK_UNAVAILABLE " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                Log.w(TAG, "CHECK_UNAVAILABLE " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);
                 main.post(() -> {
                     busy = false;
                     long[] retry = {60000, 300000, 900000, 3600000};

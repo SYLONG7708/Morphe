@@ -15,6 +15,7 @@ def main():
                    ROOT/'src/client/com/sylong/bluem/update/PlaybackSignals.java',
                    ROOT/'src/client/com/sylong/bluem/update/ClientPolicy.java',
                    ROOT/'src/tests/ClientPolicyTest.java',
+                   ROOT/'src/tests/UpdateTlsTest.java',
                    ROOT/'src/tests/PolicySelfTest.java', ROOT/'src/tests/RecoveryPolicyTest.java',
                    ROOT/'src/tests/PlaybackSignalsTest.java'], log)
         build.run([build.jtool('java'), '-cp', str(out)+os.pathsep+str(jar), 'PolicySelfTest',
@@ -22,6 +23,7 @@ def main():
         build.run([build.jtool('java'), '-cp', out, 'RecoveryPolicyTest'], log)
         build.run([build.jtool('java'), '-cp', out, 'PlaybackSignalsTest'], log)
         build.run([build.jtool('java'), '-cp', out, 'ClientPolicyTest'], log)
+        build.run([build.jtool('java'), '-cp', str(out)+os.pathsep+str(jar), 'UpdateTlsTest'], log)
     print((ROOT/'build/policy-tests.log').read_text(encoding='utf-8'))
 
 if __name__ == '__main__': main()
