@@ -212,7 +212,12 @@ public final class UpdatePolicy {
         // updater connection its own TLS context, retaining platform CA trust and
         // the HTTPS connection's normal hostname verification. Never change the
         // global factory or install a permissive TrustManager/HostnameVerifier.
-        javax.net.ssl.SSLContext tls = javax.net.ssl.SSLContext.getInstance("TLS");
+        // SslGuard also inserts an SSLContext provider ahead of Android's provider;
+        // merely requesting a new default TLS context inherits the same guard.
+        java.security.Provider platform = java.security.Security.getProvider("AndroidOpenSSL");
+        if (platform == null) platform = java.security.Security.getProvider("SunJSSE"); // desktop regression runner
+        if (platform == null) throw new java.security.NoSuchProviderException("Platform TLS provider unavailable");
+        javax.net.ssl.SSLContext tls = javax.net.ssl.SSLContext.getInstance("TLS", platform);
         tls.init(null, null, null);
         ((javax.net.ssl.HttpsURLConnection) connection).setSSLSocketFactory(tls.getSocketFactory());
     }
