@@ -2,6 +2,11 @@ name: Blue M stable auto-update
 
 on:
   workflow_dispatch:
+    inputs:
+      verify_build:
+        description: 'Build and verify unsigned APKs without publishing'
+        type: boolean
+        default: false
   schedule:
     - cron: '41 1,7,13,19 * * *'
   push:
@@ -40,6 +45,7 @@ jobs:
         id: probe
         env:
           GH_TOKEN: ${{ github.token }}
+          BLUEM_VERIFY_BUILD: ${{ inputs.verify_build }}
         run: python tools/bluem_probe.py
       - name: Set up Android SDK
         if: steps.probe.outputs.changed == 'true'
@@ -78,7 +84,7 @@ jobs:
           retention-days: 7
   publish:
     needs: build
-    if: needs.build.outputs.changed == 'true'
+    if: needs.build.outputs.changed == 'true' && github.ref == 'refs/heads/main' && inputs.verify_build != true
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:

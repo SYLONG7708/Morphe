@@ -23,6 +23,7 @@ WORKFLOWS = {"release.yml": 18, "upstream-sync.yml": 48,
 FAILURES = {"failure", "timed_out", "startup_failure", "action_required"}
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 PROTECTED = ("app/src/main/res/raw/update_signing_cert.der",
+             "bluem/assets/release-cert.der",
              "config/uis7870-safe.properties", "config/update-policy.json")
 GENERATED_ROOTS = ("verification", "upstream", "dist", "release-artifacts")
 RUNNING_CODE_SHA256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
@@ -158,6 +159,10 @@ class Guard:
         self.gh = config["gh"]
         self.python = config["python"]
         self.codex = config["codex"]
+        selected = config.get("workflows", list(WORKFLOWS))
+        if not selected or any(name not in WORKFLOWS for name in selected):
+            raise ValueError("Unsupported recovery workflow scope")
+        self.workflows = {name: WORKFLOWS[name] for name in selected}
 
     def status(self, phase: str, **details):
         write_json(self.status_file, {"updated_at": utc(), "pid": os.getpid(),
@@ -279,7 +284,7 @@ class Guard:
     def scan(self):
         observations, incidents = {}, []
         now = time.time()
-        for name, max_hours in WORKFLOWS.items():
+        for name, max_hours in self.workflows.items():
             workflow = self.api(f"repos/{REPOSITORY}/actions/workflows/{name}")
             runs = self.api(f"repos/{REPOSITORY}/actions/workflows/{name}/runs?branch=main&per_page=5")
             run = next((r for r in runs["workflow_runs"] if trusted(r, name)), None)
@@ -304,19 +309,28 @@ class Guard:
                       and now - timestamp(run["created_at"]) > max_hours * 3600):
                     incidents.append({"key": f"stale-{name}-{run['id']}", "workflow": name,
                                       "run_id": run["id"], "reason": "scheduled_check_stale"})
-        health = self.state.setdefault("public_release", {})
-        if now >= health.get("next_check", 0):
-            try:
-                health.update(result=self.audit_release(), failures=0, error=None, next_check=now + 1800)
-            except Exception as error:
-                health.update(failures=health.get("failures", 0) + 1, error=str(error), next_check=now + 300)
-        if health.get("failures", 0) >= 3:
-            run = observations["release.yml"]["run"]
-            incidents.append({"key": "public-update-health", "workflow": "release.yml",
-                              "run_id": run["id"] if run else None, "reason": "public_update_health",
-                              "error": health["error"]})
+        audits = [("release.yml", "public_release", self.audit_release),
+                  ("blue-m-stable.yml", "blue_m_release", self.audit_blue_m)]
+        for workflow, state_key, audit in audits:
+            if workflow not in self.workflows:
+                continue
+            health = self.state.setdefault(state_key, {})
+            if now >= health.get("next_check", 0):
+                try:
+                    health.update(result=audit(), failures=0, error=None, next_check=now + 1800)
+                except Exception as error:
+                    health.update(failures=health.get("failures", 0) + 1, error=str(error), next_check=now + 300)
+            if health.get("failures", 0) >= 3:
+                run = observations[workflow]["run"]
+                incidents.append({"key": state_key + "-health", "workflow": workflow,
+                                  "run_id": run["id"] if run else None, "reason": "public_update_health",
+                                  "error": health["error"]})
         self.save()
         return observations, incidents
+
+    def audit_blue_m(self):
+        from bluem_health import audit
+        return audit(self)
 
     def wait_run(self, workflow, branch, sha, since, timeout=7200, diagnosis_dir=None):
         deadline = time.time() + timeout
@@ -380,6 +394,9 @@ package identities, signing keys/certificates, signature/hash/anti-rollback chec
 Do not weaken tests, bypass verification, disable workflows, replace public download URLs or delete releases.
 Do not modify host services, other projects, this guardian, or user credentials. Never print tokens/private keys.
 Run relevant Python tests. Keep external processes hidden. Do not launch extra agents or visible app windows.
+On this Windows PC every exec_command must set tty=true, login=false and
+shell="E:\\CODEX\\.codex\\tools\\hidden-console\\powershell.exe". Child helpers need CREATE_NO_WINDOW.
+Preserve the current Codex conversation and CodexConsoleGuard; never close them.
 Do not push, merge, open issues/PRs, dispatch workflows, rerun jobs or publish artifacts yourself.
 Keep downloaded repositories, build outputs and diagnosis files out of the source candidate.
 The guardian will validate the diff, run all Python tests and both-edition cloud Build and verify, then fast-forward
@@ -427,6 +444,11 @@ Return only the required structured report; do not claim production success befo
             self.command([self.gh, "workflow", "run", "build.yml", "-R", REPOSITORY, "--ref", branch])
             verification = self.wait_run("build.yml", branch, sha, started, diagnosis_dir=job)
             write_json(job / "candidate-verification.json", verification)
+            if incident["workflow"] == "blue-m-stable.yml":
+                started = time.time()
+                self.command([self.gh, "workflow", "run", "blue-m-stable.yml", "-R", REPOSITORY,
+                              "--ref", branch, "-f", "verify_build=true"])
+                self.wait_run("blue-m-stable.yml", branch, sha, started, diagnosis_dir=job)
             if self.api(f"repos/{REPOSITORY}/git/ref/heads/main")["object"]["sha"] != base:
                 raise RuntimeError("Main advanced during cloud verification; candidate retained for rebase")
             # Normal fast-forward push rejects a concurrent change; never force-push.
@@ -451,6 +473,8 @@ Return only the required structured report; do not claim production success befo
                 self.wait_run("release.yml", "main", release_sha, started, diagnosis_dir=job)
         if name in {"release.yml", "upstream-sync.yml"}:
             write_json(job / "public-release-verification.json", self.audit_release())
+        if name == "blue-m-stable.yml":
+            write_json(job / "blue-m-release-verification.json", self.audit_blue_m())
         write_json(job / "verified-workflow.json", verified)
         return {"job": str(job), "verified_run": verified["html_url"], "sha": sha}
 
@@ -478,8 +502,8 @@ Return only the required structured report; do not claim production success befo
         observations, incidents = self.scan()
         pending = any(o.get("run", {}).get("status") in ACTIVE for o in observations.values() if o.get("run"))
         if not incidents:
-            health = self.state.get("public_release", {})
-            phase = ("public_release_check_pending" if health.get("failures", 0)
+            health = {name: self.state.get(name, {}) for name in ("public_release", "blue_m_release")}
+            phase = ("public_release_check_pending" if any(v.get("failures", 0) for v in health.values())
                      else "verification_pending" if pending else "healthy")
             self.status(phase, workflows=observations, public_release=health)
             return

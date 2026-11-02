@@ -31,7 +31,7 @@ def main():
     # The wrapper changes only CI networking. The APK build fingerprint and
     # existing signed channel remain unchanged when upstream versions match.
     urllib.request.install_opener(urllib.request.build_opener(GitHubAPIAuth(token)))
-    cloud.probe()
+    cloud.probe(force=os.environ.get("BLUEM_VERIFY_BUILD") == "true")
 
 
 if __name__ == "__main__":

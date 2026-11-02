@@ -59,6 +59,15 @@
 
 ### Windows 安裝及狀態
 
+Blue M 專用主機可加上 `-BlueMOnly`，僅監控藍色 M 更新工作流，避免把其他產品的問題交給這台主機。
+藍色 M 每 30 分鐘以 APK 內相同的固定公鑰驗證同一提交的清單與簽章，核對兩個 APK 的版本、
+簽署者、大小及 Release SHA-256；新資產實際匿名下載並核對完整檔案，已快取資產仍檢查公開網址可用。
+連續三次失敗交由背景 Codex，修復後重新驗證公開來源。
+
+`Blue M stable auto-update` 的手動 `verify_build=true` 可完整執行來源驗證、補丁及 unsigned APK 建置，
+不使用發布金鑰且不更新頻道。自動修復 Blue M 時，修復分支也必須通過這項建置才可更新 main。
+僅 main 的一般更新工作可以進入簽章發布工作；分支驗證不會發布新 APK。
+
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/install_morphe_guard.ps1 -Start
 ```

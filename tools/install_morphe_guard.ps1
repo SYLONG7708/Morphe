@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$Destination = 'E:\CODEX\Automation\MorpheRecovery',
+    [switch]$BlueMOnly,
     [switch]$Start,
     [switch]$InstallPaused
 )
@@ -22,11 +23,15 @@ $config = [ordered]@{
     pythonw = (Get-Command pythonw.exe).Source
     codex = (Get-Command codex.exe).Source
     java = (Get-Command java.exe).Source
+    curl = (Join-Path $env:WINDIR 'System32\curl.exe')
 }
+if ($BlueMOnly) { $config.workflows = @('blue-m-stable.yml') }
 if (Test-Path -LiteralPath $configPath) {
     Copy-Item -LiteralPath $configPath -Destination ($configPath + '.backup-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 }
 Copy-Item -LiteralPath $source -Destination (Join-Path $Destination 'morphe_codex_guard.py') -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'bluem_health.py') -Destination (Join-Path $Destination 'bluem_health.py') -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\bluem\assets\release-cert.der') -Destination (Join-Path $Destination 'bluem-release-cert.der') -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'VerifyFile.java') -Destination (Join-Path $Destination 'VerifyFile.java') -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\app\src\main\res\raw\update_signing_cert.der') `
     -Destination (Join-Path $Destination 'update_signing_cert.der') -Force
