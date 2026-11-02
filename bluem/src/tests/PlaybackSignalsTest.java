@@ -30,6 +30,12 @@ public final class PlaybackSignalsTest {
         check(!PlaybackSignals.progressing(-1,0),"uninitialized zero is not healthy playback");
         check(!PlaybackSignals.progressing(0,10000),"seeking is not confirmed playback");
         check(PlaybackSignals.progressing(15000,16000),"sustained position advancement is playback");
-        System.out.println("PlaybackSignalsTest: 27 lifecycle/error/media/position/update-idle regressions PASS");
+        check(!PlaybackSignals.playerOpen("jNQXAC9IVRw","NONE","null",-1),"home feed prefetch must not block installation");
+        check(!PlaybackSignals.playerOpen("jNQXAC9IVRw","WATCH_WHILE_DISMISSED","null",-1),"dismissed stale video does not block");
+        check(PlaybackSignals.playerOpen("jNQXAC9IVRw","WATCH_WHILE_MAXIMIZED","null",-1),"real player with missing state remains protected");
+        check(PlaybackSignals.playerOpen("jNQXAC9IVRw","NONE","null",3),"background audio remains protected");
+        check(PlaybackSignals.playerOpen("jNQXAC9IVRw","SHORTS","PLAYING",-1),"Shorts playback remains protected");
+        check(!PlaybackSignals.playerOpen("bad","NONE","null",-1),"invalid prefetch ID is not playback");
+        System.out.println("PlaybackSignalsTest: 33 lifecycle/error/media/position/update-idle regressions PASS");
     }
 }

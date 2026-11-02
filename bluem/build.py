@@ -98,7 +98,7 @@ def build(variant, code, name, unsigned_only=False):
         run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'PatchApk', source, patched, str(code), name, str(qa).lower()], log)
         unsigned = out/'unsigned.apk'
         rewritten = {p.name: p for p in patched.iterdir() if p.is_file()}
-        assert len(rewritten) == 2 and 'AndroidManifest.xml' in rewritten
+        assert len(rewritten) in (2, 3) and 'AndroidManifest.xml' in rewritten
         with zipfile.ZipFile(source) as original, zipfile.ZipFile(unsigned, 'w', allowZip64=False) as target:
             dex_indices = [int(m[1] or '1') for n in original.namelist() if (m := re.fullmatch(r'classes(\d*)\.dex', n))]
             for info in original.infolist():
@@ -120,6 +120,7 @@ def build(variant, code, name, unsigned_only=False):
         run([atool('apksigner'), 'sign', '--ks', env['SYMORPHE_KEYSTORE_FILE'], '--ks-key-alias', env['KEYSTORE_ENTRY_ALIAS'],
              '--ks-pass', 'env:KEYSTORE_PASSWORD', '--key-pass', 'env:KEYSTORE_ENTRY_PASSWORD', '--out', signed, aligned], log, env)
         run([sys.executable, ROOT/'verify_apk.py', signed, out/'verification'], log)
+        run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'CheckUpdateContract', signed, str(qa).lower()], log)
         with zipfile.ZipFile(source) as before, zipfile.ZipFile(signed) as after:
             unchanged = 0
             for entry in before.infolist():

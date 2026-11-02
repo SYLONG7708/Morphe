@@ -3,6 +3,7 @@ import com.reandroid.arsc.chunk.xml.ResXmlElement;
 import com.android.tools.smali.dexlib2.Opcode;
 import com.android.tools.smali.dexlib2.builder.MutableMethodImplementation;
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction3rc;
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x;
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile;
 import com.android.tools.smali.dexlib2.iface.ClassDef;
 import com.android.tools.smali.dexlib2.iface.Method;
@@ -16,9 +17,19 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.zip.*;
 
-/** Touches the binary manifest and exactly one method; no resource recompilation. */
+/** Hooks the activity and routes MicroG setup into the signed in-app updater. */
 public final class PatchApk {
     static final String MAIN = "Lcom/google/android/apps/youtube/app/watchwhile/MainActivity;";
+    static final String GMS = "Lapp/morphe/extension/shared/patches/GmsCoreSupportPatch;";
+    static Method redirect(Method method, String owner, String name) {
+        int registers = method.getParameterTypes().size(); // all these static hooks use reference parameters
+        MutableMethodImplementation body = new MutableMethodImplementation(registers);
+        body.addInstruction(new BuilderInstruction3rc(Opcode.INVOKE_STATIC_RANGE, 0, registers,
+            new ImmutableMethodReference(owner, name, method.getParameterTypes(), "V")));
+        body.addInstruction(new BuilderInstruction10x(Opcode.RETURN_VOID));
+        return new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
+            method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(), body);
+    }
     public static void main(String[] args) throws Exception {
         Path out = Path.of(args[1]);
         Files.createDirectories(out);
@@ -38,6 +49,12 @@ public final class PatchApk {
                 }
             }
             ResXmlElement app = m.getApplicationElement();
+            ResXmlElement setup = app.newElement("activity");
+            setup.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.SetupActivity");
+            setup.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
+            setup.getOrCreateAndroidAttribute("taskAffinity", android.R.attr.taskAffinity).setValueAsString("app.morphe.android.youtube.bluem.setup");
+            setup.getOrCreateAndroidAttribute("theme", android.R.attr.theme).setType((byte)android.util.TypedValue.TYPE_REFERENCE);
+            setup.getOrCreateAndroidAttribute("theme", android.R.attr.theme).setData(android.R.style.Theme_Material_NoActionBar);
             ResXmlElement provider = app.newElement("provider");
             provider.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.UpdateProvider");
             provider.getOrCreateAndroidAttribute("authorities", android.R.attr.authorities).setValueAsString("app.morphe.android.youtube.bluem.updates");
@@ -48,7 +65,7 @@ public final class PatchApk {
             receiver.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
             ResXmlElement meta = app.newElement("meta-data");
             meta.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.UPDATE_CLIENT_REVISION");
-            meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setValueAsString("6");
+            meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setValueAsString("7");
             if (Boolean.parseBoolean(args[4])) {
                 ResXmlElement qaReceiver = app.newElement("receiver");
                 qaReceiver.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.QaReceiver");
@@ -61,19 +78,28 @@ public final class PatchApk {
             m.refreshFull();
             if (icon == 0 || m.getIconResourceId() != icon) throw new IllegalStateException("Icon reference changed");
             try (OutputStream manifestOut = Files.newOutputStream(out.resolve("AndroidManifest.xml"))) { m.writeBytes(manifestOut); }
-            int hits = 0;
+            int hits = 0, gmsHooks = 0;
             for (ZipEntry entry : Collections.list(apk.entries())) {
                 if (!entry.getName().matches("classes[0-9]*\\.dex")) continue;
                 DexBackedDexFile dex;
                 try (InputStream in = new BufferedInputStream(apk.getInputStream(entry))) {
                     dex = DexBackedDexFile.fromInputStream(null, in);
                 }
-                ClassDef main = null;
-                for (ClassDef cls : dex.getClasses()) if (cls.getType().equals(MAIN)) main = cls;
-                if (main == null) continue;
+                List<ClassDef> replacements = new ArrayList<>();
+                boolean changed = false;
+                for (ClassDef main : dex.getClasses()) {
+                if (!main.getType().equals(MAIN) && !main.getType().equals(GMS)) { replacements.add(main); continue; }
                 List<Method> methods = new ArrayList<>();
                 for (Method method : main.getMethods()) {
-                    if (method.getName().equals("onCreate") && method.getParameterTypes().toString().equals("[Landroid/os/Bundle;]")) {
+                    if (main.getType().equals(GMS)) {
+                        if (method.getName().equals("open") && method.getParameterTypes().toString().equals("[Landroid/app/Activity;, Ljava/lang/String;]")) {
+                            methods.add(redirect(method, "Lcom/sylong/bluem/update/StartupSupport;", "open")); gmsHooks++; changed = true;
+                        } else if (method.getName().equals("checkForMicroGUpdate") && method.getParameterTypes().toString().equals("[Landroid/app/Activity;]")) {
+                            methods.add(redirect(method, "Lcom/sylong/bluem/update/StandaloneUpdates;", "checkMicroG")); gmsHooks++; changed = true;
+                        } else if (method.getName().equals("openGmsCoreDisableBatteryOptimizationsIntent") && method.getParameterTypes().toString().equals("[Landroid/app/Activity;]")) {
+                            methods.add(redirect(method, "Lcom/sylong/bluem/update/StartupSupport;", "openBatterySettings")); gmsHooks++; changed = true;
+                        } else methods.add(method);
+                    } else if (method.getName().equals("onCreate") && method.getParameterTypes().toString().equals("[Landroid/os/Bundle;]")) {
                         MutableMethodImplementation body = new MutableMethodImplementation(method.getImplementation());
                         body.addInstruction(0, new BuilderInstruction3rc(Opcode.INVOKE_STATIC_RANGE,
                             body.getRegisterCount() - 2, 1, new ImmutableMethodReference(
@@ -81,17 +107,21 @@ public final class PatchApk {
                         methods.add(new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
                             method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(), body));
                         hits++;
+                        changed = true;
                     } else methods.add(method);
                 }
-                ClassDef replacement = new ImmutableClassDef(main.getType(), main.getAccessFlags(), main.getSuperclass(),
-                    main.getInterfaces(), main.getSourceFile(), main.getAnnotations(), main.getFields(), methods);
+                replacements.add(new ImmutableClassDef(main.getType(), main.getAccessFlags(), main.getSuperclass(),
+                    main.getInterfaces(), main.getSourceFile(), main.getAnnotations(), main.getFields(), methods));
+                }
+                if (!changed) continue;
                 DexPool pool = new DexPool(dex.getOpcodes());
-                for (ClassDef cls : dex.getClasses()) pool.internClass(cls.getType().equals(MAIN) ? replacement : cls);
+                for (ClassDef cls : replacements) pool.internClass(cls);
                 FileDataStore store = new FileDataStore(out.resolve(entry.getName()).toFile());
                 try { pool.writeTo(store); } finally { store.close(); }
-                System.out.println("Patched MainActivity.onCreate in " + entry.getName());
+                System.out.println("Patched update/startup hooks in " + entry.getName());
             }
             if (hits != 1) throw new IllegalStateException("Expected one lifecycle hook, got " + hits);
+            if (gmsHooks != 3) throw new IllegalStateException("Expected three MicroG startup hooks, got " + gmsHooks);
         }
     }
 }

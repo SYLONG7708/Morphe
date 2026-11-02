@@ -337,8 +337,7 @@ public final class PlaybackRecovery {
         // Some upstream builds leave VideoState null until the first pause/resume event.
         // Progress and an open player still block installation, including Shorts/background audio.
         activePlayback = PlaybackSignals.activePlayback(paused, progressing, blocked, policy.waiting(), error,
-            spinner, silentStall, !id.isEmpty() && !type.contains("DISMISSED")
-                && (state.equals("PLAYING") || state.equals("null") || mediaCode == PlaybackState.STATE_PLAYING));
+            spinner, silentStall, PlaybackSignals.playerOpen(id, type, state, mediaCode));
         if (activePlayback) activeUntil = now + 30000;
         if (!id.isEmpty() && !id.equals(currentVideo)) {
             currentVideo = id; tried.clear(); healthyVideo = id; healthySince = now; lastGoodPosition = 0;

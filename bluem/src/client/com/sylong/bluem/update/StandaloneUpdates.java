@@ -28,7 +28,10 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private final AtomicBoolean cancelled = new AtomicBoolean();
     private WeakReference<Activity> current = new WeakReference<>(null);
-    private boolean resumed, busy, downloading;
+    private boolean resumed;
+    private volatile boolean busy, downloading;
+    private boolean manualCheck;
+    private volatile HttpURLConnection activeConnection;
     private long lastCheck, dismissedUntil;
     private long nextCheck;
     private int checkFailures;
@@ -37,6 +40,8 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
     private ProgressDialog progress;
     private int progressValue;
     private String progressLabel;
+    private String progressStage;
+    private long progressBytes, progressTotal;
     private UpdatePolicy.Item ready;
     private UpdatePolicy.Release latest;
 
@@ -48,6 +53,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 PlaybackRecovery.prepare(activity.getApplicationContext());
                 activity.getApplication().registerActivityLifecycleCallbacks(instance);
             }
+            StartupSupport.ensureService(activity);
         } catch (Throwable e) { Log.w(TAG, "Updater initialization unavailable: " + e.getClass().getSimpleName()); }
     }
     private StandaloneUpdates(Context context) {
@@ -121,7 +127,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
     }
     private void check() {
         if (busy || downloading || activity() == null || (dialog != null && dialog.isShowing())) return;
-        if (!PlaybackRecovery.online(app) || SystemClock.elapsedRealtime() < nextCheck) return;
+        if (SystemClock.elapsedRealtime() < nextCheck) return;
         lastCheck = SystemClock.elapsedRealtime();
         nextCheck = lastCheck + 6 * 3600000L;
         busy = true;
@@ -167,11 +173,13 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                             if (prefs.getBoolean("waiting_permission", false) && app.getPackageManager().canRequestPackageInstalls()) {
                                 prefs.edit().remove("waiting_permission").commit();
                                 installReady();
-                            } else showReady();
+                            } else if (InstallResultReceiver.pendingAction != null) installReady();
+                            else showReady();
                         });
                     }
                     return;
                 }
+                if (!PlaybackRecovery.online(app)) throw new IOException("Network unavailable");
                 byte[] bytes = UpdatePolicy.fetch(BuildConfig.CHANNEL_URL, UpdatePolicy.MAX_MANIFEST, BuildConfig.QA);
                 byte[] signature = UpdatePolicy.fetch(BuildConfig.CHANNEL_URL + ".sig", 8192, BuildConfig.QA);
                 UpdatePolicy.Release release = UpdatePolicy.verify(bytes, signature, certificate(), prefs.getLong("sequence", 0), BuildConfig.QA);
@@ -198,6 +206,10 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                     long[] retry = {60000, 300000, 900000, 3600000};
                     nextCheck = SystemClock.elapsedRealtime() + retry[Math.min(checkFailures++, retry.length - 1)];
                     prefs.edit().putString("update_status", "offline_or_retry_later").apply();
+                    if (manualCheck) {
+                        manualCheck = false;
+                        showRetry("目前無法檢查更新", "請確認網路連線後重試。目前的版本與資料會保留。", this::manualCheck);
+                    }
                 });
             }
         });
@@ -208,6 +220,31 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             value.nextCheck = Math.min(value.nextCheck, SystemClock.elapsedRealtime() + 3000);
             value.main.postDelayed(value::check, 3100);
         });
+    }
+    /** Replaces the upstream browser-and-exit download action. */
+    public static void openMicroGUpdate(Activity a, String ignoredUrl) {
+        attach(a);
+        StandaloneUpdates value = instance;
+        if (value == null) return;
+        value.main.post(() -> {
+            if (!a.isFinishing() && !a.isDestroyed()) {
+                value.manualCheck();
+            }
+        });
+    }
+    /** One signed update feed owns both packages; do not show a second upstream prompt. */
+    public static void checkMicroG(Activity a) { attach(a); requestCheck(); }
+    static void qaOpenMicroG() {
+        StandaloneUpdates value = instance;
+        if (BuildConfig.QA && value != null && value.activity() != null)
+            StartupSupport.open(value.activity(), "https://github.com/MorpheApp/MicroG-RE/releases/latest");
+    }
+    private void manualCheck() {
+        if (downloading) { showProgress(); return; }
+        manualCheck = true; dismissedUntil = 0;
+        prefs.edit().remove("install_retry_after").remove("permission_prompt_after").apply();
+        if (dialog != null) { dialog.dismiss(); dialog = null; }
+        nextCheck = 0; check();
     }
     private void applyPlaybackPolicy(byte[] signedBytes) throws Exception {
         JSONObject recovery = new JSONObject(new String(signedBytes, "UTF-8")).optJSONObject("playback");
@@ -250,6 +287,10 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 prefs.edit().remove("accepted_sequence").commit();
                 prefs.edit().putString("update_status", waitingCompatible ? "waiting_for_compatible_recovery_update" : "up_to_date").apply();
                 Log.i(TAG, (waitingCompatible ? "UPDATE_HELD_TO_PRESERVE_RECOVERY " : "UP_TO_DATE ") + release.sequence);
+                if (manualCheck) {
+                    manualCheck = false;
+                    showError("更新檢查完成", waitingCompatible ? "相容的新版仍在準備中，會保留目前版本。" : "藍色 M 與 MicroG 已是此更新頻道的最新版本。");
+                }
                 return;
             }
             if (activity() == null) return;
@@ -259,26 +300,73 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 prefs.edit().putString("update_status", "waiting_for_playback_idle").apply();
                 return;
             }
-            prefs.edit().putLong("accepted_sequence", release.sequence).apply();
-            download(updates.get(0));
+            if (!manualCheck && SystemClock.elapsedRealtime() < dismissedUntil) return;
+            manualCheck = false;
+            UpdatePolicy.Item item = updates.get(0);
+            Activity a = activity();
+            if (a == null) return;
+            StringBuilder message = new StringBuilder("可用更新：\n");
+            for (UpdatePolicy.Item update : updates) message.append(update.label).append(" ").append(update.versionName).append('\n');
+            message.append("\n下載會留在目前畫面並顯示進度，完成後由您選擇安裝。");
+            dialog = new AlertDialog.Builder(a).setTitle("藍色 M 更新")
+                .setMessage(message.toString())
+                .setPositiveButton("立即下載", (d, w) -> {
+                    dialog = null;
+                    prefs.edit().putLong("accepted_sequence", release.sequence).apply();
+                    download(item);
+                }).setNegativeButton("稍後", (d, w) -> snooze()).setOnCancelListener(d -> snooze()).create();
+            showDialog(dialog);
         });
     }
     private void snooze() {
         dialog = null; dismissedUntil = SystemClock.elapsedRealtime() + 3600000;
         prefs.edit().putLong("install_retry_after", System.currentTimeMillis() + 3600000).apply();
     }
-    private void showProgress() { /* Verified updates download quietly while playback is idle. */ }
+    private void showDialog(AlertDialog value) {
+        try { if (activity() != null) value.show(); }
+        catch (RuntimeException e) { Log.w(TAG, "DIALOG_DEFERRED " + e.getClass().getSimpleName()); dialog = null; }
+    }
+    private void showProgress() {
+        Activity a = activity();
+        if (a == null || !downloading) return;
+        String message = progressStage != null ? progressStage : String.format(Locale.TAIWAN,
+            "正在下載 %s\n%.1f / %.1f MB", progressLabel, progressBytes / 1048576.0, progressTotal / 1048576.0);
+        if (progress == null) {
+            progress = new ProgressDialog(a);
+            progress.setTitle("下載 " + progressLabel + " 更新");
+            progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progress.setMax(100);
+            progress.setProgressNumberFormat("%1$d%%");
+            progress.setProgressPercentFormat(null);
+            progress.setMessage(message);
+            progress.setCancelable(false);
+            progress.setButton(ProgressDialog.BUTTON_NEGATIVE, "取消下載", (d, w) -> cancelDownload());
+            try { progress.show(); }
+            catch (RuntimeException e) { progress = null; return; }
+        }
+        progress.setProgress(progressValue);
+        progress.setMessage(message);
+    }
+    private void cancelDownload() {
+        cancelled.set(true);
+        HttpURLConnection connection = activeConnection;
+        if (connection != null) workerCancel.execute(connection::disconnect);
+    }
+    private final ExecutorService workerCancel = Executors.newSingleThreadExecutor();
     private void download(UpdatePolicy.Item item) {
         if (downloading || activity() == null) return;
         downloading = true; cancelled.set(false); progressLabel = item.label; progressValue = 0;
+        progressStage = null; progressBytes = 0; progressTotal = item.size;
         showProgress();
         worker.execute(() -> {
             try {
                 File target = apkFile(item);
                 if (!target.isFile() || target.length() != item.size || !UpdatePolicy.hash(target).equals(item.sha256)) {
                     File temp = new File(directory(), item.sha256 + ".part");
+                    if (temp.exists() && !temp.delete()) throw new IOException("Cannot reset incomplete download");
                     UpdatePolicy.require(directory().getUsableSpace() > item.size + 64L * 1024 * 1024, "Insufficient storage");
                     HttpURLConnection c = UpdatePolicy.connect(item.url, BuildConfig.QA);
+                    activeConnection = c;
                     try {
                         long advertised = c.getContentLengthLong();
                         UpdatePolicy.require(advertised == -1 || advertised == item.size, "Wrong download size");
@@ -289,20 +377,24 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                                 total += n; UpdatePolicy.require(total <= item.size, "Oversized APK");
                                 out.write(buffer, 0, n);
                                 int percent = (int) (total * 100 / item.size);
-                                if (percent != last) { last = percent; main.post(() -> { progressValue = percent; if (progress != null) progress.setProgress(percent); }); }
+                                if (percent != last) {
+                                    last = percent; long downloadedBytes = total;
+                                    main.post(() -> { progressValue = percent; progressBytes = downloadedBytes; showProgress(); });
+                                }
                             }
                             out.getFD().sync();
                         }
+                        main.post(() -> { progressStage = "下載完成，正在驗證檔案與簽章…"; showProgress(); });
                         verifyArchive(temp, item);
                         if (cancelled.get()) throw new InterruptedIOException("Cancelled");
                         if (!temp.renameTo(target)) throw new IOException("Cannot save APK");
-                    } finally { c.disconnect(); temp.delete(); }
+                    } finally { activeConnection = null; c.disconnect(); temp.delete(); }
                 }
                 verifyArchive(target, item);
                 prefs.edit().putString("ready_package", item.pkg).putString("ready_file", target.getName())
                     .remove("installer_launched").remove("waiting_permission").commit();
                 Log.i(TAG, "APK_VERIFIED " + item.pkg + " " + item.code);
-                main.post(() -> { finishProgress(); ready = item; installReady(); });
+                main.post(() -> { finishProgress(); ready = item; showReady(); });
             } catch (Exception e) {
                 Log.w(TAG, "DOWNLOAD_FAILED " + e.getClass().getSimpleName() + ": " + e.getMessage());
                 prefs.edit().remove("accepted_sequence").commit();
@@ -310,6 +402,11 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                     finishProgress();
                     nextCheck = SystemClock.elapsedRealtime() + 300000;
                     prefs.edit().putString("update_status", "download_retry_later").apply();
+                    if (cancelled.get()) { snooze(); return; }
+                    String reason = !PlaybackRecovery.online(app) ? "網路已中斷，連線恢復後可重新下載。" :
+                        e.getMessage() != null && e.getMessage().contains("Insufficient storage") ? "儲存空間不足，請騰出空間後重試。" :
+                        e instanceof SecurityException ? "下載檔案未通過安全驗證，未安裝。請重新下載。" : "下載未完成，請檢查網路後重試。";
+                    showRetry("更新下載未完成", reason, () -> download(item));
                 });
             }
         });
@@ -318,13 +415,42 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         downloading = false;
         if (progress != null) { progress.dismiss(); progress = null; }
     }
-    private void showReady() { installReady(); }
+    private void showReady() {
+        Activity a = activity();
+        if (a == null || ready == null || dialog != null && dialog.isShowing()) return;
+        if (System.currentTimeMillis() < prefs.getLong("install_retry_after", 0)) return;
+        UpdatePolicy.Item item = ready;
+        dialog = new AlertDialog.Builder(a).setTitle("下載完成：" + item.label + " " + item.versionName)
+            .setMessage("檔案與簽章驗證通過。\n\n安裝時 Android 可能暫時關閉藍色 M；完成後重新開啟即可接續。帳號與設定會保留。")
+            .setPositiveButton("安裝更新", (d, w) -> {
+                dialog = null;
+                prefs.edit().remove("install_retry_after").remove("permission_prompt_after").apply();
+                Log.i(TAG, "USER_INSTALL_REQUEST " + item.pkg);
+                installReady();
+            }).setNegativeButton("稍後安裝", (d, w) -> snooze()).setOnCancelListener(d -> snooze()).create();
+        showDialog(dialog);
+        prefs.edit().putString("update_status", "downloaded_waiting_for_install").apply();
+    }
+    private void showRetry(String title, String message, Runnable retry) {
+        Activity a = activity(); if (a == null) return;
+        dialog = new AlertDialog.Builder(a).setTitle(title).setMessage(message)
+            .setPositiveButton("重試", (d,w) -> { dialog = null; retry.run(); })
+            .setNegativeButton("稍後", (d,w) -> snooze()).setOnCancelListener(d -> snooze()).create();
+        showDialog(dialog);
+    }
     private void installReady() {
         Activity a = activity();
+        Log.i(TAG, "INSTALL_GATE foreground=" + (a != null) + " ready=" + (ready != null)
+            + " busy=" + busy + " playback=" + PlaybackRecovery.isPlaybackActive());
         if (a == null || ready == null || busy) return;
-        if (PlaybackRecovery.isPlaybackActive() || System.currentTimeMillis() < prefs.getLong("install_retry_after", 0)) {
+        if (PlaybackRecovery.isPlaybackActive()) {
             nextCheck = SystemClock.elapsedRealtime() + 60000;
+            showRetry("等待安裝更新", "請先暫停影片或關閉小播放器，等待約 30 秒再按重試。已下載的更新會保留。", this::installReady);
             return;
+        }
+        if (System.currentTimeMillis() < prefs.getLong("install_retry_after", 0)) {
+            nextCheck = SystemClock.elapsedRealtime() + 60000;
+            showReady(); return;
         }
         if (InstallResultReceiver.pendingAction != null) {
             Intent confirmation = InstallResultReceiver.pendingAction;
@@ -349,13 +475,14 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             if (System.currentTimeMillis() < prefs.getLong("permission_prompt_after", 0)) return;
             prefs.edit().putLong("permission_prompt_after", System.currentTimeMillis() + 86400000).apply();
             dialog = new AlertDialog.Builder(a).setTitle("允許自動更新")
-                .setMessage("請允許藍色 M 安裝更新。系統只需設定一次，之後會在播放閒置時套用已驗證的版本。")
+                .setMessage("請允許藍色 M 安裝更新。系統只需設定一次，完成後請返回這裡繼續安裝。")
                 .setPositiveButton("前往設定", (d, w) -> {
                     dialog = null;
                     prefs.edit().putBoolean("waiting_permission", true).apply();
-                    a.startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + app.getPackageName())));
+                    try { a.startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + app.getPackageName()))); }
+                    catch (RuntimeException e) { showError("請允許安裝更新", "請從系統設定允許藍色 M 安裝應用程式，再回到此畫面重試。"); }
                 }).setNegativeButton("稍後", (d, w) -> snooze()).setOnCancelListener(d -> snooze()).create();
-            dialog.show();
+            showDialog(dialog);
             return;
         }
         UpdatePolicy.Item item = ready;
@@ -403,7 +530,8 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             } catch (Exception e) {
                 if (sessionId >= 0) try { app.getPackageManager().getPackageInstaller().abandonSession(sessionId); } catch (RuntimeException ignored) { }
                 Log.w(TAG, "INSTALL_REJECTED " + e.getClass().getSimpleName());
-                main.post(() -> { busy = false; nextCheck = SystemClock.elapsedRealtime() + 3600000; });
+                main.post(() -> { busy = false; nextCheck = SystemClock.elapsedRealtime() + 3600000;
+                    showRetry("尚未完成安裝", "下載檔案已保留，請確認系統安裝權限與可用空間後重試。", this::installReady); });
             }
         });
     }
@@ -412,18 +540,25 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         if (a == null) return;
         dialog = new AlertDialog.Builder(a).setTitle(title).setMessage(message).setPositiveButton("確定", (d, w) -> snooze())
             .setOnCancelListener(d -> snooze()).create();
-        dialog.show();
+        showDialog(dialog);
     }
     @Override public void onActivityResumed(Activity a) {
-        if (!PlaybackSignals.watchActivity(a.getClass().getName())) return;
+        if (!PlaybackSignals.watchActivity(a.getClass().getName()) && !(a instanceof SetupActivity)) return;
         current = new WeakReference<>(a); resumed = true;
         Log.i(TAG, "WATCH_ACTIVITY_RESUMED " + a.getClass().getSimpleName());
-        PlaybackRecovery.resume(a);
-        if (prefs.getBoolean("waiting_permission", false)) nextCheck = 0;
+        if (!(a instanceof SetupActivity)) PlaybackRecovery.resume(a);
+        if (prefs.getBoolean("waiting_permission", false) || ready != null) nextCheck = 0;
         if (downloading) showProgress();
         else main.postDelayed(() -> { if (activity() == a) check(); }, 1100);
     }
-    @Override public void onActivityPaused(Activity a) { if (current.get() == a) resumed = false; PlaybackRecovery.pause(a); }
+    @Override public void onActivityPaused(Activity a) {
+        if (current.get() == a) {
+            resumed = false;
+            if (dialog != null) { nextCheck = 0; dialog.dismiss(); dialog = null; }
+            if (progress != null) { progress.dismiss(); progress = null; }
+        }
+        PlaybackRecovery.pause(a);
+    }
     @Override public void onActivityDestroyed(Activity a) {
         if (current.get() == a) {
             if (dialog != null) { dialog.dismiss(); dialog = null; }

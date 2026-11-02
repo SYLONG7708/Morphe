@@ -45,6 +45,13 @@ public final class PlaybackSignals {
         if (paused || blocked || (recoveryWaiting && (error || loading || stalled))) return false;
         return error || loading || playerOpen;
     }
+    public static boolean playerOpen(String id, String type, String state, int mediaState) {
+        if (id == null || !id.matches("[A-Za-z0-9_-]{11}")) return false;
+        // The home feed preloads video IDs while PlayerType is NONE and VideoState is null.
+        // A real media session still protects background audio even without a visible player.
+        return mediaState == 3 || (!type.equals("NONE") && !type.equals("null")
+            && !type.contains("DISMISSED") && (state.equals("PLAYING") || state.equals("null")));
+    }
     public static long resumePosition(long position, long lastGood, boolean error) {
         return position < 0 || (error && position == 0 && lastGood > 0) ? Math.max(0, lastGood) : position;
     }
