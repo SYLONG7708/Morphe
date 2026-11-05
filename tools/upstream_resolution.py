@@ -54,11 +54,12 @@ def resolve_reviewed(conflicts: list[str]) -> list[str]:
                 ("base", merge_base), ("local", "HEAD"), ("upstream", "MERGE_HEAD"),
                 ("merged", ":0"))}
             source = blobs["merged"]
-        # Conflicts need a local/base blob. A clean upstream addition can also
-        # receive a reviewed adaptation: absence of base/local and both the
-        # upstream and merged bytes must all match the rule exactly.
-        if (source is None or (path in conflicts
-                and (blobs["local"] is None or blobs["base"] is None))):
+        # A locally deleted file can conflict with an upstream edit or rename.
+        # Match that absence exactly and require an explicit upstream patch base;
+        # the default local base below still rejects a missing local file.
+        # Clean additions also pin absent base/local and upstream/merged bytes.
+        if ((path in conflicts and blobs["base"] is None)
+                or (path not in conflicts and source is None)):
             continue
         digests = {name: sha(value) for name, value in blobs.items()}
         matches = [r for r in catalog["resolutions"] if r["path"] == path and r["inputs"] == digests]

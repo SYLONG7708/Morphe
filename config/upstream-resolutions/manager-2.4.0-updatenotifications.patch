@@ -1,0 +1,90 @@
+--- a/app/src/main/java/app/morphe/manager/notification/UpdateNotifications.kt
++++ b/app/src/main/java/app/morphe/manager/notification/UpdateNotifications.kt
+@@ -48,6 +48,7 @@
+             else
+                 context.getString(R.string.home_update_available),
+             notificationId = NOTIFICATION_ID_MANAGER_UPDATE,
++            openAction = ACTION_MANAGER,
+             action = NotificationCompat.Action.Builder(
+                 R.drawable.ic_notification,
+                 context.getString(R.string.whats_new),
+@@ -75,11 +76,38 @@
+             else
+                 context.getString(R.string.notification_bundle_update_text_unversioned),
+             notificationId = NOTIFICATION_ID_BUNDLE_UPDATE,
++            openAction = ACTION_YOUTUBE,
+             action = NotificationCompat.Action.Builder(
+                 R.drawable.ic_notification,
+                 context.getString(R.string.whats_new),
+                 buildBundleChangelogIntent(bundleUid)
+             ).build()
++        )
++    }
++
++    fun showYouTubeUpdateNotification(version: String? = null) {
++        postNotification(
++            channelId = NotificationChannels.PATCH_UPDATES,
++            title = context.getString(R.string.notification_youtube_update_title),
++            contentText = if (!version.isNullOrBlank())
++                context.getString(R.string.notification_update_text, version)
++            else
++                context.getString(R.string.notification_youtube_update_text),
++            notificationId = NOTIFICATION_ID_YOUTUBE_UPDATE,
++            openAction = ACTION_YOUTUBE,
++        )
++    }
++
++    fun showMicroGUpdateNotification(version: String? = null) {
++        postNotification(
++            channelId = NotificationChannels.PATCH_UPDATES,
++            title = context.getString(R.string.notification_microg_update_title),
++            contentText = if (!version.isNullOrBlank())
++                context.getString(R.string.notification_update_text, version)
++            else
++                context.getString(R.string.notification_microg_update_text),
++            notificationId = NOTIFICATION_ID_MICROG_UPDATE,
++            openAction = ACTION_MICROG,
+         )
+     }
+ 
+@@ -123,9 +151,10 @@
+         title: String,
+         contentText: String,
+         notificationId: Int,
++        openAction: String? = null,
+         action: NotificationCompat.Action? = null,
+         tag: String? = null,
+-        contentIntent: PendingIntent = buildOpenAppIntent()
++        contentIntent: PendingIntent = buildOpenAppIntent(openAction, notificationId)
+     ) {
+         val notification = NotificationCompat.Builder(context, channelId)
+             .setSmallIcon(R.drawable.ic_notification)
+@@ -165,14 +194,24 @@
+      * The [EXTRA_TRIGGER_UPDATE_CHECK] extra is picked up by [MainActivity] via
+      * [app.morphe.manager.ui.viewmodel.MainViewModel.pendingUpdateCheck].
+      */
+-    private fun buildOpenAppIntent() =
+-        NotificationIntents.activity(context, NotificationIntents.REQUEST_CODE_UPDATE_CHECK) {
+-            putExtra(EXTRA_TRIGGER_UPDATE_CHECK, true)
+-        }
++    private fun buildOpenAppIntent(
++        action: String? = null,
++        requestCode: Int = NotificationIntents.REQUEST_CODE_UPDATE_CHECK,
++    ) = NotificationIntents.activity(context, requestCode) {
++        putExtra(EXTRA_TRIGGER_UPDATE_CHECK, true)
++        action?.let { putExtra(EXTRA_UPDATE_ACTION, it) }
++    }
+ 
+     companion object {
+         private const val NOTIFICATION_ID_MANAGER_UPDATE = 2001
+         private const val NOTIFICATION_ID_BUNDLE_UPDATE  = 2002
++        private const val NOTIFICATION_ID_YOUTUBE_UPDATE = 2003
++        private const val NOTIFICATION_ID_MICROG_UPDATE = 2004
++
++        const val ACTION_MANAGER = "manager"
++        const val ACTION_YOUTUBE = "youtube"
++        const val ACTION_MICROG = "microg"
++        const val EXTRA_UPDATE_ACTION = "ecosystem_update_action"
+         private const val NOTIFICATION_ID_MOUNT_REPLACED = 2007
+ 
+         /**

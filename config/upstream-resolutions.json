@@ -1894,6 +1894,347 @@
       "requires": [
         "manager-2.3.0-remotepatchbundle"
       ]
+    },
+    {
+      "id": "manager-2.4.0-app-gradle",
+      "path": "app/build.gradle.kts",
+      "inputs": {
+        "base": "966043eb6178ffa80a33101c961ac4f1f81a13ff4c65b03ff74f295befe242d2",
+        "local": "81ddada887dd79799430903c718d9bf3347816e17120d7ce7bcfb4d15041dcd7",
+        "upstream": "5443164b9e45d5529fa77e8bbf72ab3bb636abd7ef3c23f06fa8cb34461a5a51"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-app-gradle.patch",
+      "patch_sha256": "120c34b9054f88d981cf48355e6a655703f5da4139cfc1a8967a57089b1f8a45",
+      "result_sha256": "5ed41b0534c713e41d33f265949f5e4bab69001d2b2515bc00ed46f13e85bdd0",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-androidmanifest",
+      "path": "app/src/main/AndroidManifest.xml",
+      "inputs": {
+        "base": "b27d735b76ce7d4c651c50b7ae252d53dbf051fb017c3d60819bc7c9b97cd62b",
+        "local": "ae8ea7ca6059bf145776143f4426205a9961cabe536c174d260aef11c82db091",
+        "upstream": "ee0634c5aad1b5a494806e23d519c3b3c59501fdc661ca01f001e80eeb337815"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-androidmanifest.patch",
+      "patch_sha256": "04e04ecd677cba21d66b0f44b5210770ff0597c9354e67233420925effcedabc",
+      "result_sha256": "cc4bbf3a2cf46e1f63a9508866a08fa1d273f0d3999adadb0f46f8f5a1665ca3",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-mainactivity",
+      "path": "app/src/main/java/app/morphe/manager/MainActivity.kt",
+      "inputs": {
+        "base": "4913d7a6cfe8b194e66f4e353a58ddaba90788c1b76036062e6efb9c03483460",
+        "local": "441e9e4167f0c970c80ad0a1a7d4c83c25c5248131eb081c7195e929e1d4d953",
+        "upstream": "a018459c7f1d38883d6dc30ddab02a7eeb1cfd3af5a16b3de1f7c8ede499aacb"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-mainactivity.patch",
+      "patch_sha256": "1e10c50f072c683b992d7dd0f12e074aa0f277e07c2e165ba147e2be51e1ae98",
+      "result_sha256": "ab9b7551339c23c27eaa8ec71ddd9bd950e251f1b909b8f50b025e41892856bb",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-managerapplication",
+      "path": "app/src/main/java/app/morphe/manager/ManagerApplication.kt",
+      "inputs": {
+        "base": "ce2fa731ac4b5a9230d3bc4baa95e6035776d7c0d725295fd1e719c16677f7e0",
+        "local": "08756e18c4325d3c6507d0bdd8ccfffc18e9add15541f615c6718f9fa81eb18c",
+        "upstream": "74c16c1fd9800f1052de586313e18ebbe8d8913667e267928f0806435b7f9f3e"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-managerapplication.patch",
+      "patch_sha256": "69545c248bab1c6ca49ba27b9d87a1121479794364ecf6b720b7e198a8be90b7",
+      "result_sha256": "b2ad06b534c9789e518590308ba6c5158a55af70a25cbbe7efdc5a63780cf8f4",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-appversioncatalog",
+      "path": "app/src/main/java/app/morphe/manager/domain/bundles/AppVersionCatalog.kt",
+      "inputs": {
+        "base": "378354e5a2aa4c1b20102858947e2bdf861db5630aa8bf8a79103277e325d829",
+        "local": "999839b1f0ccae717f2ccbb72da406b18e36b8cb20cc85debaea3eab7e3767b9",
+        "upstream": "0d4c1f2b963c69287709909eaeacc3797cae3af1173256a1be58b18cd20dfba9"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-appversioncatalog.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "999839b1f0ccae717f2ccbb72da406b18e36b8cb20cc85debaea3eab7e3767b9",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-remotepatchbundle",
+      "path": "app/src/main/java/app/morphe/manager/domain/bundles/RemotePatchBundle.kt",
+      "inputs": {
+        "base": "93079243efb26dbc1e8b6434642516b82ca3e9300108f60d8925c4bfad5a62d1",
+        "local": "0e31ee161b5a077da6b418fdcf098f340b44435aa57d035b4070f3b6f17481ab",
+        "upstream": "cb8def21c5b8555297ee3f2d5b1ec466d91f2b0b71001cffd4a978cb9f98ece6"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-remotepatchbundle.patch",
+      "patch_sha256": "9c037e9188a3024e4b37a3b6736c8ea708a79479643b7ced17086e7cd88cb664",
+      "result_sha256": "ca41a39722dc414c1612172a461d061a24808e2c866eda678ef55fa5101be338",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-releaseapi",
+      "path": "app/src/main/java/app/morphe/manager/network/api/ReleaseAPI.kt",
+      "inputs": {
+        "base": "655c826e272ea607382e23cfb1af99c62fb87f54c01b9e383b1cc8cfc38fa9a5",
+        "local": "18a86d1157993760c5ecbadff1f1c622088f41bdfae6c27b074f568f00c87bf0",
+        "upstream": "4cf2ed18a859a018a9459eed9b18a53de4f75e521e930efbcc49c7a2a1a7835c"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-releaseapi.patch",
+      "patch_sha256": "27ab5b23545247d88199dabd56d1b0a7171b55ce5eac1f55005093dd9344e811",
+      "result_sha256": "5ab2efc2da55336a5dfd1eedf6e26d5bb9237c6be6a52323ba6c66cda8810cb4",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-app-gradle",
+        "manager-2.4.0-androidmanifest",
+        "manager-2.4.0-mainactivity",
+        "manager-2.4.0-managerapplication",
+        "manager-2.4.0-appversioncatalog",
+        "manager-2.4.0-remotepatchbundle",
+        "manager-2.4.0-morpheasset",
+        "manager-2.4.0-fcmservice",
+        "manager-2.4.0-patcherviewmodel",
+        "manager-2.4.0-settingsviewmodel",
+        "manager-2.4.0-updateviewmodel",
+        "manager-2.4.0-fcmtopicmanager",
+        "manager-2.4.0-updatenotificationmanager",
+        "manager-2.4.0-updatecheckworker",
+        "manager-2.4.0-strings-be-rby",
+        "manager-2.4.0-libs-versions",
+        "manager-2.4.0-releaseasset",
+        "manager-2.4.0-updatenotifications",
+        "manager-2.4.0-detachedsignaturemetadatatest"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-morpheasset",
+      "path": "app/src/main/java/app/morphe/manager/network/dto/MorpheAsset.kt",
+      "inputs": {
+        "base": "078f7a515cb29ff7e678b041cb9a2f0d4de9331a7d10d16226324900ce090c0c",
+        "local": "3cd1facdc4fb701d41cd76facc712f9e64a538cac5b8c729eae60f0ef46e0e70",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-morpheasset.patch",
+      "patch_sha256": "5cc0039f6e4f2a000ad509234d618ff0b50e4e3b8c25e1e4e854674833dc1f0a",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-fcmservice",
+      "path": "app/src/main/java/app/morphe/manager/service/FcmService.kt",
+      "inputs": {
+        "base": "89612ec473f815dd8850443eee6ec6988bb57cf83f4cc7891313d69bd0a3f7dc",
+        "local": null,
+        "upstream": "23187afe5dcee579f380048f2aa12decf140471bdaac59b7189631c4e2cfe205"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-fcmservice.patch",
+      "patch_sha256": "e9568a4f56258f5c2ff6a91247dcce7162d44c0097407cfe66c826e8f7ea3ca9",
+      "result_sha256": null,
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-patcherviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/PatcherViewModel.kt",
+      "inputs": {
+        "base": "93911bda04da1eadb2ae610abb2686001a63343659e8052437081d3504ecb636",
+        "local": "4b3767f43b5f310944f7cdf62b73019fa43f5663cb494285096c05ae243346a7",
+        "upstream": "3bf90c43dba2619b951a6ece15dc4230212e5c3ba1553ce4808488b43da750d0"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-patcherviewmodel.patch",
+      "patch_sha256": "149e7d5a518ae3750131be92a69ce1656f4bb84d4571271165b762605243c508",
+      "result_sha256": "2861c7e6026ac936f329e099348d208c23e499b82d7f773baaee0f105f3593e5",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-settingsviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/SettingsViewModel.kt",
+      "inputs": {
+        "base": "dd08b0ddd07b6c1bc7af34724a666c616b27347ece9baa6af4928ccf8a6abff0",
+        "local": "12b433ae867ac23897267e469ee6893e46d2c141c57a2749e65f4d9a7e3e6392",
+        "upstream": "eacff5dd92fcf17b60bc6c330b13ef0dc298dace344f2aad01718278c7463c2b"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-settingsviewmodel.patch",
+      "patch_sha256": "fa06e3b481fe634b9d3b96260599ab84c84622b445fc384cc18be196b52c1048",
+      "result_sha256": "9c917ca16879e246fa10fcdda95d1bf3a259d115a35c5e27bd90d078c8e2c0ae",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-updateviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/UpdateViewModel.kt",
+      "inputs": {
+        "base": "442652fe0eff9842cc7400c0f92efe1a2e2f6a7b09ade7dea056942afd426175",
+        "local": "b4fb38b85e47583bb027b9f4fc37fef9fbf88df1c28d2bc0bda0f1d2fba3bef2",
+        "upstream": "f04999cd0a211952f6cf9913decf977cc4c542d16b37ace8105316abc2c95bf3"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-updateviewmodel.patch",
+      "patch_sha256": "998d36e224d3c77e3fcdd0d4bea8b2c001cbd00677f91fa344c425f9f8f00891",
+      "result_sha256": "b348831eeacb6ce7b35a0dfd0b2328d77e0572971287e67e660a3caaf8454039",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-fcmtopicmanager",
+      "path": "app/src/main/java/app/morphe/manager/util/FcmTopicManager.kt",
+      "inputs": {
+        "base": "155667b34e59d0cb77189a9f07941f03bd02d17b53a519157f3e7182c4833fdc",
+        "local": "ef50b01405aed8eecd9e32afe481958189c0414b496258fc5ebda2bfe83f26d2",
+        "upstream": "da1ca29a0170a8ba8aae1b341e6e535eb7e3560baca6f661f57b1278d2b3f6c8"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-fcmtopicmanager.patch",
+      "patch_sha256": "78cc7bcf811db7f7adfe2276f62db6d611b028275a38fe3dc09cb6ed322b9561",
+      "result_sha256": "77de6fa835568377b65ab35ba9a27fb3e728e2262c4b8f4aecb3d8b1b1e4c520",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-updatenotificationmanager",
+      "path": "app/src/main/java/app/morphe/manager/util/UpdateNotificationManager.kt",
+      "inputs": {
+        "base": "f1425bfd5ecd457307c7cfe82d7b890edc08c95c1dcb9bad9423cbfe97aebd3a",
+        "local": "e335176de2c54ef363900ff46dddaf82807b0128d23a3feba6f1d3605cc6aa92",
+        "upstream": null
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-updatenotificationmanager.patch",
+      "patch_sha256": "48ac0ac1773e80268c47f404a81796e487e504f5ddf6c857b0f99f05bfe0c397",
+      "result_sha256": null,
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-updatecheckworker",
+      "path": "app/src/main/java/app/morphe/manager/worker/UpdateCheckWorker.kt",
+      "inputs": {
+        "base": "64687b588470acc0017024115253ab44e6ac7f213dddf8689903685c4bf62b4a",
+        "local": "57ce1a426ea5818d0106b2a305786e5f648b465b17dcab221648e04d8a92931c",
+        "upstream": "7d811df0f0abe3571589012095289b289016be6d3bbd8a5f3519c10328fdf66d"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-updatecheckworker.patch",
+      "patch_sha256": "dd37a370fc20d3ec496dfcb435985a93d21f058efb0e4f80ef24589180de9e92",
+      "result_sha256": "d1bb43bf9436658e9cc87b51ae1ff38329a53661496997ffe28ebb8ca3a6bb15",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-strings-be-rby",
+      "path": "app/src/main/res/values-be-rBY/strings.xml",
+      "inputs": {
+        "base": "4a6ff45a2612a5639c21ae6a10cffd6268b39cc326030ca0637ae819f9c09fbd",
+        "local": "8364eba000351849404b85a8d062c8f427a9c37636dd0dd41f0b87cc57babb3f",
+        "upstream": "53ae6f8f1d0fbca36ed1c53130dd3d81089a75705611dab0a82bcba6f9214329"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-strings-be-rby.patch",
+      "patch_sha256": "7d4687e04f71327830f8f8aa30cf55ed0d48fb5e8ea107053a9c42d71b65335f",
+      "result_sha256": "44cd5cba5b9c24b43141145d83044f170ca87cfee2b0b508c8d44f74dd1ef212",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-libs-versions",
+      "path": "gradle/libs.versions.toml",
+      "inputs": {
+        "base": "68d4fc6137b1478d6a215b7c2eda87aa77ed6dfb00209c25ee4c3f095b081354",
+        "local": "6a402714dfd0c538f869ec949ca6b98620dfbfaa755f47f2531dba33f82faa09",
+        "upstream": "9f2b68057fa24721ccb3870748b32c7e81257537902f937163b1d3fdcd859076"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-libs-versions.patch",
+      "patch_sha256": "15a141b5104cc8b58501c0dadddb2e50f05b8b7ffb1cf7c7ad1458a9202034e5",
+      "result_sha256": "17e2d68f868fc7419fd78ee4403d3c88985183d207d748ddc0bb862e82941e21",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-releaseasset",
+      "path": "app/src/main/java/app/morphe/manager/network/dto/ReleaseAsset.kt",
+      "inputs": {
+        "base": null,
+        "local": null,
+        "upstream": "f189648670f7111d6942a236feb4b1fae3674f81a81d27d37be5399a03d69c3c",
+        "merged": "f189648670f7111d6942a236feb4b1fae3674f81a81d27d37be5399a03d69c3c"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-releaseasset.patch",
+      "patch_sha256": "53b579a1f6b3347e9b3563be501064686506fa77ac7697e76e0d7a387a44711b",
+      "result_sha256": "1d0a8e70add2eaa99d3aebb4f10fd19c89386079f5118b8ee72bbdc7011d5ff8",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-updatenotifications",
+      "path": "app/src/main/java/app/morphe/manager/notification/UpdateNotifications.kt",
+      "inputs": {
+        "base": null,
+        "local": null,
+        "upstream": "43f829366c5c0d5e54a8d4ae32653d7a2e5d7d76f69f31b6f0f748388013a041",
+        "merged": "43f829366c5c0d5e54a8d4ae32653d7a2e5d7d76f69f31b6f0f748388013a041"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-updatenotifications.patch",
+      "patch_sha256": "3c77821c8a9fa6fe289e7394f568d72492a299197694b7390ce1a06c4b2625d6",
+      "result_sha256": "ee55341d100d5a589f964aca761bf059407c9340c878061c1097f0b971eb9e1f",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
+    },
+    {
+      "id": "manager-2.4.0-detachedsignaturemetadatatest",
+      "path": "app/src/test/java/app/morphe/manager/network/api/DetachedSignatureMetadataTest.kt",
+      "inputs": {
+        "base": null,
+        "local": "6597409aee2cd7109467d320287d01365b16951b7ac03752835ad6923c257313",
+        "upstream": null,
+        "merged": "6597409aee2cd7109467d320287d01365b16951b7ac03752835ad6923c257313"
+      },
+      "patch": "config/upstream-resolutions/manager-2.4.0-detachedsignaturemetadatatest.patch",
+      "patch_sha256": "cad4ed1c8dc9fda1315846d3928f9d7b65c43fc07d900dfe69ab466a5691a28a",
+      "result_sha256": "a2da6e21325c15850c820457d9b65e9e58a0c5fb1440c326ccf1b9dfeb667e70",
+      "patch_base": "local",
+      "requires": [
+        "manager-2.4.0-releaseapi"
+      ]
     }
   ]
 }

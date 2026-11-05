@@ -1,0 +1,31 @@
+--- a/app/src/main/java/app/morphe/manager/network/dto/ReleaseAsset.kt
++++ b/app/src/main/java/app/morphe/manager/network/dto/ReleaseAsset.kt
+@@ -18,6 +18,7 @@
+ import kotlinx.serialization.encoding.Decoder
+ import kotlinx.serialization.encoding.Encoder
+ import java.time.LocalDateTime
++import java.time.OffsetDateTime
+ import java.time.ZoneOffset
+ 
+ @Serializable
+@@ -28,6 +29,8 @@
+     @SerialName("created_at")
+     @Serializable(with = LocalDateTimeSerializer::class)
+     val createdAt: LocalDateTime,
++    @SerialName("signature_download_url")
++    val signatureDownloadUrl: String? = null,
+     /** Key the bundles of the source are signed with, see PatchBundleSignature. */
+     @SerialName("public_key")
+     val publicKey: String? = null,
+@@ -45,5 +48,10 @@
+ 
+     override fun serialize(encoder: Encoder, value: LocalDateTime) = encoder.encodeString(value.toString())
+ 
+-    override fun deserialize(decoder: Decoder): LocalDateTime = LocalDateTime.parse(decoder.decodeString())
++    override fun deserialize(decoder: Decoder): LocalDateTime {
++        val timestamp = decoder.decodeString()
++        return runCatching {
++            OffsetDateTime.parse(timestamp).withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime()
++        }.getOrElse { LocalDateTime.parse(timestamp) }
++    }
+ }

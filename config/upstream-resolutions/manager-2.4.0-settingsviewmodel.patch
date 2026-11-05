@@ -1,0 +1,30 @@
+--- a/app/src/main/java/app/morphe/manager/ui/viewmodel/SettingsViewModel.kt
++++ b/app/src/main/java/app/morphe/manager/ui/viewmodel/SettingsViewModel.kt
+@@ -25,7 +25,7 @@
+ import app.morphe.manager.domain.repository.SelectionSetSummary
+ import app.morphe.manager.domain.repository.SourceMuteRepository
+ import app.morphe.manager.patcher.runtime.jvm.JvmInstallation
+-import app.morphe.manager.network.api.MorpheAPI
++import app.morphe.manager.network.api.ReleaseAPI
+ import app.morphe.manager.patcher.patch.PatchInfo
+ import app.morphe.manager.ui.screen.settings.system.CopyTarget
+ import app.morphe.manager.ui.screen.shared.CopySelectionCandidate
+@@ -35,9 +35,6 @@
+ import app.morphe.manager.util.syncFcmTopics
+ import app.morphe.manager.worker.UpdateCheckInterval
+ import app.morphe.manager.worker.UpdateCheckWorker
+-import app.morphe.patcher.dex.BytecodeMode
+-import com.google.android.gms.common.ConnectionResult
+-import com.google.android.gms.common.GoogleApiAvailability
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.ExperimentalCoroutinesApi
+ import kotlinx.coroutines.async
+@@ -79,7 +76,7 @@
+     private val optionsRepository: PatchOptionsRepository,
+     private val patchBundleRepository: PatchBundleRepository,
+     private val appDataResolver: AppDataResolver,
+-    private val api: MorpheAPI,
++    private val api: ReleaseAPI,
+     private val appContext: Context,
+     jvmInstallation: JvmInstallation,
+     /** State behind the copy panel, see [openCopy], and behind renaming and deleting sets. */

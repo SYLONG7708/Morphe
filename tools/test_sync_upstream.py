@@ -248,6 +248,78 @@ class OfficialSyncTest(unittest.TestCase):
         self.assertEqual("custom behavior\n", (self.fork / "app.txt").read_text())
         self.assertEqual("blocked", json.loads((self.fork / "verification/upstream-sync.json").read_text())["state"])
 
+    def locally_deleted_rule(self, renamed=False):
+        catalog = self.reviewed_rule()
+        (self.fork / "app.txt").unlink()
+        self.commit(self.fork, "remove channel-inapplicable service")
+        rule = catalog["resolutions"][0]
+        upstream = "upstream improvement\n"
+        if renamed:
+            self.cmd(self.upstream, "mv", "app.txt", "renamed-app.txt")
+            # An unchanged rename still conflicts with the fork's deletion.
+            upstream = "base\n"
+            (self.upstream / "renamed-app.txt").write_text(upstream)
+            self.cmd(self.upstream, "add", "renamed-app.txt")
+            self.cmd(self.upstream, "commit", "-qm", "rename upstream service")
+            self.cmd(self.upstream, "tag", "-f", "v1.31.0")
+            rule["path"] = "renamed-app.txt"
+        data = "".join(difflib.unified_diff(upstream.splitlines(True), [],
+                                          fromfile="a/" + rule["path"], tofile="/dev/null")).encode()
+        rule["inputs"].update(local=None, upstream=hashlib.sha256(upstream.encode()).hexdigest())
+        rule.update(patch_base="upstream", result_sha256=None,
+                    patch_sha256=hashlib.sha256(data).hexdigest())
+        (self.fork / rule["patch"]).write_bytes(data)
+        (self.fork / "config/upstream-resolutions.json").write_text(json.dumps(catalog))
+        self.cmd(self.fork, "add", "config")
+        self.cmd(self.fork, "commit", "-qm", "review local deletion against exact upstream source")
+        return catalog
+
+    def test_reviewed_local_deletion_survives_an_upstream_edit(self):
+        self.locally_deleted_rule()
+        self.prepare()
+        self.assertFalse((self.fork / "app.txt").exists())
+        self.assertEqual("", self.cmd(self.fork, "diff", "--name-only", "--diff-filter=U").stdout)
+        status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
+        self.assertEqual("prepared", status["state"])
+        self.assertEqual(["reviewed-fixture"], status["repairs"])
+
+    def test_reviewed_local_deletion_survives_an_upstream_rename(self):
+        self.locally_deleted_rule(renamed=True)
+        self.prepare()
+        self.assertFalse((self.fork / "app.txt").exists())
+        self.assertFalse((self.fork / "renamed-app.txt").exists())
+        status = json.loads((self.fork / "verification/upstream-sync.json").read_text())
+        self.assertEqual("prepared", status["state"])
+        self.assertEqual(["reviewed-fixture"], status["repairs"])
+
+    def test_local_deletion_rule_does_not_match_an_empty_local_file(self):
+        self.locally_deleted_rule()
+        (self.fork / "app.txt").write_bytes(b"")
+        self.commit(self.fork, "keep an empty local file")
+        self.prepare()
+        self.assertEqual(b"", (self.fork / "app.txt").read_bytes())
+        self.assertEqual("blocked", json.loads((self.fork / "verification/upstream-sync.json").read_text())["state"])
+
+    def test_local_deletion_rule_does_not_match_a_new_upstream_edit(self):
+        self.locally_deleted_rule()
+        (self.upstream / "app.txt").write_text("unreviewed service implementation\n")
+        self.commit(self.upstream, "upstream service changed")
+        self.cmd(self.upstream, "tag", "-f", "v1.31.0")
+        self.prepare()
+        self.assertFalse((self.fork / "app.txt").exists())
+        self.assertEqual("blocked", json.loads((self.fork / "verification/upstream-sync.json").read_text())["state"])
+
+    def test_local_deletion_rule_still_requires_a_present_patch_base(self):
+        catalog = self.locally_deleted_rule()
+        del catalog["resolutions"][0]["patch_base"]
+        (self.fork / "config/upstream-resolutions.json").write_text(json.dumps(catalog))
+        self.cmd(self.fork, "add", "config")
+        self.cmd(self.fork, "commit", "-qm", "missing upstream patch base")
+        with self.assertRaisesRegex(ValueError, "Unsupported reviewed patch base"):
+            self.prepare()
+        self.assertFalse((self.fork / "app.txt").exists())
+        self.assertEqual("", self.cmd(self.fork, "status", "--porcelain", "--untracked-files=no").stdout)
+
     def test_deletion_must_match_the_reviewed_result(self):
         catalog = self.deletion_rule()
         catalog["resolutions"][0]["result_sha256"] = hashlib.sha256(b"").hexdigest()
