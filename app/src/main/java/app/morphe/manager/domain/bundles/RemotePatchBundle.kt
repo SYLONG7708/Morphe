@@ -14,8 +14,8 @@ import app.morphe.manager.BuildConfig
 import app.morphe.manager.domain.bundles.RemotePatchBundle.Companion.CHANGELOG_CACHE_TTL
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.update.DetachedSignatureVerifier
-import app.morphe.manager.network.api.MorpheAPI
-import app.morphe.manager.network.dto.MorpheAsset
+import app.morphe.manager.network.api.ReleaseAPI
+import app.morphe.manager.network.dto.ReleaseAsset
 import app.morphe.manager.network.service.AssetDownloader
 import app.morphe.manager.network.service.HttpService
 import app.morphe.manager.network.utils.getOrThrow
@@ -32,8 +32,6 @@ import io.ktor.http.contentType
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.*
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
@@ -52,7 +50,7 @@ typealias PatchBundleDownloadProgress = (bytesRead: Long, bytesTotal: Long?) -> 
 /** What a remote bundle reaches its source with, handed to it by whoever builds the bundle. */
 class RemoteBundleServices(
     val http: HttpService,
-    val api: MorpheAPI,
+    val api: ReleaseAPI,
     val assetDownloader: AssetDownloader,
     val prefs: PreferencesManager
 )
@@ -76,7 +74,9 @@ sealed class RemotePatchBundle(
     private val assetDownloader: AssetDownloader by inject()
     private val refusedReleaseFile = directory.resolve("refused-release")
 
-    protected abstract suspend fun getLatestInfo(): MorpheAsset
+    override val patchSourceEntry: String get() = patchSourceEntryForEndpoint(endpoint)
+
+    protected abstract suspend fun getLatestInfo(): ReleaseAsset
     abstract override fun copy(
         error: Throwable?,
         name: String,
@@ -86,7 +86,7 @@ sealed class RemotePatchBundle(
         enabled: Boolean
     ): RemotePatchBundle
 
-    protected open suspend fun download(info: MorpheAsset, onProgress: PatchBundleDownloadProgress? = null) =
+    protected open suspend fun download(info: ReleaseAsset, onProgress: PatchBundleDownloadProgress? = null) =
         withContext(Dispatchers.IO) {
             installPatchBundle("Downloading patch bundle", publishedKey = info.publicKey) { staging ->
                 services.assetDownloader.downloadToFile(
@@ -110,9 +110,7 @@ sealed class RemotePatchBundle(
 
             PatchBundleDownloadResult(
                 versionSignature = info.version,
-                assetCreatedAtMillis = runCatching {
-                    info.createdAt.toInstant(TimeZone.UTC).toEpochMilliseconds()
-                }.getOrNull()
+                assetCreatedAtMillis = info.createdAtMillis
             )
         }
 
@@ -154,7 +152,7 @@ sealed class RemotePatchBundle(
      * [getLatestInfo] with the manifest page URL remembered, so [browsePageUrl] can use it without
      * a network request of its own.
      */
-    private suspend fun latestInfo(): MorpheAsset = getLatestInfo().also { asset ->
+    private suspend fun latestInfo(): ReleaseAsset = getLatestInfo().also { asset ->
         asset.pageUrl?.let { pageUrls[uid] = it }
     }
 
@@ -167,13 +165,10 @@ sealed class RemotePatchBundle(
     suspend fun update(onProgress: PatchBundleDownloadProgress? = null): PatchBundleDownloadResult? =
         withContext(Dispatchers.IO) {
             val info = latestInfo()
-            val remoteCreatedAt = runCatching {
-                info.createdAt.toInstant(TimeZone.UTC).toEpochMilliseconds()
-            }.getOrNull()
 
             if (hasInstalled()
                 && info.version == installedVersionSignatureInternal
-                && (remoteCreatedAt == null || remoteCreatedAt == createdAt)
+                && info.createdAtMillis == createdAt
             ) return@withContext null
 
             downloadUnlessRefused(info, onProgress)
@@ -184,7 +179,7 @@ sealed class RemotePatchBundle(
      * source trusted the same key as now, which would only download it to refuse it again.
      */
     private suspend fun downloadUnlessRefused(
-        info: MorpheAsset,
+        info: ReleaseAsset,
         onProgress: PatchBundleDownloadProgress?
     ): PatchBundleDownloadResult {
         val release = listOf(info.version, info.createdAt, readSigningKey().orEmpty()).joinToString("|")
@@ -201,7 +196,7 @@ sealed class RemotePatchBundle(
         }
     }
 
-    suspend fun fetchLatestReleaseInfo(): MorpheAsset {
+    suspend fun fetchLatestReleaseInfo(): ReleaseAsset {
         val key = "$uid|$endpoint"
         releaseInfoCache[key]?.let { return it }
 
@@ -309,7 +304,7 @@ sealed class RemotePatchBundle(
         private const val DEFAULT_BUNDLE_FILE = "patches-bundle.json"
 
         internal const val CHANGELOG_CACHE_TTL = 10 * 60 * 1000L
-        private val releaseInfoCache = TimedCache<String, MorpheAsset>(CHANGELOG_CACHE_TTL)
+        private val releaseInfoCache = TimedCache<String, ReleaseAsset>(CHANGELOG_CACHE_TTL)
         private val entriesCache = TimedCache<String, List<ChangelogEntry>>(CHANGELOG_CACHE_TTL)
 
         // Manifest page URLs by source uid, kept here because bundle instances are recreated on every reload
@@ -359,6 +354,25 @@ sealed class RemotePatchBundle(
                     append("&name=").append(URLEncoder.encode(it, "UTF-8").replace("+", "%20"))
                 }
             }
+        }
+
+        /**
+         * [PatchBundleSource.patchSourceEntry] of a remote source: the repository on GitHub and
+         * GitLab whatever the branch, file or pull request, otherwise the host and path. The
+         * query and user info are left out, as they can hold a token.
+         */
+        fun patchSourceEntryForEndpoint(endpoint: String): String {
+            val (host, segments) = endpointParts(endpoint) ?: return "url=unknown"
+            val entry = when {
+                segments.size >= 2 && (host == "raw.githubusercontent.com" || host == "github.com") ->
+                    "github=${segments[0]}/${segments[1]}"
+
+                segments.size >= 2 && host == "gitlab.com" -> "gitlab=${segments[0]}/${segments[1]}"
+                else -> "url=" + (listOf(host) + segments).joinToString("/")
+            }
+            // Commas separate entries, and the API takes printable ASCII only
+            return entry.replace(",", "%2C").filter { it in '!'..'~' }
+                .take(MAX_PATCH_SOURCE_ENTRY_LENGTH)
         }
 
         /** Lowercased host and path segments of [endpoint], or null when it is not a valid URL. */
@@ -529,7 +543,7 @@ class JsonPatchBundle(
         }
     }
 
-    private suspend fun fetchManifest(url: String) = api.rawFileRequest<MorpheAsset>(url).getOrThrow()
+    private suspend fun fetchManifest(url: String) = api.rawFileRequest<ReleaseAsset>(url).getOrThrow()
 
     override suspend fun fetchChangelogEntries(): List<ChangelogEntry> {
         val changelogUrl = api.changelogUrlFromBundleEndpoint(activeEndpoint) ?: return emptyList()
@@ -633,6 +647,8 @@ class APIPatchBundle(
     // Every install already has the default source
     override val addSourceLink: String? get() = null
 
+    override val patchSourceEntry: String get() = patchSourceEntryForEndpoint(SOURCE_REPO_URL)
+
     override suspend fun fetchChangelogEntries(): List<ChangelogEntry> {
         val branch = if (usePrerelease) BRANCH_DEV else BRANCH_STABLE
         return fetchAndCacheEntries("$uid|$branch") {
@@ -685,7 +701,7 @@ class GitHubPullRequestBundle(
         api.getAssetFromPullRequest(owner, repo, prNumber)
     }
 
-    override suspend fun download(info: MorpheAsset, onProgress: PatchBundleDownloadProgress?) = withContext(Dispatchers.IO) {
+    override suspend fun download(info: ReleaseAsset, onProgress: PatchBundleDownloadProgress?) = withContext(Dispatchers.IO) {
         val gitHubPat = services.prefs.gitHubPat.get().also {
             if (it.isBlank()) throw RuntimeException("PAT is required")
         }
@@ -788,9 +804,7 @@ class GitHubPullRequestBundle(
 
         PatchBundleDownloadResult(
             versionSignature = info.version,
-            assetCreatedAtMillis = runCatching {
-                info.createdAt.toInstant(TimeZone.UTC).toEpochMilliseconds()
-            }.getOrNull()
+            assetCreatedAtMillis = info.createdAtMillis
         )
     }
 

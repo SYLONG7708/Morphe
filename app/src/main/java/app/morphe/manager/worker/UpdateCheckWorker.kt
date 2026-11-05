@@ -12,10 +12,8 @@ import app.morphe.manager.R
 import app.morphe.manager.domain.manager.PreferencesManager
 import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
 import app.morphe.manager.domain.update.UpdateStatus
-import app.morphe.manager.util.UpdateNotificationManager
+import app.morphe.manager.notification.UpdateNotifications
 import app.morphe.manager.util.tag
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
 
@@ -59,12 +57,11 @@ enum class UpdateCheckInterval(val minutes: Long, val labelResId: Int) {
  */
 class UpdateCheckWorker(
     context: Context,
-    params: WorkerParameters
-) : CoroutineWorker(context, params), KoinComponent {
-
-    private val prefs: PreferencesManager by inject()
-    private val coordinator: EcosystemUpdateCoordinator by inject()
-    private val notificationManager: UpdateNotificationManager by inject()
+    params: WorkerParameters,
+    private val prefs: PreferencesManager,
+    private val coordinator: EcosystemUpdateCoordinator,
+    private val notificationManager: UpdateNotifications,
+) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
         val notificationsEnabled = prefs.backgroundUpdateNotifications.get()

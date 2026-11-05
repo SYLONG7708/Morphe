@@ -22,7 +22,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -50,6 +49,7 @@ import app.morphe.manager.domain.update.EcosystemUpdateCoordinator
 import app.morphe.manager.domain.update.InstallableUpdate
 import app.morphe.manager.license.DeviceActivationActivity
 import app.morphe.manager.license.DeviceLicenseManager
+import app.morphe.manager.notification.UpdateNotifications
 import app.morphe.manager.ui.model.SourceScope
 import app.morphe.manager.ui.model.navigation.*
 import app.morphe.manager.ui.screen.BatchPatcherScreen
@@ -90,7 +90,7 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.parametersOf
 import org.koin.androidx.viewmodel.ext.android.getViewModel as getActivityViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     /** Language the activity was attached in, to tell when it has to be recreated. */
     private var attachedLanguage = AppLocale.SYSTEM
@@ -210,19 +210,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleUpdateIntent(intent: Intent?, vm: MainViewModel) {
         if (intent?.getBooleanExtra(
-                UpdateNotificationManager.EXTRA_TRIGGER_UPDATE_CHECK,
+                UpdateNotifications.EXTRA_TRIGGER_UPDATE_CHECK,
                 false,
             ) == true
         ) {
             vm.pendingUpdateCheck = true
         }
         vm.pendingEcosystemAction = intent
-            ?.getStringExtra(UpdateNotificationManager.EXTRA_UPDATE_ACTION)
+            ?.getStringExtra(UpdateNotifications.EXTRA_UPDATE_ACTION)
             ?.takeIf {
                 it in setOf(
-                    UpdateNotificationManager.ACTION_MANAGER,
-                    UpdateNotificationManager.ACTION_YOUTUBE,
-                    UpdateNotificationManager.ACTION_MICROG,
+                    UpdateNotifications.ACTION_MANAGER,
+                    UpdateNotifications.ACTION_YOUTUBE,
+                    UpdateNotifications.ACTION_MICROG,
                 )
             }
     }
@@ -248,7 +248,7 @@ class MainActivity : AppCompatActivity() {
 
         // Handled here rather than in onNewIntent so a cold start from a notification or a
         // launcher shortcut triggers the check as well
-        if (intent?.getBooleanExtra(UpdateNotificationManager.EXTRA_TRIGGER_UPDATE_CHECK, false) == true) {
+        if (intent?.getBooleanExtra(UpdateNotifications.EXTRA_TRIGGER_UPDATE_CHECK, false) == true) {
             vm.pendingUpdateCheck = true
             return
         }
@@ -430,13 +430,13 @@ private fun MorpheManager(vm: MainViewModel) {
         vm.pendingEcosystemAction = null
         navController.popBackStack(HomeScreen, false)
         when (action) {
-            UpdateNotificationManager.ACTION_YOUTUBE ->
+            UpdateNotifications.ACTION_YOUTUBE ->
                 homeViewModel.patchFlow.showPatchDialog(EcosystemUpdateCoordinator.YOUTUBE_PACKAGE)
 
-            UpdateNotificationManager.ACTION_MANAGER ->
+            UpdateNotifications.ACTION_MANAGER ->
                 runCatching { updateCoordinator.installPrepared(InstallableUpdate.MANAGER) }
 
-            UpdateNotificationManager.ACTION_MICROG ->
+            UpdateNotifications.ACTION_MICROG ->
                 runCatching { updateCoordinator.installPrepared(InstallableUpdate.MICROG) }
         }
     }
