@@ -10,6 +10,7 @@ import app.morphe.patcher.patch.Patch
 import app.morphe.patcher.patch.bytecodePatch
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import app.morphe.patcher.patch.patch as unifiedPatch
 
 /**
  * A selection is made against the patches the app lists and resolved by the patcher, so the key
@@ -32,12 +33,12 @@ class PatchKeyParityTest {
     }
 
     // Keyed the way PatchBundleInfo lists the patches of an app
-    private fun listedKeys(patches: List<Patch<*>>): Map<String, String?> {
+    private fun listedKeys(patches: List<Patch>): Map<String, String?> {
         val listed = patches.map(::PatchInfo).filter { it.compatibleWith(app) }
         return uniqueNames(listed).zip(listed.map { it.description }).toMap()
     }
 
-    private fun patcherKeys(patches: List<Patch<*>>): Map<String, String?> =
+    private fun patcherKeys(patches: List<Patch>): Map<String, String?> =
         patches.keyedFor(app).mapValues { (_, patch) -> patch.description }
 
     @Test
@@ -46,6 +47,9 @@ class PatchKeyParityTest {
             patch("Ads", "universal", null),
             patch("Ads", "app", app),
             patch("Ads", "app and other", app, "com.other"),
+            unifiedPatch(name = "Ads", description = "unified API") {
+                compatibleWith(Compatibility(packageName = app, name = app))
+            },
             patch("Theme", "unrestricted"),
             patch("Other", "elsewhere", "com.other")
         )

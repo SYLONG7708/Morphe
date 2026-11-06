@@ -51,8 +51,8 @@ class PatchBundleCompatibilityTest(unittest.TestCase):
 
     def test_release_catalog_supports_current_and_previous_bundle_api(self) -> None:
         catalog = Path(__file__).resolve().parents[1] / "gradle/libs.versions.toml"
-        # Published 1.47.0.7870.2 and official 1.48.0 respectively.
-        for required in ("1.14.0", "2.0.0"):
+        # Keep older releases usable alongside official patches 2.1.0 (patcher 2.3.0).
+        for required in ("1.14.0", "2.0.0", "2.2.0", "2.3.0"):
             with self.subTest(required=required):
                 bundle, _, temp = self.create_inputs(required, "1.15.1")
                 self.addCleanup(temp.cleanup)

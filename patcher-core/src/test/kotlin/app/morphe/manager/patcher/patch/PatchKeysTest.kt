@@ -13,6 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import app.morphe.patcher.patch.patch as unifiedPatch
 
 /**
  * The keys selections and options name patches by. The patcher resolves a selection with them,
@@ -79,11 +80,26 @@ class PatchKeysTest {
 
     @Test
     fun `keys do not depend on the order the bundle lists the patches in`() {
-        val patches: List<Patch<*>> = listOf(universal("Ads"), patch("Ads", app), patch("Ads", app, "com.other"))
+        val patches: List<Patch> = listOf(universal("Ads"), patch("Ads", app), patch("Ads", app, "com.other"))
 
         val forward = patches.keyedFor(app)
         val backward = patches.reversed().keyedFor(app)
 
         assertEquals(forward, backward)
+    }
+
+    @Test
+    fun `unified and legacy patches keep distinct stable selection keys`() {
+        val legacy = universal("Ads")
+        val unified = unifiedPatch(name = "Ads") {
+            compatibleWith(Compatibility(packageName = app, name = app))
+        }
+        val patches = listOf(legacy, unified)
+
+        val keyed = patches.keyedFor(app)
+
+        assertSame(unified, keyed["Ads"])
+        assertSame(legacy, keyed["Ads (2)"])
+        assertEquals(keyed, patches.reversed().keyedFor(app))
     }
 }
