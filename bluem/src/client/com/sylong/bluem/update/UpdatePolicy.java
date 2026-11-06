@@ -19,7 +19,7 @@ public final class UpdatePolicy {
     public static final int MAX_MANIFEST = 131072;
     public static final int MAX_UPSTREAM = 2 * 1024 * 1024;
     public static final String POLICY = "morphe-recommended-stable";
-    public static final int MIN_RECOVERY_REVISION = 8;
+    public static final int MIN_RECOVERY_REVISION = 9;
     public static boolean preservesRecovery(String pkg, int revision) {
         return MICROG.equals(pkg) || (YOUTUBE.equals(pkg) && revision >= MIN_RECOVERY_REVISION);
     }
@@ -214,10 +214,7 @@ public final class UpdatePolicy {
         // global factory or install a permissive TrustManager/HostnameVerifier.
         // SslGuard also inserts an SSLContext provider ahead of Android's provider;
         // merely requesting a new default TLS context inherits the same guard.
-        java.security.Provider platform = java.security.Security.getProvider("AndroidOpenSSL");
-        if (platform == null) platform = java.security.Security.getProvider("SunJSSE"); // desktop regression runner
-        if (platform == null) throw new java.security.NoSuchProviderException("Platform TLS provider unavailable");
-        javax.net.ssl.SSLContext tls = javax.net.ssl.SSLContext.getInstance("TLS", platform);
+        javax.net.ssl.SSLContext tls = TlsCompatibility.platformContext("TLS");
         tls.init(null, null, null);
         ((javax.net.ssl.HttpsURLConnection) connection).setSSLSocketFactory(tls.getSocketFactory());
     }

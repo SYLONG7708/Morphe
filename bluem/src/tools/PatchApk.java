@@ -4,9 +4,12 @@ import com.android.tools.smali.dexlib2.Opcode;
 import com.android.tools.smali.dexlib2.builder.MutableMethodImplementation;
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction3rc;
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x;
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction35c;
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile;
 import com.android.tools.smali.dexlib2.iface.ClassDef;
 import com.android.tools.smali.dexlib2.iface.Method;
+import com.android.tools.smali.dexlib2.iface.instruction.*;
+import com.android.tools.smali.dexlib2.iface.reference.*;
 import com.android.tools.smali.dexlib2.immutable.ImmutableClassDef;
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethod;
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference;
@@ -19,6 +22,19 @@ import java.util.zip.*;
 public final class PatchApk {
     static final String MAIN = "Lcom/google/android/apps/youtube/app/watchwhile/MainActivity;";
     static final String GMS = "Lapp/morphe/extension/shared/patches/GmsCoreSupportPatch;";
+    static boolean isTlsGuard(ClassDef cls) {
+        if (!"Ljavax/net/ssl/SSLSocketFactory;".equals(cls.getSuperclass()) &&
+            !"Ljavax/net/ssl/SSLServerSocketFactory;".equals(cls.getSuperclass())) return false;
+        for (Method method : cls.getMethods()) {
+            if (method.getImplementation() == null) continue;
+            for (Instruction ins : method.getImplementation().getInstructions()) {
+                if (!(ins instanceof ReferenceInstruction)) continue;
+                Reference ref = ((ReferenceInstruction) ins).getReference();
+                if (ref instanceof StringReference && "Unable to find a default SSL provider.".equals(((StringReference) ref).getString())) return true;
+            }
+        }
+        return false;
+    }
     static Method redirect(Method method, String owner, String name) {
         int registers = method.getParameterTypes().size(); // all these static hooks use reference parameters
         MutableMethodImplementation body = new MutableMethodImplementation(registers);
@@ -63,7 +79,7 @@ public final class PatchApk {
             receiver.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
             ResXmlElement meta = app.newElement("meta-data");
             meta.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.UPDATE_CLIENT_REVISION");
-            meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setValueAsString("8");
+            meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setValueAsString("9");
             if (Boolean.parseBoolean(args[4])) {
                 ResXmlElement qaReceiver = app.newElement("receiver");
                 qaReceiver.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.QaReceiver");
@@ -76,7 +92,7 @@ public final class PatchApk {
             m.refreshFull();
             if (icon == 0 || m.getIconResourceId() != icon) throw new IllegalStateException("Icon reference changed");
             try (OutputStream manifestOut = Files.newOutputStream(out.resolve("AndroidManifest.xml"))) { m.writeBytes(manifestOut); }
-            int hits = 0, gmsHooks = 0;
+            int hits = 0, gmsHooks = 0, tlsHooks = 0, tlsClasses = 0;
             int nextDexIndex = 1;
             for (ZipEntry entry : Collections.list(apk.entries())) {
                 String name = entry.getName();
@@ -93,10 +109,38 @@ public final class PatchApk {
                 List<ClassDef> replacements = new ArrayList<>();
                 boolean changed = false;
                 for (ClassDef main : dex.getClasses()) {
-                if (!main.getType().equals(MAIN) && !main.getType().equals(GMS)) { replacements.add(main); continue; }
+                boolean tlsGuard = isTlsGuard(main);
+                if (tlsGuard) tlsClasses++;
+                if (!main.getType().equals(MAIN) && !main.getType().equals(GMS) && !tlsGuard) { replacements.add(main); continue; }
                 List<Method> methods = new ArrayList<>();
                 for (Method method : main.getMethods()) {
-                    if (main.getType().equals(GMS)) {
+                    if (tlsGuard && method.getImplementation() != null) {
+                        MutableMethodImplementation body = new MutableMethodImplementation(method.getImplementation());
+                        boolean rewrittenTls = false;
+                        for (int i = 0; i < body.getInstructions().size(); i++) {
+                            Instruction instruction = body.getInstructions().get(i);
+                            if (!(instruction instanceof ReferenceInstruction)) continue;
+                            Reference ref = ((ReferenceInstruction) instruction).getReference();
+                            if (!(ref instanceof MethodReference)) continue;
+                            MethodReference called = (MethodReference) ref;
+                            if (!called.getDefiningClass().equals("Ljavax/net/ssl/SSLContext;") ||
+                                !called.getName().equals("getInstance") ||
+                                !called.getParameterTypes().toString().equals("[Ljava/lang/String;]")) continue;
+                            ImmutableMethodReference replacement = new ImmutableMethodReference(
+                                "Lcom/sylong/bluem/update/TlsCompatibility;", "context", List.of("Ljava/lang/String;"), "Ljavax/net/ssl/SSLContext;");
+                            if (instruction.getOpcode() == Opcode.INVOKE_STATIC && instruction instanceof FiveRegisterInstruction) {
+                                FiveRegisterInstruction call = (FiveRegisterInstruction) instruction;
+                                body.replaceInstruction(i, new BuilderInstruction35c(Opcode.INVOKE_STATIC,
+                                    call.getRegisterCount(),call.getRegisterC(),call.getRegisterD(),call.getRegisterE(),call.getRegisterF(),call.getRegisterG(),replacement));
+                            } else if (instruction.getOpcode() == Opcode.INVOKE_STATIC_RANGE && instruction instanceof RegisterRangeInstruction) {
+                                RegisterRangeInstruction call = (RegisterRangeInstruction) instruction;
+                                body.replaceInstruction(i,new BuilderInstruction3rc(Opcode.INVOKE_STATIC_RANGE,call.getStartRegister(),call.getRegisterCount(),replacement));
+                            } else throw new IllegalStateException("Unexpected TLS factory invocation");
+                            rewrittenTls = true; tlsHooks++; changed = true;
+                        }
+                        methods.add(rewrittenTls ? new ImmutableMethod(method.getDefiningClass(),method.getName(),method.getParameters(),
+                            method.getReturnType(),method.getAccessFlags(),method.getAnnotations(),method.getHiddenApiRestrictions(),body) : method);
+                    } else if (main.getType().equals(GMS)) {
                         if (method.getName().equals("open") && method.getParameterTypes().toString().equals("[Landroid/app/Activity;, Ljava/lang/String;]")) {
                             methods.add(redirect(method, "Lcom/sylong/bluem/update/StartupSupport;", "open")); gmsHooks++; changed = true;
                         } else if (method.getName().equals("checkForMicroGUpdate") && method.getParameterTypes().toString().equals("[Landroid/app/Activity;]")) {
@@ -125,6 +169,7 @@ public final class PatchApk {
             }
             if (hits != 1) throw new IllegalStateException("Expected one lifecycle hook, got " + hits);
             if (gmsHooks != 3) throw new IllegalStateException("Expected three MicroG startup hooks, got " + gmsHooks);
+            if (tlsClasses != 2 || tlsHooks != 2) throw new IllegalStateException("Expected two TLS guard backends; got classes="+tlsClasses+" calls="+tlsHooks);
         }
     }
 }

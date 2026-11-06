@@ -69,7 +69,7 @@ def package_unsigned(source, patched, client_dex, certificate, destination):
         original_names = set(original.namelist())
         replaced = set(rewritten) & original_names
         added = set(rewritten) - original_names
-        if (len(replaced) not in (2, 3) or 'AndroidManifest.xml' not in replaced
+        if (not 2 <= len(replaced) <= 5 or 'AndroidManifest.xml' not in replaced
                 or any(not re.fullmatch(r'classes(\d*)\.dex', name)
                        for name in set(rewritten) - {'AndroidManifest.xml'})):
             raise ValueError('Unexpected patched APK entries')
