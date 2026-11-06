@@ -10,8 +10,6 @@ import com.android.tools.smali.dexlib2.iface.Method;
 import com.android.tools.smali.dexlib2.immutable.ImmutableClassDef;
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethod;
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference;
-import com.android.tools.smali.dexlib2.writer.pool.DexPool;
-import com.android.tools.smali.dexlib2.writer.io.FileDataStore;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -79,6 +77,12 @@ public final class PatchApk {
             if (icon == 0 || m.getIconResourceId() != icon) throw new IllegalStateException("Icon reference changed");
             try (OutputStream manifestOut = Files.newOutputStream(out.resolve("AndroidManifest.xml"))) { m.writeBytes(manifestOut); }
             int hits = 0, gmsHooks = 0;
+            int nextDex = 2;
+            for (ZipEntry entry : Collections.list(apk.entries())) {
+                if (!entry.getName().matches("classes[0-9]*\\.dex")) continue;
+                String number = entry.getName().substring(7, entry.getName().length() - 4);
+                nextDex = Math.max(nextDex, (number.isEmpty() ? 1 : Integer.parseInt(number)) + 1);
+            }
             for (ZipEntry entry : Collections.list(apk.entries())) {
                 if (!entry.getName().matches("classes[0-9]*\\.dex")) continue;
                 DexBackedDexFile dex;
@@ -114,10 +118,7 @@ public final class PatchApk {
                     main.getInterfaces(), main.getSourceFile(), main.getAnnotations(), main.getFields(), methods));
                 }
                 if (!changed) continue;
-                DexPool pool = new DexPool(dex.getOpcodes());
-                for (ClassDef cls : replacements) pool.internClass(cls);
-                FileDataStore store = new FileDataStore(out.resolve(entry.getName()).toFile());
-                try { pool.writeTo(store); } finally { store.close(); }
+                nextDex = DexPartition.write(out, entry.getName(), dex.getOpcodes(), replacements, nextDex);
                 System.out.println("Patched update/startup hooks in " + entry.getName());
             }
             if (hits != 1) throw new IllegalStateException("Expected one lifecycle hook, got " + hits);

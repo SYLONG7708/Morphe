@@ -62,6 +62,25 @@ def compile_tools(log):
 def sign_manifest(source, destination, log):
     run([jtool('java'), '-cp', ROOT/'build/tools', 'SignManifest', source, destination, ROOT/'assets/release-cert.der'], log, signing_env(True))
 
+def package_apk(source, unsigned, rewritten, client_dex):
+    with zipfile.ZipFile(source) as original, zipfile.ZipFile(unsigned, 'w', allowZip64=False) as target:
+        original_names = set(original.namelist())
+        assert len(original_names.intersection(rewritten)) in (2, 3) and 'AndroidManifest.xml' in rewritten
+        assert all(n == 'AndroidManifest.xml' or re.fullmatch(r'classes(\d*)\.dex', n) for n in rewritten)
+        extra_dex = set(rewritten) - original_names
+        dex_indices = [int(m[1] or '1') for n in original_names.union(extra_dex)
+                       if (m := re.fullmatch(r'classes(\d*)\.dex', n))]
+        for info in original.infolist():
+            if info.filename == 'stamp-cert-sha256' or re.fullmatch(r'META-INF/(?:[^/]+\.(?:SF|RSA|DSA|EC)|MANIFEST\.MF)', info.filename, re.I):
+                continue
+            content = rewritten[info.filename].read_bytes() if info.filename in rewritten else original.read(info.filename)
+            info.extra = b''
+            target.writestr(info, content)
+        for name in sorted(extra_dex):
+            target.writestr(name, rewritten[name].read_bytes(), compress_type=zipfile.ZIP_STORED)
+        target.writestr('classes'+str(max(dex_indices)+1)+'.dex', client_dex.read_bytes(), compress_type=zipfile.ZIP_STORED)
+        target.writestr('assets/bluem-updates/release-cert.der', (ROOT/'assets/release-cert.der').read_bytes())
+
 def build(variant, code, name, unsigned_only=False):
     out = ROOT/'build'/variant
     out.mkdir(parents=True, exist_ok=True)
@@ -95,20 +114,13 @@ def build(variant, code, name, unsigned_only=False):
         run([atool('d8'), '--release', '--min-api', '28', '--lib', android_jar, '--output', dex, jar, apksig], log)
         patched = out/'patched'
         patched.mkdir(exist_ok=True)
+        for previous in patched.iterdir():
+            if re.fullmatch(r'classes\d*\.dex', previous.name):
+                previous.unlink()
         run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'PatchApk', source, patched, str(code), name, str(qa).lower()], log)
         unsigned = out/'unsigned.apk'
         rewritten = {p.name: p for p in patched.iterdir() if p.is_file()}
-        assert len(rewritten) in (2, 3) and 'AndroidManifest.xml' in rewritten
-        with zipfile.ZipFile(source) as original, zipfile.ZipFile(unsigned, 'w', allowZip64=False) as target:
-            dex_indices = [int(m[1] or '1') for n in original.namelist() if (m := re.fullmatch(r'classes(\d*)\.dex', n))]
-            for info in original.infolist():
-                if info.filename == 'stamp-cert-sha256' or re.fullmatch(r'META-INF/(?:[^/]+\.(?:SF|RSA|DSA|EC)|MANIFEST\.MF)', info.filename, re.I):
-                    continue
-                content = rewritten[info.filename].read_bytes() if info.filename in rewritten else original.read(info.filename)
-                info.extra = b''
-                target.writestr(info, content)
-            target.writestr('classes'+str(max(dex_indices)+1)+'.dex', (dex/'classes.dex').read_bytes(), compress_type=zipfile.ZIP_STORED)
-            target.writestr('assets/bluem-updates/release-cert.der', (ROOT/'assets/release-cert.der').read_bytes())
+        package_apk(source, unsigned, rewritten, dex/'classes.dex')
         aligned = out/'aligned.apk'
         run([atool('zipalign'), '-f', '-P', '16', '4', unsigned, aligned], log)
         if unsigned_only:
@@ -129,7 +141,7 @@ def build(variant, code, name, unsigned_only=False):
                 assert before.read(entry.filename) == after.read(entry.filename), 'Unexpected original entry change: '+entry.filename
                 unchanged += 1
         result = dict(variant=variant, version_code=code, version_name=name, sha256=digest(signed), size=signed.stat().st_size,
-                      original_entries_byte_identical=unchanged, changed_original_entries=sorted(rewritten), channel=url,
+                      original_entries_byte_identical=unchanged, changed_original_entries=sorted(set(before.namelist()).intersection(rewritten)), channel=url,
                       qa=qa, production_signer=CERT)
         (out/'build-result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(result, ensure_ascii=False, indent=2))

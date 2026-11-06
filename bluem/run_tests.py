@@ -24,6 +24,11 @@ def main():
         build.run([build.jtool('java'), '-cp', out, 'PlaybackSignalsTest'], log)
         build.run([build.jtool('java'), '-cp', out, 'ClientPolicyTest'], log)
         build.run([build.jtool('java'), '-cp', str(out)+os.pathsep+str(jar), 'UpdateTlsTest'], log)
+        desktop = build.tool_classpath()
+        build.run([build.jtool('javac'), '-encoding', 'UTF-8', '-cp', desktop, '-d', out,
+                   ROOT/'src/tools/DexPartition.java', ROOT/'src/tests/DexPartitionTest.java'], log)
+        build.run([build.jtool('java'), '-Xmx1g', '-cp', str(out)+os.pathsep+desktop,
+                   'DexPartitionTest', out/'dex-partition'], log)
     print((ROOT/'build/policy-tests.log').read_text(encoding='utf-8'))
 
 if __name__ == '__main__': main()
