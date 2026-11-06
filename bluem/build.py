@@ -1,5 +1,5 @@
 """Build a portable, prepatched two-APK release. Private keys stay in the secure directory."""
-import argparse, hashlib, json, os, re, shutil, subprocess, sys, zipfile
+import argparse, hashlib, json, os, re, shutil, subprocess, sys, tempfile, zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -57,10 +57,39 @@ def compile_tools(log):
     dest = ROOT/'build/tools'
     dest.mkdir(parents=True, exist_ok=True)
     run([jtool('javac'), '-encoding', 'UTF-8', '-cp', tool_classpath()+os.pathsep+str(SDK/'platforms/android-37.0/android.jar'),
-         '-d', dest, *sorted((ROOT/'src/tools').glob('*.java'))], log)
+         '-d', dest, *sorted((ROOT/'src/tools').glob('*.java')), ROOT/'src/tests/DexPartitionWriterTest.java'], log)
+    run([jtool('java'), '-Xmx1g', '-cp', tool_classpath(), 'DexPartitionWriterTest', ROOT/'build/dex-tests'], log)
 
 def sign_manifest(source, destination, log):
     run([jtool('java'), '-cp', ROOT/'build/tools', 'SignManifest', source, destination, ROOT/'assets/release-cert.der'], log, signing_env(True))
+
+def package_unsigned(source, patched, client_dex, certificate, destination):
+    rewritten = {p.name: p for p in patched.iterdir() if p.is_file()}
+    with zipfile.ZipFile(source) as original:
+        original_names = set(original.namelist())
+        replaced = set(rewritten) & original_names
+        added = set(rewritten) - original_names
+        if (len(replaced) not in (2, 3) or 'AndroidManifest.xml' not in replaced
+                or any(not re.fullmatch(r'classes(\d*)\.dex', name)
+                       for name in set(rewritten) - {'AndroidManifest.xml'})):
+            raise ValueError('Unexpected patched APK entries')
+        last_dex = max(int(m[1] or '1') for name in original_names
+                       if (m := re.fullmatch(r'classes(\d*)\.dex', name)))
+        extra_dex = ['classes'+str(last_dex+i+1)+'.dex' for i in range(len(added))]
+        if added != set(extra_dex):
+            raise ValueError('Non-contiguous overflow DEX entries')
+        with zipfile.ZipFile(destination, 'w', allowZip64=False) as target:
+            for info in original.infolist():
+                if info.filename == 'stamp-cert-sha256' or re.fullmatch(r'META-INF/(?:[^/]+\.(?:SF|RSA|DSA|EC)|MANIFEST\.MF)', info.filename, re.I):
+                    continue
+                content = rewritten[info.filename].read_bytes() if info.filename in rewritten else original.read(info.filename)
+                info.extra = b''
+                target.writestr(info, content)
+            for name in extra_dex:
+                target.writestr(name, rewritten[name].read_bytes(), compress_type=zipfile.ZIP_STORED)
+            target.writestr('classes'+str(last_dex+len(extra_dex)+1)+'.dex', client_dex.read_bytes(), compress_type=zipfile.ZIP_STORED)
+            target.writestr('assets/bluem-updates/release-cert.der', certificate.read_bytes())
+    return rewritten
 
 def build(variant, code, name, unsigned_only=False):
     out = ROOT/'build'/variant
@@ -93,25 +122,16 @@ def build(variant, code, name, unsigned_only=False):
         dex = out/'dex'
         dex.mkdir(exist_ok=True)
         run([atool('d8'), '--release', '--min-api', '28', '--lib', android_jar, '--output', dex, jar, apksig], log)
-        patched = out/'patched'
-        patched.mkdir(exist_ok=True)
-        run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'PatchApk', source, patched, str(code), name, str(qa).lower()], log)
         unsigned = out/'unsigned.apk'
-        rewritten = {p.name: p for p in patched.iterdir() if p.is_file()}
-        assert len(rewritten) in (2, 3) and 'AndroidManifest.xml' in rewritten
-        with zipfile.ZipFile(source) as original, zipfile.ZipFile(unsigned, 'w', allowZip64=False) as target:
-            dex_indices = [int(m[1] or '1') for n in original.namelist() if (m := re.fullmatch(r'classes(\d*)\.dex', n))]
-            for info in original.infolist():
-                if info.filename == 'stamp-cert-sha256' or re.fullmatch(r'META-INF/(?:[^/]+\.(?:SF|RSA|DSA|EC)|MANIFEST\.MF)', info.filename, re.I):
-                    continue
-                content = rewritten[info.filename].read_bytes() if info.filename in rewritten else original.read(info.filename)
-                info.extra = b''
-                target.writestr(info, content)
-            target.writestr('classes'+str(max(dex_indices)+1)+'.dex', (dex/'classes.dex').read_bytes(), compress_type=zipfile.ZIP_STORED)
-            target.writestr('assets/bluem-updates/release-cert.der', (ROOT/'assets/release-cert.der').read_bytes())
+        # Each run needs fresh staging: stale overflow DEX files duplicate classes.
+        with tempfile.TemporaryDirectory(prefix='patched-', dir=out) as directory:
+            patched = Path(directory)
+            run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'PatchApk', source, patched, str(code), name, str(qa).lower()], log)
+            rewritten = package_unsigned(source, patched, dex/'classes.dex', ROOT/'assets/release-cert.der', unsigned)
         aligned = out/'aligned.apk'
         run([atool('zipalign'), '-f', '-P', '16', '4', unsigned, aligned], log)
         if unsigned_only:
+            run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'CheckUpdateContract', aligned, str(qa).lower()], log)
             print(json.dumps({'unsigned': str(aligned), 'version_code': code, 'version_name': name}))
             return
         signed = out/'BlueM.apk'
@@ -122,6 +142,7 @@ def build(variant, code, name, unsigned_only=False):
         run([sys.executable, ROOT/'verify_apk.py', signed, out/'verification'], log)
         run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'CheckUpdateContract', signed, str(qa).lower()], log)
         with zipfile.ZipFile(source) as before, zipfile.ZipFile(signed) as after:
+            changed_original_entries = sorted(set(rewritten) & set(before.namelist()))
             unchanged = 0
             for entry in before.infolist():
                 if entry.filename in rewritten or entry.filename.startswith('META-INF/') or entry.filename == 'stamp-cert-sha256':
@@ -129,7 +150,7 @@ def build(variant, code, name, unsigned_only=False):
                 assert before.read(entry.filename) == after.read(entry.filename), 'Unexpected original entry change: '+entry.filename
                 unchanged += 1
         result = dict(variant=variant, version_code=code, version_name=name, sha256=digest(signed), size=signed.stat().st_size,
-                      original_entries_byte_identical=unchanged, changed_original_entries=sorted(rewritten), channel=url,
+                      original_entries_byte_identical=unchanged, changed_original_entries=changed_original_entries, channel=url,
                       qa=qa, production_signer=CERT)
         (out/'build-result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(result, ensure_ascii=False, indent=2))

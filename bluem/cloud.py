@@ -238,7 +238,7 @@ def assemble():
         validate_patch_result(result, plan['selection'])
         (ROOT/'inputs/recommended-base-sha256.txt').write_text(build.digest(patched))
         build.run([sys.executable, ROOT/'run_tests.py'], log)
-        build.run([sys.executable, '-m', 'unittest', 'test_cloud', 'test_recommended_policy'], log)
+        build.run([sys.executable, '-m', 'unittest', 'test_cloud', 'test_recommended_policy', 'test_build'], log)
         build.run([sys.executable, ROOT/'build.py', 'release', '--unsigned', '--code', plan['code']], log, clean_env)
     out = ROOT/'dist'; out.mkdir(exist_ok=True)
     shutil.copyfile(ROOT/'build/release/aligned.apk', out/'BlueM-unsigned.apk')
