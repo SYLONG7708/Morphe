@@ -2250,7 +2250,9 @@
       "patch_base": "upstream",
       "requires": [
         "manager-2.5.0-patcherviewmodel",
-        "manager-2.5.0-libs-versions"
+        "manager-2.5.0-libs-versions",
+        "manager-2.5.0-ecosystemupdatecoordinator",
+        "manager-2.5.0-homescreen"
       ]
     },
     {
@@ -2285,6 +2287,40 @@
       "requires": [
         "manager-2.5.0-homeviewmodel",
         "manager-2.5.0-patcherviewmodel"
+      ]
+    },
+    {
+      "id": "manager-2.5.0-ecosystemupdatecoordinator",
+      "path": "app/src/main/java/app/morphe/manager/domain/update/EcosystemUpdateCoordinator.kt",
+      "inputs": {
+        "base": null,
+        "local": "36fae2825913787a66f7756f88f0b74fc747d6d8c20e4bf8c1cad5d7955fdd5b",
+        "upstream": null,
+        "merged": "36fae2825913787a66f7756f88f0b74fc747d6d8c20e4bf8c1cad5d7955fdd5b"
+      },
+      "patch": "config/upstream-resolutions/manager-2.5.0-ecosystemupdatecoordinator.patch",
+      "patch_sha256": "3ce8b84d940b9e38aa13ef249e0ca9cb9f525eaa35fa8c7f3c970f749fbedbd9",
+      "result_sha256": "031c96ce1e80888d2b296e9f0372d4f2742c98048324c64d9cbad26ade5cd8e6",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.5.0-homeviewmodel"
+      ]
+    },
+    {
+      "id": "manager-2.5.0-homescreen",
+      "path": "app/src/main/java/app/morphe/manager/ui/screen/HomeScreen.kt",
+      "inputs": {
+        "base": "41cef4b6079837c492547bf46a69c9da198fa0259e8be0c5d106dc6083b7b736",
+        "local": "2f492a675677859b7f236798276b4aad166c55e5f60c238bef681f0fc8ab4ca8",
+        "upstream": "c91aaedc24b701766c46c2ea1eee3acadb2cf228f4467733df693cc7ce642617",
+        "merged": "ee492bf02ef99f0c05c27d9ac44b421f8204cde7878512487c2148cc340f84d5"
+      },
+      "patch": "config/upstream-resolutions/manager-2.5.0-homescreen.patch",
+      "patch_sha256": "ce6cccdea80b263ca719a7beb39004ffb00a1308248333e6e146777db93802f7",
+      "result_sha256": "0347088b8238ef6852da39be070a0e4e9636369c84f588151190853e42e4d0ea",
+      "patch_base": "merged",
+      "requires": [
+        "manager-2.5.0-homeviewmodel"
       ]
     }
   ]

@@ -1,0 +1,11 @@
+--- a/app/src/main/java/app/morphe/manager/domain/update/EcosystemUpdateCoordinator.kt
++++ b/app/src/main/java/app/morphe/manager/domain/update/EcosystemUpdateCoordinator.kt
+@@ -191,7 +191,7 @@
+                 sessionInstaller.installShizuku(localFile, expectedPackage)
+ 
+             rootInstaller.hasRootAccess() -> {
+-                rootInstaller.installAsPlayStore(localFile)
++                rootInstaller.installPackage(localFile, asPlayStore = true)
+                 InstallResult.Success
+             }
+ 

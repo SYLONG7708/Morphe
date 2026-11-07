@@ -1,0 +1,20 @@
+--- a/app/src/main/java/app/morphe/manager/ui/screen/HomeScreen.kt
++++ b/app/src/main/java/app/morphe/manager/ui/screen/HomeScreen.kt
+@@ -184,7 +184,6 @@
+         availablePatches,
+         bundleUpdateProgress,
+         onboardingState,
+-        patchTriggerPackage,
+         onStartQuickPatch,
+     ) {
+         homeViewModel.patchFlow.onStartQuickPatch = onStartQuickPatch
+@@ -192,8 +191,7 @@
+             homeAppState != null &&
+             availablePatches > 0 &&
+             bundleUpdateProgress == null &&
+-            onboardingState == null &&
+-            patchTriggerPackage == null
++            onboardingState == null
+         ) {
+             homeViewModel.patchFlow.inspectOneTapHubOptions()
+         }
