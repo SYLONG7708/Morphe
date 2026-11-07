@@ -80,7 +80,7 @@ def prepare(local=False):
         manifest = {'schema':1, 'channel':'blue-m-stable', 'sequence':plan['code'],
             'published_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'upstream':plan['selection'], 'packages':packages,
-            'client':{'revision':9,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
+            'client':{'revision':10,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
             'playback':PLAYBACK_POLICY}
         write(READY/'blue-m-stable.json', manifest)
         # Compile only our small standard-library signer in the secret-bearing job.
@@ -88,10 +88,14 @@ def prepare(local=False):
         build.run([build.jtool('javac'), '-d', ROOT/'build/tools', ROOT/'src/tools/SignManifest.java'], log)
         build.sign_manifest(READY/'blue-m-stable.json', READY/'blue-m-stable.json.sig', log)
     write(READY/'plan.json', plan)
-    notes = f'''藍色 M 程式內更新與首次啟動修正
+    notes = f'''藍色 M 版本判斷、下載重試及 TLS 相容修正
 
 YouTube {plan['selection']['youtube_version']} / Morphe patches {plan['selection']['patches_version']} / 官方 MicroG {plan['microg_version']}。
 
+- 以版號、簽章、SHA-256、Android／ABI 及修復版本共同判斷更新；同版不同檔案、本機版本較新及不相容版本均明確提示。
+- 安裝完成後立即重新取得簽署頻道，修正舊快取造成延後取得最新版本的問題。
+- 取消後主動重新下載會解除舊的延後安裝計時，驗證完成後可選擇「安裝更新」。
+- 統一車機與雲端的 Android 9 共用版本選擇，避免誤報只適用較新 Android 的版本。
 - MicroG 與藍色 M 更新在程式內下載，顯示百分比及已下載 MB；支援取消、背景返回與中斷後重試。
 - 下載完成驗證 SHA-256、簽章、套件與版本；由使用者按「安裝更新」接續 Android 安裝程序。
 - 缺少 MicroG 時顯示原生初次設定頁，取代開啟網頁並結束程式的舊流程。
@@ -100,7 +104,7 @@ YouTube {plan['selection']['youtube_version']} / Morphe patches {plan['selection
 - 修正首頁預載資訊誤判成正在播放、導致更新一直等待的問題；真正播放中仍保護播放。
 - 已驗證 APK 可離線接續安裝；保留帳號與設定，沿用正式簽章。
 - 修正首次設定重新啟動／程序中斷後遺失系統安裝確認的情況，從原系統交易繼續安裝，無須重新下載或等待一小時。
-- 後續 YouTube 更新必須包含 revision 9 以上，保留 TLS 相容性與安裝恢復修正。
+- 後續 YouTube 更新必須包含 revision 10 以上，保留 TLS 相容性與安裝恢復修正。
 
 保留既有播放錯誤恢復。Android 首次安裝來源授權及必要的系統安裝確認仍須操作；系統替換套件時可能關閉 App，完成後可重新開啟。
 相容 Android 9 以上及四種 ABI；實際設備驗收範圍請參照交付紀錄。

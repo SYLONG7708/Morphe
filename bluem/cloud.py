@@ -25,9 +25,9 @@ GOOGLE_CERTS = {
     '3257d599a49d2c961a471ca9843f59d341a405884583fc087df4237b733bbd6d',
 }
 ABIS = {'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'}
-# Local repair 2026100918 adds the guarded TLS backend fallback (client revision 9).
+# Local repair 2026100919 preserves TLS and exact-artifact update recovery (revision 10).
 # Reserve its code so a future public release upgrades these installations.
-MIN_RELEASE_CODE = 2026100919
+MIN_RELEASE_CODE = 2026100920
 KNOWN_GOOGLE = {'21.16.256': '724d2bf15d31dac98db00d82914db3876edf66e62fe2845001f204209ecf4c00'}
 
 

@@ -14,7 +14,7 @@ class CloudPolicyTest(unittest.TestCase):
         self.assertEqual(len(set(clients)), len(clients))
         self.assertTrue(set(clients) <= {'TV_SABR','ANDROID_CREATOR','TV_SIMPLY'})
     def test_old_channel_migrates_monotonically(self):
-        self.assertEqual(next_code({'sequence':2026092404}),2026100919)
+        self.assertEqual(next_code({'sequence':2026092404}),2026100920)
     def test_cloud_release_upgrades_locally_delivered_recovery(self):
         current = {'sequence':2026100905, 'packages':[
             {'package':'app.morphe.android.youtube','version_code':2026100905},

@@ -55,7 +55,7 @@ public final class CheckUpdateContract {
     ResXmlElement element=(ResXmlElement)children.next();ResXmlAttribute name=element.searchAttributeByResourceId(android.R.attr.name);
     if(name==null)continue;String n=name.getValueAsString();
     if("com.sylong.bluem.update.QaReceiver".equals(n))qa++;
-    if("com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(n))revision="9".equals(element.searchAttributeByResourceId(android.R.attr.value).getValueAsString());
+    if("com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(n))revision="10".equals(element.searchAttributeByResourceId(android.R.attr.value).getValueAsString());
     if("com.sylong.bluem.update.SetupActivity".equals(n)){
      setupManifest=true;require(element.searchAttributeByResourceId(android.R.attr.exported).getData()==0,"Setup activity must be private");
     }
@@ -63,6 +63,6 @@ public final class CheckUpdateContract {
    require(qa==(Boolean.parseBoolean(args[1])?1:0),"QA receiver exposure mismatch");
    require(revision&&setupManifest&&setup&&checked==3&&mainHooks==1&&tlsHooks==2,"Incomplete startup/update/TLS contract");
   }
-  System.out.println("In-app update contract PASS: 3 native routes, 2 safe TLS backends, no browser/exit, one startup hook, private setup, revision 9, original services, QA boundary");
+  System.out.println("In-app update contract PASS: 3 native routes, 2 safe TLS backends, no browser/exit, one startup hook, private setup, revision 10, original services, QA boundary");
  }
 }

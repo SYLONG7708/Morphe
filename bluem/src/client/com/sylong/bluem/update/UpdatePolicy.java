@@ -19,9 +19,22 @@ public final class UpdatePolicy {
     public static final int MAX_MANIFEST = 131072;
     public static final int MAX_UPSTREAM = 2 * 1024 * 1024;
     public static final String POLICY = "morphe-recommended-stable";
-    public static final int MIN_RECOVERY_REVISION = 9;
+    public static final int MIN_RECOVERY_REVISION = 10;
     public static boolean preservesRecovery(String pkg, int revision) {
         return MICROG.equals(pkg) || (YOUTUBE.equals(pkg) && revision >= MIN_RECOVERY_REVISION);
+    }
+
+    public enum InstalledState { UPDATE, CURRENT, LOCAL_NEWER, DIFFERENT_BUILD, DIFFERENT_SIGNER, INCOMPATIBLE, HELD_RECOVERY }
+
+    /** Classify exact installed artifacts, including same-code local repairs. */
+    public static InstalledState installedState(Item item, int revision, long installedCode,
+            boolean trustedSigner, int sdk, String[] abis, String installedHash) {
+        if (installedCode > 0 && !trustedSigner) return InstalledState.DIFFERENT_SIGNER;
+        if (installedCode > item.code) return InstalledState.LOCAL_NEWER;
+        if (!item.compatible(sdk, abis)) return InstalledState.INCOMPATIBLE;
+        if (!preservesRecovery(item.pkg, revision)) return InstalledState.HELD_RECOVERY;
+        if (installedCode < item.code) return InstalledState.UPDATE;
+        return item.sha256.equals(installedHash) ? InstalledState.CURRENT : InstalledState.DIFFERENT_BUILD;
     }
 
     public static final class Recommendation {
@@ -45,6 +58,10 @@ public final class UpdatePolicy {
             if (l != r) return Long.compare(l, r);
         }
         return 0;
+    }
+    /** The shared channel keeps the same Android 9 floor as cloud.recommended(). */
+    public static Recommendation recommendedForChannel(byte[] bytes, int deviceSdk) throws Exception {
+        return recommended(bytes, Math.min(deviceSdk, 28));
     }
     public static Recommendation recommended(byte[] bytes, int sdk) throws Exception {
         require(bytes.length > 0 && bytes.length <= MAX_UPSTREAM, "Upstream metadata size");

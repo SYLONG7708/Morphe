@@ -79,7 +79,7 @@ public final class PatchApk {
             receiver.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
             ResXmlElement meta = app.newElement("meta-data");
             meta.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.UPDATE_CLIENT_REVISION");
-            meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setValueAsString("9");
+            meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setValueAsString("10");
             if (Boolean.parseBoolean(args[4])) {
                 ResXmlElement qaReceiver = app.newElement("receiver");
                 qaReceiver.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.QaReceiver");

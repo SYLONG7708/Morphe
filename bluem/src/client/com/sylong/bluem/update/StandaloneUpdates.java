@@ -153,13 +153,15 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                     UpdatePolicy.require(item != null, "Pending package missing from signed release");
                     PackageInfo present = installed(item.pkg);
                     if (present != null && present.getLongVersionCode() >= item.code && signedBy(present, item.cert)) {
-                        if (present.getLongVersionCode() == item.code) {
-                            UpdatePolicy.require(UpdatePolicy.hash(new File(present.applicationInfo.sourceDir)).equals(item.sha256), "Installed APK differs from release");
-                        }
+                        boolean exact = present.getLongVersionCode() == item.code
+                            && UpdatePolicy.hash(new File(present.applicationInfo.sourceDir)).equals(item.sha256);
                         prefs.edit().remove("ready_file").remove("ready_package").remove("waiting_permission").remove("installer_launched").commit();
                         apkFile(item).delete();
-                        Log.i(TAG, "INSTALL_VERIFIED " + item.pkg + " " + present.getLongVersionCode());
-                        evaluate(release);
+                        Log.i(TAG, (exact ? "INSTALL_VERIFIED " : "PENDING_SUPERSEDED ") + item.pkg + " " + present.getLongVersionCode());
+                        // Cached metadata verifies the previous install. Fetch the current
+                        // channel immediately instead of waiting another six hours.
+                        if (!PlaybackRecovery.online(app)) { evaluate(release); return; }
+                        Log.i(TAG, "REFRESH_AFTER_INSTALL");
                     } else {
                         try { verifyArchive(apkFile(item), item); }
                         catch (Exception invalidApk) {
@@ -176,8 +178,8 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                             } else if (InstallResultReceiver.pendingAction != null) installReady();
                             else showReady();
                         });
+                        return;
                     }
-                    return;
                 }
                 if (!PlaybackRecovery.online(app)) throw new IOException("Network unavailable");
                 byte[] bytes = UpdatePolicy.fetch(BuildConfig.CHANNEL_URL, UpdatePolicy.MAX_MANIFEST, BuildConfig.QA);
@@ -185,12 +187,12 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 UpdatePolicy.Release release = UpdatePolicy.verify(bytes, signature, certificate(), prefs.getLong("sequence", 0), BuildConfig.QA);
                 applyPlaybackPolicy(bytes);
                 try {
-                    UpdatePolicy.Recommendation official = UpdatePolicy.recommended(
+                    UpdatePolicy.Recommendation official = UpdatePolicy.recommendedForChannel(
                         UpdatePolicy.fetch(BuildConfig.UPSTREAM_URL, UpdatePolicy.MAX_UPSTREAM, BuildConfig.QA), Build.VERSION.SDK_INT);
                     Log.i(TAG, "OFFICIAL_RECOMMENDED " + official.youtubeVersion + " PATCHES " + official.patchesVersion);
                     if (!release.recommendation.matches(official)) {
                         prefs.edit().putString("upstream_status", "new_stable_build_pending").apply();
-                    }
+                    } else prefs.edit().remove("upstream_status").apply();
                 } catch (Exception unavailable) {
                     Log.i(TAG, "UPSTREAM_METADATA_UNAVAILABLE_USING_SIGNED_RELEASE");
                 }
@@ -265,31 +267,56 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
     }
     private void evaluate(UpdatePolicy.Release release) throws Exception {
         List<UpdatePolicy.Item> updates = new ArrayList<>();
-        boolean incompatibleRecovery = false;
+        List<String> notices = new ArrayList<>();
+        String status = "up_to_date";
         for (UpdatePolicy.Item item : release.items) {
             PackageInfo present = installed(item.pkg);
-            if (present != null && !signedBy(present, item.cert)) {
-                Log.w(TAG, "SKIP_DIFFERENT_SIGNER " + item.pkg);
-                continue;
-            }
             long code = present == null ? 0 : present.getLongVersionCode();
-            if (code < item.code && !UpdatePolicy.preservesRecovery(item.pkg, release.clientRevision)) {
-                incompatibleRecovery = true;
-                Log.w(TAG, "UPDATE_REQUIRES_RECOVERY_REVISION " + UpdatePolicy.MIN_RECOVERY_REVISION);
-                continue;
+            boolean trusted = present == null || signedBy(present, item.cert);
+            String hash = present != null && trusted && code == item.code
+                ? UpdatePolicy.hash(new File(present.applicationInfo.sourceDir)) : null;
+            UpdatePolicy.InstalledState state = UpdatePolicy.installedState(item, release.clientRevision,
+                code, trusted, Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS, hash);
+            Log.i(TAG, "PACKAGE_STATE " + item.pkg + " installed=" + code + " channel=" + item.code + " " + state);
+            switch (state) {
+                case UPDATE: updates.add(item); break;
+                case CURRENT: break;
+                case LOCAL_NEWER:
+                    notices.add(item.label + " 已安裝較新的版本（" + code + "），會保留目前版本。");
+                    if (status.equals("up_to_date")) status = "local_version_ahead";
+                    break;
+                case HELD_RECOVERY:
+                    notices.add(item.label + " 更新尚未包含目前的相容修復，會保留目前版本。");
+                    status = "waiting_for_compatible_recovery_update"; break;
+                case DIFFERENT_BUILD:
+                    notices.add(item.label + " 版號相同，但檔案內容不同。會保留目前版本，等待版號更高的相容更新。");
+                    status = "same_version_different_build"; break;
+                case DIFFERENT_SIGNER:
+                    notices.add(item.label + " 的安裝簽章與更新來源不同，無法直接覆蓋，資料會保留。");
+                    status = "installed_signer_mismatch"; break;
+                case INCOMPATIBLE:
+                    notices.add(item.label + " 的新版不支援這台裝置的 Android 版本或處理器，會保留目前版本。");
+                    status = "waiting_for_device_compatible_update"; break;
             }
-            if (code < item.code && item.compatible(Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS)) updates.add(item);
         }
-        final boolean waitingCompatible = incompatibleRecovery;
+        final String evaluatedStatus = status;
+        final String noticeText = String.join("\n\n", notices);
+        PackageInfo installedYouTube = installed(UpdatePolicy.YOUTUBE);
+        PackageInfo installedMicroG = installed(UpdatePolicy.MICROG);
+        final String versionText = "藍色 M " + BuildConfig.YOUTUBE_VERSION + "（版本 "
+            + (installedYouTube == null ? "未安裝" : installedYouTube.getLongVersionCode())
+            + "）\n補丁 " + BuildConfig.PATCHES_VERSION
+            + "\nMicroG " + (installedMicroG == null ? "未安裝" : installedMicroG.versionName);
         main.post(() -> {
             busy = false; latest = release; ready = null;
             if (updates.isEmpty()) {
                 prefs.edit().remove("accepted_sequence").commit();
-                prefs.edit().putString("update_status", waitingCompatible ? "waiting_for_compatible_recovery_update" : "up_to_date").apply();
-                Log.i(TAG, (waitingCompatible ? "UPDATE_HELD_TO_PRESERVE_RECOVERY " : "UP_TO_DATE ") + release.sequence);
+                prefs.edit().putString("update_status", evaluatedStatus).apply();
+                Log.i(TAG, "UPDATE_EVALUATED " + evaluatedStatus + " " + release.sequence);
                 if (manualCheck) {
                     manualCheck = false;
-                    showError("更新檢查完成", waitingCompatible ? "相容的新版仍在準備中，會保留目前版本。" : "藍色 M 與 MicroG 已是此更新頻道的最新版本。");
+                    showError("更新檢查完成", versionText + "\n\n" + (noticeText.isEmpty()
+                        ? "藍色 M 與 MicroG 已與此更新頻道一致。" : noticeText));
                 }
                 return;
             }
@@ -306,7 +333,9 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             Activity a = activity();
             if (a == null) return;
             StringBuilder message = new StringBuilder("可用更新：\n");
-            for (UpdatePolicy.Item update : updates) message.append(update.label).append(" ").append(update.versionName).append('\n');
+            for (UpdatePolicy.Item update : updates) message.append(update.label).append(" ").append(update.versionName)
+                .append("（版本 ").append(update.code).append("）\n");
+            if (!noticeText.isEmpty()) message.append('\n').append(noticeText).append('\n');
             message.append("\n下載會留在目前畫面並顯示進度，完成後由您選擇安裝。");
             dialog = new AlertDialog.Builder(a).setTitle("藍色 M 更新")
                 .setMessage(message.toString())
@@ -355,6 +384,9 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
     private final ExecutorService workerCancel = Executors.newSingleThreadExecutor();
     private void download(UpdatePolicy.Item item) {
         if (downloading || activity() == null) return;
+        // An explicit download or retry supersedes an earlier cancel/later choice.
+        // Otherwise the verified APK can be hidden behind the old one-hour timer.
+        prefs.edit().remove("install_retry_after").remove("permission_prompt_after").apply();
         downloading = true; cancelled.set(false); progressLabel = item.label; progressValue = 0;
         progressStage = null; progressBytes = 0; progressTotal = item.size;
         showProgress();
