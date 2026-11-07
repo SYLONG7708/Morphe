@@ -2235,6 +2235,57 @@
       "requires": [
         "manager-2.4.0-releaseapi"
       ]
+    },
+    {
+      "id": "manager-2.5.0-homeviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/HomeViewModel.kt",
+      "inputs": {
+        "base": "f67b7e6306bff49d5ae2c6eb77b077f740e38ab6f838e39f64c8e65834130977",
+        "local": "1b2e56f8b68634e2404baccf47375080c015e769feca2d6e2828ac254a226384",
+        "upstream": "145116395dd7235538cd167f8205cf983d46ad831eeb829cd3656eed716a8ac6"
+      },
+      "patch": "config/upstream-resolutions/manager-2.5.0-homeviewmodel.patch",
+      "patch_sha256": "8677e54767bcc9c01ad6b401f550039a51587854759a5f18aa7438b2f6ba921a",
+      "result_sha256": "151873eb9f6998d28ae7964ba33f8e0764a759364b083e48d56c4ca9dbee1770",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.5.0-patcherviewmodel",
+        "manager-2.5.0-libs-versions"
+      ]
+    },
+    {
+      "id": "manager-2.5.0-patcherviewmodel",
+      "path": "app/src/main/java/app/morphe/manager/ui/viewmodel/PatcherViewModel.kt",
+      "inputs": {
+        "base": "3bf90c43dba2619b951a6ece15dc4230212e5c3ba1553ce4808488b43da750d0",
+        "local": "2861c7e6026ac936f329e099348d208c23e499b82d7f773baaee0f105f3593e5",
+        "upstream": "7a69b616cd0f30b846e62f88710854e5c965959ec6ce372ef96ea4972c097bb5"
+      },
+      "patch": "config/upstream-resolutions/manager-2.5.0-patcherviewmodel.patch",
+      "patch_sha256": "d1c384cb4b8309a848d81325fbb2d02021edcef490218ad249ee15b879276443",
+      "result_sha256": "3ff5214c193e3715cea9dbe64abf3dd29cc6083ff0aedda1a471e0e2ab96f703",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.5.0-homeviewmodel",
+        "manager-2.5.0-libs-versions"
+      ]
+    },
+    {
+      "id": "manager-2.5.0-libs-versions",
+      "path": "gradle/libs.versions.toml",
+      "inputs": {
+        "base": "9f2b68057fa24721ccb3870748b32c7e81257537902f937163b1d3fdcd859076",
+        "local": "8cec1975a008a8b3ad7e864a16090a264e6a322142a9d84833fa5abddbfdfcbc",
+        "upstream": "fe11ebc841b93ee814fd57d0a6794f42307367e0abdaeda63aec17cc3ec2c9bb"
+      },
+      "patch": "config/upstream-resolutions/manager-2.5.0-libs-versions.patch",
+      "patch_sha256": "1d9ee963216a9f296648420f264eb0fe349bfec77fd4e48170ba0946aeb06868",
+      "result_sha256": "99dd693a309dde47335c1ea0ee448021d305f7dbdef8173e8d2ee82e2830db53",
+      "patch_base": "upstream",
+      "requires": [
+        "manager-2.5.0-homeviewmodel",
+        "manager-2.5.0-patcherviewmodel"
+      ]
     }
   ]
 }
