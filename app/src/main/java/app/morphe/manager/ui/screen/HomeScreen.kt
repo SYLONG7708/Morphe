@@ -69,8 +69,6 @@ fun HomeScreen(
     homeAppButtonPrefs: HomeAppButtonPreferences = koinInject(),
     bundleUpdateProgress: PatchBundleRepository.BundleUpdateProgress?,
     onboardingState: OnboardingState? = null,
-    patchTriggerPackage: String? = null,
-    onPatchTriggerHandled: () -> Unit = {},
     appInfoTriggerPackage: String? = null,
     onAppInfoTriggerHandled: () -> Unit = {},
     installViewModel: InstallViewModel = koinViewModel()
@@ -186,7 +184,6 @@ fun HomeScreen(
         availablePatches,
         bundleUpdateProgress,
         onboardingState,
-        patchTriggerPackage,
         onStartQuickPatch,
     ) {
         homeViewModel.patchFlow.onStartQuickPatch = onStartQuickPatch
@@ -194,8 +191,7 @@ fun HomeScreen(
             homeAppState != null &&
             availablePatches > 0 &&
             bundleUpdateProgress == null &&
-            onboardingState == null &&
-            patchTriggerPackage == null
+            onboardingState == null
         ) {
             homeViewModel.patchFlow.inspectOneTapHubOptions()
         }
@@ -268,14 +264,6 @@ fun HomeScreen(
     }
     val startBatchPatch: (List<HomeAppItem>) -> Unit = { items ->
         openBatchQueue(items.map { it.batchTarget() })
-    }
-
-    // Handle patch trigger from dialog
-    LaunchedEffect(patchTriggerPackage) {
-        patchTriggerPackage?.let { packageName ->
-            homeViewModel.patchFlow.showPatchDialog(packageName)
-            onPatchTriggerHandled()
-        }
     }
 
     // Handle app info trigger (e.g. from mount replaced notification)

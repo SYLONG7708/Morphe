@@ -197,16 +197,14 @@ fun DialogHostScope.MissingPatchesDialog(
  *
  * Storage access is not always what is missing: a folder the user picked earlier can simply be
  * gone, or no longer hold what the patch asks for, which [PathValidationResult.Reason] tells apart.
- * Then there is no permission worth asking for, and [onClearPaths] drops the saved paths instead,
- * where [canClearPaths] allows it.
+ * Then there is no permission worth asking for, and [onClearPaths] drops the paths instead.
  */
 @Composable
 fun DialogHostScope.UnusableOptionPathsDialog(
     failures: List<PathValidationResult>,
     onRetryAfterPermission: () -> Unit,
     onDismiss: () -> Unit,
-    canClearPaths: Boolean = false,
-    onClearPaths: () -> Unit = {}
+    onClearPaths: () -> Unit
 ) {
     val context = LocalContext.current
     val fs: Filesystem = koinInject()
@@ -257,7 +255,7 @@ fun DialogHostScope.UnusableOptionPathsDialog(
             )
             val grant = when {
                 // Nothing left to grant, so dropping the paths is the way to go on
-                !storageAccessCanHelp -> clearPaths.takeIf { canClearPaths }
+                !storageAccessCanHelp -> clearPaths
 
                 // Android 11+ open the dedicated all-files-access settings screen
                 isApi30Plus -> DialogAction(
@@ -287,7 +285,7 @@ fun DialogHostScope.UnusableOptionPathsDialog(
                 grant,
                 // A path can be gone while storage access is missing as well, so the way out
                 // is offered next to the permission button rather than instead of it
-                clearPaths.takeIf { canClearPaths && storageAccessCanHelp },
+                clearPaths.takeIf { storageAccessCanHelp },
                 DialogAction(
                     text = stringResource(android.R.string.cancel),
                     onClick = onDismiss,

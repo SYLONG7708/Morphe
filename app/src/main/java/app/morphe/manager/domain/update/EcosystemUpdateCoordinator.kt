@@ -191,7 +191,7 @@ class EcosystemUpdateCoordinator(
                 sessionInstaller.installShizuku(localFile, expectedPackage)
 
             rootInstaller.hasRootAccess() -> {
-                rootInstaller.installAsPlayStore(localFile)
+                rootInstaller.installPackage(localFile, asPlayStore = true)
                 InstallResult.Success
             }
 

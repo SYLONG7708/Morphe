@@ -93,6 +93,7 @@ class HomeViewModel(
     private val patcherProcesses: PatcherProcesses by inject()
     private val ecosystemUpdateCoordinator: EcosystemUpdateCoordinator by inject()
     private val verifiedYouTubeSourceDownloader: VerifiedYouTubeSourceDownloader by inject()
+    private val patchOptionsPrefs: PatchOptionsPreferencesManager by inject()
 
     /** The app list on the home screen. */
     val apps = HomeApps(
@@ -312,6 +313,7 @@ class HomeViewModel(
         patchSelectionRepository = patchSelectionRepository,
         sourceMuteRepository = sourceMuteRepository,
         optionsRepository = optionsRepository,
+        patchOptionsPrefs = patchOptionsPrefs,
         networkInfo = networkInfo,
         prefs = prefs,
         pm = pm,
