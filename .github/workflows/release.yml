@@ -65,9 +65,7 @@ jobs:
           microg_tag="$(jq -r '.tag_name' <<<"$microg_json")"
           patch_version="$(jq -r '.tag_name | sub("^v"; "")' <<<"$patch_json")"
           microg_version="$(jq -r '.tag_name | sub("^v"; "")' <<<"$microg_json")"
-          patch_url="$(jq -r '.assets[] | select(.name | endswith(".mpp")) | .browser_download_url' \
-            <<<"$patch_json" | head -n1)"
-          test -n "$patch_url" && test "$patch_url" != "null"
+          printf '%s\n' "$patch_json" > upstream/patch-release.json
           revision="$(awk -F= '$1 == "profileRevision" { gsub(/[[:space:]]/, "", $2); print $2 }' \
             config/uis7870-safe.properties)"
           test -n "$revision"
@@ -77,7 +75,8 @@ jobs:
             https://github.com/MorpheApp/morphe-patches.git upstream/morphe-patches
           git clone --filter=blob:none --depth 1 --branch "$microg_tag" \
             https://github.com/MorpheApp/MicroG-RE.git upstream/microg-re
-          curl --fail --location --retry 3 "$patch_url" \
+          python3 tools/ci_retry.py -- python3 tools/download_patch_bundle.py \
+            --release-json upstream/patch-release.json \
             --output "upstream/patches-$patch_version.mpp"
           echo "patch_version=$patch_version" >> "$GITHUB_OUTPUT"
           echo "microg_version=$microg_version" >> "$GITHUB_OUTPUT"
