@@ -13,6 +13,7 @@ TRANSIENT = re.compile(
     r"timed? out|timeout|connection (?:reset|refused|closed)|temporary failure|"
     r"remote host terminated|unexpected end of file|HTTP[^\n]*(?:429|500|502|503|504)|"
     r"status code[^\n]*(?:429|500|502|503|504)|could not (?:GET|HEAD)|"
+    r"curl: \(22\) The requested URL returned error: (?:429|500|502|503|504)\b|"
     r"unable to access[^\n]*(?:resolve host|connection)|network is unreachable",
     re.IGNORECASE,
 )
@@ -20,6 +21,7 @@ PERMANENT = re.compile(
     r"signature verification failed|hash mismatch|compilation error|"
     r"tests? (?:failed|completed, [1-9].* failed)|failed to find package|"
     r"status code[^\n]*(?:401|403)|"
+    r"curl: \(22\) The requested URL returned error: (?:401|403)\b|"
     r"requires morphe-patcher|keystore was tampered|password was incorrect|"
     r"Upstream merge needs a code change|Reviewed resolution.*(?:mismatch|did not apply)|"
     r"requires a clean checkout|CONFLICT \(|"

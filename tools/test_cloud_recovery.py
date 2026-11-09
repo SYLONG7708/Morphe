@@ -28,6 +28,29 @@ class CloudRecoveryTest(unittest.TestCase):
         self.assertEqual("retain", self.choose(
             "HTTP 503\nValueError: Official asset digest/size mismatch")["action"])
 
+    def test_release_curl_504_failure_triggers_cloud_recovery(self):
+        self.run["id"] = 42465154565
+        self.run["path"] = ".github/workflows/release.yml"
+        logs = (
+            "release\tResolve upstream releases\t2026-11-08T08:59:04Z ##[group]Run set -euo pipefail\n"
+            "release\tResolve upstream releases\t2026-11-08T08:59:04Z ##[endgroup]\n"
+            "release\tResolve upstream releases\t2026-11-08T08:59:22Z curl: (22) The requested URL returned error: 504\n"
+            "release\tResolve upstream releases\t2026-11-08T08:59:22Z Warning: Problem : HTTP error. Will retry in 1 seconds. 3 retries left.\n"
+            "release\tResolve upstream releases\t2026-11-08T08:59:29Z curl: (22) The requested URL returned error: 504\n"
+            "release\tResolve upstream releases\t2026-11-08T08:59:29Z ##[error]Process completed with exit code 22.\n"
+        )
+        self.assertEqual("retry", self.choose(failure_output(logs))["action"])
+        self.run["run_attempt"] = 3
+        self.assertEqual("retain", self.choose(failure_output(logs))["action"])
+
+    def test_curl_credentials_and_verification_errors_keep_the_release(self):
+        for error in ("curl: (22) The requested URL returned error: 401",
+                      "curl: (22) The requested URL returned error: 403",
+                      "signature verification failed", "hash mismatch", "2 tests failed"):
+            with self.subTest(error=error):
+                logs = "curl: (22) The requested URL returned error: 504\n" + error
+                self.assertEqual("retain", self.choose(logs)["action"])
+
     def test_maximum_three_total_attempts(self):
         for attempt in (1, 2, 3, 4):
             self.run["run_attempt"] = attempt
