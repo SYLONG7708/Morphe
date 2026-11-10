@@ -80,7 +80,7 @@ def prepare(local=False):
         manifest = {'schema':1, 'channel':'blue-m-stable', 'sequence':plan['code'],
             'published_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'upstream':plan['selection'], 'packages':packages,
-            'client':{'revision':10,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
+            'client':{'revision':11,'fingerprint':plan['fingerprint'],'source_commit':plan['source_commit']},
             'playback':PLAYBACK_POLICY}
         write(READY/'blue-m-stable.json', manifest)
         # Compile only our small standard-library signer in the secret-bearing job.
