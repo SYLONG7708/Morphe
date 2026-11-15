@@ -11,19 +11,19 @@ public final class PatchLiveBridgeManifest {
         for(Iterator<?> children=app.getElements();children.hasNext();) {
             ResXmlElement child=(ResXmlElement)children.next();
             ResXmlAttribute name=child.searchAttributeByResourceId(android.R.attr.name);
-            if(name!=null && "com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(name.getValueAsString()))
-                child.getOrCreateAndroidAttribute("value",android.R.attr.value).setValueAsString("11");
+            if(name!=null && "com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(name.getDataAsString()))
+                child.getOrCreateAndroidAttribute("value",android.R.attr.value).setDataAsString("11");
         }
         ResXmlElement service=app.newElement("service");
-        service.getOrCreateAndroidAttribute("name",android.R.attr.name).setValueAsString("com.sylong.bluem.live.LiveResolveService");
+        service.getOrCreateAndroidAttribute("name",android.R.attr.name).setDataAsString("com.sylong.bluem.live.LiveResolveService");
         service.getOrCreateAndroidAttribute("exported",android.R.attr.exported).setValueAsBoolean(true);
         ResXmlElement meta=app.newElement("meta-data");
-        meta.getOrCreateAndroidAttribute("name",android.R.attr.name).setValueAsString("com.sylong.bluem.LIVE_BRIDGE");
-        meta.getOrCreateAndroidAttribute("value",android.R.attr.value).setValueAsString("1");
+        meta.getOrCreateAndroidAttribute("name",android.R.attr.name).setDataAsString("com.sylong.bluem.LIVE_BRIDGE");
+        meta.getOrCreateAndroidAttribute("value",android.R.attr.value).setDataAsString("1");
         ResXmlElement queries=manifest.getManifestElement().newElement("queries");
         String[] partners=qa?new String[]{"tw.com.sylong.tvcar","tw.com.sylong.tvcar.direct"}:new String[]{"tw.com.sylong.tvcar"};
         for(String pkg:partners) {
-            ResXmlElement item=queries.newElement("package");item.getOrCreateAndroidAttribute("name",android.R.attr.name).setValueAsString(pkg);
+            ResXmlElement item=queries.newElement("package");item.getOrCreateAndroidAttribute("name",android.R.attr.name).setDataAsString(pkg);
         }
     }
     public static void main(String[] args) throws Exception {

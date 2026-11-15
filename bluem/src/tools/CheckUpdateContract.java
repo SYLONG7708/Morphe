@@ -54,10 +54,10 @@ public final class CheckUpdateContract {
    Iterator<?> children=manifest.getApplicationElement().getElements();
    while(children.hasNext()){
     ResXmlElement element=(ResXmlElement)children.next();ResXmlAttribute name=element.searchAttributeByResourceId(android.R.attr.name);
-    if(name==null)continue;String n=name.getValueAsString();
+    if(name==null)continue;String n=name.getDataAsString();
     if("com.sylong.bluem.update.QaReceiver".equals(n))qa++;
-    if("com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(n))revision="11".equals(element.searchAttributeByResourceId(android.R.attr.value).getValueAsString());
-    if("com.sylong.bluem.LIVE_BRIDGE".equals(n))liveMetadata="1".equals(element.searchAttributeByResourceId(android.R.attr.value).getValueAsString());
+    if("com.sylong.bluem.UPDATE_CLIENT_REVISION".equals(n))revision="11".equals(element.searchAttributeByResourceId(android.R.attr.value).getDataAsString());
+    if("com.sylong.bluem.LIVE_BRIDGE".equals(n))liveMetadata="1".equals(element.searchAttributeByResourceId(android.R.attr.value).getDataAsString());
     if("com.sylong.bluem.live.LiveResolveService".equals(n)){
      liveServices++;require(element.searchAttributeByResourceId(android.R.attr.exported).getData()!=0,"Partner service must support explicit binding");
     }

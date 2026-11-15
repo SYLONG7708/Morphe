@@ -44,54 +44,57 @@ public final class PatchApk {
         return new ImmutableMethod(method.getDefiningClass(), method.getName(), method.getParameters(),
             method.getReturnType(), method.getAccessFlags(), method.getAnnotations(), method.getHiddenApiRestrictions(), body);
     }
+    static void patchManifest(AndroidManifestBlock m, int code, String versionName, boolean qa) {
+        if (!"app.morphe.android.youtube".equals(m.getPackageName())) throw new IllegalArgumentException("Wrong base package");
+        int icon = m.getIconResourceId();
+        ResXmlElement manifest = m.getManifestElement();
+        manifest.getOrCreateAndroidAttribute("versionCode", android.R.attr.versionCode).setDataType(android.util.TypedValue.TYPE_INT_DEC);
+        manifest.getOrCreateAndroidAttribute("versionCode", android.R.attr.versionCode).setData(code);
+        manifest.getOrCreateAndroidAttribute("versionName", android.R.attr.versionName).setDataAsString(versionName);
+        for (String permission : List.of("android.permission.REQUEST_INSTALL_PACKAGES",
+                "android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION", "android.permission.ACCESS_NETWORK_STATE")) {
+            if (!m.getUsesPermissions().contains(permission)) {
+                ResXmlElement element = manifest.newElement("uses-permission");
+                element.getOrCreateAndroidAttribute("name", android.R.attr.name).setDataAsString(permission);
+            }
+        }
+        ResXmlElement app = m.getApplicationElement();
+        ResXmlElement setup = app.newElement("activity");
+        setup.getOrCreateAndroidAttribute("name", android.R.attr.name).setDataAsString("com.sylong.bluem.update.SetupActivity");
+        setup.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
+        setup.getOrCreateAndroidAttribute("taskAffinity", android.R.attr.taskAffinity).setDataAsString("app.morphe.android.youtube.bluem.setup");
+        setup.getOrCreateAndroidAttribute("theme", android.R.attr.theme).setDataType(android.util.TypedValue.TYPE_REFERENCE);
+        setup.getOrCreateAndroidAttribute("theme", android.R.attr.theme).setData(android.R.style.Theme_Material_NoActionBar);
+        ResXmlElement provider = app.newElement("provider");
+        provider.getOrCreateAndroidAttribute("name", android.R.attr.name).setDataAsString("com.sylong.bluem.update.UpdateProvider");
+        provider.getOrCreateAndroidAttribute("authorities", android.R.attr.authorities).setDataAsString("app.morphe.android.youtube.bluem.updates");
+        provider.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
+        provider.getOrCreateAndroidAttribute("grantUriPermissions", android.R.attr.grantUriPermissions).setValueAsBoolean(true);
+        ResXmlElement receiver = app.newElement("receiver");
+        receiver.getOrCreateAndroidAttribute("name", android.R.attr.name).setDataAsString("com.sylong.bluem.update.InstallResultReceiver");
+        receiver.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
+        ResXmlElement meta = app.newElement("meta-data");
+        meta.getOrCreateAndroidAttribute("name", android.R.attr.name).setDataAsString("com.sylong.bluem.UPDATE_CLIENT_REVISION");
+        meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setDataAsString("11");
+        PatchLiveBridgeManifest.apply(m, qa);
+        if (qa) {
+            ResXmlElement qaReceiver = app.newElement("receiver");
+            qaReceiver.getOrCreateAndroidAttribute("name", android.R.attr.name).setDataAsString("com.sylong.bluem.update.QaReceiver");
+            qaReceiver.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(true);
+            qaReceiver.getOrCreateAndroidAttribute("permission", android.R.attr.permission).setDataAsString("android.permission.DUMP");
+            // Local QA only; production preserves the original network security policy.
+            app.removeAttributesWithId(android.R.attr.networkSecurityConfig);
+            app.getOrCreateAndroidAttribute("usesCleartextTraffic", android.R.attr.usesCleartextTraffic).setValueAsBoolean(true);
+        }
+        m.refreshFull();
+        if (icon == 0 || m.getIconResourceId() != icon) throw new IllegalStateException("Icon reference changed");
+    }
     public static void main(String[] args) throws Exception {
         Path out = Path.of(args[1]);
         Files.createDirectories(out);
         try (ZipFile apk = new ZipFile(args[0])) {
             AndroidManifestBlock m = AndroidManifestBlock.load(apk.getInputStream(apk.getEntry("AndroidManifest.xml")));
-            if (!"app.morphe.android.youtube".equals(m.getPackageName())) throw new IllegalArgumentException("Wrong base package");
-            int icon = m.getIconResourceId();
-            ResXmlElement manifest = m.getManifestElement();
-            manifest.getOrCreateAndroidAttribute("versionCode", android.R.attr.versionCode).setType((byte) android.util.TypedValue.TYPE_INT_DEC);
-            manifest.getOrCreateAndroidAttribute("versionCode", android.R.attr.versionCode).setData(Integer.parseInt(args[2]));
-            manifest.getOrCreateAndroidAttribute("versionName", android.R.attr.versionName).setValueAsString(args[3]);
-            for (String permission : List.of("android.permission.REQUEST_INSTALL_PACKAGES",
-                    "android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION", "android.permission.ACCESS_NETWORK_STATE")) {
-                if (!m.getUsesPermissions().contains(permission)) {
-                    ResXmlElement element = manifest.newElement("uses-permission");
-                    element.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString(permission);
-                }
-            }
-            ResXmlElement app = m.getApplicationElement();
-            ResXmlElement setup = app.newElement("activity");
-            setup.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.SetupActivity");
-            setup.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
-            setup.getOrCreateAndroidAttribute("taskAffinity", android.R.attr.taskAffinity).setValueAsString("app.morphe.android.youtube.bluem.setup");
-            setup.getOrCreateAndroidAttribute("theme", android.R.attr.theme).setType((byte)android.util.TypedValue.TYPE_REFERENCE);
-            setup.getOrCreateAndroidAttribute("theme", android.R.attr.theme).setData(android.R.style.Theme_Material_NoActionBar);
-            ResXmlElement provider = app.newElement("provider");
-            provider.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.UpdateProvider");
-            provider.getOrCreateAndroidAttribute("authorities", android.R.attr.authorities).setValueAsString("app.morphe.android.youtube.bluem.updates");
-            provider.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
-            provider.getOrCreateAndroidAttribute("grantUriPermissions", android.R.attr.grantUriPermissions).setValueAsBoolean(true);
-            ResXmlElement receiver = app.newElement("receiver");
-            receiver.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.InstallResultReceiver");
-            receiver.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(false);
-            ResXmlElement meta = app.newElement("meta-data");
-            meta.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.UPDATE_CLIENT_REVISION");
-            meta.getOrCreateAndroidAttribute("value", android.R.attr.value).setValueAsString("11");
-            PatchLiveBridgeManifest.apply(m, Boolean.parseBoolean(args[4]));
-            if (Boolean.parseBoolean(args[4])) {
-                ResXmlElement qaReceiver = app.newElement("receiver");
-                qaReceiver.getOrCreateAndroidAttribute("name", android.R.attr.name).setValueAsString("com.sylong.bluem.update.QaReceiver");
-                qaReceiver.getOrCreateAndroidAttribute("exported", android.R.attr.exported).setValueAsBoolean(true);
-                qaReceiver.getOrCreateAndroidAttribute("permission", android.R.attr.permission).setValueAsString("android.permission.DUMP");
-                // Local QA only; production preserves the original network security policy.
-                app.removeAttributesWithId(android.R.attr.networkSecurityConfig);
-                app.getOrCreateAndroidAttribute("usesCleartextTraffic", android.R.attr.usesCleartextTraffic).setValueAsBoolean(true);
-            }
-            m.refreshFull();
-            if (icon == 0 || m.getIconResourceId() != icon) throw new IllegalStateException("Icon reference changed");
+            patchManifest(m, Integer.parseInt(args[2]), args[3], Boolean.parseBoolean(args[4]));
             try (OutputStream manifestOut = Files.newOutputStream(out.resolve("AndroidManifest.xml"))) { m.writeBytes(manifestOut); }
             int hits = 0, gmsHooks = 0, tlsHooks = 0, tlsClasses = 0;
             int nextDexIndex = 1;

@@ -57,8 +57,10 @@ def compile_tools(log):
     dest = ROOT/'build/tools'
     dest.mkdir(parents=True, exist_ok=True)
     run([jtool('javac'), '-encoding', 'UTF-8', '-cp', tool_classpath()+os.pathsep+str(SDK/'platforms/android-37.0/android.jar'),
-         '-d', dest, *sorted((ROOT/'src/tools').glob('*.java')), ROOT/'src/tests/DexPartitionWriterTest.java'], log)
+         '-d', dest, *sorted((ROOT/'src/tools').glob('*.java')),
+         ROOT/'src/tests/DexPartitionWriterTest.java', ROOT/'src/tests/ManifestPatchTest.java'], log)
     run([jtool('java'), '-Xmx1g', '-cp', tool_classpath(), 'DexPartitionWriterTest', ROOT/'build/dex-tests'], log)
+    run([jtool('java'), '-cp', tool_classpath(), 'ManifestPatchTest'], log)
 
 def sign_manifest(source, destination, log):
     run([jtool('java'), '-cp', ROOT/'build/tools', 'SignManifest', source, destination, ROOT/'assets/release-cert.der'], log, signing_env(True))
