@@ -239,7 +239,16 @@ def assemble():
         (ROOT/'inputs/recommended-base-sha256.txt').write_text(build.digest(patched))
         build.run([sys.executable, ROOT/'run_tests.py'], log)
         build.run([sys.executable, '-m', 'unittest', 'test_cloud', 'test_recommended_policy', 'test_build'], log)
-        build.run([sys.executable, ROOT/'build.py', 'release', '--unsigned', '--code', plan['code']], log, clean_env)
+        try:
+            build.run([sys.executable, ROOT/'build.py', 'release', '--unsigned', '--code', plan['code']], log, clean_env)
+        except RuntimeError:
+            log.flush()
+            for diagnostic in (ROOT/'build/assembly.log', ROOT/'build/release/build.log'):
+                if diagnostic.is_file():
+                    lines = diagnostic.read_text(encoding='utf-8', errors='replace')[-10000:].splitlines()
+                    for line in lines[-45:]:
+                        print(f'[Unsigned {diagnostic.name}] {line}', file=sys.stderr)
+            raise
     out = ROOT/'dist'; out.mkdir(exist_ok=True)
     shutil.copyfile(ROOT/'build/release/aligned.apk', out/'BlueM-unsigned.apk')
     shutil.copyfile(paths['microg'], out/'MicroG.apk')
