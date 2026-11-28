@@ -102,13 +102,19 @@ def build(variant, code, name, unsigned_only=False):
     selection = json.loads((ROOT/'selection.json').read_text())
     with (out/'build.log').open('wb') as log:
         compile_tools(log)
-        run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'CheckRecoveryContract', source], log)
+        recovery_receipt = out/'playback-capability.txt'
+        run([jtool('java'), '-Xmx2g', '-cp', tool_classpath(), 'CheckRecoveryContract', source, recovery_receipt], log)
+        recovery_capability = recovery_receipt.read_text(encoding='utf-8').strip()
+        if recovery_capability not in {'supported', 'unavailable'}:
+            raise ValueError('Unexpected optional playback capability receipt')
+        recovery_available = recovery_capability == 'supported'
         generated = out/'generated/com/sylong/bluem/update/BuildConfig.java'
         generated.parent.mkdir(parents=True, exist_ok=True)
         url = 'http://127.0.0.1:8873/blue-m-stable.json' if qa else CHANNEL_URL
         upstream_url = 'http://127.0.0.1:8873/patches-list.json' if qa else 'https://raw.githubusercontent.com/MorpheApp/morphe-patches/main/patches-list.json'
         generated.write_text('package com.sylong.bluem.update;\npublic final class BuildConfig {\n' +
             f' public static final boolean QA = {str(qa).lower()};\n public static final String CHANNEL_URL = "{url}";\n' +
+            f' public static final boolean RECOVERY_AVAILABLE = {str(recovery_available).lower()};\n' +
             f' public static final String UPSTREAM_URL = "{upstream_url}";\n' +
             f' public static final String PATCHES_VERSION = "{selection["patches_version"]}";\n' +
             f' public static final String YOUTUBE_VERSION = "{selection["youtube_version"]}";\n}}\n', encoding='utf-8')

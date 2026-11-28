@@ -126,6 +126,7 @@ public final class PlaybackRecovery {
         Log.i(TAG, "CLIENT_SELECTED " + name);
     }
     static void prepare(Context context) {
+        if (!BuildConfig.RECOVERY_AVAILABLE) return;
         app = context.getApplicationContext();
         prefs = app.getSharedPreferences("bluem_updates", Context.MODE_PRIVATE);
         try {
@@ -142,6 +143,10 @@ public final class PlaybackRecovery {
         if (started) return;
         started = true; app = a.getApplicationContext();
         prefs = app.getSharedPreferences("bluem_updates", Context.MODE_PRIVATE);
+        if (!BuildConfig.RECOVERY_AVAILABLE) {
+            prefs.edit().putString("recovery_status", "upstream_playback").apply();
+            return;
+        }
         handler.postDelayed(() -> {
             try {
                 // Resolve required APIs before changing a setting. A future incompatible upstream fails safely.
@@ -168,7 +173,19 @@ public final class PlaybackRecovery {
         if (activity.get() == a) activity.clear();
     }
     public static boolean isPlaybackActive() {
-        return activePlayback || SystemClock.elapsedRealtime() < activeUntil;
+        long now = SystemClock.elapsedRealtime();
+        if (BuildConfig.RECOVERY_AVAILABLE) return activePlayback || now < activeUntil;
+        if (app == null) return false;
+        PlaybackState media = mediaState(activity.get(), now);
+        if (media != null && (media.getState() == PlaybackState.STATE_PLAYING
+                || media.getState() == PlaybackState.STATE_BUFFERING
+                || media.getState() == PlaybackState.STATE_CONNECTING)) return true;
+        try {
+            String state = String.valueOf(call(STATE, "getCurrent"));
+            return "PLAYING".equals(state) || "BUFFERING".equals(state);
+        } catch (Exception unavailable) {
+            return false;
+        }
     }
     public static boolean online(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

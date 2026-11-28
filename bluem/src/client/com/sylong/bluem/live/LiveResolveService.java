@@ -139,9 +139,12 @@ public final class LiveResolveService extends Service {
         return new JSONObject().put("schema",1).put("ok",true).put("backend","morphe").put("client",String.valueOf(client))
             .put("videoId",videoId).put("userAgent",userAgent).put("video",video).put("audio",audio);
     }
-    @Override public IBinder onBind(Intent intent) { return endpoint.getBinder(); }
+    @Override public IBinder onBind(Intent intent) {
+        return BridgeBuildConfig.RECOVERY_AVAILABLE ? endpoint.getBinder() : null;
+    }
     @Override public void onCreate() {
         super.onCreate();
+        if (!BridgeBuildConfig.RECOVERY_AVAILABLE) return;
         try {
             Class<?> recovery = Class.forName("com.sylong.bluem.update.PlaybackRecovery");
             Method prepare = recovery.getDeclaredMethod("prepare",android.content.Context.class);
