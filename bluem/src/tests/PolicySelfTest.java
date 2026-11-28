@@ -66,6 +66,12 @@ public final class PolicySelfTest {
                 "compatible upgrade accepted on API " + sdk);
         }
         check(UpdatePolicy.installedState(youtube,11,youtube.code,true,33,arm64,youtube.sha256) == UpdatePolicy.InstalledState.CURRENT, "exact artifact current");
+        check(UpdatePolicy.matchesInstalledArtifact(youtube, youtube.code, youtube.versionName, true, youtube.sha256), "installed artifact verified");
+        check(!UpdatePolicy.matchesInstalledArtifact(youtube, youtube.code-1, youtube.versionName, true, youtube.sha256), "prior version cannot produce a success receipt");
+        check(!UpdatePolicy.matchesInstalledArtifact(youtube, youtube.code, "other", true, youtube.sha256), "unexpected installed name cannot produce a success receipt");
+        check(!UpdatePolicy.matchesInstalledArtifact(youtube, youtube.code, youtube.versionName, false, youtube.sha256), "other signer cannot produce a success receipt");
+        check(!UpdatePolicy.matchesInstalledArtifact(youtube, youtube.code, youtube.versionName, true, null), "unreadable installed APK cannot produce a success receipt");
+        check(!UpdatePolicy.matchesInstalledArtifact(youtube, youtube.code, youtube.versionName, true, microg.sha256), "different APK cannot produce a success receipt");
         check(UpdatePolicy.installedState(youtube,11,youtube.code,true,33,arm64,"different") == UpdatePolicy.InstalledState.DIFFERENT_BUILD, "same-code distinct APK never reported current");
         check(UpdatePolicy.installedState(youtube,8,youtube.code,true,33,arm64,"different") == UpdatePolicy.InstalledState.HELD_RECOVERY, "public 918 cannot replace repaired 918");
         check(UpdatePolicy.installedState(youtube,8,youtube.code+1,true,33,arm64,null) == UpdatePolicy.InstalledState.LOCAL_NEWER, "newer local repair retained without false current claim");

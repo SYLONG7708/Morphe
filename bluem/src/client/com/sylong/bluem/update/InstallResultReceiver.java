@@ -9,6 +9,7 @@ import android.util.Log;
 
 /** Explicit, non-exported receiver, addressed by a mutable OS callback PendingIntent. */
 public final class InstallResultReceiver extends BroadcastReceiver {
+    static final int NO_RESULT = Integer.MIN_VALUE;
     static volatile Intent pendingAction;
     @Override public void onReceive(Context context, Intent intent) {
         SharedPreferences p = context.getSharedPreferences("bluem_updates", Context.MODE_PRIVATE);
@@ -24,9 +25,9 @@ public final class InstallResultReceiver extends BroadcastReceiver {
         } else {
             pendingAction = null;
             p.edit().remove("install_session").remove("installer_launched").remove("install_confirmation_pending")
-                .putString("update_status", status == PackageInstaller.STATUS_SUCCESS ? "installed" : "install_retry_later")
-                .putLong("install_retry_after", status == PackageInstaller.STATUS_SUCCESS ? 0 : System.currentTimeMillis() + 3600000)
-                .apply();
+                .putInt("install_result", status).putLong("install_result_time", System.currentTimeMillis())
+                .putString("update_status", status == PackageInstaller.STATUS_SUCCESS ? "verifying_installed_apk" : "install_not_completed")
+                .remove("install_retry_after").commit();
         }
         StandaloneUpdates.requestCheck();
     }

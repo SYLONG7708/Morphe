@@ -127,6 +127,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
     }
     private void check() {
         if (busy || downloading || activity() == null || (dialog != null && dialog.isShowing())) return;
+        if (showInstallReceipt()) return;
         if (SystemClock.elapsedRealtime() < nextCheck) return;
         lastCheck = SystemClock.elapsedRealtime();
         nextCheck = lastCheck + 6 * 3600000L;
@@ -152,17 +153,49 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                     for (UpdatePolicy.Item it : release.items) if (it.pkg.equals(pending)) item = it;
                     UpdatePolicy.require(item != null, "Pending package missing from signed release");
                     PackageInfo present = installed(item.pkg);
+                    int installResult = prefs.getInt("install_result", InstallResultReceiver.NO_RESULT);
                     if (present != null && present.getLongVersionCode() >= item.code && signedBy(present, item.cert)) {
-                        boolean exact = present.getLongVersionCode() == item.code
-                            && UpdatePolicy.hash(new File(present.applicationInfo.sourceDir)).equals(item.sha256);
-                        prefs.edit().remove("ready_file").remove("ready_package").remove("waiting_permission").remove("installer_launched").commit();
+                        String installedHash = present.getLongVersionCode() == item.code && present.applicationInfo != null
+                            && present.applicationInfo.sourceDir != null
+                            ? UpdatePolicy.hash(new File(present.applicationInfo.sourceDir)) : null;
+                        boolean exact = UpdatePolicy.matchesInstalledArtifact(item, present.getLongVersionCode(),
+                            present.versionName, true, installedHash);
+                        SharedPreferences.Editor result = prefs.edit().remove("ready_file").remove("ready_package")
+                            .remove("waiting_permission").remove("installer_launched").remove("install_session")
+                            .remove("install_confirmation_pending").remove("install_result").remove("install_result_time")
+                            .remove("install_retry_after").putString("update_status", exact ? "install_verified" : "install_readback_mismatch");
+                        if (exact) {
+                            result.putString("install_receipt", item.label + " " + item.versionName + "（版本碼 " + item.code + "）"
+                                + "\n\n已核對裝置上實際安裝的版本、簽章與 APK 檔案。").putBoolean("install_receipt_unread", true);
+                        }
+                        result.commit();
+                        InstallResultReceiver.pendingAction = null;
                         apkFile(item).delete();
                         Log.i(TAG, (exact ? "INSTALL_VERIFIED " : "PENDING_SUPERSEDED ") + item.pkg + " " + present.getLongVersionCode());
-                        // Cached metadata verifies the previous install. Fetch the current
-                        // channel immediately instead of waiting another six hours.
-                        if (!PlaybackRecovery.online(app)) { evaluate(release); return; }
-                        Log.i(TAG, "REFRESH_AFTER_INSTALL");
+                        main.post(() -> {
+                            busy = false; ready = null; latest = release; nextCheck = 0;
+                            finishProgress();
+                            if (exact) showInstallReceipt();
+                            else showError("安裝結果需確認", "系統目前是 " + present.versionName + "（版本碼 "
+                                + present.getLongVersionCode() + "），與本次下載的 APK 不同。");
+                        });
+                        return;
                     } else {
+                        long installTime = prefs.getLong(installResult == PackageInstaller.STATUS_SUCCESS
+                            ? "install_result_time" : "install_started", 0);
+                        boolean awaitingInstall = installResult == PackageInstaller.STATUS_SUCCESS
+                            || (installResult == InstallResultReceiver.NO_RESULT && prefs.getInt("install_session", -1) >= 0
+                                && InstallResultReceiver.pendingAction == null && !prefs.getBoolean("waiting_permission", false));
+                        long elapsed = System.currentTimeMillis() - installTime;
+                        if (awaitingInstall && elapsed >= 0 && elapsed < 45000) {
+                            main.post(() -> {
+                                busy = false;
+                                showInstallProgress(installResult == PackageInstaller.STATUS_SUCCESS
+                                    ? "正在核對已安裝的版本與簽章。" : "正在等待 Android 安裝結果。若系統顯示確認視窗，請按「安裝」。");
+                                pollInstallResult();
+                            });
+                            return;
+                        }
                         try { verifyArchive(apkFile(item), item); }
                         catch (Exception invalidApk) {
                             apkFile(item).delete();
@@ -172,7 +205,12 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                         UpdatePolicy.Item result = item;
                         main.post(() -> {
                             busy = false; latest = release; ready = result;
-                            if (prefs.getBoolean("waiting_permission", false) && app.getPackageManager().canRequestPackageInstalls()) {
+                            finishProgress();
+                            if (activity() == null) return;
+                            if (installResult != InstallResultReceiver.NO_RESULT) {
+                                prefs.edit().remove("install_result").remove("install_result_time").commit();
+                                showRetry("尚未確認安裝完成", installResultMessage(installResult), this::installReady);
+                            } else if (prefs.getBoolean("waiting_permission", false) && app.getPackageManager().canRequestPackageInstalls()) {
                                 prefs.edit().remove("waiting_permission").commit();
                                 installReady();
                             } else if (InstallResultReceiver.pendingAction != null) installReady();
@@ -204,7 +242,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             } catch (Exception e) {
                 Log.w(TAG, "CHECK_UNAVAILABLE " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);
                 main.post(() -> {
-                    busy = false;
+                    busy = false; finishProgress();
                     long[] retry = {60000, 300000, 900000, 3600000};
                     nextCheck = SystemClock.elapsedRealtime() + retry[Math.min(checkFailures++, retry.length - 1)];
                     prefs.edit().putString("update_status", "offline_or_retry_later").apply();
@@ -452,9 +490,10 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         if (a == null || ready == null || dialog != null && dialog.isShowing()) return;
         if (System.currentTimeMillis() < prefs.getLong("install_retry_after", 0)) return;
         UpdatePolicy.Item item = ready;
-        dialog = new AlertDialog.Builder(a).setTitle("下載完成：" + item.label + " " + item.versionName)
-            .setMessage("檔案與簽章驗證通過。\n\n安裝時 Android 可能暫時關閉藍色 M；完成後重新開啟即可接續。帳號與設定會保留。")
-            .setPositiveButton("安裝更新", (d, w) -> {
+        dialog = new AlertDialog.Builder(a).setTitle("下載完成，等候安裝")
+            .setMessage(item.label + " " + item.versionName + "（版本碼 " + item.code + "）\n\n"
+                + "請在接下來的 Android 系統視窗按「安裝」。若藍色 M 暫時關閉，重新開啟後會核對實際安裝結果。")
+            .setPositiveButton("前往系統安裝", (d, w) -> {
                 dialog = null;
                 prefs.edit().remove("install_retry_after").remove("permission_prompt_after").apply();
                 Log.i(TAG, "USER_INSTALL_REQUEST " + item.pkg);
@@ -488,8 +527,10 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             Intent confirmation = InstallResultReceiver.pendingAction;
             InstallResultReceiver.pendingAction = null;
             try {
+                finishProgress();
                 a.startActivity(confirmation);
-                prefs.edit().putLong("install_retry_after", System.currentTimeMillis() + 3600000).apply();
+                prefs.edit().putString("update_status", "awaiting_system_install_result").apply();
+                Toast.makeText(app, "請在 Android 視窗按「安裝」。", Toast.LENGTH_SHORT).show();
             } catch (RuntimeException e) {
                 InstallResultReceiver.pendingAction = confirmation;
                 Log.w(TAG, "SYSTEM_CONFIRMATION_DEFERRED");
@@ -525,8 +566,8 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         if (!app.getPackageManager().canRequestPackageInstalls()) {
             if (System.currentTimeMillis() < prefs.getLong("permission_prompt_after", 0)) return;
             prefs.edit().putLong("permission_prompt_after", System.currentTimeMillis() + 86400000).apply();
-            dialog = new AlertDialog.Builder(a).setTitle("允許自動更新")
-                .setMessage("請允許藍色 M 安裝更新。系統只需設定一次，完成後請返回這裡繼續安裝。")
+            dialog = new AlertDialog.Builder(a).setTitle("系統需要安裝許可")
+                .setMessage("請在 Android 設定允許藍色 M 安裝應用程式。返回藍色 M 後，會繼續到系統確認畫面。")
                 .setPositiveButton("前往設定", (d, w) -> {
                     dialog = null;
                     prefs.edit().putBoolean("waiting_permission", true).apply();
@@ -537,6 +578,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
             return;
         }
         UpdatePolicy.Item item = ready;
+        showInstallProgress("正在將已驗證的 " + item.label + " APK 交給 Android。");
         busy = true;
         worker.execute(() -> {
             int sessionId = -1;
@@ -545,7 +587,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 PackageInstaller installer = app.getPackageManager().getPackageInstaller();
                 PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
                 params.setAppPackageName(item.pkg); params.setSize(item.size);
-                if (Build.VERSION.SDK_INT >= 31) params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED);
+                if (Build.VERSION.SDK_INT >= 31) params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_REQUIRED);
                 sessionId = installer.createSession(params);
                 try (PackageInstaller.Session session = installer.openSession(sessionId);
                      InputStream in = new FileInputStream(apkFile(item));
@@ -558,6 +600,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                 main.post(() -> {
                     busy = false;
                     if (activity() == null || PlaybackRecovery.isPlaybackActive()) {
+                        finishProgress();
                         installer.abandonSession(committedId);
                         nextCheck = SystemClock.elapsedRealtime() + 60000;
                         return;
@@ -565,23 +608,79 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
                     try (PackageInstaller.Session session = installer.openSession(committedId)) {
                         prefs.edit().putInt("install_session", committedId).putBoolean("installer_launched", true)
                             .putBoolean("install_confirmation_pending", false)
+                            .remove("install_result").remove("install_result_time")
                             .putLong("install_started", System.currentTimeMillis()).putString("update_status", "installing").commit();
                         session.commit(installCallback(committedId).getIntentSender());
                         Log.i(TAG, "INSTALL_SESSION_COMMITTED " + item.pkg + " " + item.code);
-                        nextCheck = SystemClock.elapsedRealtime() + 60000;
+                        showInstallProgress("正在等待 Android 安裝結果。請在系統視窗確認。");
+                        pollInstallResult();
                     } catch (Exception e) {
                         try { installer.abandonSession(committedId); } catch (RuntimeException ignored) { }
                         prefs.edit().remove("install_session").putString("update_status", "install_retry_later").apply();
+                        finishProgress();
                         Log.w(TAG, "INSTALL_COMMIT_RETRY " + e.getClass().getSimpleName());
+                        showRetry("尚未開始系統安裝", "Android 暫時無法開始安裝，請重試。已下載的 APK 仍可使用。", this::installReady);
                     }
                 });
             } catch (Exception e) {
                 if (sessionId >= 0) try { app.getPackageManager().getPackageInstaller().abandonSession(sessionId); } catch (RuntimeException ignored) { }
                 Log.w(TAG, "INSTALL_REJECTED " + e.getClass().getSimpleName());
-                main.post(() -> { busy = false; nextCheck = SystemClock.elapsedRealtime() + 3600000;
-                    showRetry("尚未完成安裝", "下載檔案已保留，請確認系統安裝權限與可用空間後重試。", this::installReady); });
+                main.post(() -> {
+                    finishProgress(); busy = false; nextCheck = 0;
+                    PackageInfo currentPackage = installed(item.pkg);
+                    if (currentPackage != null && currentPackage.getLongVersionCode() >= item.code) {
+                        check();
+                    } else showRetry("尚未完成安裝", "請確認 Android 安裝權限與可用空間後重試。已下載的 APK 仍可使用。", this::installReady);
+                });
             }
         });
+    }
+    private void pollInstallResult() {
+        nextCheck = SystemClock.elapsedRealtime() + 3000;
+        main.postDelayed(this::check, 3200);
+    }
+    private void showInstallProgress(String message) {
+        Activity a = activity();
+        if (a == null) return;
+        if (progress == null) {
+            progress = new ProgressDialog(a);
+            progress.setTitle("正在安裝更新");
+            progress.setCancelable(false);
+            progress.setMessage(message);
+            try { progress.show(); }
+            catch (RuntimeException unavailable) { progress = null; }
+        } else progress.setMessage(message);
+    }
+    private boolean showInstallReceipt() {
+        Activity a = activity();
+        if (a == null || !prefs.getBoolean("install_receipt_unread", false)) return false;
+        dialog = new AlertDialog.Builder(a).setTitle("安裝成功")
+            .setMessage(prefs.getString("install_receipt", ""))
+            .setPositiveButton("確定", (d, w) -> {
+                prefs.edit().remove("install_receipt_unread").commit();
+                dialog = null; nextCheck = 0;
+                main.postDelayed(this::check, 800);
+            }).setCancelable(false).create();
+        showDialog(dialog);
+        return true;
+    }
+    private static String installResultMessage(int status) {
+        switch (status) {
+            case PackageInstaller.STATUS_SUCCESS:
+                return "Android 已回報完成，藍色 M 尚未在裝置上核對到預期的已安裝版本。回到這裡重新確認。";
+            case PackageInstaller.STATUS_FAILURE_ABORTED:
+                return "安裝已取消或中斷。按「重試」可再次開啟 Android 安裝畫面。";
+            case PackageInstaller.STATUS_FAILURE_BLOCKED:
+                return "Android 阻擋了安裝。請查看系統提示和藍色 M 的安裝權限，再重試。";
+            case PackageInstaller.STATUS_FAILURE_STORAGE:
+                return "裝置空間不足。釋出空間後按「重試」。";
+            case PackageInstaller.STATUS_FAILURE_CONFLICT:
+                return "Android 偵測到版本或簽章衝突。請先確認裝置上的版本。";
+            case PackageInstaller.STATUS_FAILURE_INCOMPATIBLE:
+                return "Android 判定這個 APK 與裝置不相容。請核對裝置和版本。";
+            default:
+                return "Android 未能完成這次安裝。按「重試」可繼續使用已下載的更新。";
+        }
     }
     private PendingIntent installCallback(int sessionId) {
         Intent result = new Intent(app, InstallResultReceiver.class).setAction("com.sylong.bluem.INSTALL_RESULT");
@@ -601,7 +700,7 @@ public final class StandaloneUpdates implements Application.ActivityLifecycleCal
         current = new WeakReference<>(a); resumed = true;
         Log.i(TAG, "WATCH_ACTIVITY_RESUMED " + a.getClass().getSimpleName());
         if (!(a instanceof SetupActivity)) PlaybackRecovery.resume(a);
-        if (prefs.getBoolean("waiting_permission", false) || ready != null) nextCheck = 0;
+        if (!prefs.getString("ready_package", "").isEmpty() || prefs.getBoolean("install_receipt_unread", false)) nextCheck = 0;
         if (downloading) showProgress();
         else main.postDelayed(() -> { if (activity() == a) check(); }, 1100);
     }

@@ -37,6 +37,13 @@ public final class UpdatePolicy {
         return item.sha256.equals(installedHash) ? InstalledState.CURRENT : InstalledState.DIFFERENT_BUILD;
     }
 
+    /** A system callback is not enough. Match the installed artifact to the verified download. */
+    public static boolean matchesInstalledArtifact(Item item, long code, String versionName,
+            boolean trustedSigner, String installedHash) {
+        return trustedSigner && code == item.code && item.versionName.equals(versionName)
+                && item.sha256.equals(installedHash);
+    }
+
     public static final class Recommendation {
         public final String patchesVersion, youtubeVersion;
         public Recommendation(String patches, String youtube) {
