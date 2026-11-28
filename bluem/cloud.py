@@ -232,7 +232,7 @@ def assemble():
             raise ValueError('Official MicroG identity changed')
         patched = ROOT/'inputs/youtube-recommended-patched.apk'
         build.run([build.jtool('java'), '-Xmx4g', '-jar', paths['desktop'], 'patch', source,
-                   '-p', paths['patches'], '--unsigned', '--bytecode-mode=FULL', '-o', patched,
+                   '-p', paths['patches'], '--unsigned', '-o', patched,
                    '-r', ROOT/'evidence/patch-result.json'], log, clean_env)
         result = json.loads((ROOT/'evidence/patch-result.json').read_text())
         validate_patch_result(result, plan['selection'])
